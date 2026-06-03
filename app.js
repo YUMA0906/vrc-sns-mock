@@ -442,6 +442,79 @@ const myPosts = [
   },
 ];
 
+const trustProfiles = {
+  You: {
+    summary: "通常投稿、下書き、保存した参考資料をまとめて、公開前のポートフォリオとして見直せる自分用の信用ページ。",
+    style: "VRChat内の自然な空気感、日常ログ、ワールド散歩の記録を中心に整理しています。",
+    scope: ["VRChat photo", "Avatar notes", "World archive", "Portfolio"],
+    links: ["https://vrchat.com/home/user/example", "https://x.com/YUMA0906", "https://yuma0906.booth.pm/"],
+    completed: 0,
+    likes: 128,
+    saves: 18,
+    repeat: 0,
+  },
+  "Mika Alterworks": {
+    summary: "衣装導入、表情調整、軽いギミック追加まで相談しやすいアバター改変クリエイター。",
+    style: "ネオン、和風、柔らかい日常系まで、BOOTH衣装を自然に馴染ませる作風。",
+    scope: ["Avatar edit", "Outfit setup", "Expression", "Booth assets"],
+    links: ["https://vrchat.com/home/user/mika-alterworks", "https://x.com/mika_alterworks", "https://mika-alterworks.booth.pm/"],
+    completed: 42,
+    likes: 980,
+    saves: 246,
+    repeat: 18,
+  },
+  "Lumi Photo": {
+    summary: "ワールド選定からポーズ提案まで任せられるVRChatフォトグラファー。",
+    style: "夜景、ポートレート、フレンドとの記念撮影をしっとり見せる写真表現。",
+    scope: ["Portrait photo", "World photo", "Lighting", "Album"],
+    links: ["https://vrchat.com/home/user/lumi-photo", "https://x.com/lumi_vrcphoto"],
+    completed: 31,
+    likes: 720,
+    saves: 184,
+    repeat: 12,
+  },
+  "Aoi Retouch": {
+    summary: "肌、髪、色味、集合写真の仕上げを中心に対応するレタッチ担当。",
+    style: "素材感を残しながら、SNSで見栄えする明るさと奥行きを整える作風。",
+    scope: ["Retouch", "Color grading", "Group photo", "Before after"],
+    links: ["https://x.com/aoi_retouch", "https://aoi-retouch.booth.pm/"],
+    completed: 58,
+    likes: 840,
+    saves: 210,
+    repeat: 25,
+  },
+  "Frame Drift": {
+    summary: "ワールド紹介、イベント告知、アバターPVの短尺編集をまとめて相談できる映像クリエイター。",
+    style: "テンポ感のあるカット、暗めのステージ、SNSで流しやすい短尺動画が得意。",
+    scope: ["Video edit", "Avatar PV", "Event recap", "YouTube"],
+    links: ["https://x.com/framedrift_vrc"],
+    completed: 22,
+    likes: 650,
+    saves: 132,
+    repeat: 7,
+  },
+  "Orbit Build": {
+    summary: "撮影、展示、イベント用途の軽量ワールド制作を相談できるワールドクリエイター。",
+    style: "光と余白を大事にした、写真を撮りたくなるコンパクトな空間設計。",
+    scope: ["World build", "Lighting", "Event space", "Optimization"],
+    links: ["https://vrchat.com/home/world/orbit-build"],
+    completed: 16,
+    likes: 540,
+    saves: 176,
+    repeat: 6,
+  },
+  "Rin Works": {
+    summary: "依頼受付投稿、サムネイル、料金表カードの見せ方を整えるデザイナー。",
+    style: "価格、納期、残り枠がぱっと読める、依頼前提の情報設計が得意。",
+    scope: ["Commission card", "Thumbnail", "Menu design", "Portfolio"],
+    links: ["https://x.com/rinworks_vrc", "https://rinworks.booth.pm/"],
+    completed: 36,
+    likes: 610,
+    saves: 198,
+    repeat: 14,
+  },
+};
+
 const board = document.querySelector("#board");
 const profileBoard = document.querySelector("#profileBoard");
 const feedView = document.querySelector("#feedView");
@@ -467,6 +540,14 @@ const profileRequest = document.querySelector("#profileRequest");
 const profileRating = document.querySelector("#profileRating");
 const profileFollow = document.querySelector("#profileFollow");
 const profileRequestButton = document.querySelector("#profileRequestButton");
+const profileShareButton = document.querySelector("#profileShareButton");
+const trustSummaryText = document.querySelector("#trustSummaryText");
+const trustStatus = document.querySelector("#trustStatus");
+const trustMetrics = document.querySelector("#trustMetrics");
+const trustScopeTags = document.querySelector("#trustScopeTags");
+const trustStyleNote = document.querySelector("#trustStyleNote");
+const trustFeaturedWorks = document.querySelector("#trustFeaturedWorks");
+const trustTimelineLabel = document.querySelector("#trustTimelineLabel");
 const dialog = document.querySelector("#pinDialog");
 const closeDialog = document.querySelector("#closeDialog");
 const dialogImage = document.querySelector("#dialogImage");
@@ -851,6 +932,11 @@ function renderProfile(creator) {
     ? `${savedPins.size} saved`
     : posts.some((pin) => pin.request?.open) ? "依頼受付中" : "通常投稿中心";
   profileRating.textContent = isMine ? "Drafts 2" : "評価 4.9";
+  const trust = getTrustProfile(creator, posts, isMine);
+  const openRequest = posts.some((pin) => pin.request?.open);
+  renderTrustProfile(creator, posts, isMine);
+  profileRequest.textContent = openRequest ? "依頼受付中" : `${trust.completed} completed`;
+  profileRating.textContent = `${trust.saves} saved`;
   profileBoard.innerHTML = posts.map(pinCard).join("");
   if (isMine) {
     profileFollow.innerHTML = "プロフィール編集";
@@ -1501,6 +1587,12 @@ profileRequestButton.addEventListener("click", () => {
   }
   setView("requests");
   showFeed();
+});
+profileShareButton?.addEventListener("click", shareCurrentProfile);
+trustFeaturedWorks?.addEventListener("click", (event) => {
+  const featured = event.target.closest("[data-featured-id]");
+  if (!featured) return;
+  openPin(Number(featured.dataset.featuredId), featured);
 });
 
 board.addEventListener("click", handleBoardClick);
@@ -2318,6 +2410,84 @@ function renderProfileLinks(urls) {
   }).join("");
 }
 
+function getTrustProfile(creator, posts, isMine) {
+  const fallback = trustProfiles[creator] || {};
+  return {
+    summary: fallback.summary || `${creator}の投稿、依頼受付状況、代表作、外部リンクをまとめて確認できる公開プロフィール。`,
+    style: fallback.style || `${posts[0]?.category || "VRChat"}を中心に、過去作品から作風を確認できる構成です。`,
+    scope: fallback.scope || [...new Set(posts.map((post) => post.category))],
+    links: isMine ? getProfileLinks().concat(fallback.links || []) : (fallback.links || []),
+    completed: fallback.completed ?? posts.filter((post) => post.request).length * 4,
+    likes: fallback.likes ?? posts.length * 42,
+    saves: fallback.saves ?? posts.length * 14,
+    repeat: fallback.repeat ?? Math.max(1, Math.floor(posts.length / 2)),
+  };
+}
+
+function formatMetric(value, label) {
+  return `<span><strong>${value}</strong><small>${label}</small></span>`;
+}
+
+function renderTrustProfile(creator, posts, isMine) {
+  const trust = getTrustProfile(creator, posts, isMine);
+  const openRequest = posts.some((post) => post.request?.open);
+  const featured = posts.slice(0, 3);
+  const links = [...new Set(trust.links.filter(Boolean))];
+
+  trustSummaryText.textContent = trust.summary;
+  trustStatus.innerHTML = `
+    <strong>${openRequest ? "依頼受付中" : "通常投稿中心"}</strong>
+    <span>${openRequest ? "料金・納期・受付枠を投稿から確認できます。" : "作風と過去作品を見てから相談できます。"}</span>
+  `;
+  trustMetrics.innerHTML = [
+    formatMetric(posts.length, "投稿"),
+    formatMetric(trust.completed, "完了実績"),
+    formatMetric(trust.likes, "いいね"),
+    formatMetric(trust.saves, "保存"),
+    formatMetric(trust.repeat, "リピート"),
+  ].join("");
+  trustScopeTags.innerHTML = trust.scope.map((item) => `<span>${item}</span>`).join("");
+  trustStyleNote.textContent = trust.style;
+  trustTimelineLabel.textContent = `Latest ${featured.length} / ${posts.length} works`;
+  trustFeaturedWorks.innerHTML = featured.map((post) => `
+    <button class="featured-work" type="button" data-featured-id="${post.id}">
+      <img src="${post.image}" alt="${post.title}" loading="lazy" />
+      <span>${post.category}</span>
+      <strong>${post.title}</strong>
+    </button>
+  `).join("");
+
+  renderProfileLinks(links);
+}
+
+function currentProfileUrl() {
+  const base = `${location.origin}${location.pathname}`;
+  if (activeProfile === "You") return `${base}#me`;
+  if (!activeProfile) return base;
+  return `${base}#profile/${slugify(activeProfile)}`;
+}
+
+async function shareCurrentProfile() {
+  const url = currentProfileUrl();
+  const label = activeProfile ? `${activeProfile} のプロフィール` : "VRC SNS";
+
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: label, text: "VRChat creator profile", url });
+    } else if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(url);
+    }
+    profileShareButton.textContent = "コピー済み";
+  } catch {
+    profileShareButton.textContent = "URLをコピー";
+    return;
+  }
+
+  window.setTimeout(() => {
+    profileShareButton.textContent = "URLをコピー";
+  }, 1400);
+}
+
 function normalizeProfileEditorText() {
   document.querySelector("#editProfileTitle").textContent = "プロフィール編集";
   if (openAvatarEditorButton) openAvatarEditorButton.textContent = "アイコンを調整";
@@ -2407,6 +2577,11 @@ function renderProfile(creator) {
   renderProfileLinks(isMine ? getProfileLinks() : []);
   profileRequest.textContent = isMine ? `${savedPins.size} saved` : posts.some((pin) => pin.request?.open) ? "依頼受付中" : "通常投稿";
   profileRating.textContent = isMine ? "Drafts 2" : "評価 4.9";
+  const trust = getTrustProfile(creator, posts, isMine);
+  const openRequest = posts.some((pin) => pin.request?.open);
+  renderTrustProfile(creator, posts, isMine);
+  profileRequest.textContent = openRequest ? "依頼受付中" : `${trust.completed} completed`;
+  profileRating.textContent = `${trust.saves} saved`;
   profileBoard.innerHTML = posts.map(pinCard).join("");
 
   if (isMine) {

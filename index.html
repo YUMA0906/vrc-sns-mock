@@ -4,6 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VRC SNS</title>
+    <meta name="description" content="VRChat creators can collect posts, works, commission status, proof of work, and public profile links in one shareable page." />
+    <meta property="og:title" content="VRC SNS - VRChat Creator Profiles" />
+    <meta property="og:description" content="作品、実績、依頼受付状況、外部リンクをまとめて見せるVRChatクリエイター向けプロフィールモック。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://yuma0906.github.io/vrc-sns-mock/" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1535223289827-42f1e9919769?auto=format&fit=crop&w=1200&q=85" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
@@ -126,7 +133,38 @@
         <div class="profile-actions">
           <button id="profileFollow" class="primary-button" type="button">Follow</button>
           <button id="profileRequestButton" class="soft-button" type="button">依頼受付を見る</button>
-          <button class="soft-button" type="button">QR / URL</button>
+          <button id="profileShareButton" class="soft-button" type="button">URLをコピー</button>
+        </div>
+        <div class="trust-layout">
+          <section class="trust-panel trust-summary" aria-labelledby="trustSummaryTitle">
+            <div>
+              <p class="eyebrow">Trust profile</p>
+              <h2 id="trustSummaryTitle">依頼前に確認できる信用ページ</h2>
+              <p id="trustSummaryText"></p>
+            </div>
+            <div id="trustStatus" class="trust-status"></div>
+          </section>
+          <section class="trust-panel trust-proof" aria-labelledby="trustProofTitle">
+            <p class="eyebrow">Proof</p>
+            <h2 id="trustProofTitle">実績の蓄積</h2>
+            <div id="trustMetrics" class="trust-metrics"></div>
+          </section>
+          <section class="trust-panel trust-scope" aria-labelledby="trustScopeTitle">
+            <p class="eyebrow">Scope</p>
+            <h2 id="trustScopeTitle">対応範囲と作風</h2>
+            <div id="trustScopeTags" class="trust-tags"></div>
+            <p id="trustStyleNote"></p>
+          </section>
+          <section class="trust-panel trust-featured" aria-labelledby="trustFeaturedTitle">
+            <div class="section-heading-row">
+              <div>
+                <p class="eyebrow">Featured works</p>
+                <h2 id="trustFeaturedTitle">代表作</h2>
+              </div>
+              <span id="trustTimelineLabel"></span>
+            </div>
+            <div id="trustFeaturedWorks" class="featured-works"></div>
+          </section>
         </div>
         <h2 class="section-title">Past posts</h2>
         <div id="profileBoard" class="masonry compact"></div>
