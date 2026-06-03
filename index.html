@@ -163,6 +163,146 @@
       </div>
     </dialog>
 
+    <dialog id="composeDialog" class="compose-dialog" aria-labelledby="composeTitle">
+      <form id="composeForm" class="compose-shell">
+        <button class="close-button" id="closeCompose" type="button" aria-label="Close">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+
+        <section class="compose-preview" aria-label="Post preview">
+          <label class="upload-drop">
+            <input id="composeImage" type="file" accept="image/*" multiple />
+            <img id="composePreviewImage" alt="" hidden />
+            <button id="removeComposeImage" class="image-remove-button" type="button" aria-label="Remove current image" hidden>
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </button>
+            <div id="composeImageControls" class="image-controls" hidden>
+              <button id="prevComposeImage" class="image-nav-button" type="button" aria-label="Previous image">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+              </button>
+              <span id="composeImageCounter">1 / 1</span>
+              <button id="nextComposeImage" class="image-nav-button" type="button" aria-label="Next image">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </button>
+            </div>
+            <span class="upload-empty">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M12 5v14" />
+                <path d="M5 12h14" />
+              </svg>
+              <strong>画像を選択</strong>
+              <small>サムネイル付きの投稿として表示されます</small>
+            </span>
+          </label>
+          <div id="composePreviewCard" class="compose-preview-card">
+            <span>Avatar · You</span>
+            <strong>新しい投稿タイトル</strong>
+            <small>#vrchat #portfolio</small>
+          </div>
+        </section>
+
+        <section class="compose-content">
+          <p class="eyebrow">Create post</p>
+          <h2 id="composeTitle">投稿を作成</h2>
+
+          <div class="compose-mode" role="radiogroup" aria-label="Post type">
+            <label>
+              <input type="radio" name="postType" value="Post" checked />
+              <span>通常投稿</span>
+            </label>
+            <label>
+              <input type="radio" name="postType" value="Commission" />
+              <span>依頼受付</span>
+            </label>
+          </div>
+
+          <div class="compose-grid">
+            <label class="field wide">
+              <span>タイトル</span>
+              <input id="composePostTitle" type="text" placeholder="例: Neon shrine avatar edit" autocomplete="off" required />
+            </label>
+            <label class="field">
+              <span>カテゴリ</span>
+              <select id="composeCategory">
+                <option>Avatar</option>
+                <option selected>Photo</option>
+                <option>Retouch</option>
+                <option>Video</option>
+                <option>World</option>
+                <option>Commission</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>公開範囲</span>
+              <select>
+                <option>Public</option>
+                <option>Followers</option>
+                <option>Private draft</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Avatar</span>
+              <input id="composeAvatar" type="text" placeholder="Selestia" autocomplete="off" />
+            </label>
+            <label class="field">
+              <span>World</span>
+              <input id="composeWorld" type="text" placeholder="Yayoi Rain" autocomplete="off" />
+            </label>
+            <label class="field wide">
+              <span>タグ</span>
+              <input id="composeTags" type="text" placeholder="#avatar #改変 #booth" autocomplete="off" />
+            </label>
+            <label class="field wide">
+              <span>説明</span>
+              <textarea id="composeDescription" rows="4" placeholder="作品の説明、使用アセット、依頼時に伝えてほしいことなど"></textarea>
+            </label>
+          </div>
+
+          <section id="commissionFields" class="commission-fields" hidden>
+            <div>
+              <strong>依頼受付中</strong>
+              <span>通常投稿でも、依頼受付中のユーザーなら投稿詳細にCTAを表示する想定です。</span>
+            </div>
+            <label class="field">
+              <span>料金目安</span>
+              <input type="text" placeholder="¥12,000〜" />
+            </label>
+            <label class="field">
+              <span>納期目安</span>
+              <input type="text" placeholder="平均 10日" />
+            </label>
+            <label class="field">
+              <span>受付状況</span>
+              <select>
+                <option>受付中</option>
+                <option>残りわずか</option>
+                <option>満枠</option>
+              </select>
+            </label>
+          </section>
+
+          <div id="composeNotice" class="compose-notice" hidden>
+            モックなので保存はしていません。バックエンド接続後に投稿APIへ送信する想定です。
+          </div>
+
+          <div class="compose-actions">
+            <button class="soft-button" type="button" id="saveDraftButton">下書き</button>
+            <button class="primary-button" type="submit">投稿する</button>
+          </div>
+        </section>
+      </form>
+    </dialog>
+
     <button id="floatingPost" class="floating-post" type="button" aria-label="Create post">
       <svg aria-hidden="true" viewBox="0 0 24 24">
         <path d="M12 5v14" />
