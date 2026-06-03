@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VRC SNS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="VRC SNS home">
+        <span class="brand-mark"></span>
+        <span>VRC SNS</span>
+      </a>
+
+      <div class="search-shell">
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <path d="m21 21-4.3-4.3m1.3-5.2a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z" />
+        </svg>
+        <input id="searchInput" type="search" placeholder="作品、アバター、依頼を探す" autocomplete="off" />
+      </div>
+
+      <nav class="nav-actions" aria-label="Primary">
+        <button class="nav-pill is-active" type="button" data-view="discover">Explore</button>
+        <button class="nav-pill" type="button" data-view="requests">Requests</button>
+        <button id="themeToggle" class="icon-button" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M12 3a6.8 6.8 0 0 0 8.6 8.6 8 8 0 1 1-8.6-8.6Z" />
+          </svg>
+        </button>
+        <button class="icon-button" type="button" aria-label="Notifications" title="Notifications">
+          <span class="badge"></span>
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7" />
+            <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+          </svg>
+        </button>
+        <button class="avatar-button" type="button" aria-label="Profile">Y</button>
+      </nav>
+    </header>
+
+    <main>
+      <section id="feedView" class="app-view">
+      <section class="hero" aria-labelledby="pageTitle">
+        <div>
+          <p class="eyebrow">VRChat creator network</p>
+          <h1 id="pageTitle">作品を見つける、繋がる、依頼する。</h1>
+        </div>
+        <div class="hero-actions">
+          <button id="shuffleButton" class="soft-button" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M16 3h5v5" />
+              <path d="M4 20 21 3" />
+              <path d="M21 16v5h-5" />
+              <path d="M15 15 21 21" />
+              <path d="M4 4l5 5" />
+            </svg>
+            Shuffle
+          </button>
+          <button id="createButton" class="primary-button" type="button">Post</button>
+        </div>
+      </section>
+
+      <section class="summary-strip" aria-label="Service summary">
+        <div>
+          <strong>Portfolio</strong>
+          <span>改変・撮影・レタッチ・動画・ワールド制作を投稿</span>
+        </div>
+        <div>
+          <strong>Commission</strong>
+          <span>投稿やプロフィールから依頼受付へ接続</span>
+        </div>
+        <div>
+          <strong>Community</strong>
+          <span>閲覧・検索・プロフィール確認はログイン不要で快適に</span>
+        </div>
+      </section>
+
+      <section class="filters" aria-label="Categories">
+        <button class="chip is-active" type="button" data-category="All">All</button>
+        <button class="chip" type="button" data-category="Avatar">Avatar</button>
+        <button class="chip" type="button" data-category="Photo">Photo</button>
+        <button class="chip" type="button" data-category="Retouch">Retouch</button>
+        <button class="chip" type="button" data-category="Video">Video</button>
+        <button class="chip" type="button" data-category="World">World</button>
+        <button class="chip" type="button" data-category="Commission">Commission</button>
+      </section>
+
+      <section class="board-wrap" aria-live="polite">
+        <div id="emptyState" class="empty-state" hidden>
+          <p>見つかりませんでした</p>
+          <span>検索ワードやカテゴリを変えてみてください。</span>
+        </div>
+        <div id="board" class="masonry"></div>
+      </section>
+      </section>
+
+      <section id="profileView" class="profile-view app-view" hidden>
+        <button id="backToFeed" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Explore
+        </button>
+        <div class="profile-hero">
+          <div>
+            <p id="profileRole" class="eyebrow"></p>
+            <h1 id="profileName"></h1>
+            <p id="profileBio"></p>
+          </div>
+          <div class="profile-stats">
+            <span id="profilePosts"></span>
+            <span id="profileRequest"></span>
+            <span id="profileRating"></span>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <button id="profileFollow" class="primary-button" type="button">Follow</button>
+          <button id="profileRequestButton" class="soft-button" type="button">依頼受付を見る</button>
+          <button class="soft-button" type="button">QR / URL</button>
+        </div>
+        <h2 class="section-title">Past posts</h2>
+        <div id="profileBoard" class="masonry compact"></div>
+      </section>
+    </main>
+
+    <dialog id="pinDialog" class="pin-dialog" aria-labelledby="dialogTitle">
+      <div class="dialog-grid">
+        <button class="close-button" id="closeDialog" type="button" aria-label="Close">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+        <div class="dialog-image-wrap">
+          <img id="dialogImage" alt="" />
+        </div>
+        <div class="dialog-content">
+          <p id="dialogCategory" class="eyebrow"></p>
+          <h2 id="dialogTitle"></h2>
+          <p id="dialogDescription"></p>
+          <div class="dialog-meta">
+            <span id="dialogCreator"></span>
+            <span id="dialogAvatar"></span>
+            <span id="dialogWorld"></span>
+            <span id="dialogTags"></span>
+          </div>
+          <button id="dialogRequest" class="request-panel" type="button"></button>
+          <div class="dialog-actions">
+            <button id="dialogSave" class="save-large" type="button">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M19 21 12 17 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z" />
+              </svg>
+              Save
+            </button>
+            <button id="dialogFollow" class="soft-button" type="button">Follow</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <button id="floatingPost" class="floating-post" type="button" aria-label="Create post">
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M12 5v14" />
+        <path d="M5 12h14" />
+      </svg>
+    </button>
+
+    <div id="dropHint" class="drop-hint" hidden>
+      <strong>画像をドロップして投稿</strong>
+      <span>投稿タイプは前回の設定を引き継ぎます。</span>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
