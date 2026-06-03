@@ -1388,6 +1388,7 @@ function handleMockSubmit(event) {
 
 let ignoreNextBoardClick = false;
 let boardTouchStart = null;
+const boardTapMoveTolerance = 4;
 
 function handleBoardClick(event) {
   if (ignoreNextBoardClick) {
@@ -1451,7 +1452,7 @@ function handleBoardTouchMove(event) {
   const touch = event.touches[0];
   const deltaX = Math.abs(touch.clientX - boardTouchStart.x);
   const deltaY = Math.abs(touch.clientY - boardTouchStart.y);
-  if (deltaX > 10 || deltaY > 10) {
+  if (deltaX > boardTapMoveTolerance || deltaY > boardTapMoveTolerance) {
     boardTouchStart.moved = true;
   }
 }
@@ -1462,6 +1463,13 @@ function handleBoardTouchEnd(event) {
 
   if (!touchStart || touchStart.moved) return;
   if (event.target.closest("[data-save], [data-tag], [data-profile]")) return;
+
+  const touch = event.changedTouches?.[0];
+  if (!touch) return;
+
+  const deltaX = Math.abs(touch.clientX - touchStart.x);
+  const deltaY = Math.abs(touch.clientY - touchStart.y);
+  if (deltaX > boardTapMoveTolerance || deltaY > boardTapMoveTolerance) return;
 
   const card = event.target.closest(".pin-card");
   if (!card || card !== touchStart.card) return;
