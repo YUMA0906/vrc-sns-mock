@@ -2648,6 +2648,7 @@ function renderProfile(creator) {
   profileRating.textContent = isMine ? "Drafts 2" : "評価 4.9";
   const trust = getTrustProfile(creator, posts, isMine);
   const openRequest = posts.some((pin) => pin.request?.open);
+  renderProfileLevelBadge(posts, trust);
   renderTrustProfile(creator, posts, isMine);
   profileRequest.textContent = openRequest ? "依頼受付中" : `${trust.completed} completed`;
   profileRating.textContent = `${trust.saves} saved`;
