@@ -2479,8 +2479,9 @@ function trustedLevel(score) {
 function renderProfileLevelBadge(posts, trust) {
   const score = trustScore(posts, trust);
   const level = trustedLevel(score);
+  const badgeLabel = level.label.replace(" User", "");
   profileLevelBadge.className = `profile-level-badge profile-level-badge--${level.key}`;
-  profileLevelBadge.textContent = level.label;
+  profileLevelBadge.innerHTML = `<span>${badgeLabel}</span>`;
   profileLevelBadge.title = `Trust score: ${score} pts`;
 }
 

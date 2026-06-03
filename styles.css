@@ -2051,16 +2051,26 @@ body[data-theme="dark"] .profile-view.is-mine .profile-hero {
 .profile-level-badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-width: 72px;
   min-height: 30px;
   margin-left: 10px;
-  padding: 0 11px;
+  padding: 0 12px;
   vertical-align: 0.35em;
   border-radius: 999px;
   color: #fff;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 860;
   line-height: 1;
   box-shadow: 0 12px 28px rgba(20,20,20,0.14);
+}
+
+.profile-level-badge span {
+  display: block;
+  max-width: 84px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .profile-level-badge--visitor {
