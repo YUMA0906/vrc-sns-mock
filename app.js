@@ -400,6 +400,48 @@ const pins = [
   },
 ];
 
+const myPosts = [
+  {
+    id: 101,
+    title: "Blue hour photo dump",
+    category: "Photo",
+    creator: "You",
+    role: "VRChat creator",
+    avatar: "Manuka",
+    world: "Blue Hour Loft",
+    tags: ["#photo", "#daily", "#portfolio"],
+    request: null,
+    description: "最近撮った写真をまとめた通常投稿。公開前のモックでは、複数画像の投稿プレビューやタグ整理の確認に使う想定です。",
+    image: vrchatImages.city,
+  },
+  {
+    id: 102,
+    title: "Avatar texture note",
+    category: "Avatar",
+    creator: "You",
+    role: "VRChat creator",
+    avatar: "Selestia",
+    world: "Creator Room",
+    tags: ["#avatar", "#texture", "#wip"],
+    request: null,
+    description: "改変メモと使用テクスチャの整理。あとからプロフィール内で過去投稿として見返せる想定です。",
+    image: vrchatImages.fashion,
+  },
+  {
+    id: 103,
+    title: "World walk archive",
+    category: "World",
+    creator: "You",
+    role: "VRChat creator",
+    avatar: "Rurune",
+    world: "Silent Harbor",
+    tags: ["#world", "#archive", "#photo"],
+    request: null,
+    description: "お気に入りワールドの散歩ログ。通常投稿のみ作れる投稿ボタンから作成されるイメージです。",
+    image: vrchatImages.world,
+  },
+];
+
 const board = document.querySelector("#board");
 const profileBoard = document.querySelector("#profileBoard");
 const feedView = document.querySelector("#feedView");
@@ -413,7 +455,10 @@ const createButton = document.querySelector("#createButton");
 const floatingPost = document.querySelector("#floatingPost");
 const dropHint = document.querySelector("#dropHint");
 const themeToggle = document.querySelector("#themeToggle");
+const avatarButton = document.querySelector("#avatarButton");
 const backToFeed = document.querySelector("#backToFeed");
+const profileBanner = document.querySelector("#profileBanner");
+const profileAvatar = document.querySelector("#profileAvatar");
 const profileName = document.querySelector("#profileName");
 const profileRole = document.querySelector("#profileRole");
 const profileBio = document.querySelector("#profileBio");
@@ -452,11 +497,37 @@ const composeAvatar = document.querySelector("#composeAvatar");
 const composeWorld = document.querySelector("#composeWorld");
 const composeTags = document.querySelector("#composeTags");
 const composeDescription = document.querySelector("#composeDescription");
-const composeMode = document.querySelector(".compose-mode");
-const commissionFields = document.querySelector("#commissionFields");
 const composeNotice = document.querySelector("#composeNotice");
 const saveDraftButton = document.querySelector("#saveDraftButton");
-const postTypeInputs = [...document.querySelectorAll("input[name='postType']")];
+const editProfileDialog = document.querySelector("#editProfileDialog");
+const editProfileForm = document.querySelector("#editProfileForm");
+const closeEditProfile = document.querySelector("#closeEditProfile");
+const cancelEditProfile = document.querySelector("#cancelEditProfile");
+const editBannerPreview = document.querySelector("#editBannerPreview");
+const openBannerEditorButton = document.querySelector("#openBannerEditor");
+const editAvatarPreview = document.querySelector("#editAvatarPreview");
+const openAvatarEditorButton = document.querySelector("#openAvatarEditor");
+const editAvatarInput = document.querySelector("#editAvatarInput");
+const avatarEditorDialog = document.querySelector("#avatarEditorDialog");
+const closeAvatarEditor = document.querySelector("#closeAvatarEditor");
+const avatarChooseImage = document.querySelector("#avatarChooseImage");
+const avatarEditorDone = document.querySelector("#avatarEditorDone");
+const avatarCropPanel = document.querySelector("#avatarEditorPanel");
+const avatarCropFrame = document.querySelector("#avatarEditorFrame");
+const avatarCropImage = document.querySelector("#avatarEditorImage");
+const avatarZoom = document.querySelector("#avatarEditorZoom");
+const avatarOffsetX = document.querySelector("#avatarEditorOffsetX");
+const avatarOffsetY = document.querySelector("#avatarEditorOffsetY");
+const avatarEditorEyebrow = document.querySelector("#avatarEditorEyebrow") || document.querySelector(".avatar-editor-copy .eyebrow");
+const editPreviewName = document.querySelector("#editPreviewName");
+const editPreviewBio = document.querySelector("#editPreviewBio");
+const avatarEditorTitle = document.querySelector("#avatarEditorTitle");
+const editDisplayName = document.querySelector("#editDisplayName");
+const editRole = document.querySelector("#editRole");
+const editBio = document.querySelector("#editBio");
+const editLink = document.querySelector("#editLink");
+const editVisibility = document.querySelector("#editVisibility");
+const editProfileNotice = document.querySelector("#editProfileNotice");
 
 let activeCategory = "All";
 let activeView = "discover";
@@ -467,6 +538,20 @@ let activeProfile = null;
 let lockedScrollY = 0;
 let composeImages = [];
 let composeImageIndex = 0;
+let myProfile = {
+  displayName: "You",
+  role: "VRChat creator",
+  bio: "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。通常投稿の作成、プロフィール編集、過去投稿の見返しをここから行う想定です。",
+  link: "https://vrchat.com/home/user/example",
+  visibility: "Public",
+  avatar: "",
+  banner: "",
+};
+let pendingAvatarSource = "";
+let pendingBannerSource = "";
+let avatarDragState = null;
+let avatarBaseSize = { width: 260, height: 260, frame: 260 };
+let mediaEditMode = "avatar";
 
 function modalIsOpen(modal) {
   return modal.open || modal.hasAttribute("open");
@@ -509,7 +594,7 @@ function unlockPageScroll() {
 
 function unlockPageScrollIfIdle() {
   window.setTimeout(() => {
-    if (modalIsOpen(dialog) || modalIsOpen(composeDialog)) return;
+    if (modalIsOpen(dialog) || modalIsOpen(composeDialog) || modalIsOpen(editProfileDialog) || modalIsOpen(avatarEditorDialog)) return;
     unlockPageScroll();
   }, 0);
 }
@@ -524,6 +609,10 @@ function creatorBySlug(slug) {
 
 function creatorPosts(creator) {
   return pins.filter((pin) => pin.creator === creator);
+}
+
+function findPostById(id) {
+  return [...pins, ...myPosts].find((pin) => pin.id === id);
 }
 
 function creatorHasOpenRequest(creator) {
@@ -630,6 +719,7 @@ function setView(view) {
 function toggleSave(pinId) {
   if (savedPins.has(pinId)) {
     savedPins.delete(pinId);
+    profileRequestButton.textContent = "投稿を作成";
   } else {
     savedPins.add(pinId);
   }
@@ -640,7 +730,7 @@ function toggleSave(pinId) {
 function syncSaveButtons(pinId) {
   const saved = savedPins.has(pinId);
   document.querySelectorAll(`[data-save="${pinId}"]`).forEach((button) => {
-    const pin = pins.find((item) => item.id === pinId);
+    const pin = findPostById(pinId);
     button.classList.toggle("is-saved", saved);
     if (pin) {
       button.setAttribute("aria-label", `${saved ? "Unsave" : "Save"} ${pin.title}`);
@@ -677,7 +767,7 @@ function setDialogOrigin(sourceElement) {
 }
 
 function openPin(pinId, sourceElement = null) {
-  currentPin = pins.find((pin) => pin.id === pinId);
+  currentPin = findPostById(pinId);
   if (!currentPin) return;
 
   setDialogOrigin(sourceElement);
@@ -723,35 +813,75 @@ function closePinDialog() {
 }
 
 function renderProfile(creator) {
-  const posts = creatorPosts(creator);
+  const isMine = creator === "You";
+  const posts = isMine ? myPosts : creatorPosts(creator);
   const first = posts[0];
   if (!first) return;
 
   activeProfile = creator;
   feedView.hidden = true;
   profileView.hidden = false;
+  profileView.classList.toggle("is-mine", isMine);
+  const bannerImage = isMine ? myProfile.banner : first.image;
+  profileBanner.style.backgroundImage = bannerImage
+    ? `linear-gradient(180deg, rgba(15,15,15,0.08), rgba(15,15,15,0.32)), url("${bannerImage}")`
+    : "";
+  profileBanner.classList.toggle("has-image", Boolean(bannerImage));
   profileName.textContent = creator;
-  profileRole.textContent = first.role;
-  profileBio.textContent = `${first.category}を中心に、VRChat向けの作品投稿をまとめたポートフォリオ。通常投稿を眺めつつ、依頼受付がある場合だけ詳細導線を出す想定です。`;
+  profileRole.textContent = isMine ? "My page / creator dashboard" : first.role;
+  profileBio.textContent = isMine
+    ? "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。通常投稿の作成、プロフィール編集、過去投稿の見返しをここから行う想定です。"
+    : `${first.category}を中心に、VRChat向けの作品投稿をまとめたポートフォリオ。通常投稿を眺めつつ、依頼受付がある場合だけ詳細導線を出す想定です。`;
   profilePosts.textContent = `${posts.length} posts`;
-  profileRequest.textContent = posts.some((pin) => pin.request?.open) ? "依頼受付中" : "通常投稿中心";
-  profileRating.textContent = "評価 4.9";
+  if (isMine) {
+    profileName.textContent = myProfile.displayName;
+    profileRole.textContent = `My page / ${myProfile.role} / ${myProfile.visibility}`;
+    profileBio.textContent = myProfile.bio;
+  }
+  if (isMine && myProfile.avatar) {
+    profileAvatar.style.backgroundImage = `url("${myProfile.avatar}")`;
+    profileAvatar.classList.add("has-image");
+    profileAvatar.textContent = "";
+  } else {
+    profileAvatar.style.backgroundImage = "";
+    profileAvatar.classList.remove("has-image");
+    profileAvatar.textContent = (profileName.textContent || "Y").slice(0, 1).toUpperCase();
+  }
+  profileRequest.textContent = isMine
+    ? `${savedPins.size} saved`
+    : posts.some((pin) => pin.request?.open) ? "依頼受付中" : "通常投稿中心";
+  profileRating.textContent = isMine ? "Drafts 2" : "評価 4.9";
   profileBoard.innerHTML = posts.map(pinCard).join("");
-  updateFollowButton(profileFollow, creator);
+  if (isMine) {
+    profileFollow.innerHTML = "プロフィール編集";
+    profileFollow.setAttribute("aria-label", "Edit profile");
+    profileFollow.classList.remove("is-saved");
+    profileFollow.textContent = "プロフィール編集";
+    profileRequestButton.textContent = "投稿を作成";
+    profileRequestButton.textContent = "投稿を作成";
+  } else {
+    updateFollowButton(profileFollow, creator);
+    profileRequestButton.textContent = "依頼受付を見る";
+  }
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function showFeed() {
   activeProfile = null;
   profileView.hidden = true;
+  profileView.classList.remove("is-mine");
   feedView.hidden = false;
-  if (location.hash.startsWith("#profile/")) {
+  if (location.hash.startsWith("#profile/") || location.hash === "#me") {
     history.pushState("", document.title, location.pathname + location.search);
   }
   renderPins();
 }
 
 function routeFromHash() {
+  if (location.hash === "#me") {
+    renderProfile("You");
+    return;
+  }
   const match = location.hash.match(/^#profile\/(.+)$/);
   if (!match) {
     showFeed();
@@ -767,6 +897,338 @@ function openProfile(slug) {
   if (modalIsOpen(dialog)) closeModalElement(dialog);
   location.hash = `profile/${slug}`;
   renderProfile(pin.creator);
+}
+
+function openMyProfile() {
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
+  if (modalIsOpen(composeDialog)) closeComposeDialog();
+  location.hash = "me";
+  renderProfile("You");
+}
+
+function normalizeProfileEditorText() {
+  document.querySelector("#editProfileTitle").textContent = "プロフィール編集";
+  document.querySelector("#openAvatarEditor").textContent = "アイコンを調整";
+  document.querySelector("#editProfileNotice").textContent = "保存しました。";
+  document.querySelector("#cancelEditProfile").textContent = "キャンセル";
+  const displayNameLabel = editDisplayName.closest(".field")?.querySelector("span");
+  const roleLabel = editRole.closest(".field")?.querySelector("span");
+  const bioLabel = editBio.closest(".field")?.querySelector("span");
+  const linkLabel = editLink.closest(".field")?.querySelector("span");
+  const visibilityLabel = editVisibility.closest(".field")?.querySelector("span");
+  if (displayNameLabel) displayNameLabel.textContent = "表示名";
+  if (roleLabel) roleLabel.textContent = "肩書き";
+  if (bioLabel) bioLabel.textContent = "自己紹介";
+  if (linkLabel) linkLabel.textContent = "リンク";
+  if (visibilityLabel) visibilityLabel.textContent = "公開設定";
+}
+
+function openEditProfile() {
+  normalizeProfileEditorText();
+  editProfileNotice.hidden = true;
+  pendingAvatarSource = myProfile.avatar;
+  pendingBannerSource = myProfile.banner;
+  editDisplayName.value = myProfile.displayName;
+  editRole.value = myProfile.role;
+  editBio.value = myProfile.bio;
+  editLink.value = myProfile.link;
+  editVisibility.value = myProfile.visibility;
+  mediaEditMode = "avatar";
+  avatarZoom.value = "1";
+  avatarOffsetX.value = "0";
+  avatarOffsetY.value = "0";
+  updateEditProfilePreview();
+  showModalElement(editProfileDialog);
+  window.setTimeout(() => editDisplayName.focus(), 140);
+}
+
+function closeAvatarEditorDialog() {
+  if (!modalIsOpen(avatarEditorDialog) || avatarEditorDialog.classList.contains("is-closing")) return;
+  avatarEditorDialog.classList.add("is-closing");
+  window.setTimeout(() => {
+    avatarEditorDialog.classList.remove("is-closing");
+    closeModalElement(avatarEditorDialog);
+  }, 180);
+}
+
+function refreshAvatarImageLayout() {
+  const naturalWidth = avatarCropImage.naturalWidth || 1;
+  const naturalHeight = avatarCropImage.naturalHeight || 1;
+  const frameWidth = avatarCropFrame.clientWidth || 260;
+  const frameHeight = avatarCropFrame.classList.contains("is-banner")
+    ? Math.round(frameWidth * 0.36)
+    : frameWidth;
+  const coverScale = Math.max(frameWidth / naturalWidth, frameHeight / naturalHeight);
+  avatarBaseSize = {
+    width: Math.round(naturalWidth * coverScale),
+    height: Math.round(naturalHeight * coverScale),
+    frame: frameWidth,
+    frameHeight,
+  };
+  if (Number(avatarZoom.value || 1) < 1) avatarZoom.value = "1";
+}
+
+function clampAvatarOffsets() {
+  const zoom = Number(avatarZoom.value || 1);
+  const scaledWidth = avatarBaseSize.width * zoom;
+  const scaledHeight = avatarBaseSize.height * zoom;
+  const limitX = Math.max(0, (scaledWidth - avatarBaseSize.frame) / 2);
+  const limitY = Math.max(0, (scaledHeight - avatarBaseSize.frameHeight) / 2);
+  avatarOffsetX.value = String(Math.max(-limitX, Math.min(limitX, Number(avatarOffsetX.value || 0))));
+  avatarOffsetY.value = String(Math.max(-limitY, Math.min(limitY, Number(avatarOffsetY.value || 0))));
+}
+
+function saveEditProfile(event) {
+  event.preventDefault();
+  myProfile = {
+    displayName: editDisplayName.value.trim() || "You",
+    role: editRole.value.trim() || "VRChat creator",
+    bio: editBio.value.trim() || "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。",
+    link: editLink.value.trim(),
+    visibility: editVisibility.value,
+    avatar: pendingAvatarSource,
+    banner: pendingBannerSource,
+  };
+  editProfileNotice.hidden = false;
+  applyMyAvatarToChrome();
+  renderProfile("You");
+  window.setTimeout(closeEditProfileDialog, 260);
+}
+
+function updateEditProfilePreview() {
+  editPreviewName.textContent = editDisplayName.value.trim() || "You";
+  editPreviewBio.textContent = editBio.value.trim() || "自己紹介がここに表示されます。";
+  const avatar = pendingAvatarSource || myProfile.avatar;
+  if (avatar) {
+    editAvatarPreview.style.backgroundImage = `url("${avatar}")`;
+    editAvatarPreview.classList.add("has-image");
+    editAvatarPreview.textContent = "";
+  } else {
+    editAvatarPreview.style.backgroundImage = "";
+    editAvatarPreview.classList.remove("has-image");
+    editAvatarPreview.textContent = (editDisplayName.value.trim() || "Y").slice(0, 1).toUpperCase();
+  }
+}
+
+function openEditProfile() {
+  normalizeProfileEditorText();
+  editProfileNotice.hidden = true;
+  pendingAvatarSource = myProfile.avatar;
+  editDisplayName.value = myProfile.displayName;
+  editRole.value = myProfile.role;
+  editBio.value = myProfile.bio;
+  editLink.value = myProfile.link;
+  editVisibility.value = myProfile.visibility;
+  avatarCropPanel.hidden = !pendingAvatarSource;
+  avatarCropImage.src = pendingAvatarSource || "";
+  avatarZoom.value = "1";
+  avatarOffsetX.value = "0";
+  avatarOffsetY.value = "0";
+  clampAvatarOffsets();
+  updateAvatarCropTransform();
+  updateEditProfilePreview();
+  editPreviewBio.textContent = editBio.value.trim() || "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。";
+  showModalElement(editProfileDialog);
+  window.setTimeout(() => editDisplayName.focus(), 140);
+}
+
+function openAvatarEditor() {
+  if (!pendingAvatarSource && myProfile.avatar) {
+    pendingAvatarSource = myProfile.avatar;
+  }
+  if (avatarEditorTitle) avatarEditorTitle.textContent = "アイコンを調整";
+  avatarCropPanel.hidden = !pendingAvatarSource;
+  avatarCropImage.src = pendingAvatarSource || "";
+  refreshAvatarImageLayout();
+  updateAvatarCropTransform();
+  showModalElement(avatarEditorDialog);
+}
+
+function applyMyAvatarToChrome() {
+  if (myProfile.avatar) {
+    avatarButton.style.backgroundImage = `url("${myProfile.avatar}")`;
+    avatarButton.classList.add("has-image");
+    avatarButton.textContent = "";
+  } else {
+    avatarButton.style.backgroundImage = "";
+    avatarButton.classList.remove("has-image");
+    avatarButton.textContent = (myProfile.displayName || "Y").slice(0, 1).toUpperCase();
+  }
+}
+
+function closeEditProfileDialog() {
+  if (modalIsOpen(avatarEditorDialog)) closeModalElement(avatarEditorDialog);
+  if (!modalIsOpen(editProfileDialog) || editProfileDialog.classList.contains("is-closing")) return;
+  editProfileDialog.classList.add("is-closing");
+  window.setTimeout(() => {
+    editProfileDialog.classList.remove("is-closing");
+    closeModalElement(editProfileDialog);
+  }, 180);
+}
+
+function closeAvatarEditorDialog() {
+  if (!modalIsOpen(avatarEditorDialog) || avatarEditorDialog.classList.contains("is-closing")) return;
+  avatarEditorDialog.classList.add("is-closing");
+  window.setTimeout(() => {
+    avatarEditorDialog.classList.remove("is-closing");
+    closeModalElement(avatarEditorDialog);
+  }, 180);
+}
+
+function updateAvatarCropTransform() {
+  const x = Number(avatarOffsetX.value || 0);
+  const y = Number(avatarOffsetY.value || 0);
+  const zoom = Number(avatarZoom.value || 1);
+  avatarCropImage.style.setProperty("--avatar-base-width", `${avatarBaseSize.width}px`);
+  avatarCropImage.style.setProperty("--avatar-base-height", `${avatarBaseSize.height}px`);
+  avatarCropImage.style.setProperty("--avatar-x", `${x}px`);
+  avatarCropImage.style.setProperty("--avatar-y", `${y}px`);
+  avatarCropImage.style.setProperty("--avatar-zoom", String(zoom));
+}
+
+function refreshAvatarImageLayout() {
+  const naturalWidth = avatarCropImage.naturalWidth || 1;
+  const naturalHeight = avatarCropImage.naturalHeight || 1;
+  const frame = avatarCropFrame.clientWidth || 260;
+  const coverScale = Math.max(frame / naturalWidth, frame / naturalHeight);
+  avatarBaseSize = {
+    width: Math.round(naturalWidth * coverScale),
+    height: Math.round(naturalHeight * coverScale),
+    frame,
+  };
+  if (Number(avatarZoom.value || 1) < 1) avatarZoom.value = "1";
+}
+
+function clampAvatarOffsets() {
+  const zoom = Number(avatarZoom.value || 1);
+  const scaledWidth = avatarBaseSize.width * zoom;
+  const scaledHeight = avatarBaseSize.height * zoom;
+  const limitX = Math.max(0, (scaledWidth - avatarBaseSize.frame) / 2);
+  const limitY = Math.max(0, (scaledHeight - avatarBaseSize.frame) / 2);
+  avatarOffsetX.value = String(Math.max(-limitX, Math.min(limitX, Number(avatarOffsetX.value || 0))));
+  avatarOffsetY.value = String(Math.max(-limitY, Math.min(limitY, Number(avatarOffsetY.value || 0))));
+}
+
+function beginAvatarDrag(event) {
+  if (avatarCropPanel.hidden || !pendingAvatarSource) return;
+  avatarDragState = {
+    x: event.clientX,
+    y: event.clientY,
+    startOffsetX: Number(avatarOffsetX.value || 0),
+    startOffsetY: Number(avatarOffsetY.value || 0),
+  };
+  avatarCropFrame.classList.add("is-dragging");
+}
+
+function moveAvatarDrag(event) {
+  if (!avatarDragState) return;
+  const nextX = avatarDragState.startOffsetX + (event.clientX - avatarDragState.x);
+  const nextY = avatarDragState.startOffsetY + (event.clientY - avatarDragState.y);
+  avatarOffsetX.value = String(nextX);
+  avatarOffsetY.value = String(nextY);
+  clampAvatarOffsets();
+  updateAvatarCropTransform();
+}
+
+function endAvatarDrag() {
+  if (!avatarDragState) return;
+  avatarDragState = null;
+  avatarCropFrame.classList.remove("is-dragging");
+}
+
+function handleAvatarWheel(event) {
+  if (avatarCropPanel.hidden || !pendingAvatarSource) return;
+  event.preventDefault();
+  const currentZoom = Number(avatarZoom.value || 1);
+  const delta = event.deltaY < 0 ? 0.08 : -0.08;
+  const nextZoom = Math.max(1, Math.min(2.8, currentZoom + delta));
+  avatarZoom.value = nextZoom.toFixed(2);
+  clampAvatarOffsets();
+  updateAvatarCropTransform();
+}
+
+function loadAvatarEditorImage(file) {
+  if (!file || !file.type.startsWith("image/")) return;
+  const reader = new FileReader();
+  reader.addEventListener("load", () => {
+    if (mediaEditMode === "banner") {
+      pendingBannerSource = reader.result;
+      avatarCropImage.src = pendingBannerSource;
+    } else {
+      pendingAvatarSource = reader.result;
+      avatarCropImage.src = pendingAvatarSource;
+    }
+    avatarCropPanel.hidden = false;
+    avatarZoom.value = "1";
+    avatarOffsetX.value = "0";
+    avatarOffsetY.value = "0";
+    window.setTimeout(() => {
+      refreshAvatarImageLayout();
+      clampAvatarOffsets();
+      updateAvatarCropTransform();
+    }, 0);
+    updateEditProfilePreview();
+  });
+  reader.readAsDataURL(file);
+}
+
+async function cropAvatarToDataUrl() {
+  if (!pendingAvatarSource) return "";
+  const image = new Image();
+  image.src = pendingAvatarSource;
+  await new Promise((resolve, reject) => {
+    image.onload = resolve;
+    image.onerror = reject;
+  });
+
+  const size = 512;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#f7f5ef";
+  ctx.fillRect(0, 0, size, size);
+
+  const zoom = Number(avatarZoom.value || 1);
+  clampAvatarOffsets();
+  const offsetX = Number(avatarOffsetX.value || 0) * (size / 260);
+  const offsetY = Number(avatarOffsetY.value || 0) * (size / 260);
+  const baseScale = Math.max(size / image.width, size / image.height);
+  const drawWidth = image.width * baseScale * zoom;
+  const drawHeight = image.height * baseScale * zoom;
+  const drawX = (size - drawWidth) / 2 + offsetX;
+  const drawY = (size - drawHeight) / 2 + offsetY;
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+  ctx.clip();
+  ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+  ctx.restore();
+
+  return canvas.toDataURL("image/jpeg", 0.86);
+}
+
+function saveEditProfile(event) {
+  event.preventDefault();
+  cropAvatarToDataUrl().then((avatar) => {
+    myProfile = {
+    displayName: editDisplayName.value.trim() || "You",
+    role: editRole.value.trim() || "VRChat creator",
+    bio: editBio.value.trim() || "自己紹介がここに表示されます。",
+    link: editLink.value.trim(),
+    visibility: editVisibility.value,
+      avatar,
+    };
+    pendingAvatarSource = avatar;
+    editProfileNotice.hidden = false;
+    applyMyAvatarToChrome();
+    renderProfile("You");
+    window.setTimeout(closeEditProfileDialog, 260);
+  }).catch(() => {
+    editProfileNotice.hidden = false;
+    editProfileNotice.textContent = "画像の読み込みに失敗しました。別の写真を選んでください。";
+  });
 }
 
 function searchByTag(tag) {
@@ -824,6 +1286,7 @@ function openComposeHint() {
   document.body.classList.remove("is-dragging");
   dropHint.hidden = true;
   composeNotice.hidden = true;
+  if (composeCategory.value === "Commission") composeCategory.value = "Photo";
   updateComposePreview();
   showModalElement(composeDialog);
   window.setTimeout(() => composePostTitle.focus(), 140);
@@ -838,40 +1301,11 @@ function closeComposeDialog() {
   }, 180);
 }
 
-function activePostType() {
-  return postTypeInputs.find((input) => input.checked)?.value || "Post";
-}
-
-function updateComposeMode() {
-  const isCommission = activePostType() === "Commission";
-  composeMode.dataset.mode = isCommission ? "commission" : "post";
-  commissionFields.classList.toggle("is-open", isCommission);
-  if (isCommission) {
-    commissionFields.hidden = false;
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        commissionFields.classList.add("is-visible");
-      });
-    });
-  } else {
-    commissionFields.classList.remove("is-visible");
-    window.setTimeout(() => {
-      if (activePostType() !== "Commission") commissionFields.hidden = true;
-    }, 390);
-  }
-  if (isCommission && composeCategory.value !== "Commission") {
-    composeCategory.value = "Commission";
-  } else if (!isCommission && composeCategory.value === "Commission") {
-    composeCategory.value = "Photo";
-  }
-  updateComposePreview();
-}
-
 function updateComposePreview() {
   const category = composeCategory.value || "Avatar";
   const title = composePostTitle.value.trim() || "新しい投稿タイトル";
   const tags = composeTags.value.trim() || "#vrchat #portfolio";
-  const creator = activePostType() === "Commission" ? "You · 依頼受付中" : "You";
+  const creator = "You";
 
   composePreviewCard.innerHTML = `
     <span>${category} · ${creator}</span>
@@ -948,9 +1382,7 @@ function removeCurrentComposeImage() {
 function handleMockSubmit(event) {
   event.preventDefault();
   composeNotice.hidden = false;
-  composeNotice.textContent = activePostType() === "Commission"
-    ? "依頼受付投稿のモックを作成しました。実装時は画像サムネイルと依頼条件を投稿APIへ送信します。"
-    : "通常投稿のモックを作成しました。実装時は画像、本文、タグ、Avatar/World情報を投稿APIへ送信します。";
+  composeNotice.textContent = "通常投稿のモックを作成しました。実装時は画像、本文、タグ、Avatar/World情報を投稿APIへ送信します。";
   updateComposePreview();
 }
 
@@ -993,8 +1425,13 @@ shuffleButton.addEventListener("click", shufflePins);
 createButton.addEventListener("click", openComposeHint);
 floatingPost.addEventListener("click", openComposeHint);
 themeToggle.addEventListener("click", toggleTheme);
+avatarButton.addEventListener("click", openMyProfile);
 backToFeed.addEventListener("click", showFeed);
 profileRequestButton.addEventListener("click", () => {
+  if (activeProfile === "You") {
+    openComposeHint();
+    return;
+  }
   setView("requests");
   showFeed();
 });
@@ -1066,6 +1503,10 @@ dialogFollow.addEventListener("click", () => {
 
 profileFollow.addEventListener("click", () => {
   if (!activeProfile) return;
+  if (activeProfile === "You") {
+    openEditProfile();
+    return;
+  }
   if (followedCreators.has(activeProfile)) {
     followedCreators.delete(activeProfile);
   } else {
@@ -1073,6 +1514,571 @@ profileFollow.addEventListener("click", () => {
   }
   updateFollowButton(profileFollow, activeProfile);
 });
+
+closeEditProfile.addEventListener("click", closeEditProfileDialog);
+cancelEditProfile.addEventListener("click", closeEditProfileDialog);
+
+editProfileDialog.addEventListener("click", (event) => {
+  if (event.target === editProfileDialog) closeEditProfileDialog();
+});
+
+editProfileDialog.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeEditProfileDialog();
+});
+
+editProfileForm.addEventListener("submit", saveEditProfile);
+
+[editDisplayName, editRole, editBio, editLink, editVisibility].forEach((input) => {
+  input.addEventListener("input", updateEditProfilePreview);
+  input.addEventListener("change", updateEditProfilePreview);
+});
+
+editAvatarPreview.addEventListener("click", () => {
+  if (pendingAvatarSource || myProfile.avatar) {
+    openMediaEditor("avatar");
+    return;
+  }
+  mediaEditMode = "avatar";
+  editAvatarInput.click();
+});
+
+openAvatarEditorButton.addEventListener("click", () => {
+  if (!pendingAvatarSource && !myProfile.avatar) {
+    mediaEditMode = "avatar";
+    editAvatarInput.click();
+    return;
+  }
+  openMediaEditor("avatar");
+});
+
+editBannerPreview?.addEventListener("click", () => {
+  if (pendingBannerSource || myProfile.banner) {
+    openMediaEditor("banner");
+    return;
+  }
+  mediaEditMode = "banner";
+  editAvatarInput.click();
+});
+
+openBannerEditorButton?.addEventListener("click", () => {
+  if (!pendingBannerSource && !myProfile.banner) {
+    mediaEditMode = "banner";
+    editAvatarInput.click();
+    return;
+  }
+  openMediaEditor("banner");
+});
+
+editAvatarInput.addEventListener("change", () => {
+  loadAvatarEditorImage(editAvatarInput.files?.[0]);
+  editAvatarInput.value = "";
+  window.setTimeout(() => openMediaEditor(mediaEditMode), 30);
+});
+
+[avatarZoom, avatarOffsetX, avatarOffsetY].forEach((input) => {
+  input.addEventListener("input", () => {
+    clampAvatarOffsets();
+    updateAvatarCropTransform();
+  });
+  input.addEventListener("change", () => {
+    clampAvatarOffsets();
+    updateAvatarCropTransform();
+  });
+});
+
+avatarCropFrame.addEventListener("pointerdown", (event) => {
+  event.preventDefault();
+  beginAvatarDrag(event);
+});
+avatarCropFrame.addEventListener("wheel", handleAvatarWheel, { passive: false });
+avatarCropImage.addEventListener("load", () => {
+  refreshAvatarImageLayout();
+  clampAvatarOffsets();
+  updateAvatarCropTransform();
+});
+window.addEventListener("resize", () => {
+  if (avatarCropPanel.hidden) return;
+  refreshAvatarImageLayout();
+  clampAvatarOffsets();
+  updateAvatarCropTransform();
+});
+
+closeAvatarEditor.addEventListener("click", closeAvatarEditorDialog);
+avatarChooseImage.addEventListener("click", () => editAvatarInput.click());
+avatarEditorDone.addEventListener("click", async () => {
+  await applyMediaEditorResult();
+  closeAvatarEditorDialog();
+});
+
+avatarEditorDialog.addEventListener("click", (event) => {
+  if (event.target === avatarEditorDialog) closeAvatarEditorDialog();
+});
+
+avatarEditorDialog.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeAvatarEditorDialog();
+});
+
+function ensureProfileLinksRow() {
+  let linksRow = document.querySelector("#profileLinks");
+  if (linksRow) return linksRow;
+  linksRow = document.createElement("div");
+  linksRow.id = "profileLinks";
+  linksRow.className = "profile-links";
+  profileBio.insertAdjacentElement("afterend", linksRow);
+  return linksRow;
+}
+
+function linkIconMarkup(kind) {
+  if (kind === "x") {
+    return `<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 4h4.2l4 5.6L17 4H20l-6.3 7.3L20 20h-4.2l-4.3-6-5.2 6H3l6.7-7.8z" /></svg>`;
+  }
+  if (kind === "booth") {
+    return `<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 7h14l-1 12H6L5 7Z" /><path d="M8 7a4 4 0 1 1 8 0" /></svg>`;
+  }
+  if (kind === "vrchat") {
+    return `<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18v9l-4 3-3-3h-4l-3 3-4-3V6Z" /><path d="M8 10h2" /><path d="M14 10h2" /></svg>`;
+  }
+  return `<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M10 14 21 3" /><path d="M15 3h6v6" /><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5" /></svg>`;
+}
+
+function detectLinkKind(url) {
+  const value = String(url || "").toLowerCase();
+  if (!value) return "generic";
+  if (value.includes("x.com") || value.includes("twitter.com")) return "x";
+  if (value.includes("booth.pm")) return "booth";
+  if (value.includes("vrchat.com")) return "vrchat";
+  return "generic";
+}
+
+function renderProfileLinks(url) {
+  const linksRow = ensureProfileLinksRow();
+  if (!url) {
+    linksRow.innerHTML = "";
+    linksRow.hidden = true;
+    return;
+  }
+  const kind = detectLinkKind(url);
+  const label = kind === "x" ? "X" : kind === "booth" ? "BOOTH" : kind === "vrchat" ? "VRChat" : "Link";
+  linksRow.hidden = false;
+  linksRow.innerHTML = `<a class="profile-link-button" href="${url}" target="_blank" rel="noreferrer" aria-label="${label}を開く">${linkIconMarkup(kind)}<span>${label}</span></a>`;
+}
+
+function renderProfile(creator) {
+  const isMine = creator === "You";
+  const posts = isMine ? myPosts : creatorPosts(creator);
+  const first = posts[0];
+  if (!first) return;
+
+  activeProfile = creator;
+  feedView.hidden = true;
+  profileView.hidden = false;
+  profileView.classList.toggle("is-mine", isMine);
+  const bannerImage = isMine ? myProfile.banner : first.image;
+  profileBanner.style.backgroundImage = bannerImage
+    ? `linear-gradient(180deg, rgba(15,15,15,0.08), rgba(15,15,15,0.32)), url("${bannerImage}")`
+    : "";
+  profileBanner.classList.toggle("has-image", Boolean(bannerImage));
+  profileName.textContent = creator;
+  profileRole.textContent = isMine ? "My page / creator dashboard" : first.role;
+  profileBio.textContent = isMine
+    ? "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。通常投稿の作成、プロフィール編集、過去投稿の見返しをここから行う想定です。"
+    : `${first.category}を中心に、VRChat向けの作品投稿をまとめたポートフォリオ。通常投稿を眺めつつ、依頼受付がある場合は詳細確認へ進む想定です。`;
+  profilePosts.textContent = `${posts.length} posts`;
+  if (isMine) {
+    profileName.textContent = myProfile.displayName;
+    profileRole.textContent = `My page / ${myProfile.role} / ${myProfile.visibility}`;
+    profileBio.textContent = myProfile.bio;
+  }
+  if (isMine && myProfile.avatar) {
+    profileAvatar.style.backgroundImage = `url("${myProfile.avatar}")`;
+    profileAvatar.classList.add("has-image");
+    profileAvatar.textContent = "";
+  } else {
+    profileAvatar.style.backgroundImage = "";
+    profileAvatar.classList.remove("has-image");
+    profileAvatar.textContent = (profileName.textContent || "Y").slice(0, 1).toUpperCase();
+  }
+  renderProfileLinks(isMine ? myProfile.link : "");
+  profileRequest.textContent = isMine
+    ? `${savedPins.size} saved`
+    : posts.some((pin) => pin.request?.open) ? "依頼受付中" : "通常投稿";
+  profileRating.textContent = isMine ? "Drafts 2" : "評価 4.9";
+  profileBoard.innerHTML = posts.map(pinCard).join("");
+  if (isMine) {
+    profileFollow.setAttribute("aria-label", "Edit profile");
+    profileFollow.classList.remove("is-saved");
+    profileFollow.textContent = "プロフィール編集";
+    profileRequestButton.textContent = "投稿を作成";
+  } else {
+    updateFollowButton(profileFollow, creator);
+    profileRequestButton.textContent = "依頼受付を見る";
+  }
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function getCurrentMediaSource() {
+  return mediaEditMode === "banner"
+    ? (pendingBannerSource || myProfile.banner || "")
+    : (pendingAvatarSource || myProfile.avatar || "");
+}
+
+function normalizeProfileEditorText() {
+  document.querySelector("#editProfileTitle").textContent = "プロフィール編集";
+  if (openAvatarEditorButton) openAvatarEditorButton.textContent = "アイコンを調整";
+  if (openBannerEditorButton) openBannerEditorButton.textContent = "バナーを調整";
+  if (editProfileNotice) editProfileNotice.textContent = "保存しました。";
+  if (cancelEditProfile) cancelEditProfile.textContent = "キャンセル";
+
+  const labels = [
+    [editDisplayName, "表示名"],
+    [editRole, "肩書き"],
+    [editBio, "自己紹介"],
+    [editLink, "リンク"],
+    [editVisibility, "公開設定"],
+  ];
+  labels.forEach(([input, text]) => {
+    const label = input?.closest(".field")?.querySelector("span");
+    if (label) label.textContent = text;
+  });
+
+  if (avatarEditorTitle) avatarEditorTitle.textContent = mediaEditMode === "banner" ? "バナーを調整" : "アイコンを調整";
+  if (avatarEditorEyebrow) avatarEditorEyebrow.textContent = mediaEditMode === "banner" ? "Profile banner" : "Profile icon";
+  if (avatarChooseImage) avatarChooseImage.textContent = "画像を選ぶ";
+  if (avatarEditorDone) avatarEditorDone.textContent = "完了";
+}
+
+function updateEditProfilePreview() {
+  editPreviewName.textContent = editDisplayName.value.trim() || "You";
+  editPreviewBio.textContent = editBio.value.trim() || "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。";
+
+  if (editBannerPreview) {
+    const banner = pendingBannerSource || myProfile.banner;
+    editBannerPreview.style.backgroundImage = banner
+      ? `linear-gradient(180deg, rgba(15,15,15,0.06), rgba(15,15,15,0.22)), url("${banner}")`
+      : "";
+    editBannerPreview.classList.toggle("has-image", Boolean(banner));
+  }
+
+  const avatar = pendingAvatarSource || myProfile.avatar;
+  if (avatar) {
+    editAvatarPreview.style.backgroundImage = `url("${avatar}")`;
+    editAvatarPreview.classList.add("has-image");
+    editAvatarPreview.textContent = "";
+  } else {
+    editAvatarPreview.style.backgroundImage = "";
+    editAvatarPreview.classList.remove("has-image");
+    editAvatarPreview.textContent = (editDisplayName.value.trim() || "Y").slice(0, 1).toUpperCase();
+  }
+}
+
+function openEditProfile() {
+  mediaEditMode = "avatar";
+  normalizeProfileEditorText();
+  editProfileNotice.hidden = true;
+  pendingAvatarSource = myProfile.avatar;
+  pendingBannerSource = myProfile.banner;
+  editDisplayName.value = myProfile.displayName;
+  editRole.value = myProfile.role;
+  editBio.value = myProfile.bio;
+  editLink.value = myProfile.link;
+  editVisibility.value = myProfile.visibility;
+  avatarZoom.value = "1";
+  avatarOffsetX.value = "0";
+  avatarOffsetY.value = "0";
+  updateEditProfilePreview();
+  showModalElement(editProfileDialog);
+  window.setTimeout(() => editDisplayName.focus(), 140);
+}
+
+function openMediaEditor(mode) {
+  mediaEditMode = mode;
+  normalizeProfileEditorText();
+  avatarCropFrame.classList.toggle("is-banner", mode === "banner");
+  avatarCropPanel.hidden = !getCurrentMediaSource();
+  avatarCropImage.src = getCurrentMediaSource();
+  avatarZoom.value = "1";
+  avatarOffsetX.value = "0";
+  avatarOffsetY.value = "0";
+  refreshAvatarImageLayout();
+  clampAvatarOffsets();
+  updateAvatarCropTransform();
+  showModalElement(avatarEditorDialog);
+}
+
+function refreshAvatarImageLayout() {
+  const naturalWidth = avatarCropImage.naturalWidth || 1;
+  const naturalHeight = avatarCropImage.naturalHeight || 1;
+  const frameWidth = avatarCropFrame.clientWidth || (mediaEditMode === "banner" ? 420 : 260);
+  const frameHeight = avatarCropFrame.clientHeight || (mediaEditMode === "banner" ? (frameWidth * 7 / 20) : frameWidth);
+  const coverScale = Math.max(frameWidth / naturalWidth, frameHeight / naturalHeight);
+
+  avatarBaseSize = {
+    width: naturalWidth * coverScale,
+    height: naturalHeight * coverScale,
+    frame: frameWidth,
+    frameHeight,
+  };
+
+  if (Number(avatarZoom.value || 1) < 1) avatarZoom.value = "1";
+}
+
+function clampAvatarOffsets() {
+  const zoom = Number(avatarZoom.value || 1);
+  const scaledWidth = avatarBaseSize.width * zoom;
+  const scaledHeight = avatarBaseSize.height * zoom;
+  const limitX = Math.max(0, (scaledWidth - avatarBaseSize.frame) / 2);
+  const limitY = Math.max(0, (scaledHeight - avatarBaseSize.frameHeight) / 2);
+  avatarOffsetX.value = String(Math.max(-limitX, Math.min(limitX, Number(avatarOffsetX.value || 0))));
+  avatarOffsetY.value = String(Math.max(-limitY, Math.min(limitY, Number(avatarOffsetY.value || 0))));
+}
+
+function updateAvatarCropTransform() {
+  const x = Number(avatarOffsetX.value || 0);
+  const y = Number(avatarOffsetY.value || 0);
+  const zoom = Number(avatarZoom.value || 1);
+  avatarCropImage.style.setProperty("--avatar-base-width", `${avatarBaseSize.width}px`);
+  avatarCropImage.style.setProperty("--avatar-base-height", `${avatarBaseSize.height}px`);
+  avatarCropImage.style.setProperty("--avatar-x", `${x}px`);
+  avatarCropImage.style.setProperty("--avatar-y", `${y}px`);
+  avatarCropImage.style.setProperty("--avatar-zoom", String(zoom));
+}
+
+function loadAvatarEditorImage(file) {
+  if (!file || !file.type.startsWith("image/")) return;
+  const reader = new FileReader();
+  reader.addEventListener("load", () => {
+    if (mediaEditMode === "banner") {
+      pendingBannerSource = reader.result;
+    } else {
+      pendingAvatarSource = reader.result;
+    }
+    avatarCropPanel.hidden = false;
+    avatarCropImage.src = reader.result;
+    avatarZoom.value = "1";
+    avatarOffsetX.value = "0";
+    avatarOffsetY.value = "0";
+    updateEditProfilePreview();
+  });
+  reader.readAsDataURL(file);
+}
+
+function getCropRectFromPreview(naturalWidth, naturalHeight) {
+  const zoom = Number(avatarZoom.value || 1);
+  const displayedWidth = avatarBaseSize.width * zoom;
+  const displayedHeight = avatarBaseSize.height * zoom;
+  const frameWidth = avatarBaseSize.frame;
+  const frameHeight = avatarBaseSize.frameHeight;
+  const offsetX = Number(avatarOffsetX.value || 0);
+  const offsetY = Number(avatarOffsetY.value || 0);
+
+  const visibleLeft = (displayedWidth - frameWidth) / 2 - offsetX;
+  const visibleTop = (displayedHeight - frameHeight) / 2 - offsetY;
+
+  const scaleX = naturalWidth / displayedWidth;
+  const scaleY = naturalHeight / displayedHeight;
+
+  let sx = visibleLeft * scaleX;
+  let sy = visibleTop * scaleY;
+  let sw = frameWidth * scaleX;
+  let sh = frameHeight * scaleY;
+
+  sx = Math.max(0, Math.min(naturalWidth - sw, sx));
+  sy = Math.max(0, Math.min(naturalHeight - sh, sy));
+
+  return { sx, sy, sw, sh };
+}
+
+async function cropAvatarToDataUrl() {
+  const source = pendingAvatarSource;
+  if (!source) return "";
+  const image = new Image();
+  image.src = source;
+  await new Promise((resolve, reject) => {
+    image.onload = resolve;
+    image.onerror = reject;
+  });
+
+  const { sx, sy, sw, sh } = getCropRectFromPreview(image.width, image.height);
+  const size = 512;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#f7f5ef";
+  ctx.fillRect(0, 0, size, size);
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+  ctx.clip();
+  ctx.drawImage(image, sx, sy, sw, sh, 0, 0, size, size);
+  ctx.restore();
+  return canvas.toDataURL("image/jpeg", 0.9);
+}
+
+async function cropBannerToDataUrl() {
+  const source = pendingBannerSource;
+  if (!source) return "";
+  const image = new Image();
+  image.src = source;
+  await new Promise((resolve, reject) => {
+    image.onload = resolve;
+    image.onerror = reject;
+  });
+
+  const { sx, sy, sw, sh } = getCropRectFromPreview(image.width, image.height);
+  const width = 1600;
+  const height = 560;
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(image, sx, sy, sw, sh, 0, 0, width, height);
+  return canvas.toDataURL("image/jpeg", 0.9);
+}
+
+function saveEditProfile(event) {
+  event.preventDefault();
+  myProfile = {
+    displayName: editDisplayName.value.trim() || "You",
+    role: editRole.value.trim() || "VRChat creator",
+    bio: editBio.value.trim() || "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。",
+    link: editLink.value.trim(),
+    visibility: editVisibility.value,
+    avatar: pendingAvatarSource,
+    banner: pendingBannerSource,
+  };
+  editProfileNotice.hidden = false;
+  applyMyAvatarToChrome();
+  renderProfile("You");
+  window.setTimeout(closeEditProfileDialog, 260);
+}
+
+async function applyMediaEditorResult() {
+  if (mediaEditMode === "banner") {
+    pendingBannerSource = await cropBannerToDataUrl();
+  } else {
+    pendingAvatarSource = await cropAvatarToDataUrl();
+  }
+  updateEditProfilePreview();
+  renderProfile("You");
+}
+
+function updateEditProfilePreview() {
+  editPreviewName.textContent = editDisplayName.value.trim() || "You";
+  editPreviewBio.textContent = editBio.value.trim() || "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。";
+
+  if (editBannerPreview) {
+    const banner = pendingBannerSource || myProfile.banner;
+    editBannerPreview.style.backgroundImage = banner
+      ? `linear-gradient(180deg, rgba(15,15,15,0.06), rgba(15,15,15,0.22)), url("${banner}")`
+      : "";
+    editBannerPreview.classList.toggle("has-image", Boolean(banner));
+  }
+
+  const avatar = pendingAvatarSource || myProfile.avatar;
+  if (avatar) {
+    editAvatarPreview.style.backgroundImage = `url("${avatar}")`;
+    editAvatarPreview.classList.add("has-image");
+    editAvatarPreview.textContent = "";
+  } else {
+    editAvatarPreview.style.backgroundImage = "";
+    editAvatarPreview.classList.remove("has-image");
+    editAvatarPreview.textContent = (editDisplayName.value.trim() || "Y").slice(0, 1).toUpperCase();
+  }
+}
+
+function refreshProfilePreviewAfterMediaEdit() {
+  updateEditProfilePreview();
+  renderProfile("You");
+}
+
+function openMediaEditor(mode) {
+  mediaEditMode = mode;
+  normalizeProfileEditorText();
+  if (mode === "avatar") {
+    if (!pendingAvatarSource && myProfile.avatar) pendingAvatarSource = myProfile.avatar;
+    avatarCropPanel.hidden = !pendingAvatarSource;
+    avatarCropImage.src = pendingAvatarSource || "";
+    avatarCropFrame.classList.remove("is-banner");
+  } else {
+    if (!pendingBannerSource && myProfile.banner) pendingBannerSource = myProfile.banner;
+    avatarCropPanel.hidden = !pendingBannerSource;
+    avatarCropImage.src = pendingBannerSource || "";
+    avatarCropFrame.classList.add("is-banner");
+  }
+  refreshAvatarImageLayout();
+  clampAvatarOffsets();
+  updateAvatarCropTransform();
+  showModalElement(avatarEditorDialog);
+}
+
+async function applyMediaEditorResult() {
+  if (mediaEditMode === "banner") {
+    pendingBannerSource = await cropBannerToDataUrl();
+  } else {
+    pendingAvatarSource = await cropAvatarToDataUrl();
+  }
+  refreshProfilePreviewAfterMediaEdit();
+}
+
+async function cropBannerToDataUrl() {
+  const source = pendingBannerSource;
+  if (!source) return "";
+  const image = new Image();
+  image.src = source;
+  await new Promise((resolve, reject) => {
+    image.onload = resolve;
+    image.onerror = reject;
+  });
+
+  const width = 1600;
+  const height = 560;
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+
+  const zoom = Number(avatarZoom.value || 1);
+  const frameW = avatarBaseSize.frame;
+  const frameH = Math.round(frameW * 0.36);
+  const coverScale = Math.max(width / image.width, height / image.height);
+  const drawWidth = image.width * coverScale * zoom;
+  const drawHeight = image.height * coverScale * zoom;
+  const offsetX = Number(avatarOffsetX.value || 0) * (width / frameW);
+  const offsetY = Number(avatarOffsetY.value || 0) * (height / frameH);
+  const drawX = (width - drawWidth) / 2 + offsetX;
+  const drawY = (height - drawHeight) / 2 + offsetY;
+  ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+  return canvas.toDataURL("image/jpeg", 0.88);
+}
+
+function normalizeProfileEditorText() {
+  document.querySelector("#editProfileTitle").textContent = "プロフィール編集";
+  document.querySelector("#openAvatarEditor").textContent = "アイコンを調整";
+  if (openBannerEditorButton) openBannerEditorButton.textContent = "バナーを調整";
+  document.querySelector("#editProfileNotice").textContent = "保存しました。";
+  document.querySelector("#cancelEditProfile").textContent = "キャンセル";
+  const displayNameLabel = editDisplayName.closest(".field")?.querySelector("span");
+  const roleLabel = editRole.closest(".field")?.querySelector("span");
+  const bioLabel = editBio.closest(".field")?.querySelector("span");
+  const linkLabel = editLink.closest(".field")?.querySelector("span");
+  const visibilityLabel = editVisibility.closest(".field")?.querySelector("span");
+  if (displayNameLabel) displayNameLabel.textContent = "表示名";
+  if (roleLabel) roleLabel.textContent = "肩書き";
+  if (bioLabel) bioLabel.textContent = "自己紹介";
+  if (linkLabel) linkLabel.textContent = "リンク";
+  if (visibilityLabel) visibilityLabel.textContent = "公開設定";
+  if (avatarEditorTitle) avatarEditorTitle.textContent = mediaEditMode === "banner" ? "バナーを調整" : "アイコンを調整";
+  if (avatarEditorEyebrow) avatarEditorEyebrow.textContent = mediaEditMode === "banner" ? "Profile banner" : "Profile icon";
+  if (avatarChooseImage) avatarChooseImage.textContent = "画像を選ぶ";
+  if (avatarEditorDone) avatarEditorDone.textContent = "完了";
+}
+
+window.addEventListener("pointermove", moveAvatarDrag);
+window.addEventListener("pointerup", endAvatarDrag);
+window.addEventListener("pointercancel", endAvatarDrag);
 
 closeCompose.addEventListener("click", closeComposeDialog);
 
@@ -1090,10 +2096,6 @@ composeForm.addEventListener("submit", handleMockSubmit);
 saveDraftButton.addEventListener("click", () => {
   composeNotice.hidden = false;
   composeNotice.textContent = "下書き保存のモックです。バックエンド接続後はドラフトAPIへ保存する想定です。";
-});
-
-postTypeInputs.forEach((input) => {
-  input.addEventListener("change", updateComposeMode);
 });
 
 [composePostTitle, composeCategory, composeAvatar, composeWorld, composeTags, composeDescription].forEach((input) => {
@@ -1156,6 +2158,215 @@ window.addEventListener("drop", (event) => {
 });
 
 setTheme(localStorage.getItem("vrc-sns-theme") || "light");
-updateComposeMode();
+applyMyAvatarToChrome();
+normalizeProfileEditorText();
+updateComposePreview();
 renderPins();
 routeFromHash();
+
+function ensureEditLinkList() {
+  let list = document.querySelector("#editLinkList");
+  if (list) return list;
+
+  const linkField = editLink.closest(".field");
+  const visibilityField = editVisibility.closest(".field");
+  if (visibilityField && linkField && visibilityField.nextElementSibling !== linkField) {
+    visibilityField.insertAdjacentElement("afterend", linkField);
+  }
+
+  linkField.classList.add("wide");
+  list = document.createElement("div");
+  list.id = "editLinkList";
+  list.className = "edit-link-list";
+  linkField.insertAdjacentElement("afterend", list);
+  return list;
+}
+
+function collectProfileLinksFromInputs() {
+  const urls = [];
+  document.querySelectorAll(".edit-link-input").forEach((input) => {
+    const value = input.value.trim();
+    if (value) urls.push(value);
+  });
+  return urls;
+}
+
+function appendProfileLinkInput(value = "") {
+  const list = ensureEditLinkList();
+  const row = document.createElement("label");
+  row.className = "field wide edit-link-field";
+  row.innerHTML = `<span>リンク</span><input class="edit-link-input" type="url" value="${value.replace(/"/g, "&quot;")}" />`;
+  list.appendChild(row);
+  const input = row.querySelector("input");
+  input.addEventListener("input", handleProfileLinkInputChange);
+  input.addEventListener("change", handleProfileLinkInputChange);
+  return input;
+}
+
+function handleProfileLinkInputChange() {
+  const inputs = [...document.querySelectorAll(".edit-link-input")];
+  const last = inputs.at(-1);
+  if (last && last.value.trim()) {
+    appendProfileLinkInput("");
+  }
+}
+
+function syncProfileLinkInputs(values) {
+  const list = ensureEditLinkList();
+  list.innerHTML = "";
+  const links = values.filter(Boolean);
+  if (!links.length) {
+    appendProfileLinkInput("");
+    return;
+  }
+  links.forEach((value) => appendProfileLinkInput(value));
+  appendProfileLinkInput("");
+}
+
+function getProfileLinks() {
+  if (Array.isArray(myProfile.links) && myProfile.links.length) return myProfile.links.filter(Boolean);
+  if (myProfile.link) return [myProfile.link];
+  return [];
+}
+
+function renderProfileLinks(urls) {
+  const linksRow = ensureProfileLinksRow();
+  const list = Array.isArray(urls) ? urls.filter(Boolean) : (urls ? [urls] : []);
+  if (!list.length) {
+    linksRow.innerHTML = "";
+    linksRow.hidden = true;
+    return;
+  }
+  linksRow.hidden = false;
+  linksRow.innerHTML = list.map((url) => {
+    const kind = detectLinkKind(url);
+    const label = kind === "x" ? "X" : kind === "booth" ? "BOOTH" : kind === "vrchat" ? "VRChat" : "Link";
+    return `<a class="profile-link-button" href="${url}" target="_blank" rel="noreferrer" aria-label="${label}を開く">${linkIconMarkup(kind)}<span>${label}</span></a>`;
+  }).join("");
+}
+
+function normalizeProfileEditorText() {
+  document.querySelector("#editProfileTitle").textContent = "プロフィール編集";
+  if (openAvatarEditorButton) openAvatarEditorButton.textContent = "アイコンを調整";
+  if (openBannerEditorButton) openBannerEditorButton.textContent = "バナーを調整";
+  if (editProfileNotice) editProfileNotice.textContent = "保存しました。";
+  if (cancelEditProfile) cancelEditProfile.textContent = "キャンセル";
+
+  const labels = [
+    [editDisplayName, "表示名"],
+    [editRole, "肩書き"],
+    [editBio, "自己紹介"],
+    [editVisibility, "公開設定"],
+    [editLink, "リンク"],
+  ];
+  labels.forEach(([input, text]) => {
+    const label = input?.closest(".field")?.querySelector("span");
+    if (label) label.textContent = text;
+  });
+
+  document.querySelectorAll(".edit-link-field span").forEach((label) => {
+    label.textContent = "リンク";
+  });
+
+  if (avatarEditorTitle) avatarEditorTitle.textContent = mediaEditMode === "banner" ? "バナーを調整" : "アイコンを調整";
+  if (avatarEditorEyebrow) avatarEditorEyebrow.textContent = mediaEditMode === "banner" ? "Profile banner" : "Profile icon";
+  if (avatarChooseImage) avatarChooseImage.textContent = "画像を選ぶ";
+  if (avatarEditorDone) avatarEditorDone.textContent = "完了";
+}
+
+function openEditProfile() {
+  mediaEditMode = "avatar";
+  pendingAvatarSource = myProfile.avatar;
+  pendingBannerSource = myProfile.banner;
+  editDisplayName.value = myProfile.displayName;
+  editRole.value = myProfile.role;
+  editBio.value = myProfile.bio;
+  editLink.value = "";
+  editVisibility.value = myProfile.visibility;
+  syncProfileLinkInputs(getProfileLinks());
+  normalizeProfileEditorText();
+  editProfileNotice.hidden = true;
+  avatarZoom.value = "1";
+  avatarOffsetX.value = "0";
+  avatarOffsetY.value = "0";
+  updateEditProfilePreview();
+  showModalElement(editProfileDialog);
+  window.setTimeout(() => editDisplayName.focus(), 140);
+}
+
+function renderProfile(creator) {
+  const isMine = creator === "You";
+  const posts = isMine ? myPosts : creatorPosts(creator);
+  const first = posts[0];
+  if (!first) return;
+
+  activeProfile = creator;
+  feedView.hidden = true;
+  profileView.hidden = false;
+  profileView.classList.toggle("is-mine", isMine);
+  const bannerImage = isMine ? myProfile.banner : first.image;
+  profileBanner.style.backgroundImage = bannerImage
+    ? `linear-gradient(180deg, rgba(15,15,15,0.08), rgba(15,15,15,0.32)), url("${bannerImage}")`
+    : "";
+  profileBanner.classList.toggle("has-image", Boolean(bannerImage));
+  profileName.textContent = creator;
+  profileRole.textContent = isMine ? "My page / creator dashboard" : first.role;
+  profileBio.textContent = isMine
+    ? myProfile.bio
+    : `${first.category}を中心に、VRChat向けの作品投稿をまとめたポートフォリオ。通常投稿を眺めつつ、依頼受付がある場合は詳細確認へ進む想定です。`;
+  profilePosts.textContent = `${posts.length} posts`;
+
+  if (isMine) {
+    profileName.textContent = myProfile.displayName;
+    profileRole.textContent = `My page / ${myProfile.role} / ${myProfile.visibility}`;
+  }
+
+  if (isMine && myProfile.avatar) {
+    profileAvatar.style.backgroundImage = `url("${myProfile.avatar}")`;
+    profileAvatar.classList.add("has-image");
+    profileAvatar.textContent = "";
+  } else {
+    profileAvatar.style.backgroundImage = "";
+    profileAvatar.classList.remove("has-image");
+    profileAvatar.textContent = (profileName.textContent || "Y").slice(0, 1).toUpperCase();
+  }
+
+  renderProfileLinks(isMine ? getProfileLinks() : []);
+  profileRequest.textContent = isMine ? `${savedPins.size} saved` : posts.some((pin) => pin.request?.open) ? "依頼受付中" : "通常投稿";
+  profileRating.textContent = isMine ? "Drafts 2" : "評価 4.9";
+  profileBoard.innerHTML = posts.map(pinCard).join("");
+
+  if (isMine) {
+    profileFollow.setAttribute("aria-label", "Edit profile");
+    profileFollow.classList.remove("is-saved");
+    profileFollow.textContent = "プロフィール編集";
+    profileRequestButton.textContent = "投稿を作成";
+  } else {
+    updateFollowButton(profileFollow, creator);
+    profileRequestButton.textContent = "依頼受付を見る";
+  }
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function saveEditProfile(event) {
+  event.preventDefault();
+  const links = collectProfileLinksFromInputs();
+  myProfile = {
+    ...myProfile,
+    displayName: editDisplayName.value.trim() || "You",
+    role: editRole.value.trim() || "VRChat creator",
+    bio: editBio.value.trim() || "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。",
+    link: links[0] || "",
+    links,
+    visibility: editVisibility.value,
+    avatar: pendingAvatarSource,
+    banner: pendingBannerSource,
+  };
+  editProfileNotice.hidden = false;
+  applyMyAvatarToChrome();
+  renderProfile("You");
+  window.setTimeout(closeEditProfileDialog, 260);
+}
+
+ensureEditLinkList();
