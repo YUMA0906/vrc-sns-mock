@@ -562,6 +562,8 @@ const dialogTags = document.querySelector("#dialogTags");
 const dialogRequest = document.querySelector("#dialogRequest");
 const dialogSave = document.querySelector("#dialogSave");
 const dialogFollow = document.querySelector("#dialogFollow");
+const trustInfoDialog = document.querySelector("#trustInfoDialog");
+const closeTrustInfo = document.querySelector("#closeTrustInfo");
 const composeDialog = document.querySelector("#composeDialog");
 const composeForm = document.querySelector("#composeForm");
 const closeCompose = document.querySelector("#closeCompose");
@@ -676,7 +678,7 @@ function unlockPageScroll() {
 
 function unlockPageScrollIfIdle() {
   window.setTimeout(() => {
-    if (modalIsOpen(dialog) || modalIsOpen(composeDialog) || modalIsOpen(editProfileDialog) || modalIsOpen(avatarEditorDialog)) return;
+    if (modalIsOpen(dialog) || modalIsOpen(trustInfoDialog) || modalIsOpen(composeDialog) || modalIsOpen(editProfileDialog) || modalIsOpen(avatarEditorDialog)) return;
     unlockPageScroll();
   }, 0);
 }
@@ -891,6 +893,22 @@ function closePinDialog() {
   window.setTimeout(() => {
     dialog.classList.remove("is-closing");
     closeModalElement(dialog);
+  }, 180);
+}
+
+function openTrustInfo(event) {
+  event?.preventDefault();
+  event?.stopPropagation();
+  if (modalIsOpen(trustInfoDialog)) return;
+  showModalElement(trustInfoDialog);
+}
+
+function closeTrustInfoDialog() {
+  if (!modalIsOpen(trustInfoDialog) || trustInfoDialog.classList.contains("is-closing")) return;
+  trustInfoDialog.classList.add("is-closing");
+  window.setTimeout(() => {
+    trustInfoDialog.classList.remove("is-closing");
+    closeModalElement(trustInfoDialog);
   }, 180);
 }
 
@@ -1734,6 +1752,23 @@ window.addEventListener("pointermove", moveAvatarDrag);
 window.addEventListener("pointerup", endAvatarDrag);
 window.addEventListener("pointercancel", endAvatarDrag);
 
+profileLevelBadge.addEventListener("click", openTrustInfo);
+
+trustStatus.addEventListener("click", (event) => {
+  if (event.target.closest(".trust-rank")) openTrustInfo(event);
+});
+
+closeTrustInfo.addEventListener("click", closeTrustInfoDialog);
+
+trustInfoDialog.addEventListener("click", (event) => {
+  if (event.target === trustInfoDialog) closeTrustInfoDialog();
+});
+
+trustInfoDialog.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeTrustInfoDialog();
+});
+
 closeCompose.addEventListener("click", closeComposeDialog);
 
 composeDialog.addEventListener("click", (event) => {
@@ -1970,6 +2005,7 @@ function renderProfileLevelBadge(posts, trust) {
   profileLevelBadge.className = `profile-level-badge profile-level-badge--${level.key}`;
   profileLevelBadge.innerHTML = `<span>${badgeLabel}</span>`;
   profileLevelBadge.title = `Trust score: ${score} pts`;
+  profileLevelBadge.setAttribute("aria-label", `${level.label}. Trust score ${score} points. トラストレベルの説明を開く`);
 }
 
 function renderTrustProfile(creator, posts, isMine) {
@@ -1986,11 +2022,11 @@ function renderTrustProfile(creator, posts, isMine) {
     <span>${openRequest ? "料金・納期・受付枠を投稿から確認できます。" : "作風と過去作品を見てから相談できます。"}</span>
   `;
   trustStatus.innerHTML = `
-    <div class="trust-rank trust-rank--${level.key}">
+    <button class="trust-rank trust-rank--${level.key}" type="button" aria-label="${level.label}. Trust score ${score} points. トラストレベルの説明を開く">
       <small>Trusted level</small>
       <strong>${level.label}</strong>
       <span>${score} pts</span>
-    </div>
+    </button>
     <strong>${openRequest ? "依頼受付中" : "通常投稿中心"}</strong>
     <span>${level.note}</span>
   `;
