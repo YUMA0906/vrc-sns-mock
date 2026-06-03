@@ -435,6 +435,28 @@ const dialogTags = document.querySelector("#dialogTags");
 const dialogRequest = document.querySelector("#dialogRequest");
 const dialogSave = document.querySelector("#dialogSave");
 const dialogFollow = document.querySelector("#dialogFollow");
+const composeDialog = document.querySelector("#composeDialog");
+const composeForm = document.querySelector("#composeForm");
+const closeCompose = document.querySelector("#closeCompose");
+const composeImage = document.querySelector("#composeImage");
+const composePreviewImage = document.querySelector("#composePreviewImage");
+const removeComposeImage = document.querySelector("#removeComposeImage");
+const composeImageControls = document.querySelector("#composeImageControls");
+const prevComposeImage = document.querySelector("#prevComposeImage");
+const nextComposeImage = document.querySelector("#nextComposeImage");
+const composeImageCounter = document.querySelector("#composeImageCounter");
+const composePreviewCard = document.querySelector("#composePreviewCard");
+const composePostTitle = document.querySelector("#composePostTitle");
+const composeCategory = document.querySelector("#composeCategory");
+const composeAvatar = document.querySelector("#composeAvatar");
+const composeWorld = document.querySelector("#composeWorld");
+const composeTags = document.querySelector("#composeTags");
+const composeDescription = document.querySelector("#composeDescription");
+const composeMode = document.querySelector(".compose-mode");
+const commissionFields = document.querySelector("#commissionFields");
+const composeNotice = document.querySelector("#composeNotice");
+const saveDraftButton = document.querySelector("#saveDraftButton");
+const postTypeInputs = [...document.querySelectorAll("input[name='postType']")];
 
 let activeCategory = "All";
 let activeView = "discover";
@@ -442,6 +464,55 @@ let savedPins = new Set([3, 7]);
 let followedCreators = new Set(["Lumi Photo"]);
 let currentPin = null;
 let activeProfile = null;
+let lockedScrollY = 0;
+let composeImages = [];
+let composeImageIndex = 0;
+
+function modalIsOpen(modal) {
+  return modal.open || modal.hasAttribute("open");
+}
+
+function showModalElement(modal) {
+  lockPageScroll();
+  if (typeof modal.showModal === "function") {
+    modal.showModal();
+    return;
+  }
+  modal.setAttribute("open", "");
+  modal.classList.add("is-fallback-open");
+}
+
+function closeModalElement(modal) {
+  if (typeof modal.close === "function") {
+    modal.close();
+    unlockPageScrollIfIdle();
+    return;
+  }
+  modal.removeAttribute("open");
+  modal.classList.remove("is-fallback-open");
+  unlockPageScrollIfIdle();
+}
+
+function lockPageScroll() {
+  if (document.body.classList.contains("modal-scroll-locked")) return;
+  lockedScrollY = window.scrollY;
+  document.body.style.setProperty("--locked-scroll-y", `-${lockedScrollY}px`);
+  document.body.classList.add("modal-scroll-locked");
+}
+
+function unlockPageScroll() {
+  if (!document.body.classList.contains("modal-scroll-locked")) return;
+  document.body.classList.remove("modal-scroll-locked");
+  document.body.style.removeProperty("--locked-scroll-y");
+  window.scrollTo(0, lockedScrollY);
+}
+
+function unlockPageScrollIfIdle() {
+  window.setTimeout(() => {
+    if (modalIsOpen(dialog) || modalIsOpen(composeDialog)) return;
+    unlockPageScroll();
+  }, 0);
+}
 
 function slugify(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -639,15 +710,15 @@ function openPin(pinId, sourceElement = null) {
   dialogRequest.classList.toggle("is-action", Boolean(creatorOpenRequest));
   updateDialogSave();
   updateFollowButton(dialogFollow, currentPin.creator);
-  dialog.showModal();
+  showModalElement(dialog);
 }
 
 function closePinDialog() {
-  if (!dialog.open || dialog.classList.contains("is-closing")) return;
+  if (!modalIsOpen(dialog) || dialog.classList.contains("is-closing")) return;
   dialog.classList.add("is-closing");
   window.setTimeout(() => {
     dialog.classList.remove("is-closing");
-    dialog.close();
+    closeModalElement(dialog);
   }, 180);
 }
 
@@ -693,13 +764,13 @@ function routeFromHash() {
 function openProfile(slug) {
   const pin = creatorBySlug(slug);
   if (!pin) return;
-  if (dialog.open) dialog.close();
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
   location.hash = `profile/${slug}`;
   renderProfile(pin.creator);
 }
 
 function searchByTag(tag) {
-  if (dialog.open) closePinDialog();
+  if (modalIsOpen(dialog)) closePinDialog();
   activeProfile = null;
   profileView.hidden = true;
   feedView.hidden = false;
@@ -711,7 +782,7 @@ function searchByTag(tag) {
 }
 
 function filterByCategory(category) {
-  if (dialog.open) closePinDialog();
+  if (modalIsOpen(dialog)) closePinDialog();
   activeProfile = null;
   profileView.hidden = true;
   feedView.hidden = false;
@@ -722,7 +793,7 @@ function filterByCategory(category) {
 }
 
 function searchByMeta(category, query) {
-  if (dialog.open) closePinDialog();
+  if (modalIsOpen(dialog)) closePinDialog();
   activeProfile = null;
   profileView.hidden = true;
   feedView.hidden = false;
@@ -749,8 +820,138 @@ function toggleTheme() {
 }
 
 function openComposeHint() {
-  searchInput.focus();
-  searchInput.placeholder = "投稿オーバーレイはバックエンド連携後に実装";
+  if (modalIsOpen(dialog)) closePinDialog();
+  document.body.classList.remove("is-dragging");
+  dropHint.hidden = true;
+  composeNotice.hidden = true;
+  updateComposePreview();
+  showModalElement(composeDialog);
+  window.setTimeout(() => composePostTitle.focus(), 140);
+}
+
+function closeComposeDialog() {
+  if (!modalIsOpen(composeDialog) || composeDialog.classList.contains("is-closing")) return;
+  composeDialog.classList.add("is-closing");
+  window.setTimeout(() => {
+    composeDialog.classList.remove("is-closing");
+    closeModalElement(composeDialog);
+  }, 180);
+}
+
+function activePostType() {
+  return postTypeInputs.find((input) => input.checked)?.value || "Post";
+}
+
+function updateComposeMode() {
+  const isCommission = activePostType() === "Commission";
+  composeMode.dataset.mode = isCommission ? "commission" : "post";
+  commissionFields.classList.toggle("is-open", isCommission);
+  if (isCommission) {
+    commissionFields.hidden = false;
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        commissionFields.classList.add("is-visible");
+      });
+    });
+  } else {
+    commissionFields.classList.remove("is-visible");
+    window.setTimeout(() => {
+      if (activePostType() !== "Commission") commissionFields.hidden = true;
+    }, 390);
+  }
+  if (isCommission && composeCategory.value !== "Commission") {
+    composeCategory.value = "Commission";
+  } else if (!isCommission && composeCategory.value === "Commission") {
+    composeCategory.value = "Photo";
+  }
+  updateComposePreview();
+}
+
+function updateComposePreview() {
+  const category = composeCategory.value || "Avatar";
+  const title = composePostTitle.value.trim() || "新しい投稿タイトル";
+  const tags = composeTags.value.trim() || "#vrchat #portfolio";
+  const creator = activePostType() === "Commission" ? "You · 依頼受付中" : "You";
+
+  composePreviewCard.innerHTML = `
+    <span>${category} · ${creator}</span>
+    <strong>${title}</strong>
+    <small>${tags}</small>
+  `;
+}
+
+function readImageFile(file) {
+  return new Promise((resolve) => {
+    if (!file || !file.type.startsWith("image/")) {
+      resolve(null);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      resolve({ src: reader.result, name: file.name });
+    });
+    reader.readAsDataURL(file);
+  });
+}
+
+async function loadComposeImages(files, append = true) {
+  const images = (await Promise.all([...files].map(readImageFile))).filter(Boolean);
+  if (!images.length) return;
+
+  composeImages = append ? [...composeImages, ...images] : images;
+  composeImageIndex = append ? composeImages.length - images.length : 0;
+  composeImage.value = "";
+  renderComposeImage();
+}
+
+function renderComposeImage() {
+  const image = composeImages[composeImageIndex];
+  const uploadDrop = composePreviewImage.closest(".upload-drop");
+  const hasMultiple = composeImages.length > 1;
+
+  if (!image) {
+    composePreviewImage.hidden = true;
+    composePreviewImage.removeAttribute("src");
+    uploadDrop?.classList.remove("has-image");
+    uploadDrop?.style.removeProperty("--preview-ratio");
+    composeImageControls.hidden = true;
+    removeComposeImage.hidden = true;
+    composeImage.value = "";
+    return;
+  }
+
+  composePreviewImage.src = image.src;
+  composePreviewImage.alt = image.name || "Selected post image";
+  composePreviewImage.hidden = false;
+  uploadDrop?.classList.add("has-image");
+  removeComposeImage.hidden = false;
+  composeImageControls.hidden = !hasMultiple;
+  composeImageCounter.textContent = `${composeImageIndex + 1} / ${composeImages.length}`;
+}
+
+function moveComposeImage(direction) {
+  if (composeImages.length < 2) return;
+  composeImageIndex = (composeImageIndex + direction + composeImages.length) % composeImages.length;
+  renderComposeImage();
+}
+
+function removeCurrentComposeImage() {
+  if (!composeImages.length) return;
+  composeImages.splice(composeImageIndex, 1);
+  if (composeImageIndex >= composeImages.length) {
+    composeImageIndex = Math.max(0, composeImages.length - 1);
+  }
+  renderComposeImage();
+}
+
+function handleMockSubmit(event) {
+  event.preventDefault();
+  composeNotice.hidden = false;
+  composeNotice.textContent = activePostType() === "Commission"
+    ? "依頼受付投稿のモックを作成しました。実装時は画像サムネイルと依頼条件を投稿APIへ送信します。"
+    : "通常投稿のモックを作成しました。実装時は画像、本文、タグ、Avatar/World情報を投稿APIへ送信します。";
+  updateComposePreview();
 }
 
 function handleBoardClick(event) {
@@ -820,7 +1021,7 @@ dialog.addEventListener("cancel", (event) => {
 
 dialogRequest.addEventListener("click", (event) => {
   if (!currentPin || !creatorHasOpenRequest(currentPin.creator)) return;
-  if (dialog.open) dialog.close();
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
   setView("requests");
   showFeed();
   searchInput.value = currentPin.creator;
@@ -873,8 +1074,66 @@ profileFollow.addEventListener("click", () => {
   updateFollowButton(profileFollow, activeProfile);
 });
 
+closeCompose.addEventListener("click", closeComposeDialog);
+
+composeDialog.addEventListener("click", (event) => {
+  if (event.target === composeDialog) closeComposeDialog();
+});
+
+composeDialog.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeComposeDialog();
+});
+
+composeForm.addEventListener("submit", handleMockSubmit);
+
+saveDraftButton.addEventListener("click", () => {
+  composeNotice.hidden = false;
+  composeNotice.textContent = "下書き保存のモックです。バックエンド接続後はドラフトAPIへ保存する想定です。";
+});
+
+postTypeInputs.forEach((input) => {
+  input.addEventListener("change", updateComposeMode);
+});
+
+[composePostTitle, composeCategory, composeAvatar, composeWorld, composeTags, composeDescription].forEach((input) => {
+  input.addEventListener("input", updateComposePreview);
+  input.addEventListener("change", updateComposePreview);
+});
+
+composeImage.addEventListener("change", () => {
+  loadComposeImages(composeImage.files || [], false);
+});
+
+composePreviewImage.addEventListener("load", () => {
+  if (!composePreviewImage.naturalWidth || !composePreviewImage.naturalHeight) return;
+  const ratio = composePreviewImage.naturalWidth / composePreviewImage.naturalHeight;
+  composePreviewImage.closest(".upload-drop")?.style.setProperty("--preview-ratio", String(Math.min(Math.max(ratio, 0.64), 1.18)));
+});
+
+prevComposeImage.addEventListener("click", (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  moveComposeImage(-1);
+});
+
+nextComposeImage.addEventListener("click", (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  moveComposeImage(1);
+});
+
+removeComposeImage.addEventListener("click", (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  removeCurrentComposeImage();
+});
+
 window.addEventListener("hashchange", routeFromHash);
-window.addEventListener("dragenter", () => {
+window.addEventListener("dragenter", (event) => {
+  if (!event.dataTransfer?.types?.includes("Files")) return;
+  if (modalIsOpen(composeDialog)) return;
+  document.body.classList.add("is-dragging");
   dropHint.hidden = false;
 });
 window.addEventListener("dragover", (event) => {
@@ -882,15 +1141,21 @@ window.addEventListener("dragover", (event) => {
 });
 window.addEventListener("dragleave", (event) => {
   if (event.clientX <= 0 || event.clientY <= 0 || event.clientX >= window.innerWidth || event.clientY >= window.innerHeight) {
+    document.body.classList.remove("is-dragging");
     dropHint.hidden = true;
   }
 });
 window.addEventListener("drop", (event) => {
   event.preventDefault();
+  document.body.classList.remove("is-dragging");
   dropHint.hidden = true;
-  openComposeHint();
+  if (event.dataTransfer?.files?.length) {
+    loadComposeImages(event.dataTransfer.files);
+  }
+  if (!modalIsOpen(composeDialog)) openComposeHint();
 });
 
 setTheme(localStorage.getItem("vrc-sns-theme") || "light");
+updateComposeMode();
 renderPins();
 routeFromHash();
