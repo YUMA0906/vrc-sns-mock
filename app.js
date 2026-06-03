@@ -1386,6 +1386,8 @@ function handleMockSubmit(event) {
   updateComposePreview();
 }
 
+let ignoreNextBoardClick = false;
+
 function handleBoardClick(event) {
   if (ignoreNextBoardClick) {
     ignoreNextBoardClick = false;
@@ -1417,10 +1419,19 @@ function handleBoardClick(event) {
   if (card) openPin(Number(card.dataset.id), card);
 }
 
-let ignoreNextBoardClick = false;
-
 function handleBoardPointerUp(event) {
   if (event.pointerType !== "touch") return;
+  if (event.target.closest("[data-save], [data-tag], [data-profile]")) return;
+
+  const card = event.target.closest(".pin-card");
+  if (!card) return;
+
+  ignoreNextBoardClick = true;
+  event.preventDefault();
+  openPin(Number(card.dataset.id), card);
+}
+
+function handleBoardTouchEnd(event) {
   if (event.target.closest("[data-save], [data-tag], [data-profile]")) return;
 
   const card = event.target.closest(".pin-card");
@@ -1459,6 +1470,8 @@ board.addEventListener("click", handleBoardClick);
 profileBoard.addEventListener("click", handleBoardClick);
 board.addEventListener("pointerup", handleBoardPointerUp);
 profileBoard.addEventListener("pointerup", handleBoardPointerUp);
+board.addEventListener("touchend", handleBoardTouchEnd, { capture: true, passive: false });
+profileBoard.addEventListener("touchend", handleBoardTouchEnd, { capture: true, passive: false });
 
 board.addEventListener("keydown", (event) => {
   if (event.key !== "Enter") return;

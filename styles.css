@@ -2279,6 +2279,10 @@ body.is-dragging .drop-hint {
 
   .dialog-grid {
     grid-template-columns: 1fr;
+    max-height: calc(100dvh - 28px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
   .compose-dialog {
@@ -2322,6 +2326,10 @@ body.is-dragging .drop-hint {
   .dialog-image-wrap {
     height: 62vh;
     border-radius: 28px 28px 0 0;
+  }
+
+  .dialog-content {
+    justify-content: flex-start;
   }
 }
 
@@ -2385,6 +2393,26 @@ body.is-dragging .drop-hint {
 
   .pin-copy strong {
     font-size: 0.86rem;
+  }
+
+  .pin-dialog {
+    width: calc(100vw - 18px);
+    max-height: calc(100dvh - 18px);
+    border-radius: 24px;
+  }
+
+  .pin-dialog .dialog-grid {
+    max-height: calc(100dvh - 18px);
+    scrollbar-width: none;
+  }
+
+  .pin-dialog .dialog-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dialog-image-wrap {
+    height: min(56vh, 430px);
+    border-radius: 24px 24px 0 0;
   }
 
   .compose-content {
