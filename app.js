@@ -894,65 +894,6 @@ function closePinDialog() {
   }, 180);
 }
 
-function renderProfile(creator) {
-  const isMine = creator === "You";
-  const posts = isMine ? myPosts : creatorPosts(creator);
-  const first = posts[0];
-  if (!first) return;
-
-  activeProfile = creator;
-  feedView.hidden = true;
-  profileView.hidden = false;
-  profileView.classList.toggle("is-mine", isMine);
-  const bannerImage = isMine ? myProfile.banner : first.image;
-  profileBanner.style.backgroundImage = bannerImage
-    ? `linear-gradient(180deg, rgba(15,15,15,0.08), rgba(15,15,15,0.32)), url("${bannerImage}")`
-    : "";
-  profileBanner.classList.toggle("has-image", Boolean(bannerImage));
-  profileName.textContent = creator;
-  profileRole.textContent = isMine ? "My page / creator dashboard" : first.role;
-  profileBio.textContent = isMine
-    ? "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。通常投稿の作成、プロフィール編集、過去投稿の見返しをここから行う想定です。"
-    : `${first.category}を中心に、VRChat向けの作品投稿をまとめたポートフォリオ。通常投稿を眺めつつ、依頼受付がある場合だけ詳細導線を出す想定です。`;
-  profilePosts.textContent = `${posts.length} posts`;
-  if (isMine) {
-    profileName.textContent = myProfile.displayName;
-    profileRole.textContent = `My page / ${myProfile.role} / ${myProfile.visibility}`;
-    profileBio.textContent = myProfile.bio;
-  }
-  if (isMine && myProfile.avatar) {
-    profileAvatar.style.backgroundImage = `url("${myProfile.avatar}")`;
-    profileAvatar.classList.add("has-image");
-    profileAvatar.textContent = "";
-  } else {
-    profileAvatar.style.backgroundImage = "";
-    profileAvatar.classList.remove("has-image");
-    profileAvatar.textContent = (profileName.textContent || "Y").slice(0, 1).toUpperCase();
-  }
-  profileRequest.textContent = isMine
-    ? `${savedPins.size} saved`
-    : posts.some((pin) => pin.request?.open) ? "依頼受付中" : "通常投稿中心";
-  profileRating.textContent = isMine ? "Drafts 2" : "評価 4.9";
-  const trust = getTrustProfile(creator, posts, isMine);
-  const openRequest = posts.some((pin) => pin.request?.open);
-  renderProfileLevelBadge(posts, trust);
-  renderTrustProfile(creator, posts, isMine);
-  profileRequest.textContent = openRequest ? "依頼受付中" : `${trust.completed} completed`;
-  profileRating.textContent = `${trust.saves} saved`;
-  profileBoard.innerHTML = posts.map(pinCard).join("");
-  if (isMine) {
-    profileFollow.innerHTML = "プロフィール編集";
-    profileFollow.setAttribute("aria-label", "Edit profile");
-    profileFollow.classList.remove("is-saved");
-    profileFollow.textContent = "プロフィール編集";
-    profileRequestButton.textContent = "投稿を作成";
-    profileRequestButton.textContent = "投稿を作成";
-  } else {
-    updateFollowButton(profileFollow, creator);
-    profileRequestButton.textContent = "依頼受付を見る";
-  }
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
 
 function showFeed() {
   activeProfile = null;
@@ -994,131 +935,6 @@ function openMyProfile() {
   renderProfile("You");
 }
 
-function normalizeProfileEditorText() {
-  document.querySelector("#editProfileTitle").textContent = "プロフィール編集";
-  document.querySelector("#openAvatarEditor").textContent = "アイコンを調整";
-  document.querySelector("#editProfileNotice").textContent = "保存しました。";
-  document.querySelector("#cancelEditProfile").textContent = "キャンセル";
-  const displayNameLabel = editDisplayName.closest(".field")?.querySelector("span");
-  const roleLabel = editRole.closest(".field")?.querySelector("span");
-  const bioLabel = editBio.closest(".field")?.querySelector("span");
-  const linkLabel = editLink.closest(".field")?.querySelector("span");
-  const visibilityLabel = editVisibility.closest(".field")?.querySelector("span");
-  if (displayNameLabel) displayNameLabel.textContent = "表示名";
-  if (roleLabel) roleLabel.textContent = "肩書き";
-  if (bioLabel) bioLabel.textContent = "自己紹介";
-  if (linkLabel) linkLabel.textContent = "リンク";
-  if (visibilityLabel) visibilityLabel.textContent = "公開設定";
-}
-
-function openEditProfile() {
-  normalizeProfileEditorText();
-  editProfileNotice.hidden = true;
-  pendingAvatarSource = myProfile.avatar;
-  pendingBannerSource = myProfile.banner;
-  editDisplayName.value = myProfile.displayName;
-  editRole.value = myProfile.role;
-  editBio.value = myProfile.bio;
-  editLink.value = myProfile.link;
-  editVisibility.value = myProfile.visibility;
-  mediaEditMode = "avatar";
-  avatarZoom.value = "1";
-  avatarOffsetX.value = "0";
-  avatarOffsetY.value = "0";
-  updateEditProfilePreview();
-  showModalElement(editProfileDialog);
-  window.setTimeout(() => editDisplayName.focus(), 140);
-}
-
-function closeAvatarEditorDialog() {
-  if (!modalIsOpen(avatarEditorDialog) || avatarEditorDialog.classList.contains("is-closing")) return;
-  avatarEditorDialog.classList.add("is-closing");
-  window.setTimeout(() => {
-    avatarEditorDialog.classList.remove("is-closing");
-    closeModalElement(avatarEditorDialog);
-  }, 180);
-}
-
-function refreshAvatarImageLayout() {
-  const naturalWidth = avatarCropImage.naturalWidth || 1;
-  const naturalHeight = avatarCropImage.naturalHeight || 1;
-  const frameWidth = avatarCropFrame.clientWidth || 260;
-  const frameHeight = avatarCropFrame.classList.contains("is-banner")
-    ? Math.round(frameWidth * 0.36)
-    : frameWidth;
-  const coverScale = Math.max(frameWidth / naturalWidth, frameHeight / naturalHeight);
-  avatarBaseSize = {
-    width: Math.round(naturalWidth * coverScale),
-    height: Math.round(naturalHeight * coverScale),
-    frame: frameWidth,
-    frameHeight,
-  };
-  if (Number(avatarZoom.value || 1) < 1) avatarZoom.value = "1";
-}
-
-function clampAvatarOffsets() {
-  const zoom = Number(avatarZoom.value || 1);
-  const scaledWidth = avatarBaseSize.width * zoom;
-  const scaledHeight = avatarBaseSize.height * zoom;
-  const limitX = Math.max(0, (scaledWidth - avatarBaseSize.frame) / 2);
-  const limitY = Math.max(0, (scaledHeight - avatarBaseSize.frameHeight) / 2);
-  avatarOffsetX.value = String(Math.max(-limitX, Math.min(limitX, Number(avatarOffsetX.value || 0))));
-  avatarOffsetY.value = String(Math.max(-limitY, Math.min(limitY, Number(avatarOffsetY.value || 0))));
-}
-
-function saveEditProfile(event) {
-  event.preventDefault();
-  myProfile = {
-    displayName: editDisplayName.value.trim() || "You",
-    role: editRole.value.trim() || "VRChat creator",
-    bio: editBio.value.trim() || "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。",
-    link: editLink.value.trim(),
-    visibility: editVisibility.value,
-    avatar: pendingAvatarSource,
-    banner: pendingBannerSource,
-  };
-  editProfileNotice.hidden = false;
-  applyMyAvatarToChrome();
-  renderProfile("You");
-  window.setTimeout(closeEditProfileDialog, 260);
-}
-
-function updateEditProfilePreview() {
-  editPreviewName.textContent = editDisplayName.value.trim() || "You";
-  editPreviewBio.textContent = editBio.value.trim() || "自己紹介がここに表示されます。";
-  const avatar = pendingAvatarSource || myProfile.avatar;
-  if (avatar) {
-    editAvatarPreview.style.backgroundImage = `url("${avatar}")`;
-    editAvatarPreview.classList.add("has-image");
-    editAvatarPreview.textContent = "";
-  } else {
-    editAvatarPreview.style.backgroundImage = "";
-    editAvatarPreview.classList.remove("has-image");
-    editAvatarPreview.textContent = (editDisplayName.value.trim() || "Y").slice(0, 1).toUpperCase();
-  }
-}
-
-function openEditProfile() {
-  normalizeProfileEditorText();
-  editProfileNotice.hidden = true;
-  pendingAvatarSource = myProfile.avatar;
-  editDisplayName.value = myProfile.displayName;
-  editRole.value = myProfile.role;
-  editBio.value = myProfile.bio;
-  editLink.value = myProfile.link;
-  editVisibility.value = myProfile.visibility;
-  avatarCropPanel.hidden = !pendingAvatarSource;
-  avatarCropImage.src = pendingAvatarSource || "";
-  avatarZoom.value = "1";
-  avatarOffsetX.value = "0";
-  avatarOffsetY.value = "0";
-  clampAvatarOffsets();
-  updateAvatarCropTransform();
-  updateEditProfilePreview();
-  editPreviewBio.textContent = editBio.value.trim() || "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。";
-  showModalElement(editProfileDialog);
-  window.setTimeout(() => editDisplayName.focus(), 140);
-}
 
 function openAvatarEditor() {
   if (!pendingAvatarSource && myProfile.avatar) {
@@ -1163,39 +979,6 @@ function closeAvatarEditorDialog() {
   }, 180);
 }
 
-function updateAvatarCropTransform() {
-  const x = Number(avatarOffsetX.value || 0);
-  const y = Number(avatarOffsetY.value || 0);
-  const zoom = Number(avatarZoom.value || 1);
-  avatarCropImage.style.setProperty("--avatar-base-width", `${avatarBaseSize.width}px`);
-  avatarCropImage.style.setProperty("--avatar-base-height", `${avatarBaseSize.height}px`);
-  avatarCropImage.style.setProperty("--avatar-x", `${x}px`);
-  avatarCropImage.style.setProperty("--avatar-y", `${y}px`);
-  avatarCropImage.style.setProperty("--avatar-zoom", String(zoom));
-}
-
-function refreshAvatarImageLayout() {
-  const naturalWidth = avatarCropImage.naturalWidth || 1;
-  const naturalHeight = avatarCropImage.naturalHeight || 1;
-  const frame = avatarCropFrame.clientWidth || 260;
-  const coverScale = Math.max(frame / naturalWidth, frame / naturalHeight);
-  avatarBaseSize = {
-    width: Math.round(naturalWidth * coverScale),
-    height: Math.round(naturalHeight * coverScale),
-    frame,
-  };
-  if (Number(avatarZoom.value || 1) < 1) avatarZoom.value = "1";
-}
-
-function clampAvatarOffsets() {
-  const zoom = Number(avatarZoom.value || 1);
-  const scaledWidth = avatarBaseSize.width * zoom;
-  const scaledHeight = avatarBaseSize.height * zoom;
-  const limitX = Math.max(0, (scaledWidth - avatarBaseSize.frame) / 2);
-  const limitY = Math.max(0, (scaledHeight - avatarBaseSize.frame) / 2);
-  avatarOffsetX.value = String(Math.max(-limitX, Math.min(limitX, Number(avatarOffsetX.value || 0))));
-  avatarOffsetY.value = String(Math.max(-limitY, Math.min(limitY, Number(avatarOffsetY.value || 0))));
-}
 
 function beginAvatarDrag(event) {
   if (avatarCropPanel.hidden || !pendingAvatarSource) return;
@@ -1235,90 +1018,8 @@ function handleAvatarWheel(event) {
   updateAvatarCropTransform();
 }
 
-function loadAvatarEditorImage(file) {
-  if (!file || !file.type.startsWith("image/")) return;
-  const reader = new FileReader();
-  reader.addEventListener("load", () => {
-    if (mediaEditMode === "banner") {
-      pendingBannerSource = reader.result;
-      avatarCropImage.src = pendingBannerSource;
-    } else {
-      pendingAvatarSource = reader.result;
-      avatarCropImage.src = pendingAvatarSource;
-    }
-    avatarCropPanel.hidden = false;
-    avatarZoom.value = "1";
-    avatarOffsetX.value = "0";
-    avatarOffsetY.value = "0";
-    window.setTimeout(() => {
-      refreshAvatarImageLayout();
-      clampAvatarOffsets();
-      updateAvatarCropTransform();
-    }, 0);
-    updateEditProfilePreview();
-  });
-  reader.readAsDataURL(file);
-}
 
-async function cropAvatarToDataUrl() {
-  if (!pendingAvatarSource) return "";
-  const image = new Image();
-  image.src = pendingAvatarSource;
-  await new Promise((resolve, reject) => {
-    image.onload = resolve;
-    image.onerror = reject;
-  });
-
-  const size = 512;
-  const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#f7f5ef";
-  ctx.fillRect(0, 0, size, size);
-
-  const zoom = Number(avatarZoom.value || 1);
-  clampAvatarOffsets();
-  const offsetX = Number(avatarOffsetX.value || 0) * (size / 260);
-  const offsetY = Number(avatarOffsetY.value || 0) * (size / 260);
-  const baseScale = Math.max(size / image.width, size / image.height);
-  const drawWidth = image.width * baseScale * zoom;
-  const drawHeight = image.height * baseScale * zoom;
-  const drawX = (size - drawWidth) / 2 + offsetX;
-  const drawY = (size - drawHeight) / 2 + offsetY;
-
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-  ctx.clip();
-  ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
-  ctx.restore();
-
-  return canvas.toDataURL("image/jpeg", 0.86);
-}
-
-function saveEditProfile(event) {
-  event.preventDefault();
-  cropAvatarToDataUrl().then((avatar) => {
-    myProfile = {
-    displayName: editDisplayName.value.trim() || "You",
-    role: editRole.value.trim() || "VRChat creator",
-    bio: editBio.value.trim() || "自己紹介がここに表示されます。",
-    link: editLink.value.trim(),
-    visibility: editVisibility.value,
-      avatar,
-    };
-    pendingAvatarSource = avatar;
-    editProfileNotice.hidden = false;
-    applyMyAvatarToChrome();
-    renderProfile("You");
-    window.setTimeout(closeEditProfileDialog, 260);
-  }).catch(() => {
-    editProfileNotice.hidden = false;
-    editProfileNotice.textContent = "画像の読み込みに失敗しました。別の写真を選んでください。";
-  });
-}
-
+async 
 function searchByTag(tag) {
   if (modalIsOpen(dialog)) closePinDialog();
   activeProfile = null;
@@ -1819,71 +1520,6 @@ function detectLinkKind(url) {
   return "generic";
 }
 
-function renderProfileLinks(url) {
-  const linksRow = ensureProfileLinksRow();
-  if (!url) {
-    linksRow.innerHTML = "";
-    linksRow.hidden = true;
-    return;
-  }
-  const kind = detectLinkKind(url);
-  const label = kind === "x" ? "X" : kind === "booth" ? "BOOTH" : kind === "vrchat" ? "VRChat" : "Link";
-  linksRow.hidden = false;
-  linksRow.innerHTML = `<a class="profile-link-button" href="${url}" target="_blank" rel="noreferrer" aria-label="${label}を開く">${linkIconMarkup(kind)}<span>${label}</span></a>`;
-}
-
-function renderProfile(creator) {
-  const isMine = creator === "You";
-  const posts = isMine ? myPosts : creatorPosts(creator);
-  const first = posts[0];
-  if (!first) return;
-
-  activeProfile = creator;
-  feedView.hidden = true;
-  profileView.hidden = false;
-  profileView.classList.toggle("is-mine", isMine);
-  const bannerImage = isMine ? myProfile.banner : first.image;
-  profileBanner.style.backgroundImage = bannerImage
-    ? `linear-gradient(180deg, rgba(15,15,15,0.08), rgba(15,15,15,0.32)), url("${bannerImage}")`
-    : "";
-  profileBanner.classList.toggle("has-image", Boolean(bannerImage));
-  profileName.textContent = creator;
-  profileRole.textContent = isMine ? "My page / creator dashboard" : first.role;
-  profileBio.textContent = isMine
-    ? "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。通常投稿の作成、プロフィール編集、過去投稿の見返しをここから行う想定です。"
-    : `${first.category}を中心に、VRChat向けの作品投稿をまとめたポートフォリオ。通常投稿を眺めつつ、依頼受付がある場合は詳細確認へ進む想定です。`;
-  profilePosts.textContent = `${posts.length} posts`;
-  if (isMine) {
-    profileName.textContent = myProfile.displayName;
-    profileRole.textContent = `My page / ${myProfile.role} / ${myProfile.visibility}`;
-    profileBio.textContent = myProfile.bio;
-  }
-  if (isMine && myProfile.avatar) {
-    profileAvatar.style.backgroundImage = `url("${myProfile.avatar}")`;
-    profileAvatar.classList.add("has-image");
-    profileAvatar.textContent = "";
-  } else {
-    profileAvatar.style.backgroundImage = "";
-    profileAvatar.classList.remove("has-image");
-    profileAvatar.textContent = (profileName.textContent || "Y").slice(0, 1).toUpperCase();
-  }
-  renderProfileLinks(isMine ? myProfile.link : "");
-  profileRequest.textContent = isMine
-    ? `${savedPins.size} saved`
-    : posts.some((pin) => pin.request?.open) ? "依頼受付中" : "通常投稿";
-  profileRating.textContent = isMine ? "Drafts 2" : "評価 4.9";
-  profileBoard.innerHTML = posts.map(pinCard).join("");
-  if (isMine) {
-    profileFollow.setAttribute("aria-label", "Edit profile");
-    profileFollow.classList.remove("is-saved");
-    profileFollow.textContent = "プロフィール編集";
-    profileRequestButton.textContent = "投稿を作成";
-  } else {
-    updateFollowButton(profileFollow, creator);
-    profileRequestButton.textContent = "依頼受付を見る";
-  }
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
 
 function getCurrentMediaSource() {
   return mediaEditMode === "banner"
@@ -1891,88 +1527,6 @@ function getCurrentMediaSource() {
     : (pendingAvatarSource || myProfile.avatar || "");
 }
 
-function normalizeProfileEditorText() {
-  document.querySelector("#editProfileTitle").textContent = "プロフィール編集";
-  if (openAvatarEditorButton) openAvatarEditorButton.textContent = "アイコンを調整";
-  if (openBannerEditorButton) openBannerEditorButton.textContent = "バナーを調整";
-  if (editProfileNotice) editProfileNotice.textContent = "保存しました。";
-  if (cancelEditProfile) cancelEditProfile.textContent = "キャンセル";
-
-  const labels = [
-    [editDisplayName, "表示名"],
-    [editRole, "肩書き"],
-    [editBio, "自己紹介"],
-    [editLink, "リンク"],
-    [editVisibility, "公開設定"],
-  ];
-  labels.forEach(([input, text]) => {
-    const label = input?.closest(".field")?.querySelector("span");
-    if (label) label.textContent = text;
-  });
-
-  if (avatarEditorTitle) avatarEditorTitle.textContent = mediaEditMode === "banner" ? "バナーを調整" : "アイコンを調整";
-  if (avatarEditorEyebrow) avatarEditorEyebrow.textContent = mediaEditMode === "banner" ? "Profile banner" : "Profile icon";
-  if (avatarChooseImage) avatarChooseImage.textContent = "画像を選ぶ";
-  if (avatarEditorDone) avatarEditorDone.textContent = "完了";
-}
-
-function updateEditProfilePreview() {
-  editPreviewName.textContent = editDisplayName.value.trim() || "You";
-  editPreviewBio.textContent = editBio.value.trim() || "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。";
-
-  if (editBannerPreview) {
-    const banner = pendingBannerSource || myProfile.banner;
-    editBannerPreview.style.backgroundImage = banner
-      ? `linear-gradient(180deg, rgba(15,15,15,0.06), rgba(15,15,15,0.22)), url("${banner}")`
-      : "";
-    editBannerPreview.classList.toggle("has-image", Boolean(banner));
-  }
-
-  const avatar = pendingAvatarSource || myProfile.avatar;
-  if (avatar) {
-    editAvatarPreview.style.backgroundImage = `url("${avatar}")`;
-    editAvatarPreview.classList.add("has-image");
-    editAvatarPreview.textContent = "";
-  } else {
-    editAvatarPreview.style.backgroundImage = "";
-    editAvatarPreview.classList.remove("has-image");
-    editAvatarPreview.textContent = (editDisplayName.value.trim() || "Y").slice(0, 1).toUpperCase();
-  }
-}
-
-function openEditProfile() {
-  mediaEditMode = "avatar";
-  normalizeProfileEditorText();
-  editProfileNotice.hidden = true;
-  pendingAvatarSource = myProfile.avatar;
-  pendingBannerSource = myProfile.banner;
-  editDisplayName.value = myProfile.displayName;
-  editRole.value = myProfile.role;
-  editBio.value = myProfile.bio;
-  editLink.value = myProfile.link;
-  editVisibility.value = myProfile.visibility;
-  avatarZoom.value = "1";
-  avatarOffsetX.value = "0";
-  avatarOffsetY.value = "0";
-  updateEditProfilePreview();
-  showModalElement(editProfileDialog);
-  window.setTimeout(() => editDisplayName.focus(), 140);
-}
-
-function openMediaEditor(mode) {
-  mediaEditMode = mode;
-  normalizeProfileEditorText();
-  avatarCropFrame.classList.toggle("is-banner", mode === "banner");
-  avatarCropPanel.hidden = !getCurrentMediaSource();
-  avatarCropImage.src = getCurrentMediaSource();
-  avatarZoom.value = "1";
-  avatarOffsetX.value = "0";
-  avatarOffsetY.value = "0";
-  refreshAvatarImageLayout();
-  clampAvatarOffsets();
-  updateAvatarCropTransform();
-  showModalElement(avatarEditorDialog);
-}
 
 function refreshAvatarImageLayout() {
   const naturalWidth = avatarCropImage.naturalWidth || 1;
@@ -2084,54 +1638,8 @@ async function cropAvatarToDataUrl() {
   return canvas.toDataURL("image/jpeg", 0.9);
 }
 
-async function cropBannerToDataUrl() {
-  const source = pendingBannerSource;
-  if (!source) return "";
-  const image = new Image();
-  image.src = source;
-  await new Promise((resolve, reject) => {
-    image.onload = resolve;
-    image.onerror = reject;
-  });
-
-  const { sx, sy, sw, sh } = getCropRectFromPreview(image.width, image.height);
-  const width = 1600;
-  const height = 560;
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(image, sx, sy, sw, sh, 0, 0, width, height);
-  return canvas.toDataURL("image/jpeg", 0.9);
-}
-
-function saveEditProfile(event) {
-  event.preventDefault();
-  myProfile = {
-    displayName: editDisplayName.value.trim() || "You",
-    role: editRole.value.trim() || "VRChat creator",
-    bio: editBio.value.trim() || "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。",
-    link: editLink.value.trim(),
-    visibility: editVisibility.value,
-    avatar: pendingAvatarSource,
-    banner: pendingBannerSource,
-  };
-  editProfileNotice.hidden = false;
-  applyMyAvatarToChrome();
-  renderProfile("You");
-  window.setTimeout(closeEditProfileDialog, 260);
-}
-
-async function applyMediaEditorResult() {
-  if (mediaEditMode === "banner") {
-    pendingBannerSource = await cropBannerToDataUrl();
-  } else {
-    pendingAvatarSource = await cropAvatarToDataUrl();
-  }
-  updateEditProfilePreview();
-  renderProfile("You");
-}
-
+async 
+async 
 function updateEditProfilePreview() {
   editPreviewName.textContent = editDisplayName.value.trim() || "You";
   editPreviewBio.textContent = editBio.value.trim() || "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。";
@@ -2221,27 +1729,6 @@ async function cropBannerToDataUrl() {
   return canvas.toDataURL("image/jpeg", 0.88);
 }
 
-function normalizeProfileEditorText() {
-  document.querySelector("#editProfileTitle").textContent = "プロフィール編集";
-  document.querySelector("#openAvatarEditor").textContent = "アイコンを調整";
-  if (openBannerEditorButton) openBannerEditorButton.textContent = "バナーを調整";
-  document.querySelector("#editProfileNotice").textContent = "保存しました。";
-  document.querySelector("#cancelEditProfile").textContent = "キャンセル";
-  const displayNameLabel = editDisplayName.closest(".field")?.querySelector("span");
-  const roleLabel = editRole.closest(".field")?.querySelector("span");
-  const bioLabel = editBio.closest(".field")?.querySelector("span");
-  const linkLabel = editLink.closest(".field")?.querySelector("span");
-  const visibilityLabel = editVisibility.closest(".field")?.querySelector("span");
-  if (displayNameLabel) displayNameLabel.textContent = "表示名";
-  if (roleLabel) roleLabel.textContent = "肩書き";
-  if (bioLabel) bioLabel.textContent = "自己紹介";
-  if (linkLabel) linkLabel.textContent = "リンク";
-  if (visibilityLabel) visibilityLabel.textContent = "公開設定";
-  if (avatarEditorTitle) avatarEditorTitle.textContent = mediaEditMode === "banner" ? "バナーを調整" : "アイコンを調整";
-  if (avatarEditorEyebrow) avatarEditorEyebrow.textContent = mediaEditMode === "banner" ? "Profile banner" : "Profile icon";
-  if (avatarChooseImage) avatarChooseImage.textContent = "画像を選ぶ";
-  if (avatarEditorDone) avatarEditorDone.textContent = "完了";
-}
 
 window.addEventListener("pointermove", moveAvatarDrag);
 window.addEventListener("pointerup", endAvatarDrag);
