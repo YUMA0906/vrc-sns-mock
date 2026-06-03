@@ -780,6 +780,31 @@ body[data-theme="dark"] .pin-copy strong {
   transform: translateY(0);
 }
 
+@media (hover: none) and (pointer: coarse) {
+  .pin-card:hover img {
+    transform: scale(1.001);
+    filter: none;
+  }
+
+  .pin-card:hover .pin-media {
+    box-shadow:
+      0 2px 8px rgba(20, 20, 20, 0.08),
+      0 18px 48px rgba(20, 20, 20, 0.16);
+  }
+
+  [data-theme="dark"] .pin-card:hover .pin-media,
+  body[data-theme="dark"] .pin-card:hover .pin-media {
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.08),
+      0 3px 12px rgba(0,0,0,0.34),
+      0 22px 58px rgba(0,0,0,0.62);
+  }
+
+  .pin-overlay {
+    pointer-events: none;
+  }
+}
+
 .empty-state {
   display: grid;
   place-items: center;

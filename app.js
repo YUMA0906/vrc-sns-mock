@@ -1387,6 +1387,11 @@ function handleMockSubmit(event) {
 }
 
 function handleBoardClick(event) {
+  if (ignoreNextBoardClick) {
+    ignoreNextBoardClick = false;
+    return;
+  }
+
   const tagButton = event.target.closest("[data-tag]");
   if (tagButton) {
     event.stopPropagation();
@@ -1410,6 +1415,20 @@ function handleBoardClick(event) {
 
   const card = event.target.closest(".pin-card");
   if (card) openPin(Number(card.dataset.id), card);
+}
+
+let ignoreNextBoardClick = false;
+
+function handleBoardPointerUp(event) {
+  if (event.pointerType !== "touch") return;
+  if (event.target.closest("[data-save], [data-tag], [data-profile]")) return;
+
+  const card = event.target.closest(".pin-card");
+  if (!card) return;
+
+  ignoreNextBoardClick = true;
+  event.preventDefault();
+  openPin(Number(card.dataset.id), card);
 }
 
 chips.forEach((chip) => {
@@ -1438,6 +1457,8 @@ profileRequestButton.addEventListener("click", () => {
 
 board.addEventListener("click", handleBoardClick);
 profileBoard.addEventListener("click", handleBoardClick);
+board.addEventListener("pointerup", handleBoardPointerUp);
+profileBoard.addEventListener("pointerup", handleBoardPointerUp);
 
 board.addEventListener("keydown", (event) => {
   if (event.key !== "Enter") return;
