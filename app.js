@@ -1387,6 +1387,7 @@ function handleMockSubmit(event) {
 }
 
 let ignoreNextBoardClick = false;
+let boardTouchStart = null;
 
 function handleBoardClick(event) {
   if (ignoreNextBoardClick) {
@@ -1419,23 +1420,51 @@ function handleBoardClick(event) {
   if (card) openPin(Number(card.dataset.id), card);
 }
 
-function handleBoardPointerUp(event) {
-  if (event.pointerType !== "touch") return;
-  if (event.target.closest("[data-save], [data-tag], [data-profile]")) return;
+function handleBoardTouchStart(event) {
+  if (event.touches.length !== 1) {
+    boardTouchStart = null;
+    return;
+  }
+  if (event.target.closest("[data-save], [data-tag], [data-profile]")) {
+    boardTouchStart = null;
+    return;
+  }
 
   const card = event.target.closest(".pin-card");
-  if (!card) return;
+  if (!card) {
+    boardTouchStart = null;
+    return;
+  }
 
-  ignoreNextBoardClick = true;
-  event.preventDefault();
-  openPin(Number(card.dataset.id), card);
+  const touch = event.touches[0];
+  boardTouchStart = {
+    card,
+    x: touch.clientX,
+    y: touch.clientY,
+    moved: false,
+  };
+}
+
+function handleBoardTouchMove(event) {
+  if (!boardTouchStart || event.touches.length !== 1) return;
+
+  const touch = event.touches[0];
+  const deltaX = Math.abs(touch.clientX - boardTouchStart.x);
+  const deltaY = Math.abs(touch.clientY - boardTouchStart.y);
+  if (deltaX > 10 || deltaY > 10) {
+    boardTouchStart.moved = true;
+  }
 }
 
 function handleBoardTouchEnd(event) {
+  const touchStart = boardTouchStart;
+  boardTouchStart = null;
+
+  if (!touchStart || touchStart.moved) return;
   if (event.target.closest("[data-save], [data-tag], [data-profile]")) return;
 
   const card = event.target.closest(".pin-card");
-  if (!card) return;
+  if (!card || card !== touchStart.card) return;
 
   ignoreNextBoardClick = true;
   event.preventDefault();
@@ -1468,8 +1497,10 @@ profileRequestButton.addEventListener("click", () => {
 
 board.addEventListener("click", handleBoardClick);
 profileBoard.addEventListener("click", handleBoardClick);
-board.addEventListener("pointerup", handleBoardPointerUp);
-profileBoard.addEventListener("pointerup", handleBoardPointerUp);
+board.addEventListener("touchstart", handleBoardTouchStart, { capture: true, passive: true });
+profileBoard.addEventListener("touchstart", handleBoardTouchStart, { capture: true, passive: true });
+board.addEventListener("touchmove", handleBoardTouchMove, { capture: true, passive: true });
+profileBoard.addEventListener("touchmove", handleBoardTouchMove, { capture: true, passive: true });
 board.addEventListener("touchend", handleBoardTouchEnd, { capture: true, passive: false });
 profileBoard.addEventListener("touchend", handleBoardTouchEnd, { capture: true, passive: false });
 
