@@ -2044,7 +2044,43 @@ body[data-theme="dark"] .profile-view.is-mine .profile-hero {
 }
 
 .profile-hero h1 {
+  display: inline;
   max-width: 840px;
+}
+
+.profile-level-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  margin-left: 10px;
+  padding: 0 11px;
+  vertical-align: 0.35em;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 860;
+  line-height: 1;
+  box-shadow: 0 12px 28px rgba(20,20,20,0.14);
+}
+
+.profile-level-badge--visitor {
+  background: linear-gradient(135deg, #6c737d, #3f454d);
+}
+
+.profile-level-badge--new {
+  background: linear-gradient(135deg, #3c8dff, #165fc6);
+}
+
+.profile-level-badge--user {
+  background: linear-gradient(135deg, #35c76a, #168044);
+}
+
+.profile-level-badge--known {
+  background: linear-gradient(135deg, #ff9d3a, #c75a14);
+}
+
+.profile-level-badge--trusted {
+  background: linear-gradient(135deg, #8f62ff, #5a32c8);
 }
 
 .profile-hero p:not(.eyebrow) {

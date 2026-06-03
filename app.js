@@ -533,6 +533,7 @@ const backToFeed = document.querySelector("#backToFeed");
 const profileBanner = document.querySelector("#profileBanner");
 const profileAvatar = document.querySelector("#profileAvatar");
 const profileName = document.querySelector("#profileName");
+const profileLevelBadge = document.querySelector("#profileLevelBadge");
 const profileRole = document.querySelector("#profileRole");
 const profileBio = document.querySelector("#profileBio");
 const profilePosts = document.querySelector("#profilePosts");
@@ -934,6 +935,7 @@ function renderProfile(creator) {
   profileRating.textContent = isMine ? "Drafts 2" : "評価 4.9";
   const trust = getTrustProfile(creator, posts, isMine);
   const openRequest = posts.some((pin) => pin.request?.open);
+  renderProfileLevelBadge(posts, trust);
   renderTrustProfile(creator, posts, isMine);
   profileRequest.textContent = openRequest ? "依頼受付中" : `${trust.completed} completed`;
   profileRating.textContent = `${trust.saves} saved`;
@@ -2472,6 +2474,14 @@ function trustedLevel(score) {
     key: "visitor",
     note: "まだ実績が少ないため、代表作や外部リンクの追加が効く状態。",
   };
+}
+
+function renderProfileLevelBadge(posts, trust) {
+  const score = trustScore(posts, trust);
+  const level = trustedLevel(score);
+  profileLevelBadge.className = `profile-level-badge profile-level-badge--${level.key}`;
+  profileLevelBadge.textContent = level.label;
+  profileLevelBadge.title = `Trust score: ${score} pts`;
 }
 
 function renderTrustProfile(creator, posts, isMine) {
