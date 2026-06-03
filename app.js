@@ -2428,18 +2428,76 @@ function formatMetric(value, label) {
   return `<span><strong>${value}</strong><small>${label}</small></span>`;
 }
 
+function trustScore(posts, trust) {
+  return Math.round(
+    posts.length * 4 +
+    trust.completed * 8 +
+    trust.saves +
+    trust.repeat * 10 +
+    trust.likes * 0.2
+  );
+}
+
+function trustedLevel(score) {
+  if (score >= 650) {
+    return {
+      label: "Trusted User",
+      key: "trusted",
+      note: "実績、保存、リピートが十分に積み上がった依頼しやすいクリエイター。",
+    };
+  }
+  if (score >= 380) {
+    return {
+      label: "Known User",
+      key: "known",
+      note: "複数の実績と反応が見えていて、作風を判断しやすい状態。",
+    };
+  }
+  if (score >= 180) {
+    return {
+      label: "User",
+      key: "user",
+      note: "投稿と保存が増えはじめ、活動内容が見えやすくなっている状態。",
+    };
+  }
+  if (score >= 45) {
+    return {
+      label: "New User",
+      key: "new",
+      note: "プロフィールと投稿が揃いはじめた初期の公開アカウント。",
+    };
+  }
+  return {
+    label: "Visitor",
+    key: "visitor",
+    note: "まだ実績が少ないため、代表作や外部リンクの追加が効く状態。",
+  };
+}
+
 function renderTrustProfile(creator, posts, isMine) {
   const trust = getTrustProfile(creator, posts, isMine);
   const openRequest = posts.some((post) => post.request?.open);
   const featured = posts.slice(0, 3);
   const links = [...new Set(trust.links.filter(Boolean))];
+  const score = trustScore(posts, trust);
+  const level = trustedLevel(score);
 
   trustSummaryText.textContent = trust.summary;
   trustStatus.innerHTML = `
     <strong>${openRequest ? "依頼受付中" : "通常投稿中心"}</strong>
     <span>${openRequest ? "料金・納期・受付枠を投稿から確認できます。" : "作風と過去作品を見てから相談できます。"}</span>
   `;
+  trustStatus.innerHTML = `
+    <div class="trust-rank trust-rank--${level.key}">
+      <small>Trusted level</small>
+      <strong>${level.label}</strong>
+      <span>${score} pts</span>
+    </div>
+    <strong>${openRequest ? "依頼受付中" : "通常投稿中心"}</strong>
+    <span>${level.note}</span>
+  `;
   trustMetrics.innerHTML = [
+    formatMetric(score, "Trust score"),
     formatMetric(posts.length, "投稿"),
     formatMetric(trust.completed, "完了実績"),
     formatMetric(trust.likes, "いいね"),
