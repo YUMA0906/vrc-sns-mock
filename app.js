@@ -250,6 +250,7 @@ const requestAmountInput = document.querySelector("#requestAmountInput");
 const requestAgreement = document.querySelector("#requestAgreement");
 const requestConfirmButton = document.querySelector("#requestConfirmButton");
 const requestCreatorProfileButton = document.querySelector("#requestCreatorProfileButton");
+const requestPageReportButton = document.querySelector("#requestPageReportButton");
 const requestMoreSection = document.querySelector("#requestMoreSection");
 const requestMoreGrid = document.querySelector("#requestMoreGrid");
 const notificationsList = document.querySelector("#notificationsList");
@@ -272,6 +273,7 @@ const requestDetailTitle = document.querySelector("#requestDetailTitle");
 const requestDetailClient = document.querySelector("#requestDetailClient");
 const requestDetailSummary = document.querySelector("#requestDetailSummary");
 const requestDetailMeta = document.querySelector("#requestDetailMeta");
+const requestProgressSteps = document.querySelector("#requestProgressSteps");
 const requestDetailClientName = document.querySelector("#requestDetailClientName");
 const requestDetailClientRating = document.querySelector("#requestDetailClientRating");
 const requestDetailClientProfileButton = document.querySelector("#requestDetailClientProfileButton");
@@ -300,6 +302,27 @@ const requestApprovalDialog = document.querySelector("#requestApprovalDialog");
 const requestApprovalMessage = document.querySelector("#requestApprovalMessage");
 const requestApprovalCancel = document.querySelector("#requestApprovalCancel");
 const requestApprovalConfirm = document.querySelector("#requestApprovalConfirm");
+const requestReviewDialog = document.querySelector("#requestReviewDialog");
+const requestReviewEyebrow = document.querySelector("#requestReviewEyebrow");
+const requestReviewTitle = document.querySelector("#requestReviewTitle");
+const requestReviewLead = document.querySelector("#requestReviewLead");
+const requestReviewImage = document.querySelector("#requestReviewImage");
+const requestReviewItemTitle = document.querySelector("#requestReviewItemTitle");
+const requestReviewTargetName = document.querySelector("#requestReviewTargetName");
+const requestReviewTags = document.querySelector("#requestReviewTags");
+const requestReviewComment = document.querySelector("#requestReviewComment");
+const requestReviewCancel = document.querySelector("#requestReviewCancel");
+const requestReviewSubmit = document.querySelector("#requestReviewSubmit");
+const accountEmailButton = document.querySelector("#accountEmailButton");
+const accountPasswordButton = document.querySelector("#accountPasswordButton");
+const accountLogoutButton = document.querySelector("#accountLogoutButton");
+const accountActionDialog = document.querySelector("#accountActionDialog");
+const accountActionEyebrow = document.querySelector("#accountActionEyebrow");
+const accountActionTitle = document.querySelector("#accountActionTitle");
+const accountActionBody = document.querySelector("#accountActionBody");
+const accountActionFields = document.querySelector("#accountActionFields");
+const accountActionCancel = document.querySelector("#accountActionCancel");
+const accountActionConfirm = document.querySelector("#accountActionConfirm");
 const accountDeleteButton = document.querySelector("#accountDeleteButton");
 const accountDeleteDialog = document.querySelector("#accountDeleteDialog");
 const accountDeleteCancel = document.querySelector("#accountDeleteCancel");
@@ -331,6 +354,8 @@ const dialogTags = document.querySelector("#dialogTags");
 const dialogRequest = document.querySelector("#dialogRequest");
 const dialogSave = document.querySelector("#dialogSave");
 const dialogFollow = document.querySelector("#dialogFollow");
+const dialogCopyLink = document.querySelector("#dialogCopyLink");
+const dialogShareX = document.querySelector("#dialogShareX");
 const trustInfoDialog = document.querySelector("#trustInfoDialog");
 const closeTrustInfo = document.querySelector("#closeTrustInfo");
 const composeDialog = document.querySelector("#composeDialog");
@@ -423,6 +448,8 @@ let activeRequestManagerItemId = null;
 let missionReturnHash = "";
 let activeRequestManagerState = "pending";
 let pendingRequestSort = "deadline";
+let activeRequestReportContext = { mode: "manager", target: null };
+let activeRequestReviewContext = { mode: "client", itemId: null };
 let requestViewerAuthenticated = localStorage.getItem("vrc-sns-auth-state") !== "guest";
 let currentLanguage = localStorage.getItem("vrc-sns-language") || "ja";
 let settingsSaveTimer = 0;
@@ -466,6 +493,7 @@ const translations = {
     requestManager: "依頼管理",
     notifications: "通知",
     unreadNotifications: "未読通知",
+    postUrlCopy: "投稿URLをコピー",
     heroTitle: "作品を見つける、繋がる、依頼する。",
     portfolioDesc: "改変・撮影・レタッチ・動画・ワールド制作を投稿",
     commissionDesc: "投稿やプロフィールから依頼受付へ接続",
@@ -479,7 +507,7 @@ const translations = {
     noResultsBody: "検索語句やカテゴリを変えてもう一度探してみてください。",
     back: "Back",
     markAllRead: "すべて既読",
-    settingsLead: "通知、表示、言語、プライバシー、依頼まわりの基本設定をまとめて管理します。",
+    settingsLead: "通知、表示、言語、プライバシー、アカウントの基本設定をまとめて管理します。",
     autoSavedToast: "設定を自動保存しました",
     settingsNotificationsTitle: "通知設定",
     requestNotifications: "依頼通知",
@@ -505,18 +533,26 @@ const translations = {
     onlineStatus: "オンライン状態を表示",
     onlineStatusHelp: "依頼チャットで対応可能かを表示",
     muteBlockManage: "ミュート・ブロック管理",
-    settingsCommissionTitle: "依頼・支払い",
-    commissionStatus: "依頼受付ステータス",
-    commissionStatusHelp: "プロフィールに受付中として表示",
-    defaultDelivery: "デフォルト納期表示",
-    paymentReceive: "支払い受け取り",
     stripePlanned: "Stripe 連携予定",
+    stripeConnect: "Stripe連携",
     unset: "未設定",
     account: "アカウント",
     changeEmail: "メールアドレス変更",
     changePassword: "パスワード変更",
-    exportData: "データをエクスポート",
     deleteAccount: "アカウント削除",
+    accountActionCancel: "キャンセル",
+    accountActionDone: "完了",
+    accountLogoutConfirm: "ログアウト",
+    accountEmailTitle: "メールアドレスを変更",
+    accountEmailBody: "新しいメールアドレスを入力して確認します。実装時は認証メールを送る想定です。",
+    accountEmailField: "新しいメールアドレス",
+    accountPasswordTitle: "パスワードを変更",
+    accountPasswordBody: "現在のパスワードと新しいパスワードを入力して変更します。デモでは見た目だけの確認です。",
+    accountPasswordCurrent: "現在のパスワード",
+    accountPasswordNew: "新しいパスワード",
+    accountLogoutTitle: "ログアウトしますか？",
+    accountLogoutBody: "ログアウトすると、依頼送信やプロフィール編集には再ログインが必要になります。",
+    accountUpdatedToast: "アカウント設定を更新しました",
     commissionPosts: "Commission posts",
     requestPublishingTitle: "依頼受付",
     requestPublishingLead: "価格、納期、受付枠、サンプル画像つきの依頼受付ページを作成して、プロフィールや投稿から依頼導線へつなげます。",
@@ -559,7 +595,7 @@ const translations = {
     approveAndChat: "承認してチャットへ",
     chooseRejectReason: "拒否理由を選ぶ",
     markDelivered: "納品完了にする",
-    waitReceive: "受け取り完了待ち",
+    waitReceive: "受け取り確認・評価",
     backToRetake: "リテイク対応へ戻す",
     reviewClient: "相手を評価する",
     openChat: "チャットを開く",
@@ -604,6 +640,7 @@ const translations = {
     requestManager: "Request manager",
     notifications: "Notifications",
     unreadNotifications: "Unread notifications",
+    postUrlCopy: "Copy post URL",
     heroTitle: "Discover works, connect, and commission.",
     portfolioDesc: "Post avatar edits, photos, retouching, video, and worlds",
     commissionDesc: "Connect from posts and profiles to commission pages",
@@ -617,7 +654,7 @@ const translations = {
     noResultsBody: "Try another keyword or category.",
     back: "Back",
     markAllRead: "Mark all read",
-    settingsLead: "Manage notifications, display, language, privacy, requests, and account basics.",
+    settingsLead: "Manage notifications, display, language, privacy, and account basics.",
     autoSavedToast: "Settings auto-saved",
     settingsNotificationsTitle: "Notifications",
     requestNotifications: "Request notifications",
@@ -643,18 +680,26 @@ const translations = {
     onlineStatus: "Show online status",
     onlineStatusHelp: "Show availability in request chat",
     muteBlockManage: "Manage mute / block",
-    settingsCommissionTitle: "Requests and payments",
-    commissionStatus: "Commission status",
-    commissionStatusHelp: "Show open commissions on profile",
-    defaultDelivery: "Default delivery label",
-    paymentReceive: "Payout receiving",
     stripePlanned: "Stripe integration planned",
+    stripeConnect: "Stripe connection",
     unset: "Not set",
     account: "Account",
     changeEmail: "Change email",
     changePassword: "Change password",
-    exportData: "Export data",
     deleteAccount: "Delete account",
+    accountActionCancel: "Cancel",
+    accountActionDone: "Done",
+    accountLogoutConfirm: "Log out",
+    accountEmailTitle: "Change email",
+    accountEmailBody: "Enter a new email address. In the real app, this would send a verification email.",
+    accountEmailField: "New email address",
+    accountPasswordTitle: "Change password",
+    accountPasswordBody: "Enter your current password and a new password. This mock only shows the flow.",
+    accountPasswordCurrent: "Current password",
+    accountPasswordNew: "New password",
+    accountLogoutTitle: "Log out?",
+    accountLogoutBody: "After logging out, requests and profile editing will require signing in again.",
+    accountUpdatedToast: "Account settings updated",
     commissionPosts: "Commission posts",
     requestPublishingTitle: "Commission posts",
     requestPublishingLead: "Create commission pages with price, delivery, slots, and sample thumbnails, then connect profiles and posts to requests.",
@@ -697,7 +742,7 @@ const translations = {
     approveAndChat: "Approve and chat",
     chooseRejectReason: "Choose reject reason",
     markDelivered: "Mark delivered",
-    waitReceive: "Waiting for receipt",
+    waitReceive: "Confirm and review",
     backToRetake: "Return to retake",
     reviewClient: "Review client",
     openChat: "Open chat",
@@ -742,6 +787,7 @@ const translations = {
     requestManager: "의뢰 관리",
     notifications: "알림",
     unreadNotifications: "읽지 않은 알림",
+    postUrlCopy: "게시물 URL 복사",
     heroTitle: "작품을 찾고, 연결하고, 의뢰하세요.",
     portfolioDesc: "아바타 수정, 사진, 보정, 영상, 월드 작업을 게시",
     commissionDesc: "게시물과 프로필에서 의뢰 페이지로 연결",
@@ -755,7 +801,7 @@ const translations = {
     noResultsBody: "검색어나 카테고리를 바꿔 다시 찾아보세요.",
     back: "Back",
     markAllRead: "모두 읽음",
-    settingsLead: "알림, 표시, 언어, 개인정보, 의뢰 관련 기본 설정을 관리합니다.",
+    settingsLead: "알림, 표시, 언어, 개인정보, 계정 기본 설정을 관리합니다.",
     autoSavedToast: "설정을 자동 저장했습니다",
     settingsNotificationsTitle: "알림 설정",
     requestNotifications: "의뢰 알림",
@@ -781,18 +827,26 @@ const translations = {
     onlineStatus: "온라인 상태 표시",
     onlineStatusHelp: "의뢰 채팅에서 대응 가능 여부 표시",
     muteBlockManage: "뮤트 / 차단 관리",
-    settingsCommissionTitle: "의뢰・결제",
-    commissionStatus: "의뢰 접수 상태",
-    commissionStatusHelp: "프로필에 접수 중으로 표시",
-    defaultDelivery: "기본 납기 표시",
-    paymentReceive: "결제 수령",
     stripePlanned: "Stripe 연동 예정",
+    stripeConnect: "Stripe 연동",
     unset: "미설정",
     account: "계정",
     changeEmail: "메일 주소 변경",
     changePassword: "비밀번호 변경",
-    exportData: "데이터 내보내기",
     deleteAccount: "계정 삭제",
+    accountActionCancel: "취소",
+    accountActionDone: "완료",
+    accountLogoutConfirm: "로그아웃",
+    accountEmailTitle: "메일 주소 변경",
+    accountEmailBody: "새 메일 주소를 입력합니다. 실제 앱에서는 인증 메일을 보내는 흐름입니다.",
+    accountEmailField: "새 메일 주소",
+    accountPasswordTitle: "비밀번호 변경",
+    accountPasswordBody: "현재 비밀번호와 새 비밀번호를 입력합니다. 이 목업에서는 화면 흐름만 보여줍니다.",
+    accountPasswordCurrent: "현재 비밀번호",
+    accountPasswordNew: "새 비밀번호",
+    accountLogoutTitle: "로그아웃할까요?",
+    accountLogoutBody: "로그아웃하면 의뢰 전송과 프로필 편집에는 다시 로그인이 필요합니다.",
+    accountUpdatedToast: "계정 설정을 업데이트했습니다",
     commissionPosts: "Commission posts",
     requestPublishingTitle: "의뢰 접수",
     requestPublishingLead: "가격, 납기, 접수 슬롯, 샘플 이미지가 있는 의뢰 페이지를 만들고 프로필과 게시물에서 연결합니다.",
@@ -835,7 +889,7 @@ const translations = {
     approveAndChat: "승인하고 채팅으로",
     chooseRejectReason: "거절 이유 선택",
     markDelivered: "납품 완료로 변경",
-    waitReceive: "수령 완료 대기",
+    waitReceive: "수령 확인・평가",
     backToRetake: "수정 대응으로 돌아가기",
     reviewClient: "상대를 평가하기",
     openChat: "채팅 열기",
@@ -934,23 +988,14 @@ function updateSettingsPanelLanguage() {
     setText(privacyPanel.querySelector(".settings-wide-button"), "muteBlockManage");
   }
 
-  const commissionPanel = panels[3];
-  if (commissionPanel) {
-    setText(commissionPanel.querySelector("h2"), "settingsCommissionTitle");
-    const rows = [...commissionPanel.querySelectorAll(".settings-row")];
-    setText(rows[0]?.querySelector("strong"), "commissionStatus");
-    setText(rows[0]?.querySelector("small"), "commissionStatusHelp");
-    const fields = [...commissionPanel.querySelectorAll(".settings-field")];
-    setText(fields[0]?.querySelector("span"), "defaultDelivery");
-    setText(fields[1]?.querySelector("span"), "paymentReceive");
-    setSelectOptionTexts(fields[1]?.querySelector("select"), ["stripePlanned", "unset"]);
-  }
-
-  const accountPanel = panels[4];
+  const accountPanel = panels[3];
   if (accountPanel) {
     setText(accountPanel.querySelector("h2"), "account");
+    const stripeField = accountPanel.querySelector(".settings-field");
+    setText(stripeField?.querySelector("span"), "stripeConnect");
+    setSelectOptionTexts(stripeField?.querySelector("select"), ["stripePlanned", "unset"]);
     const buttons = [...accountPanel.querySelectorAll(".settings-account-actions button")];
-    ["changeEmail", "changePassword", "exportData", "logout", "deleteAccount"].forEach((key, index) => setText(buttons[index], key));
+    ["changeEmail", "changePassword", "logout", "deleteAccount"].forEach((key, index) => setText(buttons[index], key));
   }
 }
 
@@ -1037,6 +1082,9 @@ function applyLanguage({ rerender = false } = {}) {
   setText("#requestGuestSignIn", currentLanguage === "en" ? "Log in" : currentLanguage === "ko" ? "로그인" : "ログイン");
   setText("#requestPaymentButton", currentLanguage === "en" ? "Review request" : currentLanguage === "ko" ? "의뢰 내용 확인" : "依頼内容を確認する");
   setText("#requestCreatorProfileButton", "viewProfile");
+  setText("#requestPageReportButton", "report");
+  setAttr(dialogCopyLink, "aria-label", "postUrlCopy");
+  setAttr(dialogCopyLink, "title", "postUrlCopy");
   setText("#requestMoreSection h2", currentLanguage === "en" ? "Other commissions" : currentLanguage === "ko" ? "다른 의뢰 접수" : "他の依頼受付");
   setText("#profilePostsTitle", "profileArchive");
   setAttr(profilePostSearch, "placeholder", "profilePostSearch");
@@ -1722,6 +1770,7 @@ function renderRequestPage(creator, postId = null) {
 
   requestPaymentButton.textContent = currentLanguage === "en" ? "Review request" : currentLanguage === "ko" ? "의뢰 내용 확인" : "依頼内容を確認する";
   requestCreatorProfileButton.textContent = t("viewProfile");
+  if (requestPageReportButton) requestPageReportButton.textContent = t("report");
   requestCreatorProfileButton.dataset.profile = slugify(post.creator);
   requestAmountInput.value = String(minAmount);
   requestAmountInput.min = String(minAmount);
@@ -1898,6 +1947,33 @@ function requestStateDescription(state) {
     completed: t("completedDescription"),
   };
   return descriptions[state] || "";
+}
+
+function requestProgressItems(item) {
+  const steps = [
+    { key: "pending", label: t("pending"), detail: "依頼内容を確認" },
+    { key: "accepted", label: t("accepted"), detail: "作業予定を確定" },
+    { key: "in_progress", label: t("inProgress"), detail: "制作・やり取り中" },
+    { key: "awaiting_review", label: t("awaitingReview"), detail: "納品確認待ち" },
+    { key: "awaiting_your_review", label: t("awaitingYourReview"), detail: "相互評価へ" },
+    { key: "completed", label: t("completed"), detail: "取引完了" },
+  ];
+  const activeIndex = Math.max(0, steps.findIndex((step) => step.key === item?.status));
+  return steps.map((step, index) => ({
+    ...step,
+    state: index < activeIndex ? "complete" : index === activeIndex ? "current" : "upcoming",
+  }));
+}
+
+function renderRequestProgress(item) {
+  if (!requestProgressSteps) return;
+  requestProgressSteps.innerHTML = requestProgressItems(item).map((step, index) => `
+    <span class="request-progress-step is-${step.state}" aria-current="${step.state === "current" ? "step" : "false"}">
+      <i>${index + 1}</i>
+      <strong>${escapeHtml(step.label)}</strong>
+      <small>${escapeHtml(step.detail)}</small>
+    </span>
+  `).join("");
 }
 
 function escapeHtml(value) {
@@ -2129,6 +2205,74 @@ function closeAccountDeleteDialog() {
   closeModalElement(accountDeleteDialog);
 }
 
+function closeAccountActionDialog() {
+  closeModalElement(accountActionDialog);
+}
+
+function performLogout() {
+  requestViewerAuthenticated = false;
+  localStorage.setItem("vrc-sns-auth-state", "guest");
+  showProfileCopyToast(t("loginToast"));
+  routeFromHash();
+}
+
+function openAccountActionDialog(type) {
+  if (!accountActionDialog) return;
+  const configs = {
+    email: {
+      eyebrow: "Account",
+      title: t("accountEmailTitle"),
+      body: t("accountEmailBody"),
+      confirm: t("accountActionDone"),
+      fields: `
+        <label class="field">
+          <span>${t("accountEmailField")}</span>
+          <input type="email" placeholder="creator@example.com" autocomplete="email" />
+        </label>
+      `
+    },
+    password: {
+      eyebrow: "Security",
+      title: t("accountPasswordTitle"),
+      body: t("accountPasswordBody"),
+      confirm: t("accountActionDone"),
+      fields: `
+        <label class="field">
+          <span>${t("accountPasswordCurrent")}</span>
+          <input type="password" autocomplete="current-password" />
+        </label>
+        <label class="field">
+          <span>${t("accountPasswordNew")}</span>
+          <input type="password" autocomplete="new-password" />
+        </label>
+      `
+    },
+    logout: {
+      eyebrow: "Session",
+      title: t("accountLogoutTitle"),
+      body: t("accountLogoutBody"),
+      confirm: t("accountLogoutConfirm"),
+      fields: ""
+    }
+  };
+  const config = configs[type] || configs.email;
+  accountActionDialog.dataset.actionType = type;
+  if (accountActionEyebrow) accountActionEyebrow.textContent = config.eyebrow;
+  if (accountActionTitle) accountActionTitle.textContent = config.title;
+  if (accountActionBody) accountActionBody.textContent = config.body;
+  if (accountActionCancel) accountActionCancel.textContent = t("accountActionCancel");
+  if (accountActionConfirm) {
+    accountActionConfirm.textContent = config.confirm;
+    accountActionConfirm.classList.toggle("danger-solid-button", type === "logout");
+  }
+  if (accountActionFields) {
+    accountActionFields.innerHTML = config.fields;
+    accountActionFields.hidden = !config.fields;
+  }
+  showModalElement(accountActionDialog);
+  window.setTimeout(() => accountActionFields?.querySelector("input")?.focus(), 80);
+}
+
 function completeAccountDelete() {
   if (!updateAccountDeleteAvailability()) {
     clearAccountDeleteHoldState();
@@ -2328,13 +2472,47 @@ function cancelZipAttachments() {
   closeModalElement(zipSafetyDialog);
 }
 
-function openRequestReportDialog() {
-  const item = requestManagerItemById(activeRequestManagerItemId);
-  if (!item) return;
-  requestReportTarget.textContent = `${item.title} / ${item.client}`;
-  requestReportMessage.value = "";
-  const firstReason = document.querySelector('input[name="requestReportReason"]');
-  if (firstReason) firstReason.checked = true;
+function requestReportReasonsForMode(mode) {
+  if (mode === "client") {
+    return [
+      ["納品物や対応内容が依頼ページの説明と大きく違う", "説明と違う内容で対応された"],
+      ["連絡が長期間なく、進行状況が確認できない", "連絡が取れない、進行状況が不明"],
+      ["追加料金や外部決済、直接取引へ強く誘導している", "外部決済や直接取引へ誘導された"],
+      ["納品物に第三者素材、販売物、権利不明のデータが含まれる可能性がある", "権利や利用許諾が不安"],
+      ["威圧的、攻撃的、差別的な発言がある", "威圧的、攻撃的な発言がある"],
+      ["other", "その他"],
+    ];
+  }
+  return [
+    ["アバター、衣装、販売データなどの共有を要求している", "アバターや販売データを要求してくる"],
+    ["威圧的、脅迫的、攻撃的な発言がある", "威圧的、脅迫的、攻撃的な発言がある"],
+    ["外部決済や直接取引へ誘導している", "外部決済や直接取引へ誘導している"],
+    ["著作権、規約、利用許諾に違反する可能性がある", "権利や利用許諾に違反する可能性がある"],
+    ["スパム、虚偽内容、なりすましの可能性がある", "スパム、虚偽内容、なりすましの可能性がある"],
+    ["other", "その他"],
+  ];
+}
+
+function renderRequestReportReasons(mode) {
+  const container = requestReportDialog?.querySelector(".request-report-reasons");
+  if (!container) return;
+  container.innerHTML = requestReportReasonsForMode(mode).map(([value, label], index) => `
+    <label><input type="radio" name="requestReportReason" value="${escapeHtml(value)}" ${index === 0 ? "checked" : ""} /> <span>${escapeHtml(label)}</span></label>
+  `).join("");
+}
+
+function openRequestReportDialog(mode = "manager") {
+  const isClient = mode === "client";
+  const target = isClient ? currentOpenRequestPost() : requestManagerItemById(activeRequestManagerItemId);
+  if (!target) return;
+  activeRequestReportContext = { mode, target };
+  renderRequestReportReasons(mode);
+  if (requestReportTarget) {
+    requestReportTarget.textContent = isClient
+      ? `${target.request?.title || target.title} / ${target.creator}`
+      : `${target.title} / ${target.client}`;
+  }
+  if (requestReportMessage) requestReportMessage.value = "";
   showModalElement(requestReportDialog);
 }
 
@@ -2343,13 +2521,82 @@ function closeRequestReportDialog() {
 }
 
 function submitRequestReport() {
-  const item = requestManagerItemById(activeRequestManagerItemId);
-  if (!item) return;
+  const { mode, target } = activeRequestReportContext || {};
+  if (!target) return;
   const selected = document.querySelector('input[name="requestReportReason"]:checked');
   const baseReason = selected?.value === "other" ? "その他" : selected?.value;
-  const comment = requestReportMessage.value.trim();
-  requestDetailDecisionNote.textContent = `通報を送信しました: ${baseReason || "理由未設定"}${comment ? ` / ${comment}` : ""}。実装時は運営確認キューへ送信する想定です。`;
+  const comment = requestReportMessage?.value.trim() || "";
+  const message = `通報を送信しました: ${baseReason || "理由未設定"}${comment ? ` / ${comment}` : ""}。実装時は運営確認キューへ送信する想定です。`;
+  if (mode === "client") {
+    if (requestPaymentNote) requestPaymentNote.textContent = "通報を送信しました。運営確認キューへ送る想定です。";
+    showProfileCopyToast("通報を送信しました");
+  } else if (requestDetailDecisionNote) {
+    requestDetailDecisionNote.textContent = message;
+  }
   closeRequestReportDialog();
+}
+
+function reviewTagOptionsForMode(mode) {
+  if (mode === "creator") {
+    return ["要望が明確", "返信が早い", "素材共有が丁寧", "また取引したい"];
+  }
+  return ["連絡が丁寧", "納期が安心", "仕上がりが良い", "また依頼したい"];
+}
+
+function closeRequestReviewDialog() {
+  closeModalElement(requestReviewDialog);
+}
+
+function openRequestReviewDialog(mode, item) {
+  if (!item || !requestReviewDialog) return;
+  activeRequestReviewContext = { mode, itemId: item.id };
+  const reviewingCreator = mode === "client";
+  const targetName = reviewingCreator ? "クリエイターを評価" : "依頼者を評価";
+  if (requestReviewEyebrow) requestReviewEyebrow.textContent = reviewingCreator ? "Delivery review" : "Client review";
+  if (requestReviewTitle) requestReviewTitle.textContent = reviewingCreator ? "納品を確認して評価" : "依頼者を評価";
+  if (requestReviewLead) {
+    requestReviewLead.textContent = reviewingCreator
+      ? "納品物、連絡、スケジュール感を確認して、今回の取引を評価します。"
+      : "依頼内容の分かりやすさ、連絡、素材共有のしやすさを評価します。";
+  }
+  if (requestReviewImage) {
+    requestReviewImage.src = item.thumbnail;
+    requestReviewImage.alt = item.title;
+  }
+  if (requestReviewItemTitle) requestReviewItemTitle.textContent = item.title;
+  if (requestReviewTargetName) requestReviewTargetName.textContent = `${targetName}: ${reviewingCreator ? "You" : item.client}`;
+  if (requestReviewTags) {
+    requestReviewTags.innerHTML = reviewTagOptionsForMode(mode).map((label, index) => `
+      <label><input type="checkbox" value="${escapeHtml(label)}" ${index === 0 ? "checked" : ""} /> <span>${escapeHtml(label)}</span></label>
+    `).join("");
+  }
+  const firstScore = requestReviewDialog.querySelector('input[name="requestReviewScore"][value="good"]');
+  if (firstScore) firstScore.checked = true;
+  if (requestReviewComment) {
+    requestReviewComment.value = reviewingCreator
+      ? "納品物を確認しました。丁寧に対応いただきありがとうございました。"
+      : "やり取りがスムーズで、必要な情報も分かりやすく共有いただけました。";
+  }
+  showModalElement(requestReviewDialog);
+}
+
+function submitRequestReview() {
+  const item = requestManagerItemById(activeRequestReviewContext.itemId);
+  if (!item) return;
+  const score = requestReviewDialog?.querySelector('input[name="requestReviewScore"]:checked')?.value || "good";
+  const labels = { good: "良かった", normal: "普通", bad: "残念だった" };
+  const tags = [...(requestReviewTags?.querySelectorAll("input:checked") || [])].map((input) => input.value);
+  const comment = requestReviewComment?.value.trim() || "";
+  if (activeRequestReviewContext.mode === "client") {
+    item.status = "awaiting_your_review";
+    item.messages.push({ from: "client", time: "いま", text: `受け取り確認と評価が完了しました。評価: ${labels[score]}${tags.length ? ` / ${tags.join("・")}` : ""}` });
+  } else {
+    item.status = "completed";
+    item.messages.push({ from: "you", time: "いま", text: `こちらからの評価も完了しました。評価: ${labels[score]}${comment ? ` / ${comment}` : ""}` });
+  }
+  closeRequestReviewDialog();
+  renderRequestManagerDetailPage(item.id);
+  showProfileCopyToast("評価を投稿しました");
 }
 
 function renderRequestManagerDetailPage(itemId) {
@@ -2384,6 +2631,7 @@ function renderRequestManagerDetailPage(itemId) {
     requestTurnPill(item),
     `<span>${item.deadline}</span>`,
   ].join("");
+  renderRequestProgress(item);
   requestDetailClientName.textContent = item.client;
   requestDetailClientRating.textContent = `${t("rating")} ${clientRatingLabel(item)}`;
   requestDetailClientProfileButton.dataset.profile = slugify(item.client);
@@ -3057,6 +3305,11 @@ settingsLanguage?.addEventListener("change", () => {
   applyLanguage({ rerender: true });
   showProfileCopyToast(t("languageChanged"));
 });
+settingsView?.addEventListener("click", (event) => {
+  const row = event.target.closest(".settings-row");
+  if (!row || event.target.closest('input[type="checkbox"]')) return;
+  event.preventDefault();
+});
 settingsView?.addEventListener("change", handleSettingsAutoSave);
 shuffleButton.addEventListener("click", shufflePins);
 createButton.addEventListener("click", openComposeHint);
@@ -3080,9 +3333,7 @@ accountMenuSettings?.addEventListener("click", () => {
 });
 accountMenuLogout?.addEventListener("click", () => {
   closeAccountMenu();
-  requestViewerAuthenticated = false;
-  localStorage.setItem("vrc-sns-auth-state", "guest");
-  showProfileCopyToast(t("loginToast"));
+  openAccountActionDialog("logout");
 });
 accountMenu?.addEventListener("click", (event) => {
   event.stopPropagation();
@@ -3102,6 +3353,26 @@ backFromSettings?.addEventListener("click", returnFromSettings);
 backFromRequestManager?.addEventListener("click", returnFromRequestManager);
 backFromRequestDetail?.addEventListener("click", returnFromRequestManagerDetail);
 backFromMission?.addEventListener("click", returnFromMission);
+accountEmailButton?.addEventListener("click", () => openAccountActionDialog("email"));
+accountPasswordButton?.addEventListener("click", () => openAccountActionDialog("password"));
+accountLogoutButton?.addEventListener("click", () => openAccountActionDialog("logout"));
+accountActionCancel?.addEventListener("click", closeAccountActionDialog);
+accountActionConfirm?.addEventListener("click", () => {
+  const type = accountActionDialog?.dataset.actionType || "";
+  closeAccountActionDialog();
+  if (type === "logout") {
+    performLogout();
+    return;
+  }
+  showProfileCopyToast(t("accountUpdatedToast"));
+});
+accountActionDialog?.addEventListener("click", (event) => {
+  if (event.target === accountActionDialog) closeAccountActionDialog();
+});
+accountActionDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeAccountActionDialog();
+});
 accountDeleteButton?.addEventListener("click", openAccountDeleteDialog);
 accountDeleteCancel?.addEventListener("click", closeAccountDeleteDialog);
 accountDeletePassword?.addEventListener("input", () => {
@@ -3280,12 +3551,14 @@ requestCreatorProfileButton.addEventListener("click", () => {
   if (slug) openProfile(slug);
 });
 
+requestPageReportButton?.addEventListener("click", () => openRequestReportDialog("client"));
+
 requestDetailClientProfileButton?.addEventListener("click", () => {
   const slug = requestDetailClientProfileButton.dataset.profile;
   if (slug) openProfile(slug);
 });
 
-requestReportButton?.addEventListener("click", openRequestReportDialog);
+requestReportButton?.addEventListener("click", () => openRequestReportDialog("manager"));
 
 requestMoreGrid.addEventListener("click", (event) => {
   const card = event.target.closest("[data-request-id]");
@@ -3339,10 +3612,12 @@ requestDecisionActions?.addEventListener("click", (event) => {
     renderRequestManagerDetailPage(item.id);
     return;
   }
+  if (action === "await-review") {
+    openRequestReviewDialog("client", item);
+    return;
+  }
   if (action === "review-client") {
-    item.status = "completed";
-    item.messages.push({ from: "you", time: "いま", text: "こちらからの評価も完了しました。ありがとうございました。" });
-    renderRequestManagerDetailPage(item.id);
+    openRequestReviewDialog("creator", item);
     return;
   }
   if (action === "report") {
@@ -3373,6 +3648,16 @@ requestApprovalConfirm?.addEventListener("pointerleave", () => {
 
 requestApprovalConfirm?.addEventListener("pointercancel", () => {
   if (!approveHoldCompleted) clearApproveHoldState(requestApprovalConfirm);
+});
+
+requestReviewCancel?.addEventListener("click", closeRequestReviewDialog);
+requestReviewSubmit?.addEventListener("click", submitRequestReview);
+requestReviewDialog?.addEventListener("click", (event) => {
+  if (event.target === requestReviewDialog) closeRequestReviewDialog();
+});
+requestReviewDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeRequestReviewDialog();
 });
 
 requestRejectCancel?.addEventListener("click", () => closeModalElement(requestRejectDialog));
@@ -3428,6 +3713,9 @@ dialogFollow.addEventListener("click", () => {
   }
   updateFollowButton(dialogFollow, currentPin.creator);
 });
+
+dialogCopyLink?.addEventListener("click", copyCurrentPinLink);
+dialogShareX?.addEventListener("click", shareCurrentPinToX);
 
 profileFollow.addEventListener("click", () => {
   if (!activeProfile) return;
@@ -4338,6 +4626,50 @@ async function shareCurrentProfile() {
   }
 
   window.setTimeout(resetShareButton, 1400);
+}
+
+function currentPostShareUrl(post) {
+  const base = `${location.origin}${location.pathname}`;
+  return `${base}#post/${post.id}`;
+}
+
+function shareCurrentPinToX() {
+  if (!currentPin) return;
+  const text = `${currentPin.title} by ${currentPin.creator} #VRChat`;
+  const shareUrl = currentPostShareUrl(currentPin);
+  const intentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
+  window.open(intentUrl, "_blank", "noopener,noreferrer");
+  showProfileCopyToast("Xで共有画面を開きました");
+}
+
+async function copyCurrentPinLink() {
+  if (!currentPin || !dialogCopyLink) return;
+  const url = currentPostShareUrl(currentPin);
+  const resetButton = () => {
+    dialogCopyLink.classList.remove("is-copied");
+    dialogCopyLink.setAttribute("aria-label", t("postUrlCopy"));
+    dialogCopyLink.title = t("postUrlCopy");
+  };
+
+  try {
+    await copyTextToClipboard(url);
+    dialogCopyLink.classList.add("is-copied");
+    dialogCopyLink.classList.remove("is-copying");
+    void dialogCopyLink.offsetWidth;
+    dialogCopyLink.classList.add("is-copying");
+    dialogCopyLink.setAttribute("aria-label", t("copied"));
+    dialogCopyLink.title = t("copied");
+    showProfileCopyToast(currentLanguage === "en" ? "Post URL copied" : currentLanguage === "ko" ? "게시물 URL을 복사했습니다" : "投稿URLをコピーしました");
+  } catch {
+    resetButton();
+    dialogCopyLink.classList.remove("is-copying");
+    void dialogCopyLink.offsetWidth;
+    dialogCopyLink.classList.add("is-copying");
+    showProfileCopyToast(t("copyFailed"), false);
+    return;
+  }
+
+  window.setTimeout(resetButton, 1400);
 }
 
 function normalizeProfileEditorText() {
