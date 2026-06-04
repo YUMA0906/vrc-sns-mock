@@ -515,11 +515,188 @@ const trustProfiles = {
   },
 };
 
+const notifications = [
+  {
+    id: 1,
+    type: "request",
+    unread: true,
+    title: "Mika Alterworksが依頼受付を更新しました",
+    body: "アバター改変依頼の受付枠と納期が更新されています。",
+    time: "5分前",
+    target: { kind: "request", creator: "Mika Alterworks", postId: 1 },
+  },
+  {
+    id: 2,
+    type: "save",
+    unread: true,
+    title: "あなたの投稿が保存されました",
+    body: "World walk archiveが新しく保存されました。",
+    time: "18分前",
+    target: { kind: "post", postId: 103 },
+  },
+  {
+    id: 3,
+    type: "follow",
+    unread: false,
+    title: "Lumi Photoがあなたをフォローしました",
+    body: "プロフィールと過去投稿を確認できます。",
+    time: "1時間前",
+    target: { kind: "profile", creator: "Lumi Photo" },
+  },
+  {
+    id: 4,
+    type: "message",
+    unread: false,
+    title: "依頼前相談の返信があります",
+    body: "料金、納期、必要素材について返信が届いています。",
+    time: "昨日",
+    target: { kind: "request", creator: "Rin Works", postId: 7 },
+  },
+];
+
+const requestManagerItems = [
+  {
+    id: 1,
+    title: "Selestia spring look改変",
+    client: "Aoi Kisaragi",
+    summary: "衣装差し替え、表情3種、ポーズ撮影用の軽微な調整。",
+    status: "pending",
+    deadline: "2026-06-06",
+    budget: "¥12,000",
+    thumbnail: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=900&q=80",
+    requestedAt: "2026-06-02 21:30",
+    scope: ["衣装差し替え", "表情3種追加", "ポーズ確認", "Unity package納品"],
+    messages: [
+      { from: "client", time: "6/2 21:34", text: "春イベント向けにやわらかい印象でお願いしたいです。" },
+      { from: "you", time: "6/2 21:42", text: "承知しました。まず衣装候補を2案出してから進めます。" },
+      { from: "client", time: "6/3 09:18", text: "表情は笑顔、照れ、驚きの3つを希望です。" },
+    ],
+  },
+  {
+    id: 2,
+    title: "イベント告知用ワールド撮影",
+    client: "Nagi Studio",
+    summary: "納品枚数12枚、サムネイル向けレタッチ込み。",
+    status: "pending",
+    deadline: "2026-06-08",
+    budget: "¥18,000",
+    thumbnail: "https://images.unsplash.com/photo-1520034475321-cbe63696469a?auto=format&fit=crop&w=900&q=80",
+    requestedAt: "2026-06-03 18:10",
+    scope: ["撮影12枚", "色味レタッチ", "告知用トリミング", "サムネイル候補3種"],
+    messages: [
+      { from: "client", time: "6/3 18:12", text: "告知ツイート用に暗めと明るめの2テイストが欲しいです。" },
+      { from: "you", time: "6/3 18:25", text: "了解です。ロケーション候補も合わせて共有します。" },
+    ],
+  },
+  {
+    id: 3,
+    title: "booth商品ページ用PV編集",
+    client: "Lumi Photo",
+    summary: "30秒尺、字幕入れ、色味調整まで承諾済み。",
+    status: "accepted",
+    deadline: "2026-06-10",
+    budget: "¥28,000",
+    thumbnail: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=900&q=80",
+    requestedAt: "2026-06-01 13:20",
+    scope: ["30秒PV", "字幕入れ", "色味調整", "booth掲載比率に最適化"],
+    messages: [
+      { from: "client", time: "6/1 13:21", text: "テンポは少し早めで、商品カットを多めにしたいです。" },
+      { from: "you", time: "6/1 13:40", text: "絵コンテを明日までに送ります。BGM案も2つ出します。" },
+      { from: "client", time: "6/2 11:08", text: "ありがとうございます、承諾で進めてください。" },
+    ],
+  },
+  {
+    id: 4,
+    title: "Yayoi Rainポートレート補正",
+    client: "Rin Works",
+    summary: "肌補正、ライティング調整、SNS掲載用のトリミング。",
+    status: "accepted",
+    deadline: "2026-06-12",
+    budget: "¥9,000",
+    thumbnail: "https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=900&q=80",
+    requestedAt: "2026-06-02 20:10",
+    scope: ["肌補正", "ライティング調整", "SNS比率3種", "文字入れ余白調整"],
+    messages: [
+      { from: "client", time: "6/2 20:14", text: "ポスターにも使いたいので少しだけシャープ寄りでお願いします。" },
+      { from: "you", time: "6/2 20:30", text: "了解です。印刷用を想定して彩度を抑えめに整えます。" },
+    ],
+  },
+  {
+    id: 5,
+    title: "ライブ用ギミック導線UI",
+    client: "Mika Alterworks",
+    summary: "進行中。メニュー導線とアイコン差し替えの最終調整。",
+    status: "in_progress",
+    deadline: "2026-06-07",
+    budget: "¥22,000",
+    thumbnail: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80",
+    requestedAt: "2026-05-31 19:45",
+    scope: ["メニュー導線UI", "アイコン差し替え", "動線確認", "prefabで納品"],
+    messages: [
+      { from: "you", time: "6/3 10:03", text: "アイコン差し替え版を入れました。導線の体感を確認してほしいです。" },
+      { from: "client", time: "6/3 10:22", text: "かなり良いです。右上の戻るだけ少し目立たせたいです。" },
+      { from: "you", time: "6/4 09:04", text: "了解です。今日中に最終調整版を渡します。" },
+    ],
+  },
+  {
+    id: 6,
+    title: "展示会ブース用メインビジュアル",
+    client: "Kite Atelier",
+    summary: "進行中。構図FIX済みで仕上げ段階。",
+    status: "in_progress",
+    deadline: "2026-06-09",
+    budget: "¥35,000",
+    thumbnail: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80",
+    requestedAt: "2026-05-30 16:05",
+    scope: ["メインビジュアル制作", "展示会比率2種", "サムネイル最適化", "PSD同梱"],
+    messages: [
+      { from: "client", time: "6/2 14:50", text: "構図FIXでお願いします。キャッチコピーは後から載せます。" },
+      { from: "you", time: "6/2 15:12", text: "テキスト余白を多めに確保して仕上げます。" },
+    ],
+  },
+  {
+    id: 7,
+    title: "3周年記念アバター撮影セット",
+    client: "Haru Works",
+    summary: "納品済み。サムネイル3種と告知画像を提出。",
+    status: "awaiting_review",
+    deadline: "2026-05-31",
+    budget: "¥16,000",
+    thumbnail: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
+    requestedAt: "2026-05-24 22:18",
+    scope: ["撮影セット12枚", "告知画像", "サムネイル3種", "納品データ整理"],
+    messages: [
+      { from: "you", time: "5/31 18:05", text: "納品完了しました。Google Driveのフォルダも共有済みです。" },
+      { from: "client", time: "5/31 18:32", text: "確認しました、最高です。次回もぜひお願いしたいです。" },
+    ],
+  },
+  {
+    id: 8,
+    title: "ポスター用レタッチ一式",
+    client: "Noa Frame",
+    summary: "納品済み。印刷用データとSNS比率版を提出。",
+    status: "awaiting_your_review",
+    deadline: "2026-05-28",
+    budget: "¥14,000",
+    thumbnail: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=80",
+    requestedAt: "2026-05-22 11:02",
+    scope: ["印刷用レタッチ", "SNS比率版", "色校正調整", "書き出し4種"],
+    messages: [
+      { from: "you", time: "5/28 14:40", text: "最終データを納品しました。印刷テスト用の軽量版も添えています。" },
+      { from: "client", time: "5/28 15:01", text: "受け取りました、完璧です。ありがとうございました！" },
+    ],
+  },
+];
+
 const board = document.querySelector("#board");
 const profileBoard = document.querySelector("#profileBoard");
 const feedView = document.querySelector("#feedView");
 const profileView = document.querySelector("#profileView");
 const requestView = document.querySelector("#requestView");
+const notificationsView = document.querySelector("#notificationsView");
+const requestManagerView = document.querySelector("#requestManagerView");
+const requestManagerDetailView = document.querySelector("#requestManagerDetailView");
+const missionView = document.querySelector("#missionView");
 const searchInput = document.querySelector("#searchInput");
 const chips = [...document.querySelectorAll(".chip")];
 const navPills = [...document.querySelectorAll(".nav-pill")];
@@ -529,9 +706,16 @@ const createButton = document.querySelector("#createButton");
 const floatingPost = document.querySelector("#floatingPost");
 const dropHint = document.querySelector("#dropHint");
 const themeToggle = document.querySelector("#themeToggle");
+const missionButton = document.querySelector("#missionButton");
+const requestManagerButton = document.querySelector("#requestManagerButton");
+const notificationButton = document.querySelector("#notificationButton");
 const avatarButton = document.querySelector("#avatarButton");
 const backToFeed = document.querySelector("#backToFeed");
 const backFromRequest = document.querySelector("#backFromRequest");
+const backFromNotifications = document.querySelector("#backFromNotifications");
+const backFromRequestManager = document.querySelector("#backFromRequestManager");
+const backFromRequestDetail = document.querySelector("#backFromRequestDetail");
+const backFromMission = document.querySelector("#backFromMission");
 const profileBanner = document.querySelector("#profileBanner");
 const profileAvatar = document.querySelector("#profileAvatar");
 const profileName = document.querySelector("#profileName");
@@ -562,6 +746,20 @@ const requestPaymentButton = document.querySelector("#requestPaymentButton");
 const requestCreatorProfileButton = document.querySelector("#requestCreatorProfileButton");
 const requestMoreSection = document.querySelector("#requestMoreSection");
 const requestMoreGrid = document.querySelector("#requestMoreGrid");
+const notificationsList = document.querySelector("#notificationsList");
+const markNotificationsRead = document.querySelector("#markNotificationsRead");
+const requestManagerList = document.querySelector("#requestManagerList");
+const requestManagerEmpty = document.querySelector("#requestManagerEmpty");
+const requestStateTabs = [...document.querySelectorAll(".request-state-tab")];
+const requestDetailImage = document.querySelector("#requestDetailImage");
+const requestDetailState = document.querySelector("#requestDetailState");
+const requestDetailDeadline = document.querySelector("#requestDetailDeadline");
+const requestDetailTitle = document.querySelector("#requestDetailTitle");
+const requestDetailClient = document.querySelector("#requestDetailClient");
+const requestDetailSummary = document.querySelector("#requestDetailSummary");
+const requestDetailMeta = document.querySelector("#requestDetailMeta");
+const requestDetailBrief = document.querySelector("#requestDetailBrief");
+const requestChatTimeline = document.querySelector("#requestChatTimeline");
 const dialog = document.querySelector("#pinDialog");
 const closeDialog = document.querySelector("#closeDialog");
 const dialogImage = document.querySelector("#dialogImage");
@@ -632,6 +830,11 @@ let savedPins = new Set([3, 7]);
 let followedCreators = new Set(["Lumi Photo"]);
 let currentPin = null;
 let activeProfile = null;
+let notificationReturnHash = "";
+let requestManagerReturnHash = "";
+let activeRequestManagerItemId = null;
+let missionReturnHash = "";
+let activeRequestManagerState = "pending";
 let lockedScrollY = 0;
 let composeImages = [];
 let composeImageIndex = 0;
@@ -936,16 +1139,37 @@ function closeTrustInfoDialog() {
 function showFeed() {
   activeProfile = null;
   requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  missionView.hidden = true;
   profileView.hidden = true;
   profileView.classList.remove("is-mine");
   feedView.hidden = false;
-  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#request/") || location.hash === "#me") {
+  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash === "#notifications" || location.hash === "#request-manager" || location.hash === "#mission" || location.hash === "#me") {
     history.pushState("", document.title, location.pathname + location.search);
   }
   renderPins();
 }
 
 function routeFromHash() {
+  const requestDetailMatch = location.hash.match(/^#request-manager\/(\d+)$/);
+  if (requestDetailMatch) {
+    renderRequestManagerDetailPage(Number(requestDetailMatch[1]));
+    return;
+  }
+  if (location.hash === "#request-manager") {
+    renderRequestManagerPage();
+    return;
+  }
+  if (location.hash === "#mission") {
+    renderMissionPage();
+    return;
+  }
+  if (location.hash === "#notifications") {
+    renderNotificationsPage();
+    return;
+  }
   if (location.hash === "#me") {
     renderProfile("You");
     return;
@@ -972,6 +1196,10 @@ function openProfile(slug) {
   if (!pin) return;
   if (modalIsOpen(dialog)) closeModalElement(dialog);
   requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  missionView.hidden = true;
   location.hash = `profile/${slug}`;
   renderProfile(pin.creator);
 }
@@ -980,6 +1208,10 @@ function openMyProfile() {
   if (modalIsOpen(dialog)) closeModalElement(dialog);
   if (modalIsOpen(composeDialog)) closeComposeDialog();
   requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  missionView.hidden = true;
   location.hash = "me";
   renderProfile("You");
 }
@@ -1004,6 +1236,10 @@ function renderRequestPage(creator, postId = null) {
   activeProfile = creator;
   feedView.hidden = true;
   profileView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  missionView.hidden = true;
   requestView.hidden = false;
 
   requestPageImage.src = post.image;
@@ -1025,6 +1261,276 @@ function renderRequestPage(creator, postId = null) {
   requestCreatorProfileButton.dataset.profile = slugify(post.creator);
   renderOtherRequestCards(post.creator, post.id);
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function notificationIcon(type) {
+  const labels = {
+    request: "依",
+    save: "保",
+    follow: "縁",
+    message: "返",
+  };
+  return labels[type] || "通";
+}
+
+function renderNotificationsPage() {
+  activeProfile = null;
+  feedView.hidden = true;
+  profileView.hidden = true;
+  requestView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  missionView.hidden = true;
+  notificationsView.hidden = false;
+  notificationsList.innerHTML = notifications.map((item) => `
+    <button class="notification-item ${item.unread ? "is-unread" : ""}" type="button" data-notification-id="${item.id}">
+      <span class="notification-mark">${notificationIcon(item.type)}</span>
+      <span class="notification-copy">
+        <strong>${item.title}</strong>
+        <span>${item.body}</span>
+      </span>
+      <time>${item.time}</time>
+    </button>
+  `).join("");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function formatDeadlineLabel(deadline) {
+  const date = new Date(`${deadline}T00:00:00+09:00`);
+  return `${date.getMonth() + 1}/${date.getDate()} 締切`;
+}
+
+function isDeadlineSoon(deadline) {
+  const today = new Date();
+  const current = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const target = new Date(`${deadline}T00:00:00+09:00`);
+  const diffDays = Math.ceil((target.getTime() - current.getTime()) / 86400000);
+  return diffDays <= 3;
+}
+
+function requestStateLabel(state) {
+  const labels = {
+    pending: "未承諾",
+    accepted: "承諾済",
+    in_progress: "進行中",
+    awaiting_review: "評価待ち",
+    awaiting_your_review: "レビュー返し",
+    completed: "完了",
+  };
+  return labels[state] || state;
+}
+
+function requestStateDescription(state) {
+  const descriptions = {
+    pending: "依頼内容を確認中。まだ受けるかどうかを確定していない状態です。",
+    accepted: "依頼を受諾済み。これから作業を開始する予定が確定している状態です。",
+    in_progress: "作業開始の連絡まで完了済み。現在進行形で対応している依頼です。",
+    awaiting_review: "納品は完了済み。クライアントからの確認や評価を待っている状態です。",
+    awaiting_your_review: "相手からの評価は到着済み。こちらから相手を評価するターンの依頼です。",
+    completed: "お互いの評価や確認まで完了し、依頼が正式にクローズした状態です。",
+  };
+  return descriptions[state] || "";
+}
+
+function sortedRequestManagerItems(state = activeRequestManagerState) {
+  return requestManagerItems
+    .filter((item) => item.status === state)
+    .sort((a, b) => a.deadline.localeCompare(b.deadline));
+}
+
+function renderRequestManagerList() {
+  const items = sortedRequestManagerItems();
+  requestStateTabs.forEach((tab) => {
+    const count = requestManagerItems.filter((item) => item.status === tab.dataset.requestState).length;
+    const countLabel = tab.querySelector("small");
+    if (countLabel) countLabel.textContent = String(count);
+    tab.classList.toggle("is-active", tab.dataset.requestState === activeRequestManagerState);
+  });
+  requestManagerEmpty.hidden = items.length !== 0;
+  requestManagerList.innerHTML = items.map((item) => `
+    <article class="request-manager-card" data-request-item="${item.id}">
+      <img src="${item.thumbnail}" alt="${item.title}" loading="lazy" />
+      <div class="request-manager-card-copy">
+        <div class="request-manager-card-topline">
+          <span class="request-manager-state">${requestStateLabel(item.status)}</span>
+          <time class="${!["awaiting_review", "awaiting_your_review", "completed"].includes(item.status) && isDeadlineSoon(item.deadline) ? "is-urgent" : ""}" datetime="${item.deadline}">${formatDeadlineLabel(item.deadline)}</time>
+        </div>
+        <h2>${item.title}</h2>
+        <p>${item.summary}</p>
+        <div class="request-manager-card-meta">
+          <span>${requestStateDescription(item.status)}</span>
+          <span>${item.client}</span>
+          <span>${item.budget}</span>
+        </div>
+      </div>
+    </article>
+  `).join("");
+}
+
+function renderRequestManagerPage() {
+  activeProfile = null;
+  feedView.hidden = true;
+  profileView.hidden = true;
+  requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  missionView.hidden = true;
+  requestManagerView.hidden = false;
+  renderRequestManagerList();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function requestManagerItemById(id) {
+  return requestManagerItems.find((item) => item.id === id) || null;
+}
+
+function renderRequestManagerDetailPage(itemId) {
+  const item = requestManagerItemById(itemId);
+  if (!item) {
+    renderRequestManagerPage();
+    return;
+  }
+  activeRequestManagerItemId = item.id;
+  activeProfile = null;
+  feedView.hidden = true;
+  profileView.hidden = true;
+  requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  missionView.hidden = true;
+  requestManagerDetailView.hidden = false;
+
+  requestDetailImage.src = item.thumbnail;
+  requestDetailImage.alt = item.title;
+  requestDetailState.textContent = requestStateLabel(item.status);
+  requestDetailDeadline.textContent = formatDeadlineLabel(item.deadline);
+  requestDetailDeadline.dateTime = item.deadline;
+  requestDetailDeadline.classList.toggle("is-urgent", !["awaiting_review", "awaiting_your_review", "completed"].includes(item.status) && isDeadlineSoon(item.deadline));
+  requestDetailTitle.textContent = item.title;
+  requestDetailClient.textContent = `${item.client} / ${item.requestedAt}`;
+  requestDetailSummary.textContent = `${item.summary} ${requestStateDescription(item.status)}`;
+  requestDetailMeta.innerHTML = [
+    `<span>${item.budget}</span>`,
+    `<span>${requestStateLabel(item.status)}</span>`,
+    `<span>${item.deadline}</span>`,
+  ].join("");
+  requestDetailBrief.innerHTML = item.scope.map((entry) => `<span>${entry}</span>`).join("");
+  requestChatTimeline.innerHTML = item.messages.map((message) => `
+    <article class="request-chat-bubble ${message.from === "you" ? "is-self" : "is-client"}">
+      <p>${message.text}</p>
+      <span>${message.from === "you" ? "You" : item.client} ・ ${message.time}</span>
+    </article>
+  `).join("");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openRequestManagerPage() {
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
+  if (modalIsOpen(composeDialog)) closeComposeDialog();
+  if (location.hash && location.hash !== "#request-manager") {
+    requestManagerReturnHash = location.hash;
+  } else if (!location.hash) {
+    requestManagerReturnHash = "";
+  }
+  location.hash = "request-manager";
+  renderRequestManagerPage();
+}
+
+function openRequestManagerDetail(itemId) {
+  const item = requestManagerItemById(itemId);
+  if (!item) return;
+  location.hash = `request-manager/${item.id}`;
+  renderRequestManagerDetailPage(item.id);
+}
+
+function returnFromRequestManager() {
+  const targetHash = requestManagerReturnHash;
+  requestManagerReturnHash = "";
+  if (!targetHash) {
+    showFeed();
+    return;
+  }
+  history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
+  routeFromHash();
+}
+
+function returnFromRequestManagerDetail() {
+  history.pushState("", document.title, `${location.pathname}${location.search}#request-manager`);
+  renderRequestManagerPage();
+}
+
+function openNotificationsPage() {
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
+  if (modalIsOpen(composeDialog)) closeComposeDialog();
+  if (location.hash && location.hash !== "#notifications") {
+    notificationReturnHash = location.hash;
+  } else if (!location.hash) {
+    notificationReturnHash = "";
+  }
+  location.hash = "notifications";
+  renderNotificationsPage();
+}
+
+function renderMissionPage() {
+  activeProfile = null;
+  feedView.hidden = true;
+  profileView.hidden = true;
+  requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  missionView.hidden = false;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openMissionPage() {
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
+  if (modalIsOpen(composeDialog)) closeComposeDialog();
+  if (location.hash && location.hash !== "#mission") {
+    missionReturnHash = location.hash;
+  } else if (!location.hash) {
+    missionReturnHash = "";
+  }
+  location.hash = "mission";
+  renderMissionPage();
+}
+
+function returnFromMission() {
+  const targetHash = missionReturnHash;
+  missionReturnHash = "";
+  if (!targetHash) {
+    showFeed();
+    return;
+  }
+  history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
+  routeFromHash();
+}
+
+function returnFromNotifications() {
+  const targetHash = notificationReturnHash;
+  notificationReturnHash = "";
+  if (!targetHash) {
+    showFeed();
+    return;
+  }
+  history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
+  routeFromHash();
+}
+
+function openNotificationTarget(item) {
+  if (!item?.target) return;
+  if (item.target.kind === "request") {
+    openRequestPage(item.target.creator, item.target.postId);
+    return;
+  }
+  if (item.target.kind === "profile") {
+    openProfile(slugify(item.target.creator));
+    return;
+  }
+  if (item.target.kind === "post") {
+    showFeed();
+    openPin(item.target.postId);
+  }
 }
 
 function renderOtherRequestCards(creator, activePostId) {
@@ -1385,9 +1891,27 @@ shuffleButton.addEventListener("click", shufflePins);
 createButton.addEventListener("click", openComposeHint);
 floatingPost.addEventListener("click", openComposeHint);
 themeToggle.addEventListener("click", toggleTheme);
+missionButton?.addEventListener("click", openMissionPage);
+requestManagerButton?.addEventListener("click", openRequestManagerPage);
+notificationButton.addEventListener("click", openNotificationsPage);
 avatarButton.addEventListener("click", openMyProfile);
 backToFeed.addEventListener("click", showFeed);
 backFromRequest.addEventListener("click", showFeed);
+backFromNotifications.addEventListener("click", returnFromNotifications);
+backFromRequestManager?.addEventListener("click", returnFromRequestManager);
+backFromRequestDetail?.addEventListener("click", returnFromRequestManagerDetail);
+backFromMission?.addEventListener("click", returnFromMission);
+requestStateTabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    activeRequestManagerState = tab.dataset.requestState;
+    renderRequestManagerList();
+  });
+});
+requestManagerList?.addEventListener("click", (event) => {
+  const card = event.target.closest("[data-request-item]");
+  if (!card) return;
+  openRequestManagerDetail(Number(card.dataset.requestItem));
+});
 profileRequestButton.addEventListener("click", () => {
   if (profileRequestButton.hidden) return;
   if (activeProfile === "You") {
@@ -1450,6 +1974,21 @@ requestMoreGrid.addEventListener("click", (event) => {
   const card = event.target.closest("[data-request-id]");
   if (!card || !activeProfile) return;
   openRequestPage(activeProfile, Number(card.dataset.requestId));
+});
+
+notificationsList.addEventListener("click", (event) => {
+  const row = event.target.closest("[data-notification-id]");
+  if (!row) return;
+  const item = notifications.find((notification) => notification.id === Number(row.dataset.notificationId));
+  if (item) item.unread = false;
+  openNotificationTarget(item);
+});
+
+markNotificationsRead.addEventListener("click", () => {
+  notifications.forEach((item) => {
+    item.unread = false;
+  });
+  renderNotificationsPage();
 });
 
 dialogCreator.addEventListener("click", (event) => {
@@ -2100,6 +2639,16 @@ function formatMetric(value, label) {
   return `<span><strong>${value}</strong><small>${label}</small></span>`;
 }
 
+function clampScore(value, max) {
+  return Math.min(value, max);
+}
+
+function trustedLinkCount(links) {
+  return new Set((links || [])
+    .map((url) => detectLinkKind(url))
+    .filter((kind) => kind === "x" || kind === "booth" || kind === "vrchat")).size;
+}
+
 function postLikeCount(post) {
   if (Number.isFinite(post.likes)) return post.likes;
   const categoryBoost = {
@@ -2122,37 +2671,38 @@ function topLikedPosts(posts, limit = 3) {
 
 function trustScore(posts, trust) {
   return Math.round(
-    posts.length * 4 +
-    trust.completed * 8 +
-    trust.saves +
-    trust.repeat * 10 +
-    trust.likes * 0.2
+    clampScore(posts.length * 3, 60) +
+    clampScore(trust.completed * 12, 420) +
+    clampScore(trust.repeat * 18, 270) +
+    clampScore(trust.saves * 0.35, 120) +
+    clampScore(trust.likes * 0.08, 100) +
+    clampScore(trustedLinkCount(trust.links) * 35, 105)
   );
 }
 
 function trustedLevel(score) {
-  if (score >= 650) {
+  if (score >= 760) {
     return {
       label: "Trusted User",
       key: "trusted",
       note: "実績、保存、リピートが十分に積み上がった依頼しやすいクリエイター。",
     };
   }
-  if (score >= 380) {
+  if (score >= 520) {
     return {
       label: "Known User",
       key: "known",
       note: "複数の実績と反応が見えていて、作風を判断しやすい状態。",
     };
   }
-  if (score >= 180) {
+  if (score >= 260) {
     return {
       label: "User",
       key: "user",
       note: "投稿と保存が増えはじめ、活動内容が見えやすくなっている状態。",
     };
   }
-  if (score >= 45) {
+  if (score >= 90) {
     return {
       label: "New User",
       key: "new",
@@ -2200,9 +2750,9 @@ function renderTrustProfile(creator, posts, isMine) {
     formatMetric(score, "Trust score"),
     formatMetric(posts.length, "投稿"),
     formatMetric(trust.completed, "完了実績"),
-    formatMetric(trust.likes, "いいね"),
-    formatMetric(trust.saves, "保存"),
     formatMetric(trust.repeat, "リピート"),
+    formatMetric(trust.saves, "保存"),
+    formatMetric(trustedLinkCount(trust.links), "認証リンク"),
   ].join("");
   if (trustScopeTags) trustScopeTags.innerHTML = trust.scope.map((item) => `<span>${item}</span>`).join("");
   if (trustStyleNote) trustStyleNote.textContent = trust.style;
@@ -2303,6 +2853,11 @@ function renderProfile(creator) {
 
   activeProfile = creator;
   feedView.hidden = true;
+  requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  missionView.hidden = true;
   profileView.hidden = false;
   profileView.classList.toggle("is-mine", isMine);
   const bannerImage = isMine ? myProfile.banner : first.image;

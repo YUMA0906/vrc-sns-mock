@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="./styles.css?v=stripe-placeholder-1" />
+    <link rel="stylesheet" href="./styles.css?v=request-detail-1" />
   </head>
   <body>
     <header class="topbar">
@@ -32,12 +32,19 @@
       </div>
 
       <nav class="nav-actions" aria-label="Primary">
+        <button id="missionButton" class="soft-button mission-nav-button" type="button">Our Mission</button>
         <button id="themeToggle" class="icon-button" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M12 3a6.8 6.8 0 0 0 8.6 8.6 8 8 0 1 1-8.6-8.6Z" />
           </svg>
         </button>
-        <button class="icon-button" type="button" aria-label="Notifications" title="Notifications">
+        <button id="requestManagerButton" class="icon-button" type="button" aria-label="Request manager" title="Request manager">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M9 11l3 3L22 4" />
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+          </svg>
+        </button>
+        <button id="notificationButton" class="icon-button" type="button" aria-label="Notifications" title="Notifications">
           <span class="badge"></span>
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7" />
@@ -83,6 +90,13 @@
           <strong>Community</strong>
           <span>閲覧・検索・プロフィール確認はログイン不要で快適に</span>
         </div>
+      </section>
+
+      <section class="summary-strip" aria-label="Service summary" hidden>
+        <button id="missionCardButton" class="summary-link-card" type="button">
+          <strong>Our Mission</strong>
+          <span>このサービスが目指す循環と、創作文化に向けた考え方を見る</span>
+        </button>
       </section>
 
       <section class="view-tabs" aria-label="View">
@@ -163,6 +177,10 @@
         </div>
         <h2 class="section-title">Past posts</h2>
         <div id="profileBoard" class="masonry compact"></div>
+        <button class="summary-link-card" type="button" hidden>
+          <strong>Our Mission</strong>
+          <span>このサービスが目指す循環と、創作文化に向けた考え方を見る</span>
+        </button>
       </section>
 
       <section id="requestView" class="request-view app-view" hidden>
@@ -205,6 +223,171 @@
           </div>
           <div id="requestMoreGrid" class="request-more-grid"></div>
         </section>
+      </section>
+
+      <section id="notificationsView" class="notifications-view app-view" hidden>
+        <button id="backFromNotifications" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <div class="notifications-shell">
+          <div class="notifications-heading">
+            <div>
+              <p class="eyebrow">Notifications</p>
+              <h1>通知</h1>
+            </div>
+            <button id="markNotificationsRead" class="soft-button" type="button">すべて既読</button>
+          </div>
+          <div id="notificationsList" class="notifications-list"></div>
+        </div>
+      </section>
+      <section id="requestManagerView" class="request-manager-view app-view" hidden>
+        <button id="backFromRequestManager" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <div class="request-manager-shell">
+          <div class="request-manager-heading">
+            <div>
+              <p class="eyebrow">Request manager</p>
+              <h1>依頼管理</h1>
+              <p>締め切りが近い順に確認できる依頼一覧。未承諾はまだ依頼を受けるか判断中、承諾済は受注確定、進行中は着手連絡まで済んだ依頼です。</p>
+            </div>
+          </div>
+          <div class="request-manager-tabs" aria-label="Request states">
+            <button class="request-state-tab is-active" type="button" data-request-state="pending"><span>未承諾</span><small>0</small></button>
+            <button class="request-state-tab" type="button" data-request-state="accepted"><span>承諾済</span><small>0</small></button>
+            <button class="request-state-tab" type="button" data-request-state="in_progress"><span>進行中</span><small>0</small></button>
+            <button class="request-state-tab" type="button" data-request-state="awaiting_review"><span>評価待ち</span><small>0</small></button>
+            <button class="request-state-tab" type="button" data-request-state="awaiting_your_review"><span>レビュー返し</span><small>0</small></button>
+            <button class="request-state-tab" type="button" data-request-state="completed"><span>完了</span><small>0</small></button>
+          </div>
+          <div id="requestManagerEmpty" class="empty-state" hidden>
+            <p>該当する依頼はありません</p>
+            <span>このステータスに入っている依頼はまだありません。</span>
+          </div>
+          <div id="requestManagerList" class="request-manager-list"></div>
+        </div>
+      </section>
+      <section id="requestManagerDetailView" class="request-manager-detail-view app-view" hidden>
+        <button id="backFromRequestDetail" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <div class="request-detail-shell">
+          <article class="request-detail-main-panel">
+            <div class="request-detail-main-image">
+              <img id="requestDetailImage" alt="" />
+            </div>
+            <div class="request-detail-main-copy">
+              <div class="request-detail-main-topline">
+                <span id="requestDetailState" class="request-manager-state"></span>
+                <time id="requestDetailDeadline"></time>
+              </div>
+              <h1 id="requestDetailTitle"></h1>
+              <p id="requestDetailClient" class="eyebrow"></p>
+              <p id="requestDetailSummary"></p>
+              <div id="requestDetailMeta" class="dialog-meta"></div>
+              <section class="request-brief-card" aria-labelledby="requestBriefTitle">
+                <p class="eyebrow">Request brief</p>
+                <h2 id="requestBriefTitle">依頼内容</h2>
+                <div id="requestDetailBrief" class="request-brief-list"></div>
+              </section>
+            </div>
+          </article>
+          <aside class="request-chat-panel" aria-labelledby="requestChatTitle">
+            <div class="request-chat-header">
+              <div>
+                <p class="eyebrow">Client chat</p>
+                <h2 id="requestChatTitle">チャット</h2>
+              </div>
+              <span class="request-chat-status">Online</span>
+            </div>
+            <div id="requestChatTimeline" class="request-chat-timeline"></div>
+            <form class="request-chat-compose" action="javascript:void(0)">
+              <textarea id="requestChatInput" rows="3" placeholder="メッセージを入力"></textarea>
+              <div class="request-chat-actions">
+                <button class="soft-button" type="button">添付</button>
+                <button class="primary-button" type="submit">送信</button>
+              </div>
+            </form>
+          </aside>
+        </div>
+      </section>
+      <section id="missionView" class="mission-view app-view" hidden>
+        <button id="backFromMission" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <article class="mission-shell">
+          <header class="mission-hero">
+            <p class="eyebrow">Create. Discover. Support.</p>
+            <h1>創る人も、楽しむ人も、支える人も。VRChatの創作文化が、もっと自由に、もっと豊かになる未来へ。</h1>
+            <p>作品が見つかり、評価が積み重なり、応援や依頼が次の創作につながっていく。このサービスは、その循環を支えるための土台として設計しています。</p>
+          </header>
+          <section class="mission-section" aria-labelledby="missionOverview">
+            <p class="eyebrow">Our Mission</p>
+            <h2 id="missionOverview">VRChatの創作文化を、もっと豊かに。</h2>
+            <p>VRChatには数え切れないほどの創作文化があります。</p>
+            <div class="mission-discipline-grid" aria-label="Creative disciplines">
+              <span>アバター制作</span>
+              <span>洋服制作</span>
+              <span>アバター改変</span>
+              <span>写真撮影</span>
+              <span>レタッチ</span>
+              <span>動画制作</span>
+              <span>ワールド制作</span>
+              <span>ギミック開発</span>
+            </div>
+            <p>多くのクリエイターが時間と技術を注ぎ込み、新しい体験や表現を生み出しています。しかし、その作品や技術が正当に評価され、継続的な活動につながる仕組みはまだ十分とは言えません。私たちは、その課題を解決したいと考えています。</p>
+          </section>
+          <section class="mission-section mission-section-split" aria-labelledby="missionDiscover">
+            <div>
+              <p class="eyebrow">Discover</p>
+              <h2 id="missionDiscover">作品が見つかる場所をつくる</h2>
+            </div>
+            <p>優れた作品が埋もれてしまうことなく、多くの人に見つけてもらえる場所をつくります。クリエイターが実績を発信し、ユーザーが新しい作品と出会い、コミュニティが広がっていく。そんな循環を目指しています。</p>
+          </section>
+          <section class="mission-section mission-section-split" aria-labelledby="missionSupport">
+            <div>
+              <p class="eyebrow">Support</p>
+              <h2 id="missionSupport">創作活動が続けられる環境をつくる</h2>
+            </div>
+            <div>
+              <p>創作には時間がかかります。技術を学ぶ時間。作品を磨く時間。挑戦する時間。だからこそ私たちは、クリエイターが正当に評価され、収益を得られる仕組みを大切にします。</p>
+              <div class="mission-inline-tags" aria-label="Support pillars">
+                <span>依頼</span>
+                <span>支援</span>
+                <span>実績</span>
+              </div>
+              <p>創作を続けるための選択肢を増やし、好きなことを続けられる環境づくりを目指します。</p>
+            </div>
+          </section>
+          <section class="mission-section mission-section-split" aria-labelledby="missionCommunity">
+            <div>
+              <p class="eyebrow">Community</p>
+              <h2 id="missionCommunity">クリエイターだけのサービスではありません</h2>
+            </div>
+            <div>
+              <p>作品をつくる人。作品を楽しむ人。作品を応援する人。私たちは、そのすべての人がVRChat文化を支えていると考えています。</p>
+              <p>誰かの作品との出会いが、新しい挑戦のきっかけになる。誰かへの応援が、次の作品を生み出す力になる。このサービスは、そんな循環を生み出すための場所です。</p>
+            </div>
+          </section>
+          <section class="mission-section mission-section-accent" aria-labelledby="missionVision">
+            <p class="eyebrow">Vision</p>
+            <h2 id="missionVision">私たちが目指すもの</h2>
+            <p>私たちが目指しているのは、単なるSNSでも、単なる依頼サイトでもありません。作品が評価され、クリエイターが活動を続けられ、ユーザーが新しい作品と出会える。</p>
+            <p>VRChatの創作文化がこれからも発展し続けるための土台になること。それが私たちの願いです。</p>
+          </section>
+        </article>
       </section>
     </main>
 
@@ -254,8 +437,8 @@
         <p class="eyebrow">Trust level</p>
         <h2 id="trustInfoTitle">トラストレベルとは？</h2>
         <p>
-          投稿数、依頼完了数、いいね、保存、リピートなどの活動実績から算出する、このモック独自の信用ランクです。
-          VRChatのユーザーランクに近い見え方で、外部リンクや代表作とあわせて依頼前の判断材料にする想定です。
+          依頼完了数、リピート、認証済み外部リンクを中心に、投稿数、保存、いいねを補助的に加えて算出する、このモック独自の信用ランクです。
+          人気よりも、依頼前に確認したい継続実績と本人性が伝わるように調整しています。
         </p>
         <div class="trust-info-levels" aria-label="Trust level order">
           <span class="trust-info-level trust-info-level--visitor">Visitor</span>
@@ -500,6 +683,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=stripe-placeholder-1"></script>
+    <script src="./app.js?v=request-detail-1"></script>
   </body>
 </html>
