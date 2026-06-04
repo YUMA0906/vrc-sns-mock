@@ -1537,6 +1537,14 @@ function detectLinkKind(url) {
   return "generic";
 }
 
+function isTrustedProfileLinkKind(kind) {
+  return kind === "x" || kind === "booth" || kind === "vrchat";
+}
+
+function confirmGenericProfileLink(url) {
+  return window.confirm(`このリンクはVRC / BOOTH / X以外の外部サイトです。\n\n${url}\n\n開いてもよろしいですか？`);
+}
+
 
 function getCurrentMediaSource() {
   return mediaEditMode === "banner"
@@ -1761,6 +1769,15 @@ document.addEventListener("click", (event) => {
   openTrustInfo(event);
 });
 
+document.addEventListener("click", (event) => {
+  const link = event.target.closest(".profile-link-button[data-external-warning]");
+  if (!link) return;
+  event.preventDefault();
+  const url = link.href;
+  if (!confirmGenericProfileLink(url)) return;
+  window.open(url, "_blank", "noopener,noreferrer");
+});
+
 closeTrustInfo.addEventListener("click", closeTrustInfoDialog);
 
 trustInfoDialog.addEventListener("click", (event) => {
@@ -1857,21 +1874,7 @@ renderPins();
 routeFromHash();
 
 function ensureEditLinkList() {
-  let list = document.querySelector("#editLinkList");
-  if (list) return list;
-
-  const linkField = editLink.closest(".field");
-  const visibilityField = editVisibility.closest(".field");
-  if (visibilityField && linkField && visibilityField.nextElementSibling !== linkField) {
-    visibilityField.insertAdjacentElement("afterend", linkField);
-  }
-
-  linkField.classList.add("wide");
-  list = document.createElement("div");
-  list.id = "editLinkList";
-  list.className = "edit-link-list";
-  linkField.insertAdjacentElement("afterend", list);
-  return list;
+  return document.querySelector("#editLinkList");
 }
 
 function collectProfileLinksFromInputs() {
@@ -1885,34 +1888,56 @@ function collectProfileLinksFromInputs() {
 
 function appendProfileLinkInput(value = "") {
   const list = ensureEditLinkList();
-  const row = document.createElement("label");
-  row.className = "field wide edit-link-field";
-  row.innerHTML = `<span>リンク</span><input class="edit-link-input" type="url" value="${value.replace(/"/g, "&quot;")}" />`;
+  if (!list) return null;
+  const row = document.createElement("div");
+  row.className = "edit-link-row";
+  row.innerHTML = `
+    <input class="edit-link-input" type="url" value="${value.replace(/"/g, "&quot;")}" placeholder="https://vrchat.com / booth.pm / x.com / ..." />
+    <button class="edit-link-remove" type="button" aria-label="リンクを削除">
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M18 6 6 18" />
+        <path d="m6 6 12 12" />
+      </svg>
+    </button>
+  `;
   list.appendChild(row);
   const input = row.querySelector("input");
   input.addEventListener("input", handleProfileLinkInputChange);
   input.addEventListener("change", handleProfileLinkInputChange);
+  row.querySelector(".edit-link-remove").addEventListener("click", () => {
+    row.remove();
+    normalizeEditLinkRows();
+  });
   return input;
 }
 
 function handleProfileLinkInputChange() {
+  normalizeEditLinkRows();
+}
+
+function normalizeEditLinkRows() {
+  const list = ensureEditLinkList();
+  if (!list) return;
   const inputs = [...document.querySelectorAll(".edit-link-input")];
-  const last = inputs.at(-1);
-  if (last && last.value.trim()) {
+  const filled = inputs.filter((input) => input.value.trim());
+  const empty = inputs.filter((input) => !input.value.trim());
+  empty.slice(1).forEach((input) => input.closest(".edit-link-row")?.remove());
+  if (!inputs.length || inputs.at(-1)?.value.trim()) {
     appendProfileLinkInput("");
   }
+  document.querySelectorAll(".edit-link-remove").forEach((button) => {
+    button.hidden = filled.length === 0 && document.querySelectorAll(".edit-link-input").length <= 1;
+  });
 }
 
 function syncProfileLinkInputs(values) {
   const list = ensureEditLinkList();
+  if (!list) return;
   list.innerHTML = "";
   const links = values.filter(Boolean);
-  if (!links.length) {
-    appendProfileLinkInput("");
-    return;
-  }
   links.forEach((value) => appendProfileLinkInput(value));
   appendProfileLinkInput("");
+  normalizeEditLinkRows();
 }
 
 function getProfileLinks() {
@@ -1933,16 +1958,34 @@ function renderProfileLinks(urls) {
   linksRow.innerHTML = list.map((url) => {
     const kind = detectLinkKind(url);
     const label = kind === "x" ? "X" : kind === "booth" ? "BOOTH" : kind === "vrchat" ? "VRChat" : "Link";
-    return `<a class="profile-link-button" href="${url}" target="_blank" rel="noreferrer" aria-label="${label}を開く">${linkIconMarkup(kind)}<span>${label}</span></a>`;
+    const safeUrl = url.replace(/"/g, "&quot;");
+    const warningAttr = isTrustedProfileLinkKind(kind) ? "" : ` data-external-warning="true"`;
+    return `<a class="profile-link-button" href="${safeUrl}" target="_blank" rel="noreferrer"${warningAttr} aria-label="${label}を開く">${linkIconMarkup(kind)}<span>${label}</span></a>`;
   }).join("");
+}
+
+function topTagsFromPosts(posts, limit = 3) {
+  const counts = new Map();
+  posts.forEach((post) => {
+    (post.tags || []).forEach((tag) => {
+      const normalized = String(tag).trim();
+      if (!normalized) return;
+      counts.set(normalized, (counts.get(normalized) || 0) + 1);
+    });
+  });
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "ja"))
+    .slice(0, limit)
+    .map(([tag]) => tag);
 }
 
 function getTrustProfile(creator, posts, isMine) {
   const fallback = trustProfiles[creator] || {};
+  const frequentTags = topTagsFromPosts(posts, 3);
   return {
     summary: fallback.summary || `${creator}の投稿、依頼受付状況、代表作、外部リンクをまとめて確認できる公開プロフィール。`,
     style: fallback.style || `${posts[0]?.category || "VRChat"}を中心に、過去作品から作風を確認できる構成です。`,
-    scope: fallback.scope || [...new Set(posts.map((post) => post.category))],
+    scope: frequentTags.length ? frequentTags : [...new Set(posts.map((post) => post.category))].slice(0, 3),
     links: isMine ? getProfileLinks().concat(fallback.links || []) : (fallback.links || []),
     completed: fallback.completed ?? posts.filter((post) => post.request).length * 4,
     likes: fallback.likes ?? posts.length * 42,
@@ -1953,6 +1996,26 @@ function getTrustProfile(creator, posts, isMine) {
 
 function formatMetric(value, label) {
   return `<span><strong>${value}</strong><small>${label}</small></span>`;
+}
+
+function postLikeCount(post) {
+  if (Number.isFinite(post.likes)) return post.likes;
+  const categoryBoost = {
+    Avatar: 42,
+    Photo: 34,
+    Retouch: 28,
+    Video: 38,
+    World: 32,
+    Commission: 24,
+  }[post.category] || 18;
+  const requestBoost = post.request?.open ? 26 : 0;
+  return 72 + ((post.id * 37) % 180) + categoryBoost + requestBoost;
+}
+
+function topLikedPosts(posts, limit = 3) {
+  return [...posts]
+    .sort((a, b) => postLikeCount(b) - postLikeCount(a) || b.id - a.id)
+    .slice(0, limit);
 }
 
 function trustScore(posts, trust) {
@@ -2014,7 +2077,7 @@ function renderProfileLevelBadge(posts, trust) {
 
 function renderTrustProfile(creator, posts, isMine) {
   const trust = getTrustProfile(creator, posts, isMine);
-  const featured = posts.slice(0, 3);
+  const featured = topLikedPosts(posts, 3);
   const links = [...new Set(trust.links.filter(Boolean))];
   const score = trustScore(posts, trust);
   const level = trustedLevel(score);
@@ -2041,11 +2104,11 @@ function renderTrustProfile(creator, posts, isMine) {
   ].join("");
   if (trustScopeTags) trustScopeTags.innerHTML = trust.scope.map((item) => `<span>${item}</span>`).join("");
   if (trustStyleNote) trustStyleNote.textContent = trust.style;
-  trustTimelineLabel.textContent = `Latest ${featured.length} / ${posts.length} works`;
+  trustTimelineLabel.textContent = `Top liked ${featured.length} / ${posts.length} works`;
   trustFeaturedWorks.innerHTML = featured.map((post) => `
     <button class="featured-work" type="button" data-featured-id="${post.id}">
       <img src="${post.image}" alt="${post.title}" loading="lazy" />
-      <span>${post.category}</span>
+      <span>${postLikeCount(post)} likes</span>
       <strong>${post.title}</strong>
     </button>
   `).join("");

@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="./styles.css?v=trust-status-soft-1" />
+    <link rel="stylesheet" href="./styles.css?v=featured-top-liked-1" />
   </head>
   <body>
     <header class="topbar">
@@ -392,10 +392,6 @@
               <textarea id="editBio" rows="4">投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。通常投稿の作成、プロフィール編集、過去投稿の見返しをここから行う想定です。</textarea>
             </label>
             <label class="field">
-              <span>リンク</span>
-              <input id="editLink" type="url" value="https://vrchat.com/home/user/example" />
-            </label>
-            <label class="field">
               <span>公開設定</span>
               <select id="editVisibility">
                 <option>Public</option>
@@ -403,6 +399,11 @@
                 <option>Private</option>
               </select>
             </label>
+            <input id="editLink" type="hidden" value="https://vrchat.com/home/user/example" />
+            <section class="field wide edit-links-field" aria-labelledby="editLinksTitle">
+              <span id="editLinksTitle">リンク</span>
+              <div id="editLinkList" class="edit-link-list"></div>
+            </section>
           </div>
           <div id="editProfileNotice" class="compose-notice" hidden>保存しました。</div>
           <div class="compose-actions">
@@ -457,6 +458,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=trust-status-soft-1"></script>
+    <script src="./app.js?v=featured-top-liked-1"></script>
   </body>
 </html>

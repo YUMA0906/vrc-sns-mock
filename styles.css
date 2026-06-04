@@ -2293,8 +2293,64 @@ body[data-theme="dark"] .profile-link-button {
 
 .edit-link-list {
   display: grid;
-  gap: 16px;
-  grid-column: 1 / -1;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.edit-links-field {
+  align-content: start;
+}
+
+.edit-link-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 42px;
+  gap: 8px;
+  align-items: center;
+}
+
+.edit-link-input {
+  width: 100%;
+}
+
+.edit-link-remove {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.72);
+  color: var(--muted);
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.edit-link-remove:hover,
+.edit-link-remove:focus-visible {
+  transform: translateY(-1px);
+  background: rgba(30,30,29,0.92);
+  color: #fffaf1;
+  box-shadow: 0 14px 28px rgba(20,20,20,0.12);
+}
+
+.edit-link-remove svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.edit-link-remove[hidden] {
+  display: none;
+}
+
+[data-theme="dark"] .edit-link-remove,
+body[data-theme="dark"] .edit-link-remove {
+  background: rgba(24,24,23,0.82);
+  color: #fffaf1;
 }
 
 .profile-stats {
@@ -2500,7 +2556,7 @@ body[data-theme="dark"] .trust-status {
 
 .trust-metrics {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin-top: 14px;
 }
