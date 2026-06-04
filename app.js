@@ -803,7 +803,6 @@ function setView(view) {
 function toggleSave(pinId) {
   if (savedPins.has(pinId)) {
     savedPins.delete(pinId);
-    profileRequestButton.textContent = "投稿を作成";
   } else {
     savedPins.add(pinId);
   }
@@ -1037,7 +1036,6 @@ function handleAvatarWheel(event) {
 }
 
 
-async 
 function searchByTag(tag) {
   if (modalIsOpen(dialog)) closePinDialog();
   activeProfile = null;
@@ -1302,6 +1300,7 @@ themeToggle.addEventListener("click", toggleTheme);
 avatarButton.addEventListener("click", openMyProfile);
 backToFeed.addEventListener("click", showFeed);
 profileRequestButton.addEventListener("click", () => {
+  if (profileRequestButton.hidden) return;
   if (activeProfile === "You") {
     openComposeHint();
     return;
@@ -1656,8 +1655,6 @@ async function cropAvatarToDataUrl() {
   return canvas.toDataURL("image/jpeg", 0.9);
 }
 
-async 
-async 
 function updateEditProfilePreview() {
   editPreviewName.textContent = editDisplayName.value.trim() || "You";
   editPreviewBio.textContent = editBio.value.trim() || "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。";
@@ -1756,6 +1753,12 @@ profileLevelBadge.addEventListener("click", openTrustInfo);
 
 trustStatus.addEventListener("click", (event) => {
   if (event.target.closest(".trust-rank")) openTrustInfo(event);
+});
+
+document.addEventListener("click", (event) => {
+  const trigger = event.target.closest("[data-trust-info-trigger]");
+  if (!trigger) return;
+  openTrustInfo(event);
 });
 
 closeTrustInfo.addEventListener("click", closeTrustInfoDialog);
@@ -2003,32 +2006,30 @@ function renderProfileLevelBadge(posts, trust) {
   const level = trustedLevel(score);
   const badgeLabel = level.label.replace(" User", "");
   profileLevelBadge.className = `profile-level-badge profile-level-badge--${level.key}`;
-  profileLevelBadge.innerHTML = `<span>${badgeLabel}</span>`;
+  profileLevelBadge.innerHTML = `<span>${badgeLabel}</span><i aria-hidden="true">?</i>`;
   profileLevelBadge.title = `Trust score: ${score} pts`;
+  profileLevelBadge.setAttribute("data-trust-info-trigger", "");
   profileLevelBadge.setAttribute("aria-label", `${level.label}. Trust score ${score} points. トラストレベルの説明を開く`);
 }
 
 function renderTrustProfile(creator, posts, isMine) {
   const trust = getTrustProfile(creator, posts, isMine);
-  const openRequest = posts.some((post) => post.request?.open);
   const featured = posts.slice(0, 3);
   const links = [...new Set(trust.links.filter(Boolean))];
   const score = trustScore(posts, trust);
   const level = trustedLevel(score);
+  const scopeSummary = trust.scope.join(" / ");
 
-  trustSummaryText.textContent = trust.summary;
+  trustSummaryText.textContent = "";
   trustStatus.innerHTML = `
-    <strong>${openRequest ? "依頼受付中" : "通常投稿中心"}</strong>
-    <span>${openRequest ? "料金・納期・受付枠を投稿から確認できます。" : "作風と過去作品を見てから相談できます。"}</span>
-  `;
-  trustStatus.innerHTML = `
-    <button class="trust-rank trust-rank--${level.key}" type="button" aria-label="${level.label}. Trust score ${score} points. トラストレベルの説明を開く">
+    <button class="trust-rank trust-rank--${level.key}" type="button" data-trust-info-trigger aria-label="${level.label}. Trust score ${score} points. トラストレベルの説明を開く">
       <small>Trusted level</small>
       <strong>${level.label}</strong>
       <span>${score} pts</span>
+      <i aria-hidden="true">?</i>
     </button>
-    <strong>${openRequest ? "依頼受付中" : "通常投稿中心"}</strong>
-    <span>${level.note}</span>
+    <strong>${scopeSummary}</strong>
+    <span>${trust.style}</span>
   `;
   trustMetrics.innerHTML = [
     formatMetric(score, "Trust score"),
@@ -2038,8 +2039,8 @@ function renderTrustProfile(creator, posts, isMine) {
     formatMetric(trust.saves, "保存"),
     formatMetric(trust.repeat, "リピート"),
   ].join("");
-  trustScopeTags.innerHTML = trust.scope.map((item) => `<span>${item}</span>`).join("");
-  trustStyleNote.textContent = trust.style;
+  if (trustScopeTags) trustScopeTags.innerHTML = trust.scope.map((item) => `<span>${item}</span>`).join("");
+  if (trustStyleNote) trustStyleNote.textContent = trust.style;
   trustTimelineLabel.textContent = `Latest ${featured.length} / ${posts.length} works`;
   trustFeaturedWorks.innerHTML = featured.map((post) => `
     <button class="featured-work" type="button" data-featured-id="${post.id}">
@@ -2181,9 +2182,10 @@ function renderProfile(creator) {
     profileFollow.setAttribute("aria-label", "Edit profile");
     profileFollow.classList.remove("is-saved");
     profileFollow.textContent = "プロフィール編集";
-    profileRequestButton.textContent = "投稿を作成";
+    profileRequestButton.hidden = true;
   } else {
     updateFollowButton(profileFollow, creator);
+    profileRequestButton.hidden = false;
     profileRequestButton.textContent = "依頼受付を見る";
   }
 
