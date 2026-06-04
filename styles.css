@@ -4092,6 +4092,52 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   font-weight: 700;
 }
 
+.request-delivery-card {
+  display: grid;
+  gap: 14px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: rgba(255,255,255,0.68);
+}
+
+.request-delivery-list {
+  display: grid;
+  gap: 12px;
+}
+
+.request-delivery-entry {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(246,243,236,0.78);
+}
+
+.request-delivery-entry.is-empty {
+  background: rgba(255,255,255,0.52);
+}
+
+.request-delivery-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.request-delivery-entry small {
+  color: var(--muted);
+  font-weight: 760;
+}
+
+.request-delivery-entry p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
 .request-chat-panel {
   position: relative;
   display: grid;
@@ -4546,6 +4592,12 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   font-weight: 760;
 }
 
+.request-report-followup {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
 .request-accept-popup {
   position: fixed;
   inset: 0;
@@ -4660,6 +4712,17 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
 .request-accept-popup.is-hiding {
   background: rgba(18,18,18,0);
   backdrop-filter: blur(0);
+}
+
+.request-template-field {
+  display: grid;
+  gap: 10px;
+}
+
+.request-template-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 @keyframes acceptPop {
@@ -5787,6 +5850,67 @@ body[data-theme="dark"] .trust-featured {
   background: rgba(24,24,23,0.82);
 }
 
+.profile-review-section,
+.saved-posts-section {
+  margin: 0 0 34px;
+}
+
+.profile-reviews {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.profile-review-card {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255,255,255,0.72);
+}
+
+.profile-review-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.profile-review-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.profile-review-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.profile-review-tags span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(246,243,236,0.82);
+  font-size: 0.82rem;
+  font-weight: 760;
+}
+
+[data-theme="dark"] .profile-review-card,
+body[data-theme="dark"] .profile-review-card,
+[data-theme="dark"] .request-delivery-card,
+body[data-theme="dark"] .request-delivery-card,
+[data-theme="dark"] .request-delivery-entry,
+body[data-theme="dark"] .request-delivery-entry {
+  background: rgba(24,24,23,0.82);
+}
+
 .section-heading-row {
   display: flex;
   align-items: end;
@@ -6100,6 +6224,10 @@ body.is-dragging .drop-hint {
     grid-template-columns: 1fr;
   }
 
+  .profile-reviews {
+    grid-template-columns: 1fr;
+  }
+
   .mission-section-split {
     grid-template-columns: 1fr;
     gap: 12px;
@@ -6355,6 +6483,10 @@ body.is-dragging .drop-hint {
     grid-template-columns: 1fr;
   }
 
+  .request-report-followup {
+    grid-template-columns: 1fr;
+  }
+
   .request-more-section {
     border-radius: 18px;
     padding: 16px;
@@ -6545,6 +6677,11 @@ body.is-dragging .drop-hint {
   }
 
   .request-brief-card {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .request-delivery-card {
     padding: 16px;
     border-radius: 18px;
   }

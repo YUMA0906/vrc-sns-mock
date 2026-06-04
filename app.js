@@ -165,6 +165,20 @@ const requestManagerItems = [
   { id: 8, title: "ポスター用レタッチ一式", client: "Noa Frame", summary: "相手から評価済み。こちらから相手を評価するターン。", status: "awaiting_your_review", deadline: "2026-05-28", budget: "¥14,000", thumbnail: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=80", requestedAt: "2026-05-22 11:02", scope: ["印刷用レタッチ", "SNS比率版", "色校正", "書き出し2種"], messages: [{ from: "client", time: "5/28 15:01", text: "受け取りました。完成度高かったので評価も入れておきました。" }] },
   { id: 9, title: "衣装導入ミニ依頼", client: "Sora Closet", summary: "相互評価まで完了してクローズした依頼。", status: "completed", deadline: "2026-05-20", budget: "¥5,000", thumbnail: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=80", requestedAt: "2026-05-18 12:40", scope: ["衣装導入", "軽微な干渉修正", "Unitypackage確認", "完了済み"], messages: [{ from: "you", time: "5/20 19:12", text: "こちらも評価しました。ご依頼ありがとうございました。" }] },
 ];
+
+requestManagerItems.forEach((item) => {
+  if (!Array.isArray(item.deliveries)) {
+    item.deliveries = item.status === "awaiting_review" || item.status === "awaiting_your_review" || item.status === "completed"
+      ? [{
+          name: "初回納品",
+          files: item.status === "completed" ? "Unitypackage / ZIP / Readme" : "PNG 12枚 / ZIP 1件 / Drive link",
+          note: item.status === "completed" ? "最終納品まで完了。必要なデータをまとめて共有済みです。" : "納品データをまとめて共有済みです。受け取り確認をお願いします。",
+          time: item.requestedAt.split(" ")[0]
+        }]
+      : [];
+  }
+  if (!item.rating) item.rating = `${(4.4 + (item.id % 5) * 0.1).toFixed(1)} / 5.0`;
+});
 const board = document.querySelector("#board");
 const profileBoard = document.querySelector("#profileBoard");
 const profilePostSearch = document.querySelector("#profilePostSearch");
@@ -229,6 +243,9 @@ const trustScopeTags = document.querySelector("#trustScopeTags");
 const trustStyleNote = document.querySelector("#trustStyleNote");
 const trustFeaturedWorks = document.querySelector("#trustFeaturedWorks");
 const trustTimelineLabel = document.querySelector("#trustTimelineLabel");
+const profileReviews = document.querySelector("#profileReviews");
+const savedPostsSection = document.querySelector("#savedPostsSection");
+const savedPostsBoard = document.querySelector("#savedPostsBoard");
 const requestPageImage = document.querySelector("#requestPageImage");
 const requestPageCreator = document.querySelector("#requestPageCreator");
 const requestPageTitle = document.querySelector("#requestPageTitle");
@@ -282,6 +299,7 @@ const requestReportButton = document.querySelector("#requestReportButton");
 const requestDecisionActions = document.querySelector("#requestDecisionActions");
 const requestDetailDecisionNote = document.querySelector("#requestDetailDecisionNote");
 const requestDetailBrief = document.querySelector("#requestDetailBrief");
+const requestDeliveryList = document.querySelector("#requestDeliveryList");
 const requestChatTimeline = document.querySelector("#requestChatTimeline");
 const requestChatPanel = document.querySelector(".request-chat-panel");
 const requestChatStatus = document.querySelector(".request-chat-status");
@@ -342,6 +360,16 @@ const requestReportTarget = document.querySelector("#requestReportTarget");
 const requestReportMessage = document.querySelector("#requestReportMessage");
 const requestReportCancel = document.querySelector("#requestReportCancel");
 const requestReportConfirm = document.querySelector("#requestReportConfirm");
+const requestDeliveryDialog = document.querySelector("#requestDeliveryDialog");
+const requestDeliveryName = document.querySelector("#requestDeliveryName");
+const requestDeliveryFiles = document.querySelector("#requestDeliveryFiles");
+const requestDeliveryMessage = document.querySelector("#requestDeliveryMessage");
+const requestDeliveryCancel = document.querySelector("#requestDeliveryCancel");
+const requestDeliverySubmit = document.querySelector("#requestDeliverySubmit");
+const requestReportResultDialog = document.querySelector("#requestReportResultDialog");
+const requestReportMute = document.querySelector("#requestReportMute");
+const requestReportBlock = document.querySelector("#requestReportBlock");
+const requestReportResultClose = document.querySelector("#requestReportResultClose");
 const profileCopyToast = document.querySelector("#profileCopyToast");
 const dialog = document.querySelector("#pinDialog");
 const closeDialog = document.querySelector("#closeDialog");
@@ -363,6 +391,10 @@ const closeTrustInfo = document.querySelector("#closeTrustInfo");
 const composeDialog = document.querySelector("#composeDialog");
 const composeForm = document.querySelector("#composeForm");
 const closeCompose = document.querySelector("#closeCompose");
+const composeCloseConfirmDialog = document.querySelector("#composeCloseConfirmDialog");
+const composeCloseCancel = document.querySelector("#composeCloseCancel");
+const composeCloseDiscard = document.querySelector("#composeCloseDiscard");
+const composeCloseSave = document.querySelector("#composeCloseSave");
 const composeImage = document.querySelector("#composeImage");
 const composePreviewImage = document.querySelector("#composePreviewImage");
 const removeComposeImage = document.querySelector("#removeComposeImage");
@@ -401,6 +433,7 @@ const requestPostDescription = document.querySelector("#requestPostDescription")
 const requestPostRequirements = document.querySelector("#requestPostRequirements");
 const requestComposeNotice = document.querySelector("#requestComposeNotice");
 const saveRequestDraftButton = document.querySelector("#saveRequestDraftButton");
+const requestTemplateButtons = [...document.querySelectorAll("[data-request-template]")];
 const editProfileDialog = document.querySelector("#editProfileDialog");
 const editProfileForm = document.querySelector("#editProfileForm");
 const closeEditProfile = document.querySelector("#closeEditProfile");
@@ -469,6 +502,8 @@ let lockedScrollY = 0;
 let composeImages = [];
 let composeImageIndex = 0;
 let requestComposeImageData = "";
+const composeDraftStorageKey = "vrc-sns-compose-draft";
+const requestComposeDraftStorageKey = "vrc-sns-request-compose-draft";
 let myProfile = {
   displayName: "You",
   role: "VRChat creator",
@@ -483,6 +518,52 @@ let pendingBannerSource = "";
 let avatarDragState = null;
 let avatarBaseSize = { width: 260, height: 260, frame: 260 };
 let mediaEditMode = "avatar";
+
+const requestTemplatePresets = {
+  avatar: {
+    title: "アバター改変依頼",
+    category: "Avatar",
+    price: "¥12,000〜",
+    delivery: "平均 10日",
+    capacity: "受付 2 / 5",
+    tags: "#依頼受付 #avatar #booth",
+    description: "衣装導入、表情調整、軽いギミック追加、撮影向けの見た目調整まで対応する依頼受付です。",
+    requirements: "使用アセットの購入状況、アバター名、改変イメージ、希望納期、参考画像を依頼時に共有してください。"
+  },
+  photo: {
+    title: "VRChat撮影依頼",
+    category: "Photo",
+    price: "¥4,000〜",
+    delivery: "平均 3日",
+    capacity: "受付 3 / 6",
+    tags: "#依頼受付 #photo #world",
+    description: "ワールド提案、ポーズ相談、SNS用トリミングまで含めた撮影依頼を受け付けます。",
+    requirements: "希望ワールド、人数、使いたい用途、参考写真、納期を依頼時に共有してください。"
+  },
+  world: {
+    title: "ワールド制作依頼",
+    category: "World",
+    price: "¥60,000〜",
+    delivery: "平均 30日",
+    capacity: "受付 1 / 2",
+    tags: "#依頼受付 #world #event",
+    description: "撮影、展示、イベント用途の軽量ワールド制作を受け付けます。用途に応じて導線と最適化も調整します。",
+    requirements: "用途、想定人数、必要な機能、納期、参考イメージ、既存アセットの有無を依頼時に共有してください。"
+  }
+};
+
+const publicReviewsByCreator = {
+  "Mika Alterworks": [
+    { score: "good", author: "Haru Works", body: "説明が分かりやすく、改変の方向性も丁寧に擦り合わせてもらえました。", tags: ["連絡が丁寧", "また依頼したい"] },
+    { score: "good", author: "Sora Closet", body: "BOOTH衣装の導入が早く、干渉も少なく仕上がって安心でした。", tags: ["仕上がりが良い", "納期が安心"] }
+  ],
+  "Lumi Photo": [
+    { score: "good", author: "Moe", body: "ワールド提案からポーズまで全部スムーズで、プロフィール写真に使いやすかったです。", tags: ["要望が明確", "納期が安心"] }
+  ],
+  "You": [
+    { score: "good", author: "Noa Frame", body: "やり取りがスムーズで、必要な情報もまとまっていて依頼しやすかったです。", tags: ["返信が早い", "素材共有が丁寧"] }
+  ]
+};
 
 const translations = {
   ja: {
@@ -1459,6 +1540,7 @@ function toggleSave(pinId) {
   }
   syncSaveButtons(pinId);
   if (currentPin?.id === pinId) updateDialogSave();
+  if (activeProfile === "You") renderSavedPostsSection();
 }
 
 function syncSaveButtons(pinId) {
@@ -1602,6 +1684,19 @@ function closeTrustInfoDialog() {
   }, 180);
 }
 
+function scrollPageTop() {
+  const reset = () => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  };
+  reset();
+  window.requestAnimationFrame(() => {
+    reset();
+    window.requestAnimationFrame(reset);
+  });
+}
+
 
 function showFeed() {
   activeProfile = null;
@@ -1618,6 +1713,7 @@ function showFeed() {
     history.pushState("", document.title, location.pathname + location.search);
   }
   renderPins();
+  scrollPageTop();
 }
 
 function routeFromHash() {
@@ -1785,7 +1881,7 @@ function renderRequestPage(creator, postId = null) {
   requestAgreement.checked = false;
   updateRequestAuthView();
   renderOtherRequestCards(post.creator, post.id);
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollPageTop();
 }
 
 function currentOpenRequestPost() {
@@ -1890,7 +1986,7 @@ function renderNotificationsPage() {
   `;
   }).join("");
   updateNotificationBadge();
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollPageTop();
 }
 
 function renderSettingsPage() {
@@ -1903,7 +1999,7 @@ function renderSettingsPage() {
   requestManagerDetailView.hidden = true;
   missionView.hidden = true;
   settingsView.hidden = false;
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollPageTop();
 }
 
 function openSettingsPage() {
@@ -2059,8 +2155,11 @@ function decisionActionsForRequest(item) {
   if (item.status === "pending") {
     return `<button class="primary-button approve-entry-button" type="button" data-request-action="approve">${t("approveAndChat")}</button><button class="soft-button" type="button" data-request-action="reject">${t("chooseRejectReason")}</button>`;
   }
+  if (item.status === "accepted") {
+    return `<button class="primary-button" type="button" data-request-action="start-progress">${currentLanguage === "en" ? "Start work" : currentLanguage === "ko" ? "작업 시작" : "作業を開始する"}</button><button class="soft-button" type="button" data-request-action="open-chat">${t("openChat")}</button><button class="soft-button" type="button" data-request-action="report">${t("report")}</button>`;
+  }
   if (item.status === "in_progress") {
-    return `<button class="primary-button" type="button" data-request-action="deliver">${t("markDelivered")}</button><button class="soft-button" type="button" data-request-action="report">${t("report")}</button>`;
+    return `<button class="primary-button" type="button" data-request-action="deliver">${t("markDelivered")}</button><button class="soft-button" type="button" data-request-action="open-chat">${t("openChat")}</button><button class="soft-button" type="button" data-request-action="report">${t("report")}</button>`;
   }
   if (item.status === "awaiting_review") {
     return `<button class="primary-button" type="button" data-request-action="await-review">${t("waitReceive")}</button><button class="soft-button" type="button" data-request-action="retake">${t("backToRetake")}</button>`;
@@ -2089,6 +2188,178 @@ function requestDecisionNote(item) {
     return "相手の評価が返ってきたので、こちらからもレビューを返して完了へ進みます。";
   }
   return "依頼の履歴とやり取りをあとから見返せる状態です。";
+}
+
+function renderRequestDeliveryList(item) {
+  if (!requestDeliveryList) return;
+  const deliveries = item?.deliveries || [];
+  if (!deliveries.length) {
+    requestDeliveryList.innerHTML = `
+      <article class="request-delivery-entry is-empty">
+        <strong>まだ納品履歴はありません</strong>
+        <span>進行中になったあと、納品ごとに履歴を残せる想定です。</span>
+      </article>
+    `;
+    return;
+  }
+  requestDeliveryList.innerHTML = deliveries.map((delivery) => `
+    <article class="request-delivery-entry">
+      <div class="request-delivery-topline">
+        <strong>${escapeHtml(delivery.name)}</strong>
+        <span>${escapeHtml(delivery.time || t("now"))}</span>
+      </div>
+      <small>${escapeHtml(delivery.files || "添付情報なし")}</small>
+      <p>${escapeHtml(delivery.note || "")}</p>
+    </article>
+  `).join("");
+}
+
+function publicReviewsForProfile(creator) {
+  const direct = publicReviewsByCreator[creator] || [];
+  if (direct.length) return direct;
+  const clientRequests = requestItemsByClient(creator);
+  if (clientRequests.length) {
+    return clientRequests.slice(0, 2).map((item) => ({
+      score: item.status === "completed" ? "good" : "normal",
+      author: creator,
+      body: item.summary,
+      tags: item.scope.slice(0, 2)
+    }));
+  }
+  return [];
+}
+
+function reviewToneLabel(score) {
+  return score === "bad" ? "残念だった" : score === "normal" ? "普通" : "良かった";
+}
+
+function renderProfileReviews(creator) {
+  if (!profileReviews) return;
+  const reviews = publicReviewsForProfile(creator);
+  if (!reviews.length) {
+    profileReviews.innerHTML = `
+      <article class="profile-review-card is-empty">
+        <strong>まだ公開レビューはありません</strong>
+        <p>納品後の評価が集まると、ここに取引レビューが表示される想定です。</p>
+      </article>
+    `;
+    return;
+  }
+  profileReviews.innerHTML = reviews.map((review) => `
+    <article class="profile-review-card is-${review.score}">
+      <div class="profile-review-topline">
+        <strong>${escapeHtml(review.author)}</strong>
+        <span>${reviewToneLabel(review.score)}</span>
+      </div>
+      <p>${escapeHtml(review.body)}</p>
+      <div class="profile-review-tags">${(review.tags || []).map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}</div>
+    </article>
+  `).join("");
+}
+
+function renderSavedPostsSection() {
+  if (!savedPostsSection || !savedPostsBoard) return;
+  const posts = pins.filter((post) => savedPins.has(post.id));
+  savedPostsSection.hidden = activeProfile !== "You";
+  if (activeProfile !== "You") return;
+  savedPostsBoard.innerHTML = posts.map(pinCard).join("");
+  bindPinCards(savedPostsBoard);
+}
+
+function persistComposeDraft() {
+  const payload = {
+    title: composePostTitle.value,
+    category: composeCategory.value,
+    avatar: composeAvatar.value,
+    world: composeWorld.value,
+    tags: composeTags.value,
+    description: composeDescription.value,
+    images: composeImages
+  };
+  localStorage.setItem(composeDraftStorageKey, JSON.stringify(payload));
+}
+
+function restoreComposeDraft() {
+  const raw = localStorage.getItem(composeDraftStorageKey);
+  if (!raw) return;
+  try {
+    const draft = JSON.parse(raw);
+    composePostTitle.value = draft.title || "";
+    composeCategory.value = draft.category || "Photo";
+    composeAvatar.value = draft.avatar || "";
+    composeWorld.value = draft.world || "";
+    composeTags.value = draft.tags || "";
+    composeDescription.value = draft.description || "";
+    composeImages = Array.isArray(draft.images) ? draft.images : [];
+    composeImageIndex = 0;
+    renderComposeImage();
+  } catch {}
+}
+
+function clearComposeDraft() {
+  localStorage.removeItem(composeDraftStorageKey);
+}
+
+function persistRequestComposeDraft() {
+  const payload = {
+    title: requestPostTitle.value,
+    category: requestPostCategory.value,
+    visibility: requestPostVisibility.value,
+    price: requestPostPrice.value,
+    delivery: requestPostDelivery.value,
+    capacity: requestPostCapacity.value,
+    avatar: requestPostAvatar.value,
+    world: requestPostWorld.value,
+    tags: requestPostTags.value,
+    description: requestPostDescription.value,
+    requirements: requestPostRequirements.value,
+    image: requestComposeImageData
+  };
+  localStorage.setItem(requestComposeDraftStorageKey, JSON.stringify(payload));
+}
+
+function restoreRequestComposeDraft() {
+  const raw = localStorage.getItem(requestComposeDraftStorageKey);
+  if (!raw) return;
+  try {
+    const draft = JSON.parse(raw);
+    requestPostTitle.value = draft.title || "";
+    requestPostCategory.value = draft.category || "Avatar";
+    requestPostVisibility.value = draft.visibility || "Public";
+    requestPostPrice.value = draft.price || "";
+    requestPostDelivery.value = draft.delivery || "";
+    requestPostCapacity.value = draft.capacity || "";
+    requestPostAvatar.value = draft.avatar || "";
+    requestPostWorld.value = draft.world || "";
+    requestPostTags.value = draft.tags || "";
+    requestPostDescription.value = draft.description || "";
+    requestPostRequirements.value = draft.requirements || "";
+    requestComposeImageData = draft.image || "";
+    if (requestComposeImageData) {
+      requestComposePreviewImage.src = requestComposeImageData;
+      requestComposePreviewImage.hidden = false;
+      requestComposePreviewImage.closest(".upload-drop")?.classList.add("has-image");
+    }
+  } catch {}
+}
+
+function clearRequestComposeDraft() {
+  localStorage.removeItem(requestComposeDraftStorageKey);
+}
+
+function applyRequestTemplate(kind) {
+  const preset = requestTemplatePresets[kind];
+  if (!preset) return;
+  requestPostTitle.value = preset.title;
+  requestPostCategory.value = preset.category;
+  requestPostPrice.value = preset.price;
+  requestPostDelivery.value = preset.delivery;
+  requestPostCapacity.value = preset.capacity;
+  requestPostTags.value = preset.tags;
+  requestPostDescription.value = preset.description;
+  requestPostRequirements.value = preset.requirements;
+  updateRequestComposePreview();
+  persistRequestComposeDraft();
 }
 
 function clientRatingLabel(item) {
@@ -2387,7 +2658,7 @@ function renderRequestManagerPage() {
   missionView.hidden = true;
   requestManagerView.hidden = false;
   renderRequestManagerList();
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollPageTop();
 }
 
 function requestManagerItemById(id) {
@@ -2554,6 +2825,35 @@ function submitRequestReport() {
     requestDetailDecisionNote.textContent = message;
   }
   closeRequestReportDialog();
+  showModalElement(requestReportResultDialog);
+}
+
+function closeRequestDeliveryDialog() {
+  closeModalElement(requestDeliveryDialog);
+}
+
+function openRequestDeliveryDialog() {
+  if (!activeRequestManagerItemId) return;
+  requestDeliveryName.value = "初回納品";
+  requestDeliveryFiles.value = "";
+  requestDeliveryMessage.value = "";
+  showModalElement(requestDeliveryDialog);
+}
+
+function submitRequestDelivery() {
+  const item = requestManagerItemById(activeRequestManagerItemId);
+  if (!item) return;
+  item.deliveries.unshift({
+    name: requestDeliveryName.value.trim() || "納品データ",
+    files: requestDeliveryFiles.value.trim() || "ZIP 1件 / 共有リンク",
+    note: requestDeliveryMessage.value.trim() || "納品データを共有しました。内容をご確認ください。",
+    time: t("now")
+  });
+  item.messages.push({ from: "you", time: t("now"), text: `納品を登録しました: ${item.deliveries[0].name}` });
+  item.status = "awaiting_review";
+  closeRequestDeliveryDialog();
+  renderRequestManagerDetailPage(item.id);
+  showProfileCopyToast(currentLanguage === "en" ? "Delivery submitted" : currentLanguage === "ko" ? "납품을 등록했습니다" : "納品を登録しました");
 }
 
 function reviewTagOptionsForMode(mode) {
@@ -2607,6 +2907,14 @@ function submitRequestReview() {
   const labels = { good: "良かった", normal: "普通", bad: "残念だった" };
   const tags = [...(requestReviewTags?.querySelectorAll("input:checked") || [])].map((input) => input.value);
   const comment = requestReviewComment?.value.trim() || "";
+  const targetCreator = activeRequestReviewContext.mode === "client" ? "You" : item.client;
+  if (!publicReviewsByCreator[targetCreator]) publicReviewsByCreator[targetCreator] = [];
+  publicReviewsByCreator[targetCreator].unshift({
+    score,
+    author: activeRequestReviewContext.mode === "client" ? item.client : "You",
+    body: comment || `${labels[score]}。`,
+    tags
+  });
   if (activeRequestReviewContext.mode === "client") {
     item.status = "awaiting_your_review";
     item.messages.push({ from: "client", time: "いま", text: `受け取り確認と評価が完了しました。評価: ${labels[score]}${tags.length ? ` / ${tags.join("・")}` : ""}` });
@@ -2616,6 +2924,7 @@ function submitRequestReview() {
   }
   closeRequestReviewDialog();
   renderRequestManagerDetailPage(item.id);
+  if (activeProfile) renderProfile(activeProfile);
   showProfileCopyToast("評価を投稿しました");
 }
 
@@ -2658,6 +2967,7 @@ function renderRequestManagerDetailPage(itemId) {
   requestDecisionActions.innerHTML = decisionActionsForRequest(item);
   requestDetailDecisionNote.textContent = requestDecisionNote(item);
   requestDetailBrief.innerHTML = item.scope.map((entry) => `<span>${entry}</span>`).join("");
+  renderRequestDeliveryList(item);
   const shouldShowChat = item.status !== "pending";
   requestChatPanel.hidden = !shouldShowChat;
   requestDetailShell?.classList.toggle("is-single-column", !shouldShowChat);
@@ -2670,7 +2980,7 @@ function renderRequestManagerDetailPage(itemId) {
     }
     renderRequestChatTimeline(item);
   }
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollPageTop();
 }
 
 function openRequestManagerPage() {
@@ -2732,7 +3042,7 @@ function renderMissionPage() {
   requestManagerDetailView.hidden = true;
   settingsView.hidden = true;
   missionView.hidden = false;
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollPageTop();
 }
 
 function openMissionPage() {
@@ -2965,6 +3275,7 @@ function openComposeHint() {
   dropHint.hidden = true;
   composeNotice.hidden = true;
   if (composeCategory.value === "Commission") composeCategory.value = "Photo";
+  restoreComposeDraft();
   updateComposePreview();
   showModalElement(composeDialog);
   window.setTimeout(() => composePostTitle.focus(), 140);
@@ -2979,12 +3290,35 @@ function closeComposeDialog() {
   }, 180);
 }
 
+function openComposeCloseConfirmDialog() {
+  if (!modalIsOpen(composeDialog)) return;
+  showModalElement(composeCloseConfirmDialog);
+}
+
+function closeComposeCloseConfirmDialog() {
+  closeModalElement(composeCloseConfirmDialog);
+}
+
+function closeComposeWithDraftSave() {
+  persistComposeDraft();
+  closeComposeCloseConfirmDialog();
+  closeComposeDialog();
+  showProfileCopyToast(currentLanguage === "en" ? "Draft saved" : currentLanguage === "ko" ? "초안을 저장했습니다" : "下書きを保存しました");
+}
+
+function closeComposeWithoutDraftSave() {
+  clearComposeDraft();
+  closeComposeCloseConfirmDialog();
+  closeComposeDialog();
+}
+
 function openRequestComposeDialog() {
   if (modalIsOpen(dialog)) closePinDialog();
   if (modalIsOpen(composeDialog)) closeComposeDialog();
   document.body.classList.remove("is-dragging");
   dropHint.hidden = true;
   requestComposeNotice.hidden = true;
+  restoreRequestComposeDraft();
   updateRequestComposePreview();
   showModalElement(requestComposeDialog);
   window.setTimeout(() => requestPostTitle.focus(), 140);
@@ -3119,6 +3453,7 @@ function handleMockSubmit(event) {
   event.preventDefault();
   composeNotice.hidden = false;
   composeNotice.textContent = "通常投稿のモックを作成しました。実装時は画像、本文、タグ、Avatar/World情報を投稿APIへ送信する想定です。";
+  clearComposeDraft();
   updateComposePreview();
 }
 
@@ -3157,6 +3492,7 @@ function handleRequestComposeSubmit(event) {
   myPosts.unshift(newPin);
   requestComposeNotice.hidden = false;
   requestComposeNotice.textContent = "依頼受付投稿のモックを作成しました。フィード先頭とマイページに追加されています。";
+  clearRequestComposeDraft();
   setView("discover");
   setCategory("All");
   renderPins();
@@ -3509,6 +3845,10 @@ trustFeaturedWorks?.addEventListener("click", (event) => {
   if (!featured) return;
   openPin(Number(featured.dataset.featuredId), featured);
 });
+savedPostsBoard?.addEventListener("click", handleBoardClick);
+savedPostsBoard?.addEventListener("touchstart", handleBoardTouchStart, { capture: true, passive: true });
+savedPostsBoard?.addEventListener("touchmove", handleBoardTouchMove, { capture: true, passive: true });
+savedPostsBoard?.addEventListener("touchend", handleBoardTouchEnd, { capture: true, passive: false });
 
 board.addEventListener("click", handleBoardClick);
 profileBoard.addEventListener("click", handleBoardClick);
@@ -3639,10 +3979,14 @@ requestDecisionActions?.addEventListener("click", (event) => {
     showModalElement(requestRejectDialog);
     return;
   }
-  if (action === "deliver") {
-    item.status = "awaiting_review";
-    item.messages.push({ from: "you", time: "いま", text: "納品データを送付しました。内容確認と評価をお願いします。" });
+  if (action === "start-progress") {
+    item.status = "in_progress";
+    item.messages.push({ from: "you", time: "いま", text: "作業を開始しました。進捗や確認事項はこのチャットで共有します。" });
     renderRequestManagerDetailPage(item.id);
+    return;
+  }
+  if (action === "deliver") {
+    openRequestDeliveryDialog();
     return;
   }
   if (action === "retake") {
@@ -3661,6 +4005,11 @@ requestDecisionActions?.addEventListener("click", (event) => {
   }
   if (action === "report") {
     openRequestReportDialog();
+    return;
+  }
+  if (action === "open-chat") {
+    requestChatInput?.focus();
+    requestDetailDecisionNote.textContent = currentLanguage === "en" ? "Jumped to chat input." : currentLanguage === "ko" ? "채팅 입력창으로 이동했습니다." : "チャット入力欄へ移動しました。";
     return;
   }
   requestDetailDecisionNote.textContent = "この操作はモックです。実際の実装ではここから詳細フローに進みます。";
@@ -3709,12 +4058,43 @@ requestRejectConfirm?.addEventListener("click", () => {
 
 requestReportCancel?.addEventListener("click", closeRequestReportDialog);
 requestReportConfirm?.addEventListener("click", submitRequestReport);
+requestDeliveryCancel?.addEventListener("click", closeRequestDeliveryDialog);
+requestDeliverySubmit?.addEventListener("click", submitRequestDelivery);
 requestReportDialog?.addEventListener("click", (event) => {
   if (event.target === requestReportDialog) closeRequestReportDialog();
 });
 requestReportDialog?.addEventListener("cancel", (event) => {
   event.preventDefault();
   closeRequestReportDialog();
+});
+requestDeliveryDialog?.addEventListener("click", (event) => {
+  if (event.target === requestDeliveryDialog) closeRequestDeliveryDialog();
+});
+requestDeliveryDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeRequestDeliveryDialog();
+});
+requestReportResultClose?.addEventListener("click", () => closeModalElement(requestReportResultDialog));
+requestReportResultDialog?.addEventListener("click", (event) => {
+  if (event.target === requestReportResultDialog) closeModalElement(requestReportResultDialog);
+});
+requestReportResultDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeModalElement(requestReportResultDialog);
+});
+requestReportMute?.addEventListener("click", () => {
+  const target = activeRequestReportContext?.target;
+  const name = target?.client || target?.creator;
+  if (name) mutedCreators.add(name);
+  closeModalElement(requestReportResultDialog);
+  showProfileCopyToast(currentLanguage === "en" ? "Muted this account" : currentLanguage === "ko" ? "이 계정을 뮤트했습니다" : "このアカウントをミュートしました");
+});
+requestReportBlock?.addEventListener("click", () => {
+  const target = activeRequestReportContext?.target;
+  const name = target?.client || target?.creator;
+  if (name) blockedCreators.add(name);
+  closeModalElement(requestReportResultDialog);
+  showProfileCopyToast(currentLanguage === "en" ? "Blocked this account" : currentLanguage === "ko" ? "이 계정을 차단했습니다" : "このアカウントをブロックしました");
 });
 
 dialogCreator.addEventListener("click", (event) => {
@@ -4193,7 +4573,7 @@ trustInfoDialog.addEventListener("cancel", (event) => {
   closeTrustInfoDialog();
 });
 
-closeCompose.addEventListener("click", closeComposeDialog);
+closeCompose.addEventListener("click", openComposeCloseConfirmDialog);
 
 composeDialog.addEventListener("click", (event) => {
   if (event.target === composeDialog) closeComposeDialog();
@@ -4204,20 +4584,39 @@ composeDialog.addEventListener("cancel", (event) => {
   closeComposeDialog();
 });
 
+composeCloseCancel?.addEventListener("click", closeComposeCloseConfirmDialog);
+composeCloseDiscard?.addEventListener("click", closeComposeWithoutDraftSave);
+composeCloseSave?.addEventListener("click", closeComposeWithDraftSave);
+composeCloseConfirmDialog?.addEventListener("click", (event) => {
+  if (event.target === composeCloseConfirmDialog) closeComposeCloseConfirmDialog();
+});
+composeCloseConfirmDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeComposeCloseConfirmDialog();
+});
+
 composeForm.addEventListener("submit", handleMockSubmit);
 
 saveDraftButton.addEventListener("click", () => {
+  persistComposeDraft();
   composeNotice.hidden = false;
-  composeNotice.textContent = "下書き保存のモックです。バックエンド接続後はドラフトAPIへ保存する想定です。";
+  composeNotice.textContent = "通常投稿の下書きを保存しました。";
 });
 
 [composePostTitle, composeCategory, composeAvatar, composeWorld, composeTags, composeDescription].forEach((input) => {
-  input.addEventListener("input", updateComposePreview);
-  input.addEventListener("change", updateComposePreview);
+  input.addEventListener("input", () => {
+    updateComposePreview();
+    persistComposeDraft();
+  });
+  input.addEventListener("change", () => {
+    updateComposePreview();
+    persistComposeDraft();
+  });
 });
 
 composeImage.addEventListener("change", () => {
   loadComposeImages(composeImage.files || [], false);
+  window.setTimeout(persistComposeDraft, 40);
 });
 
 composePreviewImage.addEventListener("load", () => {
@@ -4258,17 +4657,29 @@ requestComposeDialog?.addEventListener("cancel", (event) => {
 requestComposeForm?.addEventListener("submit", handleRequestComposeSubmit);
 
 saveRequestDraftButton?.addEventListener("click", () => {
+  persistRequestComposeDraft();
   requestComposeNotice.hidden = false;
-  requestComposeNotice.textContent = "依頼受付の下書き保存モックです。バックエンド接続後は依頼受付ドラフトAPIへ保存する想定です。";
+  requestComposeNotice.textContent = "依頼受付の下書きを保存しました。";
 });
 
 [requestPostTitle, requestPostCategory, requestPostVisibility, requestPostPrice, requestPostDelivery, requestPostCapacity, requestPostAvatar, requestPostWorld, requestPostTags, requestPostDescription, requestPostRequirements].forEach((input) => {
-  input?.addEventListener("input", updateRequestComposePreview);
-  input?.addEventListener("change", updateRequestComposePreview);
+  input?.addEventListener("input", () => {
+    updateRequestComposePreview();
+    persistRequestComposeDraft();
+  });
+  input?.addEventListener("change", () => {
+    updateRequestComposePreview();
+    persistRequestComposeDraft();
+  });
+});
+
+requestTemplateButtons.forEach((button) => {
+  button.addEventListener("click", () => applyRequestTemplate(button.dataset.requestTemplate));
 });
 
 requestComposeImage?.addEventListener("change", () => {
   loadRequestComposeImage(requestComposeImage.files?.[0]);
+  window.setTimeout(persistRequestComposeDraft, 40);
 });
 
 requestComposePreviewImage?.addEventListener("load", () => {
@@ -4812,11 +5223,13 @@ function renderProfile(creator) {
   const openRequest = posts.some((pin) => pin.request?.open);
   renderProfileLevelBadge(posts, trust);
   renderTrustProfile(creator, posts, isMine);
+  renderProfileReviews(creator);
   if (profileRequest) profileRequest.textContent = openRequest ? t("requestOpen") : `${trust.completed} ${t("completedMetric")}`;
   if (profileRating) profileRating.textContent = `${trust.saves} ${t("saves")}`;
   activeProfilePosts = posts;
   profilePostQuery = "";
   renderProfilePostArchive();
+  renderSavedPostsSection();
 
   if (isMine) {
     profileFollow.hidden = true;
@@ -4830,9 +5243,10 @@ function renderProfile(creator) {
     updateProfileSocialButtons(creator, false);
     profileRequestButton.hidden = !directPosts.some((pin) => pin.request?.open);
     profileRequestButton.textContent = t("requestOpen");
+    if (savedPostsSection) savedPostsSection.hidden = true;
   }
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  scrollPageTop();
 }
 
 function saveEditProfile(event) {

@@ -214,6 +214,15 @@
           </div>
           <div id="trustFeaturedWorks" class="featured-works"></div>
         </section>
+        <section class="trust-panel profile-review-section" aria-labelledby="profileReviewTitle">
+          <div class="section-heading-row">
+            <div>
+              <p class="eyebrow">Reviews</p>
+              <h2 id="profileReviewTitle">取引レビュー</h2>
+            </div>
+          </div>
+          <div id="profileReviews" class="profile-reviews"></div>
+        </section>
         <section class="profile-posts-toolbar" aria-labelledby="profilePostsTitle">
           <div>
             <p class="eyebrow">Archive</p>
@@ -237,6 +246,15 @@
           <span>検索語句を変えてもう一度探してみてください。</span>
         </div>
         <div id="profileBoard" class="masonry compact"></div>
+        <section id="savedPostsSection" class="trust-panel saved-posts-section" hidden aria-labelledby="savedPostsTitle">
+          <div class="section-heading-row">
+            <div>
+              <p class="eyebrow">Saved</p>
+              <h2 id="savedPostsTitle">保存した投稿</h2>
+            </div>
+          </div>
+          <div id="savedPostsBoard" class="masonry compact"></div>
+        </section>
         <button class="summary-link-card" type="button" hidden>
           <strong>Our Mission</strong>
           <span>このサービスが目指す循環と、創作文化に向けた考え方を見る</span>
@@ -569,6 +587,15 @@
                 <h2 id="requestBriefTitle">依頼内容</h2>
                 <div id="requestDetailBrief" class="request-brief-list"></div>
               </section>
+              <section class="request-delivery-card" aria-labelledby="requestDeliveryTitle">
+                <div class="section-heading-row">
+                  <div>
+                    <p class="eyebrow">Delivery</p>
+                    <h2 id="requestDeliveryTitle">納品履歴</h2>
+                  </div>
+                </div>
+                <div id="requestDeliveryList" class="request-delivery-list"></div>
+              </section>
             </div>
           </article>
           <aside class="request-chat-panel" aria-labelledby="requestChatTitle">
@@ -765,6 +792,42 @@
           <div class="request-sheet-actions">
             <button id="requestReportCancel" class="soft-button" type="button">キャンセル</button>
             <button id="requestReportConfirm" class="primary-button request-report-submit" type="button">通報を送信</button>
+          </div>
+        </form>
+      </dialog>
+      <dialog id="requestDeliveryDialog" class="request-sheet-dialog" aria-labelledby="requestDeliveryDialogTitle">
+        <form method="dialog" class="request-sheet-card">
+          <p class="eyebrow">Delivery</p>
+          <h2 id="requestDeliveryDialogTitle">納品内容を追加</h2>
+          <label class="field">
+            <span>納品タイトル</span>
+            <input id="requestDeliveryName" type="text" placeholder="例: 初回納品 v1" autocomplete="off" />
+          </label>
+          <label class="field">
+            <span>添付概要</span>
+            <input id="requestDeliveryFiles" type="text" placeholder="例: PNG 12枚 / ZIP 1件 / Drive link" autocomplete="off" />
+          </label>
+          <label class="field">
+            <span>メモ</span>
+            <textarea id="requestDeliveryMessage" rows="4" placeholder="修正点、確認してほしい点、納品先リンクなど"></textarea>
+          </label>
+          <div class="request-sheet-actions">
+            <button id="requestDeliveryCancel" class="soft-button" type="button">キャンセル</button>
+            <button id="requestDeliverySubmit" class="primary-button" type="button">納品を登録</button>
+          </div>
+        </form>
+      </dialog>
+      <dialog id="requestReportResultDialog" class="request-sheet-dialog" aria-labelledby="requestReportResultTitle">
+        <form method="dialog" class="request-sheet-card">
+          <p class="eyebrow">Report sent</p>
+          <h2 id="requestReportResultTitle">通報を受け付けました</h2>
+          <p>必要に応じて、今すぐ相手をミュートまたはブロックできます。実装時は運営確認キューに送信されます。</p>
+          <div class="request-report-followup">
+            <button id="requestReportMute" class="soft-button" type="button">ミュートする</button>
+            <button id="requestReportBlock" class="soft-button request-report-button" type="button">ブロックする</button>
+          </div>
+          <div class="request-sheet-actions">
+            <button id="requestReportResultClose" class="primary-button" type="button">閉じる</button>
           </div>
         </form>
       </dialog>
@@ -1057,6 +1120,19 @@
       </form>
     </dialog>
 
+    <dialog id="composeCloseConfirmDialog" class="request-sheet-dialog" aria-labelledby="composeCloseConfirmTitle">
+      <form method="dialog" class="request-sheet-card">
+        <p class="eyebrow">Draft</p>
+        <h2 id="composeCloseConfirmTitle">下書きを保存しますか？</h2>
+        <p>このまま閉じる前に、いま入力している内容を下書きとして残せます。</p>
+        <div class="request-sheet-actions">
+          <button id="composeCloseCancel" class="soft-button" type="button">戻る</button>
+          <button id="composeCloseDiscard" class="soft-button" type="button">保存しない</button>
+          <button id="composeCloseSave" class="primary-button" type="button">下書き保存</button>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="requestComposeDialog" class="compose-dialog request-compose-dialog" aria-labelledby="requestComposeTitle">
       <form id="requestComposeForm" class="compose-shell request-compose-shell">
         <button class="close-button" id="closeRequestCompose" type="button" aria-label="Close">
@@ -1097,6 +1173,14 @@
           <h2 id="requestComposeTitle">依頼受付を作成</h2>
 
           <div class="compose-grid">
+            <div class="field wide request-template-field">
+              <span>テンプレート</span>
+              <div class="request-template-buttons">
+                <button class="soft-button" type="button" data-request-template="avatar">Avatar改変</button>
+                <button class="soft-button" type="button" data-request-template="photo">撮影</button>
+                <button class="soft-button" type="button" data-request-template="world">World制作</button>
+              </div>
+            </div>
             <label class="field wide">
               <span>依頼受付タイトル</span>
               <input id="requestPostTitle" type="text" placeholder="例: アバター改変依頼" autocomplete="off" required />
