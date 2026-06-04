@@ -189,6 +189,7 @@ const floatingPost = document.querySelector("#floatingPost");
 const dropHint = document.querySelector("#dropHint");
 const themeToggle = document.querySelector("#themeToggle");
 const missionButton = document.querySelector("#missionButton");
+const missionCardButton = document.querySelector("#missionCardButton");
 const requestManagerButton = document.querySelector("#requestManagerButton");
 const requestManagerCreatePost = document.querySelector("#requestManagerCreatePost");
 const notificationButton = document.querySelector("#notificationButton");
@@ -321,6 +322,7 @@ const accountActionEyebrow = document.querySelector("#accountActionEyebrow");
 const accountActionTitle = document.querySelector("#accountActionTitle");
 const accountActionBody = document.querySelector("#accountActionBody");
 const accountActionFields = document.querySelector("#accountActionFields");
+const accountActionError = document.querySelector("#accountActionError");
 const accountActionCancel = document.querySelector("#accountActionCancel");
 const accountActionConfirm = document.querySelector("#accountActionConfirm");
 const accountDeleteButton = document.querySelector("#accountDeleteButton");
@@ -550,6 +552,8 @@ const translations = {
     accountPasswordBody: "現在のパスワードと新しいパスワードを入力して変更します。デモでは見た目だけの確認です。",
     accountPasswordCurrent: "現在のパスワード",
     accountPasswordNew: "新しいパスワード",
+    accountPasswordConfirm: "新しいパスワードを再入力",
+    accountPasswordMismatch: "新しいパスワードが一致していません",
     accountLogoutTitle: "ログアウトしますか？",
     accountLogoutBody: "ログアウトすると、依頼送信やプロフィール編集には再ログインが必要になります。",
     accountUpdatedToast: "アカウント設定を更新しました",
@@ -697,6 +701,8 @@ const translations = {
     accountPasswordBody: "Enter your current password and a new password. This mock only shows the flow.",
     accountPasswordCurrent: "Current password",
     accountPasswordNew: "New password",
+    accountPasswordConfirm: "Confirm new password",
+    accountPasswordMismatch: "New passwords do not match",
     accountLogoutTitle: "Log out?",
     accountLogoutBody: "After logging out, requests and profile editing will require signing in again.",
     accountUpdatedToast: "Account settings updated",
@@ -844,6 +850,8 @@ const translations = {
     accountPasswordBody: "현재 비밀번호와 새 비밀번호를 입력합니다. 이 목업에서는 화면 흐름만 보여줍니다.",
     accountPasswordCurrent: "현재 비밀번호",
     accountPasswordNew: "새 비밀번호",
+    accountPasswordConfirm: "새 비밀번호 확인",
+    accountPasswordMismatch: "새 비밀번호가 일치하지 않습니다",
     accountLogoutTitle: "로그아웃할까요?",
     accountLogoutBody: "로그아웃하면 의뢰 전송과 프로필 편집에는 다시 로그인이 필요합니다.",
     accountUpdatedToast: "계정 설정을 업데이트했습니다",
@@ -2206,6 +2214,10 @@ function closeAccountDeleteDialog() {
 }
 
 function closeAccountActionDialog() {
+  if (accountActionError) {
+    accountActionError.hidden = true;
+    accountActionError.textContent = "";
+  }
   closeModalElement(accountActionDialog);
 }
 
@@ -2239,11 +2251,15 @@ function openAccountActionDialog(type) {
       fields: `
         <label class="field">
           <span>${t("accountPasswordCurrent")}</span>
-          <input type="password" autocomplete="current-password" />
+          <input type="password" autocomplete="current-password" data-account-password="current" />
         </label>
         <label class="field">
           <span>${t("accountPasswordNew")}</span>
-          <input type="password" autocomplete="new-password" />
+          <input type="password" autocomplete="new-password" data-account-password="new" />
+        </label>
+        <label class="field">
+          <span>${t("accountPasswordConfirm")}</span>
+          <input type="password" autocomplete="new-password" data-account-password="confirm" />
         </label>
       `
     },
@@ -2268,6 +2284,10 @@ function openAccountActionDialog(type) {
   if (accountActionFields) {
     accountActionFields.innerHTML = config.fields;
     accountActionFields.hidden = !config.fields;
+  }
+  if (accountActionError) {
+    accountActionError.hidden = true;
+    accountActionError.textContent = "";
   }
   showModalElement(accountActionDialog);
   window.setTimeout(() => accountActionFields?.querySelector("input")?.focus(), 80);
@@ -3317,6 +3337,7 @@ createRequestButton?.addEventListener("click", openRequestComposeDialog);
 floatingPost.addEventListener("click", openComposeHint);
 themeToggle.addEventListener("click", toggleTheme);
 missionButton?.addEventListener("click", openMissionPage);
+missionCardButton?.addEventListener("click", openMissionPage);
 requestManagerButton?.addEventListener("click", openRequestManagerPage);
 requestManagerCreatePost?.addEventListener("click", openRequestComposeDialog);
 notificationButton.addEventListener("click", openNotificationsPage);
@@ -3359,12 +3380,30 @@ accountLogoutButton?.addEventListener("click", () => openAccountActionDialog("lo
 accountActionCancel?.addEventListener("click", closeAccountActionDialog);
 accountActionConfirm?.addEventListener("click", () => {
   const type = accountActionDialog?.dataset.actionType || "";
+  if (type === "password") {
+    const newPasswordInput = accountActionFields?.querySelector('[data-account-password="new"]');
+    const confirmPasswordInput = accountActionFields?.querySelector('[data-account-password="confirm"]');
+    if ((newPasswordInput?.value || "") !== (confirmPasswordInput?.value || "")) {
+      if (accountActionError) {
+        accountActionError.textContent = t("accountPasswordMismatch");
+        accountActionError.hidden = false;
+      }
+      confirmPasswordInput?.focus();
+      return;
+    }
+  }
   closeAccountActionDialog();
   if (type === "logout") {
     performLogout();
     return;
   }
   showProfileCopyToast(t("accountUpdatedToast"));
+});
+accountActionFields?.addEventListener("input", () => {
+  if (accountActionError && !accountActionError.hidden) {
+    accountActionError.hidden = true;
+    accountActionError.textContent = "";
+  }
 });
 accountActionDialog?.addEventListener("click", (event) => {
   if (event.target === accountActionDialog) closeAccountActionDialog();
