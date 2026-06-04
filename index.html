@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="./styles.css?v=request-detail-1" />
+    <link rel="stylesheet" href="./styles.css?v=profile-archive-responsive-1" />
   </head>
   <body>
     <header class="topbar">
@@ -45,13 +45,39 @@
           </svg>
         </button>
         <button id="notificationButton" class="icon-button" type="button" aria-label="Notifications" title="Notifications">
-          <span class="badge"></span>
+          <span id="notificationBadge" class="badge" aria-label="Unread notifications"></span>
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7" />
             <path d="M13.7 21a2 2 0 0 1-3.4 0" />
           </svg>
         </button>
-        <button id="avatarButton" class="avatar-button" type="button" aria-label="My page">Y</button>
+        <div class="account-menu-wrap">
+          <button id="avatarButton" class="avatar-button" type="button" aria-label="アカウントメニュー" aria-haspopup="menu" aria-expanded="false">Y</button>
+          <div id="accountMenu" class="account-menu" role="menu" hidden>
+            <button id="accountMenuProfile" type="button" role="menuitem">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M16 20v-1.4a4.6 4.6 0 0 0-4.6-4.6H6.6A4.6 4.6 0 0 0 2 18.6V20" />
+                <circle cx="9" cy="7" r="4" />
+              </svg>
+              <span>マイページ</span>
+            </button>
+            <button id="accountMenuSettings" type="button" role="menuitem">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z" />
+                <path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.06.06a2.1 2.1 0 0 1-2.97 2.97l-.06-.06a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.1 1.66V21.4a2.1 2.1 0 0 1-4.2 0v-.09A1.8 1.8 0 0 0 8.4 19.6a1.8 1.8 0 0 0-1.98.36l-.06.06a2.1 2.1 0 0 1-2.97-2.97l.06-.06A1.8 1.8 0 0 0 3.8 15a1.8 1.8 0 0 0-1.66-1.1H2.1a2.1 2.1 0 0 1 0-4.2h.09A1.8 1.8 0 0 0 3.8 8.6a1.8 1.8 0 0 0-.36-1.98l-.06-.06a2.1 2.1 0 0 1 2.97-2.97l.06.06A1.8 1.8 0 0 0 8.4 4a1.8 1.8 0 0 0 1.1-1.66V2.1a2.1 2.1 0 0 1 4.2 0v.09A1.8 1.8 0 0 0 14.8 4a1.8 1.8 0 0 0 1.98-.36l.06-.06a2.1 2.1 0 0 1 2.97 2.97l-.06.06A1.8 1.8 0 0 0 19.4 8.6a1.8 1.8 0 0 0 1.66 1.1h.09a2.1 2.1 0 0 1 0 4.2h-.09A1.8 1.8 0 0 0 19.4 15Z" />
+              </svg>
+              <span>アプリ設定</span>
+            </button>
+            <button id="accountMenuLogout" type="button" role="menuitem" class="is-danger">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M10 17l5-5-5-5" />
+                <path d="M15 12H3" />
+                <path d="M14 4h4a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-4" />
+              </svg>
+              <span>ログアウト</span>
+            </button>
+          </div>
+        </div>
       </nav>
     </header>
 
@@ -73,6 +99,7 @@
             </svg>
             Shuffle
           </button>
+          <button id="createRequestButton" class="soft-button" type="button">Request</button>
           <button id="createButton" class="primary-button" type="button">Post</button>
         </div>
       </section>
@@ -130,52 +157,85 @@
           </svg>
           Explore
         </button>
-        <div id="profileBanner" class="profile-banner" aria-hidden="true"></div>
-        <div class="profile-hero">
-          <div class="profile-identity">
-            <div id="profileAvatar" class="profile-page-avatar">Y</div>
-            <p id="profileRole" class="eyebrow"></p>
-            <h1 id="profileName"></h1>
-            <button id="profileLevelBadge" class="profile-level-badge" type="button" data-trust-info-trigger></button>
-            <p id="profileBio"></p>
-          </div>
-          <div class="profile-stats">
-            <span id="profilePosts"></span>
-            <span id="profileRequest"></span>
-            <span id="profileRating"></span>
-          </div>
-        </div>
-        <div class="profile-actions">
-          <button id="profileFollow" class="primary-button" type="button">Follow</button>
-          <button id="profileRequestButton" class="soft-button" type="button">依頼受付を見る</button>
-          <button id="profileShareButton" class="soft-button" type="button">URLをコピー</button>
-        </div>
-        <div class="trust-layout">
-          <section class="trust-panel trust-summary" aria-labelledby="trustSummaryTitle">
-            <div class="trust-summary-label">
-              <p class="eyebrow">Trust profile</p>
-              <h2 id="trustSummaryTitle" hidden>Trust profile</h2>
-              <p id="trustSummaryText" hidden></p>
-            </div>
-            <div id="trustStatus" class="trust-status"></div>
-          </section>
-          <section class="trust-panel trust-proof" aria-labelledby="trustProofTitle">
-            <p class="eyebrow">Proof</p>
-            <h2 id="trustProofTitle">実績の蓄積</h2>
-            <div id="trustMetrics" class="trust-metrics"></div>
-          </section>
-          <section class="trust-panel trust-featured" aria-labelledby="trustFeaturedTitle">
-            <div class="section-heading-row">
-              <div>
-                <p class="eyebrow">Featured works</p>
-                <h2 id="trustFeaturedTitle">代表作</h2>
+        <div class="profile-overview-grid">
+          <div class="profile-hero">
+            <div id="profileBanner" class="profile-banner" aria-hidden="true"></div>
+            <button id="profileEditButton" class="icon-button profile-edit-button" type="button" aria-label="プロフィール編集" title="プロフィール編集" hidden>
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M12 20h9" />
+                <path d="M16.8 3.6a2.6 2.6 0 0 1 3.6 3.6L8.5 19.1 3.5 20.5l1.4-5L16.8 3.6Z" />
+                <path d="m15 5.4 3.6 3.6" />
+              </svg>
+            </button>
+            <div class="profile-identity">
+              <div id="profileAvatar" class="profile-page-avatar">Y</div>
+              <p id="profileRole" class="eyebrow"></p>
+              <h1 id="profileName"></h1>
+              <p id="profileBio"></p>
+              <div class="profile-actions">
+                <button id="profileFollow" class="primary-button" type="button">Follow</button>
+                <button id="profileNotifyButton" class="icon-button profile-social-button" type="button" aria-label="通知をオンにする" title="通知をオンにする"></button>
+                <button id="profileMuteButton" class="icon-button profile-social-button" type="button" aria-label="ミュート" title="ミュート"></button>
+                <button id="profileBlockButton" class="icon-button profile-social-button profile-block-button" type="button" aria-label="ブロック" title="ブロック"></button>
+                <button id="profileRequestButton" class="soft-button" type="button">依頼受付を見る</button>
+                <button id="profileShareButton" class="icon-button profile-share-button" type="button" aria-label="プロフィールURLをコピー" title="プロフィールURLをコピー">
+                  <svg aria-hidden="true" viewBox="0 0 24 24">
+                    <path d="M10 13a5 5 0 0 0 7.1.2l2.4-2.4a5 5 0 0 0-7.1-7.1L11 5.1" />
+                    <path d="M14 11a5 5 0 0 0-7.1-.2l-2.4 2.4a5 5 0 0 0 7.1 7.1l1.4-1.4" />
+                  </svg>
+                  <span class="visually-hidden">プロフィールURLをコピー</span>
+                </button>
               </div>
-              <span id="trustTimelineLabel"></span>
             </div>
-            <div id="trustFeaturedWorks" class="featured-works"></div>
-          </section>
+          </div>
+          <div class="trust-layout">
+            <section class="trust-panel trust-summary" aria-labelledby="trustSummaryTitle">
+              <div class="trust-summary-label">
+                <p class="eyebrow">Trust profile</p>
+                <h2 id="trustSummaryTitle" hidden>Trust profile</h2>
+                <p id="trustSummaryText" hidden></p>
+              </div>
+              <div id="trustStatus" class="trust-status"></div>
+            </section>
+            <section class="trust-panel trust-proof" aria-labelledby="trustProofTitle">
+              <p class="eyebrow">Proof</p>
+              <h2 id="trustProofTitle">実績の蓄積</h2>
+              <div id="trustMetrics" class="trust-metrics"></div>
+            </section>
+          </div>
         </div>
-        <h2 class="section-title">Past posts</h2>
+        <section class="trust-panel trust-featured" aria-labelledby="trustFeaturedTitle">
+          <div class="section-heading-row">
+            <div>
+              <p class="eyebrow">Featured works</p>
+              <h2 id="trustFeaturedTitle">代表作</h2>
+            </div>
+            <span id="trustTimelineLabel"></span>
+          </div>
+          <div id="trustFeaturedWorks" class="featured-works"></div>
+        </section>
+        <section class="profile-posts-toolbar" aria-labelledby="profilePostsTitle">
+          <div>
+            <p class="eyebrow">Archive</p>
+            <h2 id="profilePostsTitle" class="section-title">Past posts</h2>
+          </div>
+          <div class="profile-post-tools">
+            <label class="profile-post-search">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="m21 21-4.3-4.3m1.3-5.2a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z" />
+              </svg>
+              <input id="profilePostSearch" type="search" placeholder="この人の投稿を検索" autocomplete="off" />
+            </label>
+            <div class="profile-post-sort" aria-label="Profile post sort">
+              <button class="is-active" type="button" data-profile-sort="recent">投稿順</button>
+              <button type="button" data-profile-sort="likes">いいね順</button>
+            </div>
+          </div>
+        </section>
+        <div id="profilePostEmpty" class="empty-state profile-post-empty" hidden>
+          <p>該当する投稿はありません</p>
+          <span>検索語句を変えてもう一度探してみてください。</span>
+        </div>
         <div id="profileBoard" class="masonry compact"></div>
         <button class="summary-link-card" type="button" hidden>
           <strong>Our Mission</strong>
@@ -200,16 +260,58 @@
               <h1 id="requestPageTitle"></h1>
               <p id="requestPageDescription"></p>
               <div id="requestPageTags" class="dialog-meta"></div>
+              <div id="requestRequestMeta" class="request-spec-grid"></div>
+              <div id="requestServiceList" class="request-service-list"></div>
+              <section class="request-media-section" aria-labelledby="requestMediaTitle">
+                <div class="section-heading-row">
+                  <div>
+                    <p class="eyebrow">Samples</p>
+                    <h2 id="requestMediaTitle">サンプル</h2>
+                  </div>
+                </div>
+                <div id="requestSampleGallery" class="request-sample-gallery"></div>
+                <div class="request-video-placeholder">
+                  <span>YouTube</span>
+                  <strong>埋め込み動画予定</strong>
+                  <small>依頼ページでは紹介動画も掲載可能</small>
+                </div>
+              </section>
             </div>
           </article>
           <aside class="request-payment-card" aria-label="Payment and request summary">
             <p class="eyebrow">Commission</p>
             <h2 id="requestPaymentTitle"></h2>
+            <p id="requestPaymentNote"></p>
             <div class="stripe-placeholder" aria-label="Stripe embed placeholder">
               <span>Stripe</span>
               <strong>埋め込み予定</strong>
             </div>
-            <p id="requestPaymentNote"></p>
+            <div id="requestAuthenticatedPanel" class="request-purchase-panel">
+              <label class="field">
+                <span>支払い方法</span>
+                <select id="requestPaymentMethod">
+                  <option>Card</option>
+                  <option>Apple Pay</option>
+                  <option>Google Pay</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>金額</span>
+                <input id="requestAmountInput" type="number" min="0" step="1000" />
+              </label>
+              <label class="request-agreement">
+                <input id="requestAgreement" type="checkbox" />
+                <span>依頼内容と同意事項を確認しました</span>
+              </label>
+              <button id="requestConfirmButton" class="primary-button" type="button">依頼を確定する</button>
+            </div>
+            <div id="requestGuestPanel" class="request-guest-panel" hidden>
+              <p>依頼するにはアカウント登録が必要です。登録すると依頼内容、支払い、チャット、納品状況を安全に管理できます。</p>
+              <div class="request-guest-actions">
+                <button id="requestGuestSignUp" class="primary-button" type="button">アカウント登録</button>
+                <button id="requestGuestSignIn" class="soft-button" type="button">ログイン</button>
+              </div>
+            </div>
             <button id="requestPaymentButton" class="primary-button" type="button">依頼内容を確認する</button>
             <button id="requestCreatorProfileButton" class="soft-button" type="button">プロフィールを見る</button>
           </aside>
@@ -243,6 +345,164 @@
           <div id="notificationsList" class="notifications-list"></div>
         </div>
       </section>
+      <section id="settingsView" class="settings-view app-view" hidden>
+        <button id="backFromSettings" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <div class="settings-shell">
+          <header class="settings-heading">
+            <div>
+              <p class="eyebrow">App settings</p>
+              <h1>アプリ設定</h1>
+              <p>通知、表示、言語、プライバシー、依頼まわりの基本設定をまとめて管理します。</p>
+            </div>
+          </header>
+
+          <div class="settings-grid">
+            <section class="settings-panel" aria-labelledby="settingsNotificationsTitle">
+              <div class="settings-panel-heading">
+                <span class="settings-panel-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
+                </span>
+                <div>
+                  <p class="eyebrow">Notifications</p>
+                  <h2 id="settingsNotificationsTitle">通知設定</h2>
+                </div>
+              </div>
+              <label class="settings-row">
+                <span><strong>依頼通知</strong><small>新規依頼、承諾、納品、評価待ちを通知</small></span>
+                <input type="checkbox" checked />
+              </label>
+              <label class="settings-row">
+                <span><strong>チャット通知</strong><small>依頼チャットの返信や添付を通知</small></span>
+                <input type="checkbox" checked />
+              </label>
+              <label class="settings-row">
+                <span><strong>作品リアクション</strong><small>いいね、保存、フォローを通知</small></span>
+                <input type="checkbox" />
+              </label>
+            </section>
+
+            <section class="settings-panel" aria-labelledby="settingsDisplayTitle">
+              <div class="settings-panel-heading">
+                <span class="settings-panel-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2" /><path d="M8 21h8" /><path d="M12 16v5" /></svg>
+                </span>
+                <div>
+                  <p class="eyebrow">Display</p>
+                  <h2 id="settingsDisplayTitle">表示と言語</h2>
+                </div>
+              </div>
+              <label class="settings-field">
+                <span>言語</span>
+                <select id="settingsLanguage">
+                  <option value="ja">日本語</option>
+                  <option value="en">English</option>
+                  <option value="ko">한국어</option>
+                </select>
+              </label>
+              <label class="settings-field">
+                <span>表示テーマ</span>
+                <select id="settingsThemeMode">
+                  <option value="system">端末設定に合わせる</option>
+                  <option value="light">ライト</option>
+                  <option value="dark">ダーク</option>
+                </select>
+              </label>
+              <label class="settings-row">
+                <span><strong>省モーション</strong><small>画面遷移やポップアップの動きを控えめにします</small></span>
+                <input id="settingsReducedMotion" type="checkbox" />
+              </label>
+              <label class="settings-row">
+                <span><strong>高コントラスト</strong><small>文字とボタンの視認性を優先します</small></span>
+                <input type="checkbox" />
+              </label>
+            </section>
+
+            <section class="settings-panel" aria-labelledby="settingsPrivacyTitle">
+              <div class="settings-panel-heading">
+                <span class="settings-panel-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 3 19 6v5c0 4.6-2.9 8.7-7 10-4.1-1.3-7-5.4-7-10V6l7-3Z" /><path d="m9.5 12 1.7 1.7 3.6-4" /></svg>
+                </span>
+                <div>
+                  <p class="eyebrow">Privacy</p>
+                  <h2 id="settingsPrivacyTitle">プライバシー</h2>
+                </div>
+              </div>
+              <label class="settings-field">
+                <span>プロフィール公開範囲</span>
+                <select>
+                  <option>Public</option>
+                  <option>Followers only</option>
+                  <option>Private</option>
+                </select>
+              </label>
+              <label class="settings-row">
+                <span><strong>外部リンク警告</strong><small>VRChat / BOOTH / X 以外のリンクを開く前に確認</small></span>
+                <input type="checkbox" checked />
+              </label>
+              <label class="settings-row">
+                <span><strong>オンライン状態を表示</strong><small>依頼チャットで対応可能かを表示</small></span>
+                <input type="checkbox" checked />
+              </label>
+              <button class="soft-button settings-wide-button" type="button">ミュート・ブロック管理</button>
+            </section>
+
+            <section class="settings-panel" aria-labelledby="settingsCommissionTitle">
+              <div class="settings-panel-heading">
+                <span class="settings-panel-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M3 10h18" /><path d="M7 15h4" /></svg>
+                </span>
+                <div>
+                  <p class="eyebrow">Commissions</p>
+                  <h2 id="settingsCommissionTitle">依頼・支払い</h2>
+                </div>
+              </div>
+              <label class="settings-row">
+                <span><strong>依頼受付ステータス</strong><small>プロフィールに受付中として表示</small></span>
+                <input type="checkbox" checked />
+              </label>
+              <label class="settings-field">
+                <span>デフォルト納期表示</span>
+                <select>
+                  <option>平均 7日</option>
+                  <option>平均 10日</option>
+                  <option>案件ごとに指定</option>
+                </select>
+              </label>
+              <label class="settings-field">
+                <span>支払い受け取り</span>
+                <select>
+                  <option>Stripe 連携予定</option>
+                  <option>未設定</option>
+                </select>
+              </label>
+            </section>
+
+            <section class="settings-panel settings-panel-wide" aria-labelledby="settingsAccountTitle">
+              <div class="settings-panel-heading">
+                <span class="settings-panel-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4 21v-1.5A5.5 5.5 0 0 1 9.5 14h5A5.5 5.5 0 0 1 20 19.5V21" /></svg>
+                </span>
+                <div>
+                  <p class="eyebrow">Account</p>
+                  <h2 id="settingsAccountTitle">アカウント</h2>
+                </div>
+              </div>
+              <div class="settings-account-actions">
+                <button class="soft-button" type="button">メールアドレス変更</button>
+                <button class="soft-button" type="button">パスワード変更</button>
+                <button class="soft-button" type="button">データをエクスポート</button>
+                <button class="soft-button danger-button" type="button">ログアウト</button>
+                <button id="accountDeleteButton" class="danger-solid-button" type="button">アカウント削除</button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
       <section id="requestManagerView" class="request-manager-view app-view" hidden>
         <button id="backFromRequestManager" class="soft-button" type="button">
           <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -251,13 +511,25 @@
           Back
         </button>
         <div class="request-manager-shell">
-          <div class="request-manager-heading">
+          <section class="request-publishing-panel" aria-labelledby="requestPublishingTitle">
+            <div>
+              <p class="eyebrow">Commission posts</p>
+              <h1 id="requestPublishingTitle">依頼受付</h1>
+              <p>価格、納期、受付枠、サンプル画像つきの依頼受付ページを作成して、プロフィールや投稿から依頼導線へつなげます。</p>
+            </div>
+            <div class="request-manager-create">
+              <span>依頼受付ページを公開</span>
+              <strong>価格、納期、受付枠、サンプル画像つきの依頼受付投稿を作成できます。</strong>
+              <button id="requestManagerCreatePost" class="primary-button" type="button">依頼受付を作成</button>
+            </div>
+          </section>
+          <section class="request-manager-heading" aria-labelledby="requestManagerTitle">
             <div>
               <p class="eyebrow">Request manager</p>
-              <h1>依頼管理</h1>
-              <p>締め切りが近い順に確認できる依頼一覧。未承諾はまだ依頼を受けるか判断中、承諾済は受注確定、進行中は着手連絡まで済んだ依頼です。</p>
+              <h1 id="requestManagerTitle">依頼管理</h1>
+              <p>受けた依頼をステータスごとに確認します。</p>
             </div>
-          </div>
+          </section>
           <div class="request-manager-tabs" aria-label="Request states">
             <button class="request-state-tab is-active" type="button" data-request-state="pending"><span>未承諾</span><small>0</small></button>
             <button class="request-state-tab" type="button" data-request-state="accepted"><span>承諾済</span><small>0</small></button>
@@ -265,6 +537,13 @@
             <button class="request-state-tab" type="button" data-request-state="awaiting_review"><span>評価待ち</span><small>0</small></button>
             <button class="request-state-tab" type="button" data-request-state="awaiting_your_review"><span>レビュー返し</span><small>0</small></button>
             <button class="request-state-tab" type="button" data-request-state="completed"><span>完了</span><small>0</small></button>
+          </div>
+          <div id="pendingSortControls" class="pending-sort-controls" aria-label="Pending request sort">
+            <span>未承諾の並び替え</span>
+            <div>
+              <button class="pending-sort-button is-active" type="button" data-pending-sort="deadline">締切順</button>
+              <button class="pending-sort-button" type="button" data-pending-sort="budget">金額順</button>
+            </div>
           </div>
           <div id="requestManagerEmpty" class="empty-state" hidden>
             <p>該当する依頼はありません</p>
@@ -289,11 +568,23 @@
               <div class="request-detail-main-topline">
                 <span id="requestDetailState" class="request-manager-state"></span>
                 <time id="requestDetailDeadline"></time>
+                <button id="requestReportButton" class="soft-button request-report-button" type="button">通報</button>
               </div>
               <h1 id="requestDetailTitle"></h1>
               <p id="requestDetailClient" class="eyebrow"></p>
               <p id="requestDetailSummary"></p>
               <div id="requestDetailMeta" class="dialog-meta"></div>
+              <section class="request-client-card" aria-labelledby="requestClientCardTitle">
+                <div>
+                  <p class="eyebrow">Client profile</p>
+                  <h2 id="requestClientCardTitle">依頼者情報</h2>
+                  <strong id="requestDetailClientName"></strong>
+                  <span id="requestDetailClientRating"></span>
+                </div>
+                <button id="requestDetailClientProfileButton" class="soft-button" type="button">プロフィールを見る</button>
+              </section>
+              <div id="requestDecisionActions" class="request-decision-actions"></div>
+              <p id="requestDetailDecisionNote" class="request-detail-decision-note"></p>
               <section class="request-brief-card" aria-labelledby="requestBriefTitle">
                 <p class="eyebrow">Request brief</p>
                 <h2 id="requestBriefTitle">依頼内容</h2>
@@ -310,16 +601,154 @@
               <span class="request-chat-status">Online</span>
             </div>
             <div id="requestChatTimeline" class="request-chat-timeline"></div>
+            <div id="requestChatDropHint" class="request-chat-drop-hint" hidden>
+              <strong>Drop files here</strong>
+              <span>画像やZIPをこの依頼チャットに添付</span>
+            </div>
             <form class="request-chat-compose" action="javascript:void(0)">
               <textarea id="requestChatInput" rows="3" placeholder="メッセージを入力"></textarea>
               <div class="request-chat-actions">
-                <button class="soft-button" type="button">添付</button>
+                <button id="requestAttachButton" class="soft-button" type="button">添付</button>
                 <button class="primary-button" type="submit">送信</button>
               </div>
+              <input id="requestAttachInput" type="file" accept="image/*,.zip" multiple hidden />
             </form>
           </aside>
         </div>
       </section>
+      <dialog id="zipSafetyDialog" class="zip-safety-dialog">
+        <form method="dialog" class="zip-safety-card">
+          <p class="eyebrow">ZIP safety check</p>
+          <h2>ZIPに販売物や第三者素材は入っていませんか？</h2>
+          <p>アバター、衣装、改変素材、PSD、Unitypackageなど、他人が販売・配布しているデータをそのまま送るとトラブルになる可能性があります。必要な権利と共有範囲を確認してから添付してください。</p>
+          <label class="zip-safety-check">
+            <input id="zipSafetyCheckbox" type="checkbox" />
+            <span>入っていません</span>
+          </label>
+          <div class="zip-safety-actions">
+            <button id="zipSafetyCancel" class="soft-button" type="button">キャンセル</button>
+            <button id="zipSafetyConfirm" class="primary-button" type="button" disabled>チャットに戻る</button>
+          </div>
+        </form>
+      </dialog>
+      <dialog id="requestCheckoutDialog" class="request-sheet-dialog">
+        <form method="dialog" class="request-sheet-card">
+          <p class="eyebrow">Confirm request</p>
+          <h2>依頼内容の確認</h2>
+          <div id="requestCheckoutSummary" class="request-sheet-summary"></div>
+          <label class="request-agreement">
+            <input id="requestCheckoutAgreement" type="checkbox" />
+            <span>タイトル、金額、支払い方法、同意事項を確認しました</span>
+          </label>
+          <div class="request-sheet-actions">
+            <button id="requestCheckoutCancel" class="soft-button" type="button">戻る</button>
+            <button id="requestCheckoutSubmit" class="primary-button" type="button" disabled>支払いへ進む</button>
+          </div>
+        </form>
+      </dialog>
+      <dialog id="requestApprovalDialog" class="request-sheet-dialog">
+        <form method="dialog" class="request-sheet-card">
+          <p class="eyebrow">Approve request</p>
+          <h2>この依頼を受諾しますか？</h2>
+          <p id="requestApprovalCopy">受諾すると、依頼チャットへ移動して初回メッセージを送る想定です。</p>
+          <label class="field">
+            <span>初回自動メッセージ</span>
+            <textarea id="requestApprovalMessage" rows="4" placeholder="よろしくお願いします。内容を確認し、作業開始予定日を共有します。"></textarea>
+          </label>
+          <div class="request-sheet-actions">
+            <button id="requestApprovalCancel" class="soft-button" type="button">キャンセル</button>
+            <button id="requestApprovalConfirm" class="primary-button hold-to-approve-button" type="button"><span>1秒長押しで承認してチャットへ</span><small>Hold to approve</small></button>
+          </div>
+        </form>
+      </dialog>
+      <dialog id="accountDeleteDialog" class="request-sheet-dialog account-delete-dialog" aria-labelledby="accountDeleteTitle">
+        <form method="dialog" class="request-sheet-card">
+          <p class="eyebrow">Danger zone</p>
+          <h2 id="accountDeleteTitle">アカウントを削除しますか？</h2>
+          <p>プロフィール、投稿、保存、依頼履歴へのアクセスを停止する想定の最終確認です。この操作は取り消せない前提の危険操作として扱います。</p>
+          <div class="account-delete-warning">
+            <strong>削除前に確認してください</strong>
+            <span>公開プロフィールと依頼受付ページは非表示になります。</span>
+            <span>進行中の依頼がある場合は先に対応状況を確認してください。</span>
+          </div>
+          <label class="field account-delete-password-field">
+            <span>現在のパスワード</span>
+            <input id="accountDeletePassword" type="password" placeholder="パスワードを入力" autocomplete="current-password" />
+            <small>デモでは password と入力すると一致します。</small>
+          </label>
+          <p id="accountDeleteError" class="account-delete-error" hidden>パスワードが一致しません。</p>
+          <p id="accountDeleteBlocker" class="account-delete-blocker" hidden></p>
+          <div class="request-sheet-actions">
+            <button id="accountDeleteCancel" class="soft-button" type="button">キャンセル</button>
+            <button id="accountDeleteConfirm" class="danger-hold-button" type="button">
+              <span>3秒長押しで完全に削除</span>
+              <small>Hold to delete</small>
+            </button>
+          </div>
+        </form>
+      </dialog>
+      <dialog id="requestRejectDialog" class="request-sheet-dialog">
+        <form method="dialog" class="request-sheet-card">
+          <p class="eyebrow">Reject request</p>
+          <h2>お断り理由を選択</h2>
+          <div class="request-reject-reasons">
+            <label><input type="radio" name="requestRejectReason" value="現在の受付枠が埋まっているため" checked /> <span>現在の受付枠が埋まっているため</span></label>
+            <label><input type="radio" name="requestRejectReason" value="内容が対応範囲外のため" /> <span>内容が対応範囲外のため</span></label>
+            <label><input type="radio" name="requestRejectReason" value="納期が厳しいため" /> <span>納期が厳しいため</span></label>
+            <label><input type="radio" name="requestRejectReason" value="other" /> <span>その他</span></label>
+          </div>
+          <label class="field">
+            <span>補足メッセージ</span>
+            <textarea id="requestRejectMessage" rows="4" placeholder="必要なら補足理由を入力"></textarea>
+          </label>
+          <div class="request-sheet-actions">
+            <button id="requestRejectCancel" class="soft-button" type="button">キャンセル</button>
+            <button id="requestRejectConfirm" class="primary-button" type="button">理由を確定</button>
+          </div>
+        </form>
+      </dialog>
+      <dialog id="requestReportDialog" class="request-sheet-dialog">
+        <form method="dialog" class="request-sheet-card">
+          <p class="eyebrow">Report request</p>
+          <h2>この依頼を通報しますか？</h2>
+          <p id="requestReportTarget" class="request-report-target"></p>
+          <div class="request-report-reasons">
+            <label><input type="radio" name="requestReportReason" value="アバター、衣装、販売データなどの共有を要求している" checked /> <span>アバターや販売データを要求してくる</span></label>
+            <label><input type="radio" name="requestReportReason" value="威圧的、脅迫的、攻撃的な発言がある" /> <span>威圧的、脅迫的、攻撃的な発言がある</span></label>
+            <label><input type="radio" name="requestReportReason" value="外部決済や直接取引へ誘導している" /> <span>外部決済や直接取引へ誘導している</span></label>
+            <label><input type="radio" name="requestReportReason" value="著作権、規約、利用許諾に違反する可能性がある" /> <span>権利や利用許諾に違反する可能性がある</span></label>
+            <label><input type="radio" name="requestReportReason" value="スパム、虚偽内容、なりすましの可能性がある" /> <span>スパム、虚偽内容、なりすましの可能性がある</span></label>
+            <label><input type="radio" name="requestReportReason" value="other" /> <span>その他</span></label>
+          </div>
+          <label class="field">
+            <span>補足コメント</span>
+            <textarea id="requestReportMessage" rows="4" placeholder="その他の場合や、確認してほしい発言・要求内容を入力"></textarea>
+          </label>
+          <div class="request-sheet-actions">
+            <button id="requestReportCancel" class="soft-button" type="button">キャンセル</button>
+            <button id="requestReportConfirm" class="primary-button request-report-submit" type="button">通報を送信</button>
+          </div>
+        </form>
+      </dialog>
+      <div id="requestAcceptPopup" class="request-accept-popup" role="status" aria-live="polite" hidden>
+        <div class="request-accept-card">
+          <span class="request-accept-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="m6 12.5 3.6 3.6L18.5 7.4" />
+            </svg>
+          </span>
+          <div>
+            <strong>受諾しました！！</strong>
+            <span>依頼チャットへ移動しました</span>
+          </div>
+        </div>
+      </div>
+      <div id="profileCopyToast" class="profile-copy-toast" role="status" aria-live="polite" hidden>
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <path d="m5 12 4 4L19 6" />
+        </svg>
+        <span>リンクをコピーしました</span>
+      </div>
       <section id="missionView" class="mission-view app-view" hidden>
         <button id="backFromMission" class="soft-button" type="button">
           <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -556,6 +985,114 @@
       </form>
     </dialog>
 
+    <dialog id="requestComposeDialog" class="compose-dialog request-compose-dialog" aria-labelledby="requestComposeTitle">
+      <form id="requestComposeForm" class="compose-shell request-compose-shell">
+        <button class="close-button" id="closeRequestCompose" type="button" aria-label="Close">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+
+        <section class="compose-preview request-compose-preview" aria-label="Request post preview">
+          <label class="upload-drop request-thumbnail-drop">
+            <input id="requestComposeImage" type="file" accept="image/*" />
+            <img id="requestComposePreviewImage" alt="" hidden />
+            <span class="upload-empty">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M12 5v14" />
+                <path d="M5 12h14" />
+              </svg>
+              <strong>依頼サムネイル</strong>
+              <small>受付内容が一目で分かる画像を設定</small>
+            </span>
+          </label>
+          <div id="requestComposePreviewCard" class="request-compose-preview-card">
+            <span>Commission · You</span>
+            <strong>依頼受付タイトル</strong>
+            <small>¥12,000〜 / 平均 10日</small>
+          </div>
+          <div class="request-compose-side-preview">
+            <p class="eyebrow">Request page preview</p>
+            <h3 id="requestComposePageTitle">依頼受付タイトル</h3>
+            <p id="requestComposePageDescription">説明を入力すると、依頼受付ページの導入文として表示されます。</p>
+            <div id="requestComposePageMeta" class="request-compose-mini-meta"></div>
+          </div>
+        </section>
+
+        <section class="compose-content request-compose-content">
+          <p class="eyebrow">Create commission</p>
+          <h2 id="requestComposeTitle">依頼受付を作成</h2>
+
+          <div class="compose-grid">
+            <label class="field wide">
+              <span>依頼受付タイトル</span>
+              <input id="requestPostTitle" type="text" placeholder="例: アバター改変依頼" autocomplete="off" required />
+            </label>
+            <label class="field">
+              <span>カテゴリ</span>
+              <select id="requestPostCategory">
+                <option selected>Avatar</option>
+                <option>Photo</option>
+                <option>Retouch</option>
+                <option>Video</option>
+                <option>World</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>公開範囲</span>
+              <select id="requestPostVisibility">
+                <option selected>Public</option>
+                <option>Followers</option>
+                <option>Private draft</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>最低価格</span>
+              <input id="requestPostPrice" type="text" placeholder="¥12,000〜" autocomplete="off" />
+            </label>
+            <label class="field">
+              <span>平均納期</span>
+              <input id="requestPostDelivery" type="text" placeholder="平均 10日" autocomplete="off" />
+            </label>
+            <label class="field">
+              <span>受付枠</span>
+              <input id="requestPostCapacity" type="text" placeholder="受付 2 / 5" autocomplete="off" />
+            </label>
+            <label class="field">
+              <span>Avatar</span>
+              <input id="requestPostAvatar" type="text" placeholder="Selestia / Manuka など" autocomplete="off" />
+            </label>
+            <label class="field">
+              <span>World</span>
+              <input id="requestPostWorld" type="text" placeholder="Portfolio / Sample world" autocomplete="off" />
+            </label>
+            <label class="field wide">
+              <span>タグ</span>
+              <input id="requestPostTags" type="text" placeholder="#依頼受付 #avatar #booth" autocomplete="off" />
+            </label>
+            <label class="field wide">
+              <span>説明</span>
+              <textarea id="requestPostDescription" rows="4" placeholder="対応範囲、得意な作風、納品形式など"></textarea>
+            </label>
+            <label class="field wide">
+              <span>依頼前に確認してほしいこと</span>
+              <textarea id="requestPostRequirements" rows="3" placeholder="使用アセットの購入状況、参考画像、希望納期など"></textarea>
+            </label>
+          </div>
+
+          <div id="requestComposeNotice" class="compose-notice" hidden>
+            モックなので保存はしていません。バックエンド接続後は依頼受付APIへ送信する想定です。
+          </div>
+
+          <div class="compose-actions">
+            <button class="soft-button" type="button" id="saveRequestDraftButton">下書き</button>
+            <button class="primary-button" type="submit">依頼受付を投稿</button>
+          </div>
+        </section>
+      </form>
+    </dialog>
+
     <dialog id="editProfileDialog" class="edit-profile-dialog" aria-labelledby="editProfileTitle">
       <form id="editProfileForm" class="edit-profile-shell">
         <button class="close-button" id="closeEditProfile" type="button" aria-label="Close">
@@ -683,6 +1220,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=request-detail-1"></script>
+    <script src="./app.js?v=profile-archive-responsive-1"></script>
   </body>
 </html>
