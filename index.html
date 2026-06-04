@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="./styles.css?v=featured-top-liked-1" />
+    <link rel="stylesheet" href="./styles.css?v=stripe-placeholder-1" />
   </head>
   <body>
     <header class="topbar">
@@ -163,6 +163,48 @@
         </div>
         <h2 class="section-title">Past posts</h2>
         <div id="profileBoard" class="masonry compact"></div>
+      </section>
+
+      <section id="requestView" class="request-view app-view" hidden>
+        <button id="backFromRequest" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Explore
+        </button>
+        <div class="request-page-layout">
+          <article class="request-detail">
+            <div class="request-detail-image">
+              <img id="requestPageImage" alt="" />
+            </div>
+            <div class="request-detail-copy">
+              <p id="requestPageCreator" class="eyebrow"></p>
+              <h1 id="requestPageTitle"></h1>
+              <p id="requestPageDescription"></p>
+              <div id="requestPageTags" class="dialog-meta"></div>
+            </div>
+          </article>
+          <aside class="request-payment-card" aria-label="Payment and request summary">
+            <p class="eyebrow">Commission</p>
+            <h2 id="requestPaymentTitle"></h2>
+            <div class="stripe-placeholder" aria-label="Stripe embed placeholder">
+              <span>Stripe</span>
+              <strong>埋め込み予定</strong>
+            </div>
+            <p id="requestPaymentNote"></p>
+            <button id="requestPaymentButton" class="primary-button" type="button">依頼内容を確認する</button>
+            <button id="requestCreatorProfileButton" class="soft-button" type="button">プロフィールを見る</button>
+          </aside>
+        </div>
+        <section id="requestMoreSection" class="request-more-section" hidden>
+          <div class="section-heading-row">
+            <div>
+              <p class="eyebrow">More commissions</p>
+              <h2>他の依頼受付</h2>
+            </div>
+          </div>
+          <div id="requestMoreGrid" class="request-more-grid"></div>
+        </section>
       </section>
     </main>
 
@@ -458,6 +500,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=featured-top-liked-1"></script>
+    <script src="./app.js?v=stripe-placeholder-1"></script>
   </body>
 </html>

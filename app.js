@@ -519,6 +519,7 @@ const board = document.querySelector("#board");
 const profileBoard = document.querySelector("#profileBoard");
 const feedView = document.querySelector("#feedView");
 const profileView = document.querySelector("#profileView");
+const requestView = document.querySelector("#requestView");
 const searchInput = document.querySelector("#searchInput");
 const chips = [...document.querySelectorAll(".chip")];
 const navPills = [...document.querySelectorAll(".nav-pill")];
@@ -530,6 +531,7 @@ const dropHint = document.querySelector("#dropHint");
 const themeToggle = document.querySelector("#themeToggle");
 const avatarButton = document.querySelector("#avatarButton");
 const backToFeed = document.querySelector("#backToFeed");
+const backFromRequest = document.querySelector("#backFromRequest");
 const profileBanner = document.querySelector("#profileBanner");
 const profileAvatar = document.querySelector("#profileAvatar");
 const profileName = document.querySelector("#profileName");
@@ -549,6 +551,17 @@ const trustScopeTags = document.querySelector("#trustScopeTags");
 const trustStyleNote = document.querySelector("#trustStyleNote");
 const trustFeaturedWorks = document.querySelector("#trustFeaturedWorks");
 const trustTimelineLabel = document.querySelector("#trustTimelineLabel");
+const requestPageImage = document.querySelector("#requestPageImage");
+const requestPageCreator = document.querySelector("#requestPageCreator");
+const requestPageTitle = document.querySelector("#requestPageTitle");
+const requestPageDescription = document.querySelector("#requestPageDescription");
+const requestPageTags = document.querySelector("#requestPageTags");
+const requestPaymentTitle = document.querySelector("#requestPaymentTitle");
+const requestPaymentNote = document.querySelector("#requestPaymentNote");
+const requestPaymentButton = document.querySelector("#requestPaymentButton");
+const requestCreatorProfileButton = document.querySelector("#requestCreatorProfileButton");
+const requestMoreSection = document.querySelector("#requestMoreSection");
+const requestMoreGrid = document.querySelector("#requestMoreGrid");
 const dialog = document.querySelector("#pinDialog");
 const closeDialog = document.querySelector("#closeDialog");
 const dialogImage = document.querySelector("#dialogImage");
@@ -705,6 +718,14 @@ function creatorHasOpenRequest(creator) {
 
 function primaryOpenRequestForCreator(creator) {
   return creatorPosts(creator).find((pin) => pin.request?.open)?.request || null;
+}
+
+function primaryOpenRequestPostForCreator(creator) {
+  return creatorPosts(creator).find((pin) => pin.request?.open) || null;
+}
+
+function openRequestPostsForCreator(creator) {
+  return creatorPosts(creator).filter((pin) => pin.request?.open);
 }
 
 function iconBookmark() {
@@ -914,10 +935,11 @@ function closeTrustInfoDialog() {
 
 function showFeed() {
   activeProfile = null;
+  requestView.hidden = true;
   profileView.hidden = true;
   profileView.classList.remove("is-mine");
   feedView.hidden = false;
-  if (location.hash.startsWith("#profile/") || location.hash === "#me") {
+  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#request/") || location.hash === "#me") {
     history.pushState("", document.title, location.pathname + location.search);
   }
   renderPins();
@@ -927,6 +949,14 @@ function routeFromHash() {
   if (location.hash === "#me") {
     renderProfile("You");
     return;
+  }
+  const requestMatch = location.hash.match(/^#request\/([^/]+)(?:\/(\d+))?$/);
+  if (requestMatch) {
+    const pin = creatorBySlug(requestMatch[1]);
+    if (pin) {
+      renderRequestPage(pin.creator, requestMatch[2] ? Number(requestMatch[2]) : null);
+      return;
+    }
   }
   const match = location.hash.match(/^#profile\/(.+)$/);
   if (!match) {
@@ -941,6 +971,7 @@ function openProfile(slug) {
   const pin = creatorBySlug(slug);
   if (!pin) return;
   if (modalIsOpen(dialog)) closeModalElement(dialog);
+  requestView.hidden = true;
   location.hash = `profile/${slug}`;
   renderProfile(pin.creator);
 }
@@ -948,8 +979,65 @@ function openProfile(slug) {
 function openMyProfile() {
   if (modalIsOpen(dialog)) closeModalElement(dialog);
   if (modalIsOpen(composeDialog)) closeComposeDialog();
+  requestView.hidden = true;
   location.hash = "me";
   renderProfile("You");
+}
+
+function openRequestPage(creator, postId = null) {
+  const post = postId ? findPostById(postId) : primaryOpenRequestPostForCreator(creator);
+  if (!post) return;
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
+  if (modalIsOpen(composeDialog)) closeComposeDialog();
+  location.hash = `request/${slugify(creator)}/${post.id}`;
+  renderRequestPage(creator, post.id);
+}
+
+function renderRequestPage(creator, postId = null) {
+  const requestPosts = openRequestPostsForCreator(creator);
+  const post = (postId ? requestPosts.find((item) => item.id === postId) : null) || requestPosts[0];
+  if (!post?.request) {
+    showFeed();
+    return;
+  }
+
+  activeProfile = creator;
+  feedView.hidden = true;
+  profileView.hidden = true;
+  requestView.hidden = false;
+
+  requestPageImage.src = post.image;
+  requestPageImage.alt = post.title;
+  requestPageCreator.textContent = `${post.creator} / ${post.role}`;
+  requestPageTitle.textContent = post.request.title;
+  requestPageDescription.textContent = `${post.description} サムネイル、過去作、受付状況を見ながら依頼内容を確認できるページ想定です。`;
+  requestPageTags.innerHTML = [
+    `<span>${post.category}</span>`,
+    `<span>Avatar: ${post.avatar}</span>`,
+    `<span>World: ${post.world}</span>`,
+    ...post.tags.map((tag) => `<span>${tag}</span>`),
+  ].join("");
+
+  requestPaymentTitle.textContent = "支払い受付";
+  requestPaymentNote.textContent = "ここにはStripe CheckoutまたはPayment Elementを埋め込む予定です。今は決済導線の配置だけ確認するためのプレースホルダーです。";
+  requestPaymentButton.textContent = "依頼内容を確認する";
+  requestCreatorProfileButton.textContent = "プロフィールを見る";
+  requestCreatorProfileButton.dataset.profile = slugify(post.creator);
+  renderOtherRequestCards(post.creator, post.id);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function renderOtherRequestCards(creator, activePostId) {
+  const others = openRequestPostsForCreator(creator).filter((post) => post.id !== activePostId);
+  requestMoreSection.hidden = others.length === 0;
+  requestMoreGrid.innerHTML = others.map((post) => `
+    <button class="request-more-card" type="button" data-request-id="${post.id}">
+      <img src="${post.image}" alt="${post.request.title}" loading="lazy" />
+      <span>${post.category}</span>
+      <strong>${post.request.title}</strong>
+      <small>${post.request.price} / ${post.request.delivery}</small>
+    </button>
+  `).join("");
 }
 
 
@@ -1299,14 +1387,14 @@ floatingPost.addEventListener("click", openComposeHint);
 themeToggle.addEventListener("click", toggleTheme);
 avatarButton.addEventListener("click", openMyProfile);
 backToFeed.addEventListener("click", showFeed);
+backFromRequest.addEventListener("click", showFeed);
 profileRequestButton.addEventListener("click", () => {
   if (profileRequestButton.hidden) return;
   if (activeProfile === "You") {
     openComposeHint();
     return;
   }
-  setView("requests");
-  showFeed();
+  openRequestPage(activeProfile);
 });
 profileShareButton?.addEventListener("click", shareCurrentProfile);
 trustFeaturedWorks?.addEventListener("click", (event) => {
@@ -1343,11 +1431,25 @@ dialog.addEventListener("cancel", (event) => {
 
 dialogRequest.addEventListener("click", (event) => {
   if (!currentPin || !creatorHasOpenRequest(currentPin.creator)) return;
-  if (modalIsOpen(dialog)) closeModalElement(dialog);
-  setView("requests");
-  showFeed();
-  searchInput.value = currentPin.creator;
-  renderPins();
+  openRequestPage(currentPin.creator);
+});
+
+requestPaymentButton.addEventListener("click", () => {
+  requestPaymentButton.textContent = "確認済み";
+  window.setTimeout(() => {
+    requestPaymentButton.textContent = "依頼内容を確認する";
+  }, 1400);
+});
+
+requestCreatorProfileButton.addEventListener("click", () => {
+  const slug = requestCreatorProfileButton.dataset.profile;
+  if (slug) openProfile(slug);
+});
+
+requestMoreGrid.addEventListener("click", (event) => {
+  const card = event.target.closest("[data-request-id]");
+  if (!card || !activeProfile) return;
+  openRequestPage(activeProfile, Number(card.dataset.requestId));
 });
 
 dialogCreator.addEventListener("click", (event) => {
