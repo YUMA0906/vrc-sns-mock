@@ -2660,6 +2660,7 @@ body[data-theme="dark"] .request-more-section {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  flex: 0 0 auto;
   min-height: 38px;
   padding: 0 14px;
   border: 1px solid transparent;
@@ -3885,50 +3886,177 @@ body.is-dragging .drop-hint {
 
   .request-manager-heading {
     grid-template-columns: 1fr;
+    padding: 20px;
   }
 
   .request-manager-tabs {
     width: 100%;
     overflow-x: auto;
+    overflow-y: hidden;
+    padding-right: 10px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .request-manager-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .request-state-tab {
+    scroll-snap-align: start;
+    min-height: 36px;
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .request-state-tab small {
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
   }
 
   .request-manager-card {
     grid-template-columns: 1fr;
+    border-radius: 18px;
   }
 
   .request-manager-card-copy {
-    padding: 0 18px 18px;
+    padding: 0 16px 16px;
+    gap: 10px;
   }
 
   .request-manager-card img {
-    min-height: 190px;
+    min-height: 180px;
+    aspect-ratio: 16 / 10;
+  }
+
+  .request-manager-card h2 {
+    font-size: 1.08rem;
+  }
+
+  .request-manager-card p {
+    line-height: 1.55;
+  }
+
+  .request-manager-card-topline {
+    align-items: flex-start;
+  }
+
+  .request-manager-card-topline time {
+    margin-left: auto;
+  }
+
+  .request-manager-card-meta {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: start;
+    justify-content: start;
+    gap: 6px;
+  }
+
+  .request-manager-card-meta span:first-child {
+    width: auto;
+    order: initial;
+    font-size: 0.84rem;
+    line-height: 1.5;
   }
 
   .request-detail-shell {
     grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .request-detail-main-panel,
+  .request-chat-panel {
+    border-radius: 18px;
+  }
+
+  .request-detail-main-image {
+    aspect-ratio: 4 / 3;
   }
 
   .request-detail-main-copy {
-    padding: 22px 18px;
+    padding: 18px 16px;
   }
 
   .request-detail-main-copy h1 {
-    font-size: clamp(1.8rem, 9vw, 2.6rem);
+    font-size: clamp(1.7rem, 8.8vw, 2.35rem);
+    line-height: 1.02;
+  }
+
+  .request-detail-main-copy p:not(.eyebrow) {
+    line-height: 1.7;
+  }
+
+  .request-detail-main-topline {
+    gap: 10px;
+  }
+
+  .request-detail-main-topline time {
+    margin-left: auto;
+  }
+
+  .request-brief-card {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .request-brief-list {
+    gap: 8px;
+  }
+
+  .request-brief-list span {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 0.84rem;
   }
 
   .request-chat-panel {
-    min-height: 560px;
+    min-height: min(72dvh, 620px);
   }
 
   .request-chat-header,
   .request-chat-timeline,
   .request-chat-compose {
-    padding-left: 18px;
-    padding-right: 18px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .request-chat-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 18px;
+    padding-bottom: 14px;
   }
 
   .request-chat-bubble {
     max-width: 100%;
+    padding: 12px 14px;
+  }
+
+  .request-chat-timeline {
+    max-height: min(42dvh, 360px);
+  }
+
+  .request-chat-compose {
+    gap: 10px;
+    padding-bottom: 16px;
+  }
+
+  .request-chat-compose textarea {
+    min-height: 92px;
+    padding: 12px 14px;
+  }
+
+  .request-chat-actions {
+    justify-content: space-between;
+  }
+
+  .request-chat-actions .soft-button,
+  .request-chat-actions .primary-button {
+    min-height: 42px;
   }
 
   .notification-item {
