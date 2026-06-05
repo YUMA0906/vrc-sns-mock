@@ -202,6 +202,7 @@ const eventDetailView = document.querySelector("#eventDetailView");
 const eventsView = document.querySelector("#eventsView");
 const missionView = document.querySelector("#missionView");
 const searchInput = document.querySelector("#searchInput");
+const eventBanner = document.querySelector(".event-banner");
 const chips = [...document.querySelectorAll(".chip")];
 const navPills = [...document.querySelectorAll(".nav-pill")];
 const emptyState = document.querySelector("#emptyState");
@@ -2824,9 +2825,15 @@ function pinCard(pin) {
 }
 
 function renderPins(items = filteredPins()) {
+  updateHomeEventBannerVisibility();
   board.innerHTML = items.map(pinCard).join("");
   emptyState.hidden = items.length !== 0;
   bindPinCards(board);
+}
+
+function updateHomeEventBannerVisibility() {
+  if (!eventBanner) return;
+  eventBanner.hidden = Boolean(searchInput?.value.trim());
 }
 
 function bindPinCards(container) {
@@ -5546,7 +5553,7 @@ eventProposalImageInput?.addEventListener("change", () => {
 });
 eventProposalForm?.addEventListener("submit", submitEventProposal);
 shuffleButton.addEventListener("click", shufflePins);
-createButton.addEventListener("click", openComposeHint);
+createButton?.addEventListener("click", openComposeHint);
 createRequestButton?.addEventListener("click", openRequestComposeDialog);
 floatingPost?.addEventListener("pointerdown", handleFloatingPostPointerDown);
 floatingPost?.addEventListener("pointerup", handleFloatingPostPointerUp);
