@@ -47,6 +47,14 @@
             <path d="M19 21 12 17 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z" />
           </svg>
         </button>
+        <button id="circlePageButton" class="icon-button" type="button" aria-label="サークル" title="サークル">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <circle cx="9" cy="8" r="3.5" />
+            <path d="M2.5 20a6.5 6.5 0 0 1 13 0" />
+            <path d="M17 10a3 3 0 1 0-1.5-5.6" />
+            <path d="M17.5 13.8A5.5 5.5 0 0 1 21.5 19" />
+          </svg>
+        </button>
         <button id="eventPageButton" class="icon-button" type="button" aria-label="イベント" title="イベント">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M8 2v4" />
@@ -108,6 +116,15 @@
                   <path d="M19 21 12 17 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z" />
                 </svg>
                 <span>ブックマーク</span>
+              </button>
+              <button type="button" role="menuitem" data-mobile-menu-action="circles">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <circle cx="9" cy="8" r="3.5" />
+                  <path d="M2.5 20a6.5 6.5 0 0 1 13 0" />
+                  <path d="M17 10a3 3 0 1 0-1.5-5.6" />
+                  <path d="M17.5 13.8A5.5 5.5 0 0 1 21.5 19" />
+                </svg>
+                <span>サークル</span>
               </button>
               <button type="button" role="menuitem" data-mobile-menu-action="requests">
                 <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -243,7 +260,6 @@
         <button class="chip" type="button" data-category="Retouch">Retouch</button>
         <button class="chip" type="button" data-category="Video">Video</button>
         <button class="chip" type="button" data-category="World">World</button>
-        <button class="chip" type="button" data-category="Commission">Commission</button>
       </section>
 
       <section class="board-wrap" aria-live="polite">
@@ -276,6 +292,7 @@
               <div id="profileAvatar" class="profile-page-avatar">Y</div>
               <p id="profileRole" class="eyebrow"></p>
               <h1 id="profileName"></h1>
+              <button id="profileLevelBadge" class="profile-level-badge" type="button" data-trust-info-trigger hidden></button>
               <p id="profileBio"></p>
               <div class="profile-actions">
                 <button id="profileFollow" class="primary-button" type="button">Follow</button>
@@ -922,6 +939,7 @@
             <label><input type="radio" name="requestReportReason" value="威圧的、脅迫的、攻撃的な発言がある" /> <span>威圧的、脅迫的、攻撃的な発言がある</span></label>
             <label><input type="radio" name="requestReportReason" value="外部決済や直接取引へ誘導している" /> <span>外部決済や直接取引へ誘導している</span></label>
             <label><input type="radio" name="requestReportReason" value="著作権、規約、利用許諾に違反する可能性がある" /> <span>権利や利用許諾に違反する可能性がある</span></label>
+            <label><input type="radio" name="requestReportReason" value="事実と異なる不当なレビュー、報復評価、評価の強要がある" /> <span>不当なレビュー、報復評価がある</span></label>
             <label><input type="radio" name="requestReportReason" value="スパム、虚偽内容、なりすましの可能性がある" /> <span>スパム、虚偽内容、なりすましの可能性がある</span></label>
             <label><input type="radio" name="requestReportReason" value="other" /> <span>その他</span></label>
           </div>
@@ -1134,6 +1152,8 @@
               <strong id="eventDetailDate">6/5 - 6/19</strong>
               <span id="eventDetailStatusLabel">Status</span>
               <strong id="eventDetailStatus">Now live</strong>
+              <span id="eventDetailOrganizerLabel">Organizer</span>
+              <strong id="eventDetailOrganizer">VRC SNS運営</strong>
               <span id="eventDetailGuideLabel">Guide</span>
               <strong id="eventDetailGuide">Details below</strong>
             </div>
@@ -1153,18 +1173,26 @@
             <h2 id="eventDetailStatsTitle">注目ポイント</h2>
             <div id="eventDetailStats" class="service-faq-grid"></div>
           </section>
+          <section id="eventCircleRequirement" class="mission-section event-circle-requirement" aria-labelledby="eventCircleRequirementTitle" hidden>
+            <div>
+              <p id="eventCircleRequirementEyebrow" class="eyebrow">Circle requirement</p>
+              <h2 id="eventCircleRequirementTitle">参加条件</h2>
+              <p id="eventCircleRequirementBody">このイベントは指定サークルへの参加が条件です。</p>
+            </div>
+            <button id="eventCircleRequirementButton" class="primary-button" type="button">サークルを見る</button>
+          </section>
           <section class="mission-section mission-section-split" aria-labelledby="eventProposalSectionTitle">
             <div>
               <p id="eventProposalEyebrow" class="eyebrow">Community event</p>
-              <h2 id="eventProposalSectionTitle">ユーザー発案でイベントを提案する</h2>
-              <p id="eventProposalSectionLead">開催希望を送ると運営イベント窓口へメールが届き、内容確認と承認後にイベントとして公開される想定です。</p>
-              <button id="openEventProposalFromDetail" class="primary-button" type="button">イベント開催を提案</button>
+              <h2 id="eventProposalSectionTitle">ユーザー発案イベントの開催許可を申請する</h2>
+              <p id="eventProposalSectionLead">申請が承認されるとイベント開催許可が付与され、主催者が好きなタイミングと期間で告知・投稿できる想定です。</p>
+              <button id="openEventProposalFromDetail" class="primary-button" type="button">イベント開催を申請</button>
             </div>
             <div id="eventProposalFlow" class="event-proposal-flow"></div>
           </section>
           <section class="mission-section" aria-labelledby="eventProposalStatusTitle">
-            <p id="eventProposalStatusEyebrow" class="eyebrow">Proposal status</p>
-            <h2 id="eventProposalStatusTitle">イベント提案の審査状況</h2>
+            <p id="eventProposalStatusEyebrow" class="eyebrow">申請ステータス</p>
+            <h2 id="eventProposalStatusTitle">イベント申請の審査状況</h2>
             <div id="eventProposalList" class="event-proposal-list"></div>
           </section>
         </article>
@@ -1181,9 +1209,9 @@
             <div>
               <p id="eventsEyebrow" class="eyebrow">Events</p>
               <h1 id="eventsTitle">イベント</h1>
-              <p id="eventsLead">開催中のイベントを探したり、ユーザー発案の新しいイベントを運営へ提案できます。</p>
+              <p id="eventsLead">開催中のイベントを探したり、ユーザー発案イベントの開催許可を運営へ申請できます。</p>
             </div>
-            <button id="eventsCreateButton" class="primary-button" type="button">イベント開催を提案</button>
+            <button id="eventsCreateButton" class="primary-button" type="button">イベント開催を申請</button>
           </header>
           <section class="events-search-panel" aria-label="Event search">
             <label class="events-search">
@@ -1194,7 +1222,8 @@
               <input id="eventsSearchInput" type="search" placeholder="イベント名、主催者、#タグで検索" autocomplete="off" />
             </label>
             <div id="eventsQuickFilters" class="events-quick-filters" aria-label="Event filters">
-              <button class="is-active" type="button" data-event-filter="official">公式イベント</button>
+              <button class="is-active" type="button" data-event-filter="all">All</button>
+              <button type="button" data-event-filter="official">公式イベント</button>
               <button type="button" data-event-filter="community">ユーザー発案</button>
             </div>
           </section>
@@ -1203,6 +1232,83 @@
             <p>イベントが見つかりませんでした</p>
             <span>検索語句やフィルタを変えてもう一度探してみてください。</span>
           </div>
+        </div>
+      </section>
+      <section id="circleView" class="circles-view app-view" hidden>
+        <button id="backFromCircles" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <div class="circles-shell">
+          <header class="circles-heading">
+            <div>
+              <p id="circleEyebrow" class="eyebrow">Circles</p>
+              <h1 id="circleTitle">サークル</h1>
+              <p id="circleLead">同好会や制作チームのような小さなグループ。参加者限定投稿や、イベント参加条件として使える想定です。</p>
+            </div>
+          </header>
+          <section class="circle-browser-panel" aria-label="サークル表示切替">
+            <div id="circleViewTabs" class="circle-view-tabs" role="tablist" aria-label="Circle tabs">
+              <button class="is-active" type="button" role="tab" aria-selected="true" data-circle-tab="browse">サークル一覧</button>
+              <button type="button" role="tab" aria-selected="false" data-circle-tab="posts">限定投稿</button>
+            </div>
+            <label class="circle-search">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7" />
+                <path d="m16.5 16.5 4 4" />
+              </svg>
+              <input id="circleSearchInput" type="search" placeholder="サークル名、主催者、#タグで検索" autocomplete="off" />
+            </label>
+            <div id="circleFilterControls" class="circle-filter-controls" aria-label="サークル表示絞り込み">
+              <span id="circleFilterLabel" class="circle-filter-label">表示</span>
+              <label class="circle-filter-toggle">
+                <input type="checkbox" data-circle-filter="joined" checked />
+                <span id="circleFilterJoined">参加中</span>
+              </label>
+              <label class="circle-filter-toggle">
+                <input type="checkbox" data-circle-filter="approval" checked />
+                <span id="circleFilterApproval">承認制</span>
+              </label>
+              <label class="circle-filter-toggle">
+                <input type="checkbox" data-circle-filter="open" checked />
+                <span id="circleFilterOpen">自由参加OK</span>
+              </label>
+            </div>
+          </section>
+          <section id="circleDetailPanel" class="circle-detail-panel" hidden>
+            <div id="circleDetailCover" class="circle-detail-cover"></div>
+            <div class="circle-detail-copy">
+              <p id="circleDetailEyebrow" class="eyebrow">Circle</p>
+              <h2 id="circleDetailName">サークル名</h2>
+              <p id="circleDetailDescription"></p>
+              <div id="circleDetailMeta" class="circle-meta-row"></div>
+              <div id="circleDetailTags" class="mission-inline-tags"></div>
+              <div class="circle-detail-actions">
+                <button id="circleJoinButton" class="primary-button" type="button">参加する</button>
+              </div>
+            </div>
+          </section>
+          <section class="circle-list-section" aria-labelledby="circleListTitle">
+            <div class="circle-section-head">
+              <div>
+                <p id="circleListEyebrow" class="eyebrow">Browse</p>
+                <h2 id="circleListTitle">サークル一覧</h2>
+              </div>
+            </div>
+            <div id="circleGrid" class="circles-grid"></div>
+          </section>
+          <section class="circle-posts-section" aria-labelledby="circlePostsTitle" hidden>
+            <div class="circle-section-head">
+              <div>
+                <p id="circlePostsEyebrow" class="eyebrow">Members only</p>
+                <h2 id="circlePostsTitle">サークル限定投稿</h2>
+              </div>
+              <p id="circlePostsNote">参加中のサークルでは、メンバーだけが見られる投稿が表示されます。</p>
+            </div>
+            <div id="circlePostsBoard" class="circle-posts-board"></div>
+          </section>
         </div>
       </section>
       <section id="missionView" class="mission-view app-view" hidden>
@@ -1365,6 +1471,7 @@
           <span class="trust-info-level trust-info-level--user">User</span>
           <span class="trust-info-level trust-info-level--known">Known User</span>
           <span class="trust-info-level trust-info-level--trusted">Trusted User</span>
+          <span class="trust-info-level trust-info-level--official">Official</span>
         </div>
         <p class="trust-info-note">※VRChat公式のランクではありません。</p>
       </div>
@@ -1439,11 +1546,16 @@
             </label>
             <label class="field">
               <span>公開範囲</span>
-              <select>
+              <select id="composeVisibility">
                 <option>Public</option>
+                <option>Circle only</option>
                 <option>Followers</option>
                 <option>Private draft</option>
               </select>
+            </label>
+            <label id="composeCircleField" class="field" hidden>
+              <span>投稿先サークル</span>
+              <select id="composeCircle"></select>
             </label>
             <label class="field">
               <span>Avatar</span>
@@ -1478,10 +1590,10 @@
     <dialog id="eventProposalDialog" class="request-sheet-dialog event-proposal-dialog" aria-labelledby="eventProposalDialogTitle">
       <form id="eventProposalForm" class="request-sheet-card event-proposal-card">
         <p id="eventProposalDialogEyebrow" class="eyebrow">Community event</p>
-        <h2 id="eventProposalDialogTitle">イベント開催を提案</h2>
-        <p id="eventProposalDialogLead">送信すると運営イベント窓口へメール通知され、審査承認後に開催中イベントや特集枠へ掲載される想定です。</p>
+        <h2 id="eventProposalDialogTitle">イベント開催を申請</h2>
+        <p id="eventProposalDialogLead">送信すると運営イベント窓口へメール通知され、承認後は主催者が好きなタイミング・期間でイベント告知や投稿を行える想定です。</p>
         <div class="compose-grid event-proposal-grid">
-          <label class="field wide">
+          <label class="field wide is-required">
             <span id="eventProposalTitleLabel">イベント名</span>
             <input id="eventProposalTitleInput" type="text" placeholder="例: Avatar styling showcase week" autocomplete="off" required />
           </label>
@@ -1494,34 +1606,36 @@
               <small id="eventProposalImagePreviewLabel">バナー画像プレビュー</small>
             </span>
           </label>
-          <label class="field">
+          <label class="field is-required">
             <span id="eventProposalTypeLabel">イベント種別</span>
             <select id="eventProposalTypeInput" required>
               <option value="showcase">作品特集</option>
               <option value="contest">コンテスト</option>
               <option value="workshop">ワークショップ</option>
               <option value="support">依頼促進キャンペーン</option>
+              <option value="other">その他</option>
             </select>
           </label>
-          <label class="field">
-            <span id="eventProposalWindowLabel">希望開催時期</span>
-            <input id="eventProposalWindowInput" type="text" placeholder="例: 7月前半 / 2週間" autocomplete="off" required />
+          <label id="eventProposalOtherTypeField" class="field wide event-proposal-other-field" hidden>
+            <span id="eventProposalOtherTypeLabel">その他の種別</span>
+            <input id="eventProposalOtherTypeInput" type="text" placeholder="例: アバター発売記念 / 同好会企画" autocomplete="off" maxlength="40" />
+            <span id="eventProposalOtherTypeHelp" class="field-help">運営が企画内容を判断しやすい短い名前を入力してください。</span>
           </label>
-          <label class="field">
+          <label class="field is-required">
             <span id="eventProposalOrganizerLabel">主催者名</span>
             <input id="eventProposalOrganizerInput" type="text" placeholder="Your display name" autocomplete="off" required />
           </label>
-          <label class="field">
+          <label class="field is-required">
             <span id="eventProposalContactLabel">連絡先メール</span>
             <input id="eventProposalContactInput" type="email" placeholder="organizer@example.com" autocomplete="off" required />
           </label>
-          <label class="field wide">
+          <label class="field wide is-required">
             <span id="eventProposalSummaryLabel">開催概要</span>
             <textarea id="eventProposalSummaryInput" rows="4" placeholder="何を開催したいか、誰に見てほしいか、どんな投稿を集めたいか" required></textarea>
           </label>
           <label class="field wide">
-            <span id="eventProposalSupportLabel">運営に期待すること</span>
-            <textarea id="eventProposalSupportInput" rows="3" placeholder="特集掲載、募集導線、開催期間の設定、注意事項案内など"></textarea>
+            <span id="eventProposalSupportLabel">運営に期待すること(※サポートを確約するものではありません)</span>
+            <textarea id="eventProposalSupportInput" rows="3" placeholder="特集掲載、バナー露出、募集導線、注意事項案内など"></textarea>
           </label>
         </div>
         <div class="event-proposal-mail-note">
@@ -1530,7 +1644,7 @@
         </div>
         <div class="request-sheet-actions">
           <button id="eventProposalCancel" class="soft-button" type="button">キャンセル</button>
-          <button id="eventProposalSubmit" class="primary-button" type="submit" disabled>提案を送信</button>
+          <button id="eventProposalSubmit" class="primary-button" type="submit" disabled>申請を送信</button>
         </div>
       </form>
     </dialog>
@@ -1629,6 +1743,13 @@
             <label class="field">
               <span>受付枠</span>
               <input id="requestPostCapacity" type="text" placeholder="受付 2 / 5" autocomplete="off" />
+            </label>
+            <label class="field">
+              <span>リテイク対応</span>
+              <select id="requestPostRetake">
+                <option value="yes" selected>対応する</option>
+                <option value="no">対応しない</option>
+              </select>
             </label>
             <label class="field">
               <span>Avatar</span>
