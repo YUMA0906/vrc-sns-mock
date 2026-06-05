@@ -524,6 +524,8 @@ let notificationReturnHash = "";
 let settingsReturnHash = "";
 let requestManagerReturnHash = "";
 let serviceReturnHash = "";
+let profileReturnHash = "";
+let requestPageReturnHash = "";
 let activeRequestManagerItemId = null;
 let missionReturnHash = "";
 let eventDetailReturnHash = "";
@@ -1568,6 +1570,7 @@ function applyLanguage({ rerender = false } = {}) {
   setText("#accountMenuSettings span", "appSettings");
   setText("#accountMenuLogout span", "logout");
   const mobileMenuLabels = {
+    home: currentLanguage === "en" ? "Home" : currentLanguage === "ko" ? "홈" : "ホーム",
     theme: currentLanguage === "en" ? "Night mode" : currentLanguage === "ko" ? "나이트 모드" : "ナイトモード",
     likes: currentLanguage === "en" ? "Liked posts" : currentLanguage === "ko" ? "좋아요" : "いいね",
     bookmarks: currentLanguage === "en" ? "Bookmarks" : currentLanguage === "ko" ? "북마크" : "ブックマーク",
@@ -2315,6 +2318,11 @@ function openProfile(slug) {
   if (modalIsOpen(dialog)) closeModalElement(dialog);
   if (modalIsOpen(composeDialog)) closeComposeDialog();
   if (modalIsOpen(requestComposeDialog)) closeRequestComposeDialog();
+  if (location.hash && !location.hash.startsWith("#profile/") && location.hash !== "#me") {
+    profileReturnHash = location.hash;
+  } else if (!location.hash) {
+    profileReturnHash = "";
+  }
   requestView.hidden = true;
   notificationsView.hidden = true;
   requestManagerView.hidden = true;
@@ -2325,6 +2333,17 @@ function openProfile(slug) {
   missionView.hidden = true;
   location.hash = `profile/${slug}`;
   renderProfile(pin.creator);
+}
+
+function returnFromProfile() {
+  const targetHash = profileReturnHash;
+  profileReturnHash = "";
+  if (!targetHash) {
+    showFeed();
+    return;
+  }
+  history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
+  routeFromHash();
 }
 
 function openMyProfile() {
@@ -2406,8 +2425,24 @@ function openRequestPage(creator, postId = null) {
   if (modalIsOpen(dialog)) closeModalElement(dialog);
   if (modalIsOpen(composeDialog)) closeComposeDialog();
   if (modalIsOpen(requestComposeDialog)) closeRequestComposeDialog();
+  if (location.hash && !location.hash.startsWith("#request/")) {
+    requestPageReturnHash = location.hash;
+  } else if (!location.hash) {
+    requestPageReturnHash = "";
+  }
   location.hash = `request/${slugify(creator)}/${post.id}`;
   renderRequestPage(creator, post.id);
+}
+
+function returnFromRequestPage() {
+  const targetHash = requestPageReturnHash;
+  requestPageReturnHash = "";
+  if (!targetHash) {
+    showFeed();
+    return;
+  }
+  history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
+  routeFromHash();
 }
 
 function renderRequestPage(creator, postId = null) {
@@ -4609,7 +4644,9 @@ accountMenu?.addEventListener("click", (event) => {
   if (!mobileAction) return;
   const action = mobileAction.dataset.mobileMenuAction;
   closeAccountMenu();
-  if (action === "theme") {
+  if (action === "home") {
+    showFeed();
+  } else if (action === "theme") {
     toggleTheme();
   } else if (action === "likes") {
     openMyProfileArchive("likes");
@@ -4629,8 +4666,8 @@ document.addEventListener("click", (event) => {
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") closeAccountMenu();
 });
-backToFeed.addEventListener("click", showFeed);
-backFromRequest.addEventListener("click", showFeed);
+backToFeed.addEventListener("click", returnFromProfile);
+backFromRequest.addEventListener("click", returnFromRequestPage);
 backFromNotifications.addEventListener("click", returnFromNotifications);
 backFromSettings?.addEventListener("click", returnFromSettings);
 backFromRequestManager?.addEventListener("click", returnFromRequestManager);
