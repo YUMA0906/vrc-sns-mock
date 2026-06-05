@@ -561,6 +561,7 @@ let bookmarkFolders = [
   { id: "folder-world", name: "World ideas", pinIds: [18] }
 ];
 savedPins = new Set(bookmarkFolders.flatMap((folder) => folder.pinIds || []));
+let profileArchivePinnedHeight = 0;
 const composeDraftStorageKey = "vrc-sns-compose-draft";
 const requestComposeDraftStorageKey = "vrc-sns-request-compose-draft";
 let myProfile = {
@@ -2319,6 +2320,21 @@ function scrollProfileArchiveIntoView() {
       window.requestAnimationFrame(run);
     });
   }, 120);
+}
+
+function currentProfileArchiveHeight() {
+  const candidates = [profileBoard, savedPostsSection, savedPostsBoard, bookmarkFoldersBoard]
+    .filter((node) => node && !node.hidden)
+    .map((node) => Math.ceil(node.getBoundingClientRect().height || node.offsetHeight || 0));
+  return candidates.length ? Math.max(...candidates) : 0;
+}
+
+function applyProfileArchivePinnedHeight() {
+  const minHeight = profileArchivePinnedHeight > 0 ? `${profileArchivePinnedHeight}px` : "";
+  if (profileBoard) profileBoard.style.minHeight = activeProfileArchiveTab === "folders" ? "" : minHeight;
+  if (savedPostsSection) savedPostsSection.style.minHeight = activeProfileArchiveTab === "folders" ? minHeight : "";
+  if (bookmarkFoldersBoard) bookmarkFoldersBoard.style.minHeight = "";
+  if (savedPostsBoard) savedPostsBoard.style.minHeight = "";
 }
 
 function openMyProfileArchive(tabName) {
@@ -4728,7 +4744,10 @@ profilePostSearch?.addEventListener("input", () => {
 
 profileArchiveTabs.forEach((button) => {
   button.addEventListener("click", () => {
-    activeProfileArchiveTab = button.dataset.profileArchiveTab || "posts";
+    const nextTab = button.dataset.profileArchiveTab || "posts";
+    const previousHeight = currentProfileArchiveHeight();
+    profileArchivePinnedHeight = nextTab === "folders" ? Math.max(previousHeight, 320) : 0;
+    activeProfileArchiveTab = nextTab;
     activeBookmarkFolderId = null;
     renderProfilePostArchive();
   });
@@ -5863,6 +5882,7 @@ function renderProfilePostArchive() {
   } else {
     renderSavedPostsSection();
   }
+  applyProfileArchivePinnedHeight();
 }
 
 function trustScore(posts, trust) {

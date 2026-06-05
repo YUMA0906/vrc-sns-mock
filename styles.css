@@ -6596,6 +6596,7 @@ body[data-theme="dark"] .profile-archive-tabs {
 .bookmark-folders-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
   gap: 14px;
 }
 
@@ -7167,11 +7168,41 @@ body.is-dragging .drop-hint {
   }
 
   main {
-    padding-inline: 14px;
+    padding: 22px 12px 52px;
   }
 
   .topbar {
-    padding-inline: 14px;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: 10px 8px;
+    padding: 12px;
+  }
+
+  .brand-mark {
+    width: 24px;
+    height: 24px;
+  }
+
+  .nav-actions {
+    justify-self: end;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-width: 228px;
+  }
+
+  .icon-button,
+  .avatar-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .badge {
+    top: 2px;
+    right: 1px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    font-size: 0.62rem;
   }
 
   .brand span:last-child,
@@ -7179,8 +7210,61 @@ body.is-dragging .drop-hint {
     display: none;
   }
 
+  .search-shell {
+    height: 42px;
+    padding: 0 12px;
+  }
+
+  .search-shell input {
+    min-width: 0;
+    font-size: 0.92rem;
+  }
+
+  .hero {
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .hero-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .hero-actions > :first-child {
+    grid-column: 1 / -1;
+  }
+
+  .hero-actions .soft-button,
+  .hero-actions .primary-button {
+    width: 100%;
+    min-width: 0;
+    padding-inline: 14px;
+  }
+
+  .summary-strip {
+    margin-bottom: 18px;
+  }
+
+  .summary-strip div,
+  .summary-link-card {
+    min-height: 72px;
+    padding: 14px;
+  }
+
   .view-tabs {
     width: 100%;
+  }
+
+  .filters {
+    gap: 8px;
+    padding: 2px 0 18px;
+  }
+
+  .chip {
+    min-height: 34px;
+    padding: 0 13px;
+    font-size: 0.84rem;
   }
 
   .event-banner-head {
@@ -7235,6 +7319,11 @@ body.is-dragging .drop-hint {
 
   .masonry {
     column-count: 2;
+    column-gap: 12px;
+  }
+
+  .pin-card {
+    margin-bottom: 12px;
   }
 
   .profile-stats {
@@ -7263,17 +7352,47 @@ body.is-dragging .drop-hint {
   }
 
   .profile-banner {
-    height: 136px;
+    height: 124px;
     border-radius: 22px 22px 0 0;
   }
 
   .profile-hero {
+    gap: 16px;
     margin-top: 0;
-    padding-top: 106px;
+    padding: 96px 16px 18px;
+  }
+
+  .profile-hero h1 {
+    display: block;
+  }
+
+  .profile-level-badge {
+    margin-left: 0;
+    margin-top: 10px;
+    vertical-align: baseline;
   }
 
   .profile-overview-grid {
     margin-top: 14px;
+  }
+
+  .profile-actions {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  #profileFollow,
+  #profileRequestButton {
+    grid-column: span 2;
+    width: 100%;
+  }
+
+  .profile-share-button,
+  .profile-social-button {
+    width: 100%;
+    min-width: 0;
   }
 
   .settings-row,
@@ -7289,6 +7408,11 @@ body.is-dragging .drop-hint {
 
   .settings-account-actions .soft-button {
     width: 100%;
+  }
+
+  .request-page-layout {
+    margin-top: 14px;
+    gap: 14px;
   }
 
   .request-detail,
@@ -7480,11 +7604,12 @@ body.is-dragging .drop-hint {
   }
 
   .request-detail-main-copy {
+    gap: 14px;
     padding: 18px 16px;
   }
 
   .request-detail-main-copy h1 {
-    font-size: clamp(1.7rem, 8.8vw, 2.35rem);
+    font-size: 1.65rem;
     line-height: 1.02;
   }
 
@@ -7505,11 +7630,18 @@ body.is-dragging .drop-hint {
   }
 
   .request-detail-main-topline {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
     gap: 10px;
   }
 
   .request-detail-main-topline time {
-    margin-left: auto;
+    margin-left: 0;
+  }
+
+  .request-report-button {
+    justify-self: end;
   }
 
   .request-brief-card {
@@ -8121,6 +8253,44 @@ body[data-theme="dark"] .profile-block-button.is-active:not([disabled]):focus-vi
 }
 
 @media (max-width: 420px) {
+  .topbar {
+    gap: 8px 6px;
+    padding: 10px 10px 8px;
+  }
+
+  .nav-actions {
+    gap: 5px;
+    max-width: 214px;
+  }
+
+  .icon-button,
+  .avatar-button {
+    width: 34px;
+    height: 34px;
+  }
+
+  .search-shell {
+    height: 40px;
+    padding: 0 10px;
+  }
+
+  .hero-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #profileFollow,
+  #profileRequestButton {
+    grid-column: 1 / -1;
+  }
+
+  .request-detail-main-copy h1 {
+    font-size: 1.42rem;
+  }
+
   .request-manager-card {
     grid-template-columns: 82px minmax(0, 1fr);
     border-radius: 16px;
