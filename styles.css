@@ -85,6 +85,13 @@ select {
 
 button {
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+button * {
+  user-select: inherit;
+  -webkit-user-select: inherit;
 }
 
 button {
@@ -4997,6 +5004,22 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   justify-content: flex-end;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.zip-safety-actions .primary-button:disabled,
+.zip-safety-actions .primary-button.is-disabled {
+  cursor: not-allowed;
+  background: color-mix(in srgb, var(--muted) 22%, transparent) !important;
+  border-color: color-mix(in srgb, var(--muted) 26%, transparent) !important;
+  color: color-mix(in srgb, var(--muted) 72%, transparent) !important;
+  box-shadow: none !important;
+  opacity: 1;
+  transform: none;
+}
+
+.zip-safety-actions .primary-button:disabled:hover,
+.zip-safety-actions .primary-button.is-disabled:hover {
+  transform: none;
 }
 
 .request-sheet-dialog {

@@ -4411,6 +4411,7 @@ function addRequestAttachments(files) {
   pendingZipAttachments = zipFiles.map(attachmentFromFile);
   zipSafetyCheckbox.checked = false;
   zipSafetyConfirm.disabled = true;
+  zipSafetyConfirm.classList.add("is-disabled");
   showModalElement(zipSafetyDialog);
 }
 
@@ -5770,7 +5771,9 @@ requestChatCompose?.addEventListener("submit", (event) => {
   sendRequestChatMessage();
 });
 zipSafetyCheckbox?.addEventListener("change", () => {
-  zipSafetyConfirm.disabled = !zipSafetyCheckbox.checked;
+  const disabled = !zipSafetyCheckbox.checked;
+  zipSafetyConfirm.disabled = disabled;
+  zipSafetyConfirm.classList.toggle("is-disabled", disabled);
 });
 zipSafetyConfirm?.addEventListener("click", confirmZipAttachments);
 zipSafetyCancel?.addEventListener("click", cancelZipAttachments);
