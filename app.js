@@ -1730,6 +1730,13 @@ function renderSavedSearchTabs() {
   `).join("");
 }
 
+function updateViewTabActiveStates() {
+  navPills.forEach((pill) => {
+    pill.classList.toggle("is-active", !activeSavedSearchTabId && pill.dataset.view === activeView);
+  });
+  updateViewTabActiveStates();
+}
+
 function activateSavedSearchTab(id) {
   const item = savedSearchTabItems.find((entry) => entry.id === id);
   if (!item) return;
@@ -3243,7 +3250,7 @@ function renderPins(items = filteredPins()) {
   updateHomeEventBannerVisibility();
   board.innerHTML = items.map(pinCard).join("");
   emptyState.hidden = items.length !== 0;
-  renderSavedSearchTabs();
+  updateViewTabActiveStates();
   bindPinCards(board);
 }
 
@@ -3272,7 +3279,7 @@ function setView(view, options = {}) {
   if (!options.preserveSavedSearch) {
     activeSavedSearchTabId = null;
   }
-  navPills.forEach((pill) => pill.classList.toggle("is-active", pill.dataset.view === view));
+  updateViewTabActiveStates();
   renderPins();
 }
 
