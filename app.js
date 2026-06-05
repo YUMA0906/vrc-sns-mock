@@ -222,6 +222,7 @@ const dropHint = document.querySelector("#dropHint");
 const themeToggle = document.querySelector("#themeToggle");
 const likedPostsButton = document.querySelector("#likedPostsButton");
 const bookmarkFoldersButton = document.querySelector("#bookmarkFoldersButton");
+const eventPageButton = document.querySelector("#eventPageButton");
 const missionButton = document.querySelector("#missionButton");
 const missionCardButton = document.querySelector("#missionCardButton");
 const requestManagerButton = document.querySelector("#requestManagerButton");
@@ -1048,6 +1049,14 @@ const translations = {
     externalLinkWarningHelp: "VRChat / BOOTH / X 以外のリンクを開く前に確認",
     onlineStatus: "オンライン状態を表示",
     onlineStatusHelp: "依頼チャットで対応可能かを表示",
+    settingsContentTitle: "コンテンツ表示",
+    showR18Content: "R18コンテンツを表示",
+    showR18ContentHelp: "年齢制限のある投稿や依頼を表示対象に含めます",
+    showGoreContent: "グロコンテンツを表示",
+    showGoreContentHelp: "流血、損傷表現など強い表現の投稿を表示対象に含めます",
+    sensitiveReveal: "センシティブ投稿の初期表示",
+    sensitiveBlur: "ぼかして「見る」ボタンを表示",
+    sensitiveVisible: "最初から表示",
     muteBlockManage: "ミュート・ブロック管理",
     stripePlanned: "Stripe 連携予定",
     stripeConnect: "Stripe連携",
@@ -1212,6 +1221,14 @@ const translations = {
     externalLinkWarningHelp: "Confirm before opening links other than VRChat / BOOTH / X",
     onlineStatus: "Show online status",
     onlineStatusHelp: "Show availability in request chat",
+    settingsContentTitle: "Content display",
+    showR18Content: "Show R18 content",
+    showR18ContentHelp: "Include age-restricted posts and requests in discovery",
+    showGoreContent: "Show gore content",
+    showGoreContentHelp: "Include posts with blood, injury, or intense visual expression",
+    sensitiveReveal: "Initial sensitive post display",
+    sensitiveBlur: "Blur with a View button",
+    sensitiveVisible: "Show immediately",
     muteBlockManage: "Manage mute / block",
     stripePlanned: "Stripe integration planned",
     stripeConnect: "Stripe connection",
@@ -1376,6 +1393,14 @@ const translations = {
     externalLinkWarningHelp: "VRChat / BOOTH / X 외 링크를 열기 전에 확인",
     onlineStatus: "온라인 상태 표시",
     onlineStatusHelp: "의뢰 채팅에서 대응 가능 여부 표시",
+    settingsContentTitle: "콘텐츠 표시",
+    showR18Content: "R18 콘텐츠 표시",
+    showR18ContentHelp: "연령 제한 게시물과 의뢰를 표시 대상에 포함합니다",
+    showGoreContent: "고어 콘텐츠 표시",
+    showGoreContentHelp: "유혈, 손상 표현 등 강한 표현의 게시물을 표시 대상에 포함합니다",
+    sensitiveReveal: "민감한 게시물 초기 표시",
+    sensitiveBlur: "흐림 처리 후 보기 버튼 표시",
+    sensitiveVisible: "처음부터 표시",
     muteBlockManage: "뮤트 / 차단 관리",
     stripePlanned: "Stripe 연동 예정",
     stripeConnect: "Stripe 연동",
@@ -1541,6 +1566,7 @@ function getCommunityEventCampaignList() {
         proposal.organizer,
       ],
       tags: [
+        ...eventProposalTags(proposal.tags),
         eventHashTag(typeLabel),
         eventHashTag(proposal.organizer),
         "#ユーザー発案",
@@ -1561,6 +1587,14 @@ function getCommunityEventCampaignList() {
 
 function getEventsPageCampaignList() {
   return activeEventsFilter === "community" ? getCommunityEventCampaignList() : getOfficialEventCampaignList();
+}
+
+function eventProposalTags(value) {
+  if (Array.isArray(value)) return value.map(eventHashTag).filter(Boolean);
+  return String(value || "")
+    .split(/[\s,、]+/)
+    .map(eventHashTag)
+    .filter(Boolean);
 }
 
 function localizedValue(value) {
@@ -1836,13 +1870,20 @@ function renderEventCarousel() {
     <button class="event-dot${index === activeEventIndex ? " is-active" : ""}" type="button" data-event-dot="${index}" aria-label="${event.title}"></button>
   `).join("");
 
-  updateEventCarouselPosition();
+  updateEventCarouselPosition(0, eventVisualIndex, { immediate: true });
 }
 
-function updateEventCarouselPosition(offsetPx = 0, visualIndex = eventVisualIndex) {
+function updateEventCarouselPosition(offsetPx = 0, visualIndex = eventVisualIndex, options = {}) {
   if (!eventCarouselTrack || !eventCarouselDots) return;
   eventVisualIndex = visualIndex;
+  if (options.immediate) {
+    eventCarouselTrack.style.transition = "none";
+  }
   eventCarouselTrack.style.transform = `translateX(calc(-${visualIndex * 100}% + ${offsetPx}px))`;
+  if (options.immediate) {
+    void eventCarouselTrack.offsetWidth;
+    eventCarouselTrack.style.transition = "";
+  }
   [...eventCarouselDots.querySelectorAll(".event-dot")].forEach((dot, index) => {
     dot.classList.toggle("is-active", index === activeEventIndex);
   });
@@ -2134,11 +2175,10 @@ function submitEventProposal(event) {
 }
 
 function updateSettingsPanelLanguage() {
-  const panels = [...settingsView.querySelectorAll(".settings-panel")];
   setText(".settings-heading h1", "appSettings");
   setText(".settings-heading p:not(.eyebrow)", "settingsLead");
 
-  const notificationPanel = panels[0];
+  const notificationPanel = settingsView.querySelector("[aria-labelledby='settingsNotificationsTitle']");
   if (notificationPanel) {
     setText(notificationPanel.querySelector("h2"), "settingsNotificationsTitle");
     const rows = [...notificationPanel.querySelectorAll(".settings-row")];
@@ -2148,7 +2188,7 @@ function updateSettingsPanelLanguage() {
     });
   }
 
-  const displayPanel = panels[1];
+  const displayPanel = settingsView.querySelector("[aria-labelledby='settingsDisplayTitle']");
   if (displayPanel) {
     setText(displayPanel.querySelector("h2"), "settingsDisplayTitle");
     const fields = [...displayPanel.querySelectorAll(".settings-field")];
@@ -2162,7 +2202,7 @@ function updateSettingsPanelLanguage() {
     });
   }
 
-  const privacyPanel = panels[2];
+  const privacyPanel = settingsView.querySelector("[aria-labelledby='settingsPrivacyTitle']");
   if (privacyPanel) {
     setText(privacyPanel.querySelector("h2"), "settingsPrivacyTitle");
     setText(privacyPanel.querySelector(".settings-field span"), "profileVisibility");
@@ -2174,7 +2214,20 @@ function updateSettingsPanelLanguage() {
     setText(privacyPanel.querySelector(".settings-wide-button"), "muteBlockManage");
   }
 
-  const accountPanel = panels[3];
+  const contentPanel = settingsView.querySelector("[aria-labelledby='settingsContentTitle']");
+  if (contentPanel) {
+    setText(contentPanel.querySelector("h2"), "settingsContentTitle");
+    const rows = [...contentPanel.querySelectorAll(".settings-row")];
+    [[rows[0], "showR18Content", "showR18ContentHelp"], [rows[1], "showGoreContent", "showGoreContentHelp"]].forEach(([row, title, help]) => {
+      setText(row?.querySelector("strong"), title);
+      setText(row?.querySelector("small"), help);
+    });
+    const field = contentPanel.querySelector(".settings-field");
+    setText(field?.querySelector("span"), "sensitiveReveal");
+    setSelectOptionTexts(field?.querySelector("select"), ["sensitiveBlur", "sensitiveVisible"]);
+  }
+
+  const accountPanel = settingsView.querySelector("[aria-labelledby='settingsAccountTitle']");
   if (accountPanel) {
     setText(accountPanel.querySelector("h2"), "account");
     const stripeField = accountPanel.querySelector(".settings-field");
@@ -2200,6 +2253,10 @@ function applyLanguage({ rerender = false } = {}) {
   setAttr(likedPostsButton, "title", "likedPostsShortcut");
   setAttr(bookmarkFoldersButton, "aria-label", "bookmarkFoldersShortcut");
   setAttr(bookmarkFoldersButton, "title", "bookmarkFoldersShortcut");
+  if (eventPageButton) {
+    eventPageButton.setAttribute("aria-label", t("events"));
+    eventPageButton.setAttribute("title", t("events"));
+  }
   setAttr(requestManagerButton, "aria-label", "requestManager");
   setAttr(requestManagerButton, "title", "requestManager");
   setAttr(notificationButton, "aria-label", "notifications");
@@ -2231,7 +2288,7 @@ function applyLanguage({ rerender = false } = {}) {
   if (composeDraftListTitle) composeDraftListTitle.textContent = currentLanguage === "en" ? "Draft list" : currentLanguage === "ko" ? "초안 목록" : "下書きリスト";
   if (composeDraftListClose) composeDraftListClose.textContent = currentLanguage === "en" ? "Close" : currentLanguage === "ko" ? "닫기" : "閉じる";
   setText("#eventBannerEyebrow", currentLanguage === "en" ? "Now live" : currentLanguage === "ko" ? "지금 진행 중" : "Now live");
-  setText("#eventBannerHeading", currentLanguage === "en" ? "Live events" : currentLanguage === "ko" ? "진행 중인 이벤트" : "開催中のイベント");
+  setText("#eventBannerHeading", currentLanguage === "en" ? "Picked events" : currentLanguage === "ko" ? "픽업 이벤트" : "ピックアップイベント");
   if (eventPrev) eventPrev.setAttribute("aria-label", currentLanguage === "en" ? "Previous event" : currentLanguage === "ko" ? "이전 이벤트" : "前のイベント");
   if (eventNext) eventNext.setAttribute("aria-label", currentLanguage === "en" ? "Next event" : currentLanguage === "ko" ? "다음 이벤트" : "次のイベント");
   if (missionCardButton) {
@@ -2272,7 +2329,7 @@ function applyLanguage({ rerender = false } = {}) {
   setText("#serviceMissionLinkTitle", currentLanguage === "en" ? "See the background and direction" : currentLanguage === "ko" ? "서비스의 배경과 방향 보기" : "サービスの背景や目指す方向を見る");
   setText("#serviceMissionBody", currentLanguage === "en" ? "Use Our Mission for the why behind the product rather than the how-to guide." : currentLanguage === "ko" ? "사용법이 아니라 왜 이 서비스를 만드는지 궁금할 때 Our Mission을 보면 됩니다." : "使い方ではなく、なぜこのサービスを作るのか、何を良くしたいのかを知りたい時は Our Mission を見てください。");
   setText("#serviceMissionLink", currentLanguage === "en" ? "Open Our Mission" : currentLanguage === "ko" ? "Our Mission 보기" : "Our Missionを見る");
-  setText("#openEventProposalButton", "eventProposalTrigger");
+  setText("#openEventProposalButton", currentLanguage === "en" ? "Open events" : currentLanguage === "ko" ? "이벤트 보기" : "イベントページへ");
   setText("#eventProposalEyebrow", currentLanguage === "en" ? "Community event" : currentLanguage === "ko" ? "커뮤니티 이벤트" : "ユーザーイベント");
   setText("#eventProposalSectionTitle", "eventProposalSectionTitle");
   setText("#eventProposalSectionLead", "eventProposalSectionLead");
@@ -2444,6 +2501,11 @@ function settingsControlKey(control, index) {
   return `${panelId}:${index}:${label}`;
 }
 
+function legacySettingsControlKeys(control) {
+  if (control?.id === "settingsR18Content") return ["settingsR19Content"];
+  return [];
+}
+
 function settingPayload(control) {
   if (control.type === "checkbox") return { type: "checkbox", checked: control.checked };
   if (control.tagName === "SELECT") return { type: "select", selectedIndex: control.selectedIndex };
@@ -2474,7 +2536,9 @@ function loadSavedSettings() {
     const key = control.dataset.settingKey || settingsControlKey(control, index);
     control.dataset.settingKey = key;
     try {
-      applySettingPayload(control, JSON.parse(localStorage.getItem(`vrc-sns-setting:${key}`)));
+      const stored = localStorage.getItem(`vrc-sns-setting:${key}`)
+        || legacySettingsControlKeys(control).map((legacyKey) => localStorage.getItem(`vrc-sns-setting:${legacyKey}`)).find(Boolean);
+      applySettingPayload(control, JSON.parse(stored));
     } catch {
       localStorage.removeItem(`vrc-sns-setting:${key}`);
     }
@@ -2484,6 +2548,15 @@ function loadSavedSettings() {
 function applyReducedMotionSetting() {
   const enabled = Boolean(settingsReducedMotion?.checked);
   document.documentElement.dataset.reducedMotion = enabled ? "true" : "false";
+}
+
+function applyContentDisplaySettings() {
+  const r18Enabled = Boolean(document.querySelector("#settingsR18Content")?.checked);
+  const goreEnabled = Boolean(document.querySelector("#settingsGoreContent")?.checked);
+  const revealMode = document.querySelector("#settingsSensitiveReveal")?.value || "blur";
+  document.documentElement.dataset.showR18Content = r18Enabled ? "true" : "false";
+  document.documentElement.dataset.showGoreContent = goreEnabled ? "true" : "false";
+  document.documentElement.dataset.sensitiveReveal = revealMode;
 }
 
 function saveSetting(control) {
@@ -2507,6 +2580,9 @@ function handleSettingsAutoSave(event) {
   saveSetting(control);
   if (control === settingsThemeMode) applyThemeMode(control.value);
   if (control === settingsReducedMotion) applyReducedMotionSetting();
+  if (control?.id === "settingsR18Content" || control?.id === "settingsGoreContent" || control?.id === "settingsSensitiveReveal") {
+    applyContentDisplaySettings();
+  }
   markSettingsAutoSaved(control !== settingsLanguage);
 }
 
@@ -5393,7 +5469,7 @@ navPills.forEach((pill) => {
 searchInput.addEventListener("input", () => renderPins());
 eventPrev?.addEventListener("click", () => goToEventSlide(activeEventIndex - 1));
 eventNext?.addEventListener("click", () => goToEventSlide(activeEventIndex + 1));
-openEventProposalButton?.addEventListener("click", openEventProposalDialog);
+openEventProposalButton?.addEventListener("click", openEventsPage);
 openEventProposalFromDetail?.addEventListener("click", openEventProposalDialog);
 eventsCreateButton?.addEventListener("click", openEventProposalDialog);
 eventsSearchInput?.addEventListener("input", renderEventsList);
@@ -5473,6 +5549,7 @@ composeDraftListBody?.addEventListener("click", (event) => {
 themeToggle.addEventListener("click", toggleTheme);
 likedPostsButton?.addEventListener("click", () => openMyProfileArchive("likes"));
 bookmarkFoldersButton?.addEventListener("click", () => openMyProfileArchive("folders"));
+eventPageButton?.addEventListener("click", openEventsPage);
 missionButton?.addEventListener("click", openServicePage);
 missionCardButton?.addEventListener("click", openServicePage);
 requestManagerButton?.addEventListener("click", openRequestManagerPage);
@@ -6639,6 +6716,7 @@ window.addEventListener("drop", (event) => {
 
 loadSavedSettings();
 applyReducedMotionSetting();
+applyContentDisplaySettings();
 applyThemeMode(localStorage.getItem("vrc-sns-theme-mode") || settingsThemeMode?.value || "system");
 applyMyAvatarToChrome();
 normalizeProfileEditorText();

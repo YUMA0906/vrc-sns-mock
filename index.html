@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="./styles.css?v=compact-account-switcher-1" />
+    <link rel="stylesheet" href="./styles.css?v=qa-event-tags-1" />
   </head>
   <body>
     <header class="topbar">
@@ -45,6 +45,15 @@
         <button id="bookmarkFoldersButton" class="icon-button" type="button" aria-label="ブックマークフォルダ" title="ブックマークフォルダ">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M19 21 12 17 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z" />
+          </svg>
+        </button>
+        <button id="eventPageButton" class="icon-button" type="button" aria-label="イベント" title="イベント">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M8 2v4" />
+            <path d="M16 2v4" />
+            <rect x="3" y="4" width="18" height="18" rx="3" />
+            <path d="M3 10h18" />
+            <path d="m9 16 2 2 4-5" />
           </svg>
         </button>
         <button id="requestManagerButton" class="icon-button" type="button" aria-label="Request manager" title="Request manager">
@@ -168,10 +177,10 @@
           <div class="event-banner-head">
             <div>
               <p id="eventBannerEyebrow" class="eyebrow">Now live</p>
-              <h2 id="eventBannerHeading">開催中のイベント</h2>
+              <h2 id="eventBannerHeading">ピックアップイベント</h2>
             </div>
             <div class="event-banner-controls" aria-label="Event controls">
-              <button id="openEventProposalButton" class="soft-button event-proposal-trigger" type="button">イベント開催を提案</button>
+              <button id="openEventProposalButton" class="soft-button event-proposal-trigger" type="button">イベントページへ</button>
               <button id="eventPrev" class="event-nav-button" type="button" aria-label="Previous event">
                 <svg aria-hidden="true" viewBox="0 0 24 24">
                   <path d="m15 18-6-6 6-6" />
@@ -586,6 +595,33 @@
                 <input type="checkbox" checked />
               </label>
               <button class="soft-button settings-wide-button" type="button">ミュート・ブロック管理</button>
+            </section>
+
+            <section class="settings-panel" aria-labelledby="settingsContentTitle">
+              <div class="settings-panel-heading">
+                <span class="settings-panel-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 3 4 7v5c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V7l-8-4Z" /><path d="M12 8v5" /><path d="M12 17h.01" /></svg>
+                </span>
+                <div>
+                  <p class="eyebrow">Content</p>
+                  <h2 id="settingsContentTitle">コンテンツ表示</h2>
+                </div>
+              </div>
+              <label class="settings-row">
+                <span><strong>R18コンテンツを表示</strong><small>年齢制限のある投稿や依頼を表示対象に含めます</small></span>
+                <input id="settingsR18Content" type="checkbox" />
+              </label>
+              <label class="settings-row">
+                <span><strong>グロコンテンツを表示</strong><small>流血、損傷表現など強い表現の投稿を表示対象に含めます</small></span>
+                <input id="settingsGoreContent" type="checkbox" />
+              </label>
+              <label class="settings-field">
+                <span>センシティブ投稿の初期表示</span>
+                <select id="settingsSensitiveReveal">
+                  <option value="blur">ぼかして「見る」ボタンを表示</option>
+                  <option value="visible">最初から表示</option>
+                </select>
+              </label>
             </section>
 
             <section class="settings-panel settings-panel-wide" aria-labelledby="settingsAccountTitle">
@@ -1772,6 +1808,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=compact-account-switcher-1"></script>
+    <script src="./app.js?v=qa-event-tags-1"></script>
   </body>
 </html>
