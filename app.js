@@ -574,6 +574,7 @@ let eventAutoplayTimer = 0;
 let eventDragState = null;
 let eventVisualIndex = 0;
 let eventLoopResetIndex = null;
+let eventDragFrame = 0;
 let ignoreEventSlideClick = false;
 const demoAccountPassword = "password";
 let approveHoldTimer = 0;
@@ -1879,13 +1880,29 @@ function updateEventCarouselPosition(offsetPx = 0, visualIndex = eventVisualInde
   if (options.immediate) {
     eventCarouselTrack.style.transition = "none";
   }
-  eventCarouselTrack.style.transform = `translateX(calc(-${visualIndex * 100}% + ${offsetPx}px))`;
+  eventCarouselTrack.style.transform = `translate3d(calc(-${visualIndex * 100}% + ${offsetPx}px), 0, 0)`;
   if (options.immediate) {
     void eventCarouselTrack.offsetWidth;
     eventCarouselTrack.style.transition = "";
   }
+  if (options.skipDots) return;
   [...eventCarouselDots.querySelectorAll(".event-dot")].forEach((dot, index) => {
     dot.classList.toggle("is-active", index === activeEventIndex);
+  });
+}
+
+function cancelEventDragFrame() {
+  if (!eventDragFrame) return;
+  window.cancelAnimationFrame(eventDragFrame);
+  eventDragFrame = 0;
+}
+
+function scheduleEventDragPosition() {
+  if (!eventDragState || eventDragFrame) return;
+  eventDragFrame = window.requestAnimationFrame(() => {
+    eventDragFrame = 0;
+    if (!eventDragState) return;
+    updateEventCarouselPosition(eventDragState.deltaX, eventVisualIndex, { skipDots: true });
   });
 }
 
@@ -1961,7 +1978,7 @@ function moveEventDrag(event) {
     eventDragState.moved = true;
   }
   if (absY > boardTapMoveTolerance && absY > absX) return;
-  updateEventCarouselPosition(eventDragState.deltaX, eventVisualIndex);
+  scheduleEventDragPosition();
 }
 
 function endEventDrag(event) {
@@ -1977,6 +1994,7 @@ function endEventDrag(event) {
     ? document.elementFromPoint(event.clientX, event.clientY)?.closest?.('.event-slide-card[href^="#event/"]')
     : null;
   eventCarouselTrack?.classList.remove("is-dragging");
+  cancelEventDragFrame();
   ignoreEventSlideClick = !isTap;
   if (isCanceled || isVerticalScroll) {
     eventDragState = null;
@@ -2548,6 +2566,13 @@ function loadSavedSettings() {
 function applyReducedMotionSetting() {
   const enabled = Boolean(settingsReducedMotion?.checked);
   document.documentElement.dataset.reducedMotion = enabled ? "true" : "false";
+}
+
+function defaultReducedMotionOff() {
+  if (!settingsReducedMotion) return;
+  settingsReducedMotion.checked = false;
+  const key = settingsReducedMotion.dataset.settingKey || "settingsReducedMotion";
+  localStorage.setItem(`vrc-sns-setting:${key}`, JSON.stringify(settingPayload(settingsReducedMotion)));
 }
 
 function applyContentDisplaySettings() {
@@ -6715,6 +6740,7 @@ window.addEventListener("drop", (event) => {
 });
 
 loadSavedSettings();
+defaultReducedMotionOff();
 applyReducedMotionSetting();
 applyContentDisplaySettings();
 applyThemeMode(localStorage.getItem("vrc-sns-theme-mode") || settingsThemeMode?.value || "system");

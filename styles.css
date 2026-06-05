@@ -703,10 +703,12 @@ body[data-theme="dark"] .event-nav-button {
 
 .event-carousel-track {
   display: flex;
-  transition: transform 1200ms cubic-bezier(.22, 1, .36, 1);
+  transition: transform 1050ms cubic-bezier(.2, .86, .2, 1);
   will-change: transform;
   cursor: grab;
   user-select: none;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 .event-carousel-track.is-dragging {
@@ -724,6 +726,7 @@ body[data-reduced-motion="true"] .event-carousel-track {
   min-width: 100%;
   padding: 0 4px;
   box-sizing: border-box;
+  transform: translateZ(0);
 }
 
 .event-slide-card {
@@ -8094,6 +8097,11 @@ body.is-dragging .drop-hint {
     height: 124px;
     padding: 8px;
     border-radius: 17px;
+  }
+
+  .event-carousel-track {
+    transition-duration: 820ms;
+    transition-timing-function: cubic-bezier(.2, .82, .2, 1);
   }
 
   .event-slide-copy {
