@@ -2516,6 +2516,7 @@ function openEventProposalDialog() {
   if (eventProposalTypeInput) eventProposalTypeInput.value = "showcase";
   if (eventProposalOrganizerInput) eventProposalOrganizerInput.value = myProfile?.displayName || "You";
   if (eventProposalContactInput) eventProposalContactInput.value = "you@example.com";
+  updateEventProposalSubmitState();
   showModalElement(eventProposalDialog);
   window.setTimeout(() => eventProposalTitleInput?.focus(), 140);
 }
@@ -2539,17 +2540,28 @@ function updateEventProposalImagePreview(source) {
 function loadEventProposalImage(file) {
   if (!file || !file.type.startsWith("image/")) {
     updateEventProposalImagePreview("");
+    updateEventProposalSubmitState();
     return;
   }
   const reader = new FileReader();
   reader.addEventListener("load", () => {
     updateEventProposalImagePreview(String(reader.result || ""));
+    updateEventProposalSubmitState();
   });
   reader.readAsDataURL(file);
 }
 
+function updateEventProposalSubmitState() {
+  if (!eventProposalForm || !eventProposalSubmit) return;
+  eventProposalSubmit.disabled = !eventProposalForm.checkValidity();
+}
+
 function submitEventProposal(event) {
   event.preventDefault();
+  if (!eventProposalForm?.reportValidity()) {
+    updateEventProposalSubmitState();
+    return;
+  }
   const proposalTitle = eventProposalTitleInput?.value?.trim();
   if (!proposalTitle) return;
   communityEventProposals = [
@@ -2558,8 +2570,8 @@ function submitEventProposal(event) {
       title: proposalTitle,
       type: eventProposalTypeInput?.value || "showcase",
       organizer: eventProposalOrganizerInput?.value?.trim() || myProfile?.displayName || "You",
-      window: eventProposalWindowInput?.value?.trim() || (currentLanguage === "en" ? "Timing undecided" : currentLanguage === "ko" ? "일정 미정" : "時期調整中"),
-      summary: eventProposalSummaryInput?.value?.trim() || (currentLanguage === "en" ? "Awaiting organizer summary." : currentLanguage === "ko" ? "주최자 개요 대기 중." : "主催者からの概要確認待ちです。"),
+      window: eventProposalWindowInput?.value?.trim() || "",
+      summary: eventProposalSummaryInput?.value?.trim() || "",
       status: "pending",
       participants: 0,
       image: pendingEventProposalImage || vrchatImages.event,
@@ -2781,7 +2793,10 @@ function applyLanguage({ rerender = false } = {}) {
   setText("[data-view='discover']", "explore");
   setText("[data-view='following']", "followingFeed");
   setText("[data-view='requests']", "requests");
-  setText("#addSavedSearchTab", "addTab");
+  if (addSavedSearchTabButton) {
+    addSavedSearchTabButton.setAttribute("aria-label", t("addTab"));
+    addSavedSearchTabButton.title = t("addTab");
+  }
   setText("#savedSearchDialogEyebrow", currentLanguage === "en" ? "Custom tab" : currentLanguage === "ko" ? "사용자 탭" : "カスタムタブ");
   setText("#savedSearchLabelText", "savedTabLabel");
   setText("#savedSearchQueryText", "savedTabQuery");
@@ -6012,6 +6027,18 @@ settingsView?.addEventListener("change", handleSettingsAutoSave);
 eventProposalCancel?.addEventListener("click", closeEventProposalDialog);
 eventProposalImageInput?.addEventListener("change", () => {
   loadEventProposalImage(eventProposalImageInput.files?.[0]);
+});
+[
+  eventProposalTitleInput,
+  eventProposalTypeInput,
+  eventProposalWindowInput,
+  eventProposalOrganizerInput,
+  eventProposalContactInput,
+  eventProposalSummaryInput,
+  eventProposalSupportInput
+].forEach((field) => {
+  field?.addEventListener("input", updateEventProposalSubmitState);
+  field?.addEventListener("change", updateEventProposalSubmitState);
 });
 eventProposalForm?.addEventListener("submit", submitEventProposal);
 shuffleButton.addEventListener("click", shufflePins);

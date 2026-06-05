@@ -1255,12 +1255,48 @@ body[data-theme="dark"] .view-tabs {
 }
 
 .saved-search-tabs {
-  flex: 1 1 220px;
+  flex: 0 1 auto;
+  max-width: min(52vw, 560px);
 }
 
 .nav-pill-add {
+  display: inline-grid;
+  place-items: center;
   flex: 0 0 auto;
-  background: rgba(255,255,255,0.82);
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, var(--line));
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 12px 26px rgba(20,20,20,0.12);
+}
+
+.nav-pill-add svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.3;
+}
+
+.nav-pill-add:hover {
+  background: color-mix(in srgb, var(--accent) 92%, #fff);
+  box-shadow: 0 16px 34px rgba(20,20,20,0.18);
+}
+
+[data-theme="dark"] .nav-pill-add,
+body[data-theme="dark"] .nav-pill-add {
+  background: #fff7e8;
+  border-color: #fff7e8;
+  color: #111;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.34);
+}
+
+[data-theme="dark"] .nav-pill-add:hover,
+body[data-theme="dark"] .nav-pill-add:hover {
+  background: #fffdf7;
+  border-color: #fffdf7;
 }
 
 .saved-search-pill {
@@ -1285,6 +1321,15 @@ body[data-theme="dark"] .view-tabs {
 }
 
 .saved-search-dialog-card .primary-button:disabled {
+  opacity: 0.46;
+  background: color-mix(in srgb, var(--muted) 24%, transparent);
+  border-color: color-mix(in srgb, var(--muted) 24%, transparent);
+  color: color-mix(in srgb, var(--muted) 82%, transparent);
+  box-shadow: none;
+  transform: none;
+}
+
+#eventProposalSubmit:disabled {
   opacity: 0.46;
   background: color-mix(in srgb, var(--muted) 24%, transparent);
   border-color: color-mix(in srgb, var(--muted) 24%, transparent);
@@ -8223,12 +8268,14 @@ body.is-dragging .drop-hint {
   }
 
   .saved-search-tabs {
-    flex-basis: 100%;
+    flex: 0 1 auto;
+    max-width: calc(100% - 46px);
     order: 3;
   }
 
   .nav-pill-add {
-    margin-left: auto;
+    order: 3;
+    margin-left: 0;
   }
 
   .filters {

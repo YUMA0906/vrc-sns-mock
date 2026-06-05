@@ -228,7 +228,12 @@
           <button class="nav-pill" type="button" data-view="requests">Requests</button>
         </div>
         <div id="savedSearchTabs" class="saved-search-tabs" aria-label="Saved searches"></div>
-        <button id="addSavedSearchTab" class="nav-pill nav-pill-add" type="button">タブ追加</button>
+        <button id="addSavedSearchTab" class="nav-pill nav-pill-add" type="button" aria-label="タブ追加" title="タブ追加">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M12 5v14" />
+            <path d="M5 12h14" />
+          </svg>
+        </button>
       </section>
 
       <section class="filters" aria-label="Categories">
@@ -1491,7 +1496,7 @@
           </label>
           <label class="field">
             <span id="eventProposalTypeLabel">イベント種別</span>
-            <select id="eventProposalTypeInput">
+            <select id="eventProposalTypeInput" required>
               <option value="showcase">作品特集</option>
               <option value="contest">コンテスト</option>
               <option value="workshop">ワークショップ</option>
@@ -1500,19 +1505,19 @@
           </label>
           <label class="field">
             <span id="eventProposalWindowLabel">希望開催時期</span>
-            <input id="eventProposalWindowInput" type="text" placeholder="例: 7月前半 / 2週間" autocomplete="off" />
+            <input id="eventProposalWindowInput" type="text" placeholder="例: 7月前半 / 2週間" autocomplete="off" required />
           </label>
           <label class="field">
             <span id="eventProposalOrganizerLabel">主催者名</span>
-            <input id="eventProposalOrganizerInput" type="text" placeholder="Your display name" autocomplete="off" />
+            <input id="eventProposalOrganizerInput" type="text" placeholder="Your display name" autocomplete="off" required />
           </label>
           <label class="field">
             <span id="eventProposalContactLabel">連絡先メール</span>
-            <input id="eventProposalContactInput" type="email" placeholder="organizer@example.com" autocomplete="off" />
+            <input id="eventProposalContactInput" type="email" placeholder="organizer@example.com" autocomplete="off" required />
           </label>
           <label class="field wide">
             <span id="eventProposalSummaryLabel">開催概要</span>
-            <textarea id="eventProposalSummaryInput" rows="4" placeholder="何を開催したいか、誰に見てほしいか、どんな投稿を集めたいか"></textarea>
+            <textarea id="eventProposalSummaryInput" rows="4" placeholder="何を開催したいか、誰に見てほしいか、どんな投稿を集めたいか" required></textarea>
           </label>
           <label class="field wide">
             <span id="eventProposalSupportLabel">運営に期待すること</span>
@@ -1525,7 +1530,7 @@
         </div>
         <div class="request-sheet-actions">
           <button id="eventProposalCancel" class="soft-button" type="button">キャンセル</button>
-          <button id="eventProposalSubmit" class="primary-button" type="submit">提案を送信</button>
+          <button id="eventProposalSubmit" class="primary-button" type="submit" disabled>提案を送信</button>
         </div>
       </form>
     </dialog>
