@@ -190,6 +190,7 @@ const eventCarouselTrack = document.querySelector("#eventCarouselTrack");
 const eventCarouselDots = document.querySelector("#eventCarouselDots");
 const eventPrev = document.querySelector("#eventPrev");
 const eventNext = document.querySelector("#eventNext");
+const openEventProposalButton = document.querySelector("#openEventProposalButton");
 const profileView = document.querySelector("#profileView");
 const requestView = document.querySelector("#requestView");
 const notificationsView = document.querySelector("#notificationsView");
@@ -198,6 +199,7 @@ const requestManagerDetailView = document.querySelector("#requestManagerDetailVi
 const settingsView = document.querySelector("#settingsView");
 const serviceView = document.querySelector("#serviceView");
 const eventDetailView = document.querySelector("#eventDetailView");
+const eventsView = document.querySelector("#eventsView");
 const missionView = document.querySelector("#missionView");
 const searchInput = document.querySelector("#searchInput");
 const chips = [...document.querySelectorAll(".chip")];
@@ -229,6 +231,9 @@ const notificationBadge = document.querySelector("#notificationBadge");
 const mobileNotificationBadge = document.querySelector("#mobileNotificationBadge");
 const avatarButton = document.querySelector("#avatarButton");
 const accountMenu = document.querySelector("#accountMenu");
+const accountSwitcherCurrent = document.querySelector("#accountSwitcherCurrent");
+const accountSwitcherList = document.querySelector("#accountSwitcherList");
+const accountAddButton = document.querySelector("#accountAddButton");
 const accountMenuProfile = document.querySelector("#accountMenuProfile");
 const accountMenuService = document.querySelector("#accountMenuService");
 const accountMenuSettings = document.querySelector("#accountMenuSettings");
@@ -241,6 +246,7 @@ const backFromRequestManager = document.querySelector("#backFromRequestManager")
 const backFromRequestDetail = document.querySelector("#backFromRequestDetail");
 const backFromService = document.querySelector("#backFromService");
 const backFromEventDetail = document.querySelector("#backFromEventDetail");
+const backFromEvents = document.querySelector("#backFromEvents");
 const backFromMission = document.querySelector("#backFromMission");
 const profileBanner = document.querySelector("#profileBanner");
 const profileAvatar = document.querySelector("#profileAvatar");
@@ -288,6 +294,8 @@ const requestGuestSignUp = document.querySelector("#requestGuestSignUp");
 const requestGuestSignIn = document.querySelector("#requestGuestSignIn");
 const requestPaymentMethod = document.querySelector("#requestPaymentMethod");
 const requestAmountInput = document.querySelector("#requestAmountInput");
+const requestAmountHelp = document.querySelector("#requestAmountHelp");
+const requestAmountError = document.querySelector("#requestAmountError");
 const requestAgreement = document.querySelector("#requestAgreement");
 const requestConfirmButton = document.querySelector("#requestConfirmButton");
 const requestCreatorProfileButton = document.querySelector("#requestCreatorProfileButton");
@@ -405,6 +413,27 @@ const eventDetailDate = document.querySelector("#eventDetailDate");
 const eventDetailStatus = document.querySelector("#eventDetailStatus");
 const eventDetailHighlights = document.querySelector("#eventDetailHighlights");
 const eventDetailStats = document.querySelector("#eventDetailStats");
+const openEventProposalFromDetail = document.querySelector("#openEventProposalFromDetail");
+const eventProposalFlow = document.querySelector("#eventProposalFlow");
+const eventProposalList = document.querySelector("#eventProposalList");
+const eventProposalDialog = document.querySelector("#eventProposalDialog");
+const eventProposalForm = document.querySelector("#eventProposalForm");
+const eventProposalTitleInput = document.querySelector("#eventProposalTitleInput");
+const eventProposalImageInput = document.querySelector("#eventProposalImageInput");
+const eventProposalImagePreview = document.querySelector("#eventProposalImagePreview");
+const eventProposalImagePreviewImg = document.querySelector("#eventProposalImagePreviewImg");
+const eventProposalTypeInput = document.querySelector("#eventProposalTypeInput");
+const eventProposalWindowInput = document.querySelector("#eventProposalWindowInput");
+const eventProposalOrganizerInput = document.querySelector("#eventProposalOrganizerInput");
+const eventProposalContactInput = document.querySelector("#eventProposalContactInput");
+const eventProposalSummaryInput = document.querySelector("#eventProposalSummaryInput");
+const eventProposalSupportInput = document.querySelector("#eventProposalSupportInput");
+const eventProposalCancel = document.querySelector("#eventProposalCancel");
+const eventsCreateButton = document.querySelector("#eventsCreateButton");
+const eventsSearchInput = document.querySelector("#eventsSearchInput");
+const eventsQuickFilters = document.querySelector("#eventsQuickFilters");
+const eventsGrid = document.querySelector("#eventsGrid");
+const eventsEmpty = document.querySelector("#eventsEmpty");
 const bookmarkFolderDialog = document.querySelector("#bookmarkFolderDialog");
 const bookmarkFolderOptions = document.querySelector("#bookmarkFolderOptions");
 const bookmarkFolderName = document.querySelector("#bookmarkFolderName");
@@ -529,8 +558,11 @@ let requestPageReturnHash = "";
 let activeRequestManagerItemId = null;
 let missionReturnHash = "";
 let eventDetailReturnHash = "";
+let eventsReturnHash = "";
 let activeRequestManagerState = "pending";
 let pendingRequestSort = "deadline";
+let activeEventsFilter = "official";
+let pendingEventProposalImage = "";
 let activeRequestReportContext = { mode: "manager", target: null };
 let activeRequestReviewContext = { mode: "client", itemId: null };
 let requestViewerAuthenticated = localStorage.getItem("vrc-sns-auth-state") !== "guest";
@@ -576,6 +608,45 @@ let myProfile = {
   avatar: "",
   banner: "",
 };
+let activeAccountId = "main";
+let userAccounts = [
+  {
+    id: "main",
+    handle: "@you",
+    unread: 3,
+    profile: { ...myProfile }
+  },
+  {
+    id: "creator",
+    handle: "@you_creator",
+    unread: 1,
+    profile: {
+      displayName: "You Creator",
+      role: "Avatar editor",
+      bio: "アバター改変、衣装導入、撮影向けセットアップを中心に公開するクリエイターアカウント。",
+      link: "https://x.com/YUMA0906",
+      links: ["https://x.com/YUMA0906", "https://yuma0906.booth.pm/"],
+      visibility: "Public",
+      avatar: "",
+      banner: vrchatImages.portrait,
+    }
+  },
+  {
+    id: "client",
+    handle: "@you_request",
+    unread: 0,
+    profile: {
+      displayName: "You Request",
+      role: "VRChat client",
+      bio: "依頼相談、保存、ブックマーク整理を中心に使う依頼者用アカウント。",
+      link: "https://vrchat.com/home/user/example",
+      links: ["https://vrchat.com/home/user/example"],
+      visibility: "Private",
+      avatar: "",
+      banner: vrchatImages.community,
+    }
+  }
+];
 let pendingAvatarSource = "";
 let pendingBannerSource = "";
 let avatarDragState = null;
@@ -657,6 +728,32 @@ const eventCampaigns = {
       ]
     },
     {
+      badge: "Avatar focus",
+      date: "6/20 - 6/27",
+      title: "アバター特集 セレスティア改変ピックアップ",
+      image: vrchatImages.fashion,
+      body: "人気アバターや衣装改変、表情差分、ギミック紹介の投稿をまとめて見られる特集。アバター名や作風からクリエイターを探しやすくする想定です。",
+      highlights: ["アバター特集", "改変作例", "BOOTH導線"],
+      stats: [
+        { value: "Avatar", label: "注目ジャンル" },
+        { value: "7 days", label: "開催期間" },
+        { value: "Featured", label: "掲載枠" }
+      ]
+    },
+    {
+      badge: "New release",
+      date: "Release week",
+      title: "新作発売記念 ルックブック投稿祭",
+      image: vrchatImages.creators,
+      body: "新作アバター、衣装、ワールド、ギミックの発売タイミングに合わせて、購入者の着用例や制作サンプルを集める発売記念イベントです。",
+      highlights: ["発売記念", "新作紹介", "着用例"],
+      stats: [
+        { value: "New", label: "対象作品" },
+        { value: "Lookbook", label: "投稿テーマ" },
+        { value: "Creator led", label: "開催形式" }
+      ]
+    },
+    {
       badge: "Coming up",
       date: "Next drop",
       title: "依頼レビュー公開アップデート予告",
@@ -695,6 +792,32 @@ const eventCampaigns = {
         { value: "3 lanes", label: "Focus areas" },
         { value: "Top feed", label: "Placement" },
         { value: "Boosted", label: "Visibility" }
+      ]
+    },
+    {
+      badge: "Avatar focus",
+      date: "Jun 20 - Jun 27",
+      title: "Avatar spotlight: Selestia edit picks",
+      image: vrchatImages.fashion,
+      body: "A focused lane for popular avatars, outfit edits, expression variants, and gimmick showcases, making it easier to find creators by avatar name and style.",
+      highlights: ["Avatar feature", "Edit samples", "BOOTH path"],
+      stats: [
+        { value: "Avatar", label: "Focus" },
+        { value: "7 days", label: "Run time" },
+        { value: "Featured", label: "Placement" }
+      ]
+    },
+    {
+      badge: "New release",
+      date: "Release week",
+      title: "New release lookbook event",
+      image: vrchatImages.creators,
+      body: "A launch-week event for new avatars, outfits, worlds, and gimmicks, collecting outfit examples, creator samples, and buyer posts around a fresh release.",
+      highlights: ["Launch event", "New works", "Lookbook"],
+      stats: [
+        { value: "New", label: "Target" },
+        { value: "Lookbook", label: "Theme" },
+        { value: "Creator led", label: "Format" }
       ]
     },
     {
@@ -739,6 +862,32 @@ const eventCampaigns = {
       ]
     },
     {
+      badge: "Avatar focus",
+      date: "6/20 - 6/27",
+      title: "아바타 특집: Selestia 개변 픽업",
+      image: vrchatImages.fashion,
+      body: "인기 아바타, 의상 개변, 표정 차분, 기믹 소개 게시물을 모아 아바타명과 스타일로 크리에이터를 찾기 쉽게 하는 특집입니다.",
+      highlights: ["아바타 특집", "개변 예시", "BOOTH 동선"],
+      stats: [
+        { value: "Avatar", label: "주목 장르" },
+        { value: "7 days", label: "진행 기간" },
+        { value: "Featured", label: "노출 위치" }
+      ]
+    },
+    {
+      badge: "New release",
+      date: "Release week",
+      title: "신작 출시 기념 룩북 이벤트",
+      image: vrchatImages.creators,
+      body: "신작 아바타, 의상, 월드, 기믹 출시 타이밍에 맞춰 착용 예시와 제작 샘플, 구매자 게시물을 모으는 출시 기념 이벤트입니다.",
+      highlights: ["출시 기념", "신작 소개", "착용 예시"],
+      stats: [
+        { value: "New", label: "대상 작품" },
+        { value: "Lookbook", label: "게시 테마" },
+        { value: "Creator led", label: "진행 방식" }
+      ]
+    },
+    {
       badge: "Coming up",
       date: "Next drop",
       title: "공개 리뷰 업데이트 예고",
@@ -754,6 +903,86 @@ const eventCampaigns = {
   ]
 };
 
+const EVENT_AUTO_FEATURE_THRESHOLD = 100;
+
+let communityEventProposals = [
+  {
+    id: 1,
+    title: {
+      ja: "夏のフォトリレー特集",
+      en: "Summer photo relay spotlight",
+      ko: "여름 포토 릴레이 특집"
+    },
+    type: "showcase",
+    organizer: "Lumi Photo",
+    window: {
+      ja: "7月前半 / 7日間",
+      en: "Early July / 7 days",
+      ko: "7월 초 / 7일"
+    },
+    summary: {
+      ja: "写真投稿を集中的に集めて、ワールド撮影やポートレート作品を特集導線で見せたい提案。",
+      en: "A proposal to gather photo posts and surface world photography and portrait work through a featured lane.",
+      ko: "사진 게시물을 모아 월드 촬영과 포트레이트 작업을 특집 동선으로 보여주려는 제안입니다."
+    },
+    status: "approved",
+    participants: 168,
+    image: vrchatImages.community,
+    submittedAt: "2026-06-02",
+    mailTo: "events@vrc-sns.mock"
+  },
+  {
+    id: 2,
+    title: {
+      ja: "ワールド制作ミニジャム",
+      en: "Mini world-building jam",
+      ko: "월드 제작 미니 잼"
+    },
+    type: "workshop",
+    organizer: "Orbit Build",
+    window: {
+      ja: "7月後半 / 週末開催",
+      en: "Late July / weekend run",
+      ko: "7월 하순 / 주말 진행"
+    },
+    summary: {
+      ja: "小規模の共同制作イベントとして、制作ログ投稿と途中経過の共有を集めたい提案。",
+      en: "A small collaboration event proposal focused on work logs and progress-sharing posts from creators.",
+      ko: "작업 로그와 중간 진행 공유 게시물을 모으는 소규모 공동 제작 이벤트 제안입니다."
+    },
+    status: "pending",
+    participants: 46,
+    image: vrchatImages.world,
+    submittedAt: "2026-06-04",
+    mailTo: "events@vrc-sns.mock"
+  },
+  {
+    id: 3,
+    title: {
+      ja: "改変ビフォーアフター週間",
+      en: "Avatar before-and-after week",
+      ko: "개변 전후 주간"
+    },
+    type: "support",
+    organizer: "Mika Alterworks",
+    window: {
+      ja: "8月上旬 / 10日間",
+      en: "Early August / 10 days",
+      ko: "8월 초 / 10일"
+    },
+    summary: {
+      ja: "依頼前に比較しやすい実績投稿を増やすため、改変前後の作品を集めるキャンペーン案。",
+      en: "A campaign idea focused on before-and-after posts so clients can compare work quality before requesting.",
+      ko: "의뢰 전에 결과물을 비교하기 쉽도록 개변 전후 게시물을 모으는 캠페인 아이디어입니다."
+    },
+    status: "scheduled",
+    participants: 214,
+    image: vrchatImages.portrait,
+    submittedAt: "2026-05-28",
+    mailTo: "events@vrc-sns.mock"
+  }
+];
+
 const translations = {
   ja: {
     searchPlaceholder: "作品、アバター、依頼を探す",
@@ -765,9 +994,22 @@ const translations = {
     likedPostsShortcut: "いいねした投稿",
     bookmarkFoldersShortcut: "ブックマークフォルダ",
     requestManager: "依頼管理",
+    events: "イベント",
     notifications: "通知",
     unreadNotifications: "未読通知",
     postUrlCopy: "投稿URLをコピー",
+    eventProposalTrigger: "イベント開催を提案",
+    eventProposalSectionTitle: "ユーザー発案でイベントを提案する",
+    eventProposalSectionLead: "開催希望を送ると運営イベント窓口へメールが届き、内容確認と承認後にイベントとして公開される想定です。",
+    eventProposalStatusTitle: "イベント提案の審査状況",
+    eventProposalDialogTitle: "イベント開催を提案",
+    eventProposalDialogLead: "送信すると運営イベント窓口へメール通知され、審査承認後に開催中イベントや特集枠へ掲載される想定です。",
+    eventProposalSubmit: "提案を送信",
+    eventProposalSuccess: "運営へイベント提案を送信しました",
+    eventsLead: "開催中のイベントを探したり、ユーザー発案の新しいイベントを運営へ提案できます。",
+    eventsSearchPlaceholder: "イベント名、主催者、#タグで検索",
+    eventsEmptyTitle: "イベントが見つかりませんでした",
+    eventsEmptyBody: "検索語句やフィルタを変えてもう一度探してみてください。",
     heroTitle: "作品を見つける、繋がる、依頼する。",
     portfolioDesc: "改変・撮影・レタッチ・動画・ワールド制作を投稿",
     commissionDesc: "投稿やプロフィールから依頼受付へ接続",
@@ -916,9 +1158,22 @@ const translations = {
     likedPostsShortcut: "Liked posts",
     bookmarkFoldersShortcut: "Bookmark folders",
     requestManager: "Request manager",
+    events: "Events",
     notifications: "Notifications",
     unreadNotifications: "Unread notifications",
     postUrlCopy: "Copy post URL",
+    eventProposalTrigger: "Propose an event",
+    eventProposalSectionTitle: "Pitch a community-led event",
+    eventProposalSectionLead: "When a creator sends a request, the operations team gets an email and the event goes live after approval.",
+    eventProposalStatusTitle: "Proposal review status",
+    eventProposalDialogTitle: "Propose an event",
+    eventProposalDialogLead: "Submitting this form sends an email to the operations event inbox. Approved proposals can be published as live event banners or featured programs.",
+    eventProposalSubmit: "Send proposal",
+    eventProposalSuccess: "Your event proposal was sent to operations",
+    eventsLead: "Search active events or send a new community event proposal to operations.",
+    eventsSearchPlaceholder: "Search by event, organizer, or #tag",
+    eventsEmptyTitle: "No events found",
+    eventsEmptyBody: "Try another keyword or filter.",
     heroTitle: "Discover works, connect, and commission.",
     portfolioDesc: "Post avatar edits, photos, retouching, video, and worlds",
     commissionDesc: "Connect from posts and profiles to commission pages",
@@ -1067,9 +1322,22 @@ const translations = {
     likedPostsShortcut: "좋아요한 게시물",
     bookmarkFoldersShortcut: "북마크 폴더",
     requestManager: "의뢰 관리",
+    events: "이벤트",
     notifications: "알림",
     unreadNotifications: "읽지 않은 알림",
     postUrlCopy: "게시물 URL 복사",
+    eventProposalTrigger: "이벤트 개최 제안",
+    eventProposalSectionTitle: "사용자 발안 이벤트 제안",
+    eventProposalSectionLead: "개최 희망을 보내면 운영 이벤트 창구로 메일이 도착하고, 내용 확인 및 승인 후 이벤트가 공개되는 흐름입니다.",
+    eventProposalStatusTitle: "이벤트 제안 심사 현황",
+    eventProposalDialogTitle: "이벤트 개최 제안",
+    eventProposalDialogLead: "제출하면 운영 이벤트 메일함으로 알림이 가고, 승인 후 진행 중 이벤트나 특집 영역에 노출되는 흐름입니다.",
+    eventProposalSubmit: "제안 보내기",
+    eventProposalSuccess: "운영에 이벤트 제안을 보냈습니다",
+    eventsLead: "진행 중인 이벤트를 검색하거나 사용자 발안 이벤트를 운영에 제안할 수 있습니다.",
+    eventsSearchPlaceholder: "이벤트명, 주최자, #태그로 검색",
+    eventsEmptyTitle: "이벤트를 찾을 수 없습니다",
+    eventsEmptyBody: "검색어나 필터를 바꿔 다시 찾아보세요.",
     heroTitle: "작품을 찾고, 연결하고, 의뢰하세요.",
     portfolioDesc: "아바타 수정, 사진, 보정, 영상, 월드 작업을 게시",
     commissionDesc: "게시물과 프로필에서 의뢰 페이지로 연결",
@@ -1232,7 +1500,275 @@ function setSelectOptionTexts(select, keys) {
 }
 
 function getEventCampaignList() {
-  return eventCampaigns[currentLanguage] || eventCampaigns.ja;
+  const baseCampaigns = (eventCampaigns[currentLanguage] || eventCampaigns.ja).filter((event) => !isEventNotice(event));
+  return [...getAutoFeaturedEventProposals(), ...baseCampaigns];
+}
+
+function isEventNotice(event) {
+  return String(event?.badge || "").toLowerCase() === "coming up";
+}
+
+function getOfficialEventCampaignList() {
+  return (eventCampaigns[currentLanguage] || eventCampaigns.ja).filter((event) => !isEventNotice(event)).map((event, index) => ({
+    ...event,
+    eventKey: `official-${index}`,
+    eventKind: "official",
+    tags: [
+      ...(event.highlights || []).map(eventHashTag),
+      eventHashTag(event.badge),
+      "#公式イベント"
+    ].filter(Boolean)
+  }));
+}
+
+function getCommunityEventCampaignList() {
+  const proposals = communityEventProposals
+    .sort((a, b) => Number(b.participants || 0) - Number(a.participants || 0));
+  return proposals.map((proposal) => {
+    const status = eventProposalStatusMeta(proposal.status);
+    const participantText = participantLabel(proposal.participants);
+    const typeLabel = eventProposalTypeLabel(proposal.type);
+    const autoFeatured = ["approved", "scheduled"].includes(proposal.status) && Number(proposal.participants || 0) >= EVENT_AUTO_FEATURE_THRESHOLD;
+    return {
+      badge: status.label,
+      date: localizedValue(proposal.window),
+      title: localizedValue(proposal.title),
+      image: proposal.image || vrchatImages.event,
+      body: localizedValue(proposal.summary),
+      highlights: [
+        participantText,
+        typeLabel,
+        proposal.organizer,
+      ],
+      tags: [
+        eventHashTag(typeLabel),
+        eventHashTag(proposal.organizer),
+        "#ユーザー発案",
+        autoFeatured ? "#トップ掲載" : ""
+      ].filter(Boolean),
+      stats: [
+        { value: participantText, label: currentLanguage === "en" ? "Participation" : currentLanguage === "ko" ? "참가 규모" : "参加規模" },
+        { value: status.label, label: currentLanguage === "en" ? "Review state" : currentLanguage === "ko" ? "심사 상태" : "審査状態" },
+        { value: autoFeatured ? (currentLanguage === "en" ? "Auto banner" : currentLanguage === "ko" ? "자동 게재" : "自動掲載") : (currentLanguage === "en" ? "Review queue" : currentLanguage === "ko" ? "심사 대기" : "審査キュー"), label: currentLanguage === "en" ? "Placement" : currentLanguage === "ko" ? "노출" : "掲載面" }
+      ],
+      proposalId: proposal.id,
+      eventKey: `community-${proposal.id}`,
+      autoFeatured,
+      eventKind: "community"
+    };
+  });
+}
+
+function getEventsPageCampaignList() {
+  return activeEventsFilter === "community" ? getCommunityEventCampaignList() : getOfficialEventCampaignList();
+}
+
+function localizedValue(value) {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value[currentLanguage] || value.ja || Object.values(value)[0] || "";
+  }
+  return value || "";
+}
+
+function eventHashTag(value) {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  return `#${text.replace(/^#/, "").replace(/\s+/g, "")}`;
+}
+
+function eventSearchVariants(value) {
+  const text = String(value || "").trim();
+  const tag = eventHashTag(text);
+  return [text, text.replace(/^#/, ""), tag].filter(Boolean);
+}
+
+function participantLabel(count) {
+  const formatted = Number(count || 0).toLocaleString(currentLanguage === "ja" ? "ja-JP" : currentLanguage === "ko" ? "ko-KR" : "en-US");
+  if (currentLanguage === "en") return `${formatted} participants`;
+  if (currentLanguage === "ko") return `${formatted}명 참가`;
+  return `参加 ${formatted}人`;
+}
+
+function getAutoFeaturedEventProposals() {
+  return communityEventProposals
+    .filter((proposal) => ["approved", "scheduled"].includes(proposal.status))
+    .filter((proposal) => Number(proposal.participants || 0) >= EVENT_AUTO_FEATURE_THRESHOLD)
+    .sort((a, b) => Number(b.participants || 0) - Number(a.participants || 0))
+    .map((proposal) => {
+      const status = eventProposalStatusMeta(proposal.status);
+      const participantText = participantLabel(proposal.participants);
+      return {
+        badge: currentLanguage === "en" ? "Community hot" : currentLanguage === "ko" ? "인기 이벤트" : "人気イベント",
+        date: localizedValue(proposal.window),
+        title: localizedValue(proposal.title),
+        image: proposal.image || vrchatImages.event,
+        body: currentLanguage === "en"
+          ? `${localizedValue(proposal.summary)} This user-proposed event was automatically promoted because participation passed ${EVENT_AUTO_FEATURE_THRESHOLD}.`
+          : currentLanguage === "ko"
+            ? `${localizedValue(proposal.summary)} 참가자가 ${EVENT_AUTO_FEATURE_THRESHOLD}명을 넘어서 톱 배너에 자동 게재되었습니다.`
+            : `${localizedValue(proposal.summary)} 参加人数が${EVENT_AUTO_FEATURE_THRESHOLD}人を超えたためトップバナーに自動掲載されています。`,
+        highlights: [
+          participantText,
+          eventProposalTypeLabel(proposal.type),
+          status.label
+        ],
+        stats: [
+          { value: participantText, label: currentLanguage === "en" ? "Participation" : currentLanguage === "ko" ? "참가 규모" : "参加規模" },
+          { value: status.label, label: currentLanguage === "en" ? "Review state" : currentLanguage === "ko" ? "심사 상태" : "審査状態" },
+          { value: currentLanguage === "en" ? "Auto banner" : currentLanguage === "ko" ? "자동 게재" : "自動掲載", label: currentLanguage === "en" ? "Placement" : currentLanguage === "ko" ? "노출" : "掲載面" }
+        ],
+        proposalId: proposal.id,
+        autoFeatured: true
+      };
+    });
+}
+
+function eventProposalTypeLabel(type) {
+  const labels = {
+    showcase: { ja: "作品特集", en: "Showcase", ko: "작품 특집" },
+    contest: { ja: "コンテスト", en: "Contest", ko: "콘테스트" },
+    workshop: { ja: "ワークショップ", en: "Workshop", ko: "워크숍" },
+    support: { ja: "依頼促進", en: "Support campaign", ko: "의뢰 촉진" }
+  };
+  return localizedValue(labels[type] || labels.showcase);
+}
+
+function eventProposalStatusMeta(status) {
+  const map = {
+    pending: {
+      label: { ja: "審査待ち", en: "Waiting review", ko: "심사 대기" },
+      note: { ja: "運営イベント窓口へメール送信済み", en: "Email sent to operations", ko: "운영 이벤트 창구로 메일 발송됨" },
+      className: "is-pending"
+    },
+    approved: {
+      label: { ja: "開催承認済み", en: "Approved", ko: "개최 승인됨" },
+      note: { ja: "掲載内容の最終確認中", en: "Final placement review", ko: "노출 내용 최종 확인 중" },
+      className: "is-approved"
+    },
+    scheduled: {
+      label: { ja: "開催予定", en: "Scheduled", ko: "개최 예정" },
+      note: { ja: "公開日と掲載面を確定済み", en: "Publish date is fixed", ko: "공개일과 노출면 확정" },
+      className: "is-scheduled"
+    }
+  };
+  const item = map[status] || map.pending;
+  return {
+    label: localizedValue(item.label),
+    note: localizedValue(item.note),
+    className: item.className
+  };
+}
+
+function renderEventProposalFlow() {
+  if (!eventProposalFlow) return;
+  const steps = [
+    {
+      title: currentLanguage === "en" ? "Send a proposal" : currentLanguage === "ko" ? "제안 보내기" : "開催希望を送る",
+      body: currentLanguage === "en" ? "The request form sends an email to the operations event inbox with title, timing, and summary." : currentLanguage === "ko" ? "제목, 시기, 개요가 운영 이벤트 메일함으로 전달됩니다." : "タイトル、開催時期、概要を入力すると運営イベント窓口へメールが送られます。"
+    },
+    {
+      title: currentLanguage === "en" ? "Operations review" : currentLanguage === "ko" ? "운영 검토" : "運営が内容を確認",
+      body: currentLanguage === "en" ? "The team checks whether the theme fits the service, if schedules work, and whether guide text is needed." : currentLanguage === "ko" ? "서비스와의 적합성, 일정, 안내 문구 필요 여부를 운영이 검토합니다." : "サービスとの相性、開催期間、必要な注意事項や掲載面を運営が確認します。"
+    },
+    {
+      title: currentLanguage === "en" ? "Approved and published" : currentLanguage === "ko" ? "승인 후 개최" : "承認後に開催",
+      body: currentLanguage === "en" ? "Approved proposals can appear in the event banner, featured lanes, and event detail page." : currentLanguage === "ko" ? "승인되면 이벤트 배너, 특집 동선, 이벤트 상세로 노출됩니다." : "承認された提案は開催中イベントのバナー、特集導線、詳細ページへ掲載されます。"
+    }
+  ];
+  eventProposalFlow.innerHTML = steps.map((step, index) => `
+    <article class="event-proposal-step">
+      <span>${String(index + 1).padStart(2, "0")}</span>
+      <strong>${step.title}</strong>
+      <p>${step.body}</p>
+    </article>
+  `).join("");
+}
+
+function renderEventProposalList() {
+  if (!eventProposalList) return;
+  eventProposalList.innerHTML = communityEventProposals.map((proposal) => {
+    const status = eventProposalStatusMeta(proposal.status);
+    return `
+      <article class="event-proposal-item">
+        <div class="event-proposal-item-top">
+          <span class="event-proposal-type">${eventProposalTypeLabel(proposal.type)}</span>
+          <span class="event-proposal-status ${status.className}">${status.label}</span>
+        </div>
+        <strong>${localizedValue(proposal.title)}</strong>
+        <p>${localizedValue(proposal.summary)}</p>
+        <div class="event-proposal-meta">
+          ${proposal.image ? `<span>${currentLanguage === "en" ? "Banner image attached" : currentLanguage === "ko" ? "배너 이미지 첨부됨" : "バナー画像あり"}</span>` : ""}
+          <span>${currentLanguage === "en" ? "Organizer" : currentLanguage === "ko" ? "주최자" : "主催者"}: ${proposal.organizer}</span>
+          <span>${currentLanguage === "en" ? "Requested window" : currentLanguage === "ko" ? "희망 일정" : "希望開催時期"}: ${localizedValue(proposal.window)}</span>
+          <span>${participantLabel(proposal.participants || 0)}</span>
+          <span>${status.note}</span>
+          ${Number(proposal.participants || 0) >= EVENT_AUTO_FEATURE_THRESHOLD && ["approved", "scheduled"].includes(proposal.status)
+            ? `<span class="event-proposal-auto">${currentLanguage === "en" ? "Auto-featured in top banner" : currentLanguage === "ko" ? "톱 배너 자동 게재" : "トップバナー自動掲載"}</span>`
+            : ""}
+          <span>${currentLanguage === "en" ? "Ops mailbox" : currentLanguage === "ko" ? "운영 메일함" : "運営メール"}: ${proposal.mailTo}</span>
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+function eventSearchText(event) {
+  return [
+    event.title,
+    event.body,
+    event.badge,
+    event.date,
+    ...(event.highlights || []).flatMap(eventSearchVariants),
+    ...(event.tags || []).flatMap(eventSearchVariants),
+    ...(event.stats || []).flatMap((stat) => [stat.value, stat.label]),
+  ].join(" ").toLowerCase();
+}
+
+function renderEventsList() {
+  if (!eventsGrid || !eventsEmpty) return;
+  const query = (eventsSearchInput?.value || "").trim().toLowerCase();
+  const campaigns = getEventsPageCampaignList()
+    .map((event, index) => ({ ...event, sourceIndex: event.eventKey || index }))
+    .filter((event) => !query || eventSearchText(event).includes(query));
+
+  eventsEmpty.hidden = campaigns.length > 0;
+  eventsGrid.innerHTML = campaigns.map((event) => `
+    <button class="events-card" type="button" data-event-open="${event.sourceIndex}">
+      <span class="events-card-image">
+        <img src="${event.image || vrchatImages.event}" alt="${event.title}" loading="lazy" />
+      </span>
+      <span class="events-card-copy">
+        <span class="events-card-meta">
+          <span>${event.badge}</span>
+          <span>${event.date}</span>
+          ${event.autoFeatured ? `<span class="events-card-auto">${currentLanguage === "en" ? "Auto-featured" : currentLanguage === "ko" ? "자동 게재" : "自動掲載"}</span>` : ""}
+        </span>
+        <strong>${event.title}</strong>
+        <span class="events-card-body">${event.body}</span>
+        <span class="events-card-tags">
+          ${(event.tags?.length ? event.tags : (event.highlights || []).map(eventHashTag)).map((item) => `<small>${item}</small>`).join("")}
+        </span>
+      </span>
+    </button>
+  `).join("");
+}
+
+function renderEventsPage() {
+  activeProfile = null;
+  feedView.hidden = true;
+  profileView.hidden = true;
+  requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
+  eventsView.hidden = true;
+  missionView.hidden = true;
+  eventsView.hidden = false;
+  renderEventsList();
+  scrollPageTop();
 }
 
 function buildEventSlides(campaigns) {
@@ -1431,6 +1967,14 @@ function handleEventTrackTransitionEnd(event) {
 }
 
 function eventByIndex(index) {
+  const key = String(index || "");
+  if (key.startsWith("official-")) {
+    return getOfficialEventCampaignList()[Number(key.replace("official-", ""))] || null;
+  }
+  if (key.startsWith("community-")) {
+    const proposalId = Number(key.replace("community-", ""));
+    return getCommunityEventCampaignList().find((event) => Number(event.proposalId) === proposalId) || null;
+  }
   return getEventCampaignList()[index] || null;
 }
 
@@ -1449,6 +1993,7 @@ function renderEventDetailPage(index) {
   settingsView.hidden = true;
   serviceView.hidden = true;
   missionView.hidden = true;
+  eventsView.hidden = true;
   eventDetailView.hidden = false;
   if (eventDetailHero) {
     eventDetailHero.classList.toggle("is-glass", !event.image);
@@ -1469,6 +2014,8 @@ function renderEventDetailPage(index) {
       </article>
     `).join("");
   }
+  renderEventProposalFlow();
+  renderEventProposalList();
   scrollPageTop();
 }
 
@@ -1491,6 +2038,99 @@ function returnFromEventDetail() {
   }
   history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
   routeFromHash();
+}
+
+function openEventsPage() {
+  closeAccountMenu();
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
+  if (modalIsOpen(composeDialog)) closeComposeDialog();
+  if (modalIsOpen(requestComposeDialog)) closeRequestComposeDialog();
+  if (location.hash && location.hash !== "#events") {
+    eventsReturnHash = location.hash;
+  } else if (!location.hash) {
+    eventsReturnHash = "";
+  }
+  location.hash = "events";
+  renderEventsPage();
+}
+
+function returnFromEvents() {
+  const targetHash = eventsReturnHash;
+  eventsReturnHash = "";
+  if (!targetHash) {
+    showFeed();
+    return;
+  }
+  history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
+  routeFromHash();
+}
+
+function openEventProposalDialog() {
+  if (!eventProposalDialog || !eventProposalForm) return;
+  closeAccountMenu();
+  eventProposalForm.reset();
+  pendingEventProposalImage = "";
+  if (eventProposalImagePreview) eventProposalImagePreview.hidden = true;
+  if (eventProposalImagePreviewImg) eventProposalImagePreviewImg.removeAttribute("src");
+  if (eventProposalTypeInput) eventProposalTypeInput.value = "showcase";
+  if (eventProposalOrganizerInput) eventProposalOrganizerInput.value = myProfile?.displayName || "You";
+  if (eventProposalContactInput) eventProposalContactInput.value = "you@example.com";
+  showModalElement(eventProposalDialog);
+  window.setTimeout(() => eventProposalTitleInput?.focus(), 140);
+}
+
+function closeEventProposalDialog() {
+  if (!eventProposalDialog) return;
+  closeModalElement(eventProposalDialog);
+}
+
+function updateEventProposalImagePreview(source) {
+  pendingEventProposalImage = source || "";
+  if (!eventProposalImagePreview || !eventProposalImagePreviewImg) return;
+  eventProposalImagePreview.hidden = !pendingEventProposalImage;
+  if (pendingEventProposalImage) {
+    eventProposalImagePreviewImg.src = pendingEventProposalImage;
+  } else {
+    eventProposalImagePreviewImg.removeAttribute("src");
+  }
+}
+
+function loadEventProposalImage(file) {
+  if (!file || !file.type.startsWith("image/")) {
+    updateEventProposalImagePreview("");
+    return;
+  }
+  const reader = new FileReader();
+  reader.addEventListener("load", () => {
+    updateEventProposalImagePreview(String(reader.result || ""));
+  });
+  reader.readAsDataURL(file);
+}
+
+function submitEventProposal(event) {
+  event.preventDefault();
+  const proposalTitle = eventProposalTitleInput?.value?.trim();
+  if (!proposalTitle) return;
+  communityEventProposals = [
+    {
+      id: Date.now(),
+      title: proposalTitle,
+      type: eventProposalTypeInput?.value || "showcase",
+      organizer: eventProposalOrganizerInput?.value?.trim() || myProfile?.displayName || "You",
+      window: eventProposalWindowInput?.value?.trim() || (currentLanguage === "en" ? "Timing undecided" : currentLanguage === "ko" ? "일정 미정" : "時期調整中"),
+      summary: eventProposalSummaryInput?.value?.trim() || (currentLanguage === "en" ? "Awaiting organizer summary." : currentLanguage === "ko" ? "주최자 개요 대기 중." : "主催者からの概要確認待ちです。"),
+      status: "pending",
+      participants: 0,
+      image: pendingEventProposalImage || vrchatImages.event,
+      submittedAt: new Date().toISOString().slice(0, 10),
+      mailTo: "events@vrc-sns.mock",
+      support: eventProposalSupportInput?.value?.trim() || ""
+    },
+    ...communityEventProposals
+  ];
+  renderEventProposalList();
+  closeEventProposalDialog();
+  showProfileCopyToast(t("eventProposalSuccess"));
 }
 
 function updateSettingsPanelLanguage() {
@@ -1550,6 +2190,7 @@ function applyLanguage({ rerender = false } = {}) {
   document.documentElement.lang = currentLanguage;
   localStorage.setItem("vrc-sns-language", currentLanguage);
   if (settingsLanguage) settingsLanguage.value = currentLanguage;
+  renderAccountSwitcher();
 
   setAttr(searchInput, "placeholder", "searchPlaceholder");
   if (missionButton) missionButton.textContent = currentLanguage === "en" ? "Service" : currentLanguage === "ko" ? "서비스 설명" : "サービス説明";
@@ -1575,6 +2216,7 @@ function applyLanguage({ rerender = false } = {}) {
     likes: currentLanguage === "en" ? "Liked posts" : currentLanguage === "ko" ? "좋아요" : "いいね",
     bookmarks: currentLanguage === "en" ? "Bookmarks" : currentLanguage === "ko" ? "북마크" : "ブックマーク",
     requests: currentLanguage === "en" ? "Requests" : currentLanguage === "ko" ? "의뢰 확인" : "依頼確認",
+    events: t("events"),
     notifications: currentLanguage === "en" ? "Notifications" : currentLanguage === "ko" ? "알림" : "通知",
   };
   Object.entries(mobileMenuLabels).forEach(([action, label]) => {
@@ -1630,6 +2272,52 @@ function applyLanguage({ rerender = false } = {}) {
   setText("#serviceMissionLinkTitle", currentLanguage === "en" ? "See the background and direction" : currentLanguage === "ko" ? "서비스의 배경과 방향 보기" : "サービスの背景や目指す方向を見る");
   setText("#serviceMissionBody", currentLanguage === "en" ? "Use Our Mission for the why behind the product rather than the how-to guide." : currentLanguage === "ko" ? "사용법이 아니라 왜 이 서비스를 만드는지 궁금할 때 Our Mission을 보면 됩니다." : "使い方ではなく、なぜこのサービスを作るのか、何を良くしたいのかを知りたい時は Our Mission を見てください。");
   setText("#serviceMissionLink", currentLanguage === "en" ? "Open Our Mission" : currentLanguage === "ko" ? "Our Mission 보기" : "Our Missionを見る");
+  setText("#openEventProposalButton", "eventProposalTrigger");
+  setText("#eventProposalEyebrow", currentLanguage === "en" ? "Community event" : currentLanguage === "ko" ? "커뮤니티 이벤트" : "ユーザーイベント");
+  setText("#eventProposalSectionTitle", "eventProposalSectionTitle");
+  setText("#eventProposalSectionLead", "eventProposalSectionLead");
+  setText("#openEventProposalFromDetail", "eventProposalTrigger");
+  setText("#eventProposalStatusEyebrow", currentLanguage === "en" ? "Proposal status" : currentLanguage === "ko" ? "제안 현황" : "提案ステータス");
+  setText("#eventProposalStatusTitle", "eventProposalStatusTitle");
+  setText("#eventProposalDialogEyebrow", currentLanguage === "en" ? "Community event" : currentLanguage === "ko" ? "커뮤니티 이벤트" : "ユーザーイベント");
+  setText("#eventProposalDialogTitle", "eventProposalDialogTitle");
+  setText("#eventProposalDialogLead", "eventProposalDialogLead");
+  setText("#eventProposalTitleLabel", currentLanguage === "en" ? "Event title" : currentLanguage === "ko" ? "이벤트명" : "イベント名");
+  setText("#eventProposalImageLabel", currentLanguage === "en" ? "Event banner image" : currentLanguage === "ko" ? "이벤트 배너 이미지" : "イベントバナー画像");
+  setText("#eventProposalImageHelp", currentLanguage === "en" ? "Operations uses this to judge the event mood and how it would look in the top banner." : currentLanguage === "ko" ? "운영이 이벤트 분위기와 톱 배너 게재 시 보이는 모습을 판단하는 데 사용합니다." : "トップバナー掲載時の見え方やイベントの雰囲気を運営が確認するために使います。");
+  setText("#eventProposalImagePreviewLabel", currentLanguage === "en" ? "Banner image preview" : currentLanguage === "ko" ? "배너 이미지 미리보기" : "バナー画像プレビュー");
+  setText("#eventProposalTypeLabel", currentLanguage === "en" ? "Event type" : currentLanguage === "ko" ? "이벤트 종류" : "イベント種別");
+  setText("#eventProposalWindowLabel", currentLanguage === "en" ? "Preferred timing" : currentLanguage === "ko" ? "희망 일정" : "希望開催時期");
+  setText("#eventProposalOrganizerLabel", currentLanguage === "en" ? "Organizer name" : currentLanguage === "ko" ? "주최자명" : "主催者名");
+  setText("#eventProposalContactLabel", currentLanguage === "en" ? "Contact email" : currentLanguage === "ko" ? "연락처 이메일" : "連絡先メール");
+  setText("#eventProposalSummaryLabel", currentLanguage === "en" ? "Overview" : currentLanguage === "ko" ? "개최 개요" : "開催概要");
+  setText("#eventProposalSupportLabel", currentLanguage === "en" ? "Requested support from ops" : currentLanguage === "ko" ? "운영에 기대하는 지원" : "運営に期待すること");
+  setText("#eventProposalMailTitle", currentLanguage === "en" ? "Sent to" : currentLanguage === "ko" ? "전송 대상" : "送信先");
+  setText("#eventProposalMailBody", currentLanguage === "en" ? "An email notification is sent to the operations event inbox: events@vrc-sns.mock." : currentLanguage === "ko" ? "운영 이벤트 메일함 events@vrc-sns.mock 으로 알림 메일이 전송됩니다." : "運営イベント窓口 events@vrc-sns.mock にメール通知されます。");
+  setText("#eventProposalCancel", currentLanguage === "en" ? "Cancel" : currentLanguage === "ko" ? "취소" : "キャンセル");
+  setText("#eventProposalSubmit", "eventProposalSubmit");
+  setText("#eventsEyebrow", currentLanguage === "en" ? "Events" : currentLanguage === "ko" ? "이벤트" : "Events");
+  setText("#eventsTitle", "events");
+  setText("#eventsLead", "eventsLead");
+  setText("#eventsCreateButton", "eventProposalTrigger");
+  setAttr(eventsSearchInput, "placeholder", "eventsSearchPlaceholder");
+  setText("[data-event-filter='official']", currentLanguage === "en" ? "Official events" : currentLanguage === "ko" ? "공식 이벤트" : "公式イベント");
+  setText("[data-event-filter='community']", currentLanguage === "en" ? "Community" : currentLanguage === "ko" ? "사용자 발안" : "ユーザー発案");
+  setText("#eventsEmpty p", "eventsEmptyTitle");
+  setText("#eventsEmpty span", "eventsEmptyBody");
+  if (eventProposalTypeInput) {
+    [...eventProposalTypeInput.options].forEach((option) => {
+      option.textContent = eventProposalTypeLabel(option.value);
+    });
+  }
+  if (eventProposalTitleInput) eventProposalTitleInput.placeholder = currentLanguage === "en" ? "Example: Avatar styling showcase week" : currentLanguage === "ko" ? "예: Avatar styling showcase week" : "例: Avatar styling showcase week";
+  if (eventProposalWindowInput) eventProposalWindowInput.placeholder = currentLanguage === "en" ? "Example: Early July / 2 weeks" : currentLanguage === "ko" ? "예: 7월 초 / 2주" : "例: 7月前半 / 2週間";
+  if (eventProposalOrganizerInput) eventProposalOrganizerInput.placeholder = currentLanguage === "en" ? "Your display name" : currentLanguage === "ko" ? "표시 이름" : "表示名";
+  if (eventProposalContactInput) eventProposalContactInput.placeholder = "organizer@example.com";
+  if (eventProposalSummaryInput) eventProposalSummaryInput.placeholder = currentLanguage === "en" ? "What you want to run, who it is for, and what kind of posts or requests you want to collect." : currentLanguage === "ko" ? "무엇을 열고 싶은지, 누구를 위한 이벤트인지, 어떤 게시물을 모으고 싶은지 적어주세요." : "何を開催したいか、誰に見てほしいか、どんな投稿や依頼を集めたいかを書いてください。";
+  if (eventProposalSupportInput) eventProposalSupportInput.placeholder = currentLanguage === "en" ? "Feature placement, banner exposure, signup flow, moderation notes, and so on." : currentLanguage === "ko" ? "특집 노출, 배너 게재, 모집 동선, 운영 안내 등 기대하는 지원을 적어주세요." : "特集掲載、バナー露出、募集導線、運営案内など期待する支援を書いてください。";
+  renderEventProposalFlow();
+  renderEventProposalList();
   setText("#pageTitle", "heroTitle");
   const summary = [...document.querySelectorAll(".summary-strip:not([hidden]) > div span")];
   ["portfolioDesc", "commissionDesc", "communityDesc"].forEach((key, index) => setText(summary[index], key));
@@ -1651,7 +2339,7 @@ function applyLanguage({ rerender = false } = {}) {
   setText("#createButton", "post");
   setText("#emptyState p", "noResultsTitle");
   setText("#emptyState span", "noResultsBody");
-  document.querySelectorAll("#backToFeed, #backFromRequest, #backFromNotifications, #backFromSettings, #backFromRequestManager, #backFromRequestDetail, #backFromEventDetail, #backFromMission").forEach((button) => {
+  document.querySelectorAll("#backToFeed, #backFromRequest, #backFromNotifications, #backFromSettings, #backFromRequestManager, #backFromRequestDetail, #backFromEventDetail, #backFromEvents, #backFromMission").forEach((button) => {
     const svg = button.querySelector("svg")?.outerHTML || "";
     button.innerHTML = `${svg}${t("back")}`;
   });
@@ -1687,6 +2375,7 @@ function applyLanguage({ rerender = false } = {}) {
   const purchaseFields = [...document.querySelectorAll("#requestAuthenticatedPanel .field > span")];
   if (purchaseFields[0]) purchaseFields[0].textContent = currentLanguage === "en" ? "Payment method" : currentLanguage === "ko" ? "결제 방법" : "支払い方法";
   if (purchaseFields[1]) purchaseFields[1].textContent = currentLanguage === "en" ? "Amount" : currentLanguage === "ko" ? "금액" : "金額";
+  updateRequestAmountState();
   setText("#requestAuthenticatedPanel .request-agreement span", currentLanguage === "en" ? "I confirmed the request and agreement" : currentLanguage === "ko" ? "의뢰 내용과 동의 사항을 확인했습니다" : "依頼内容と同意事項を確認しました");
   setText("#requestConfirmButton", currentLanguage === "en" ? "Confirm request" : currentLanguage === "ko" ? "의뢰 확정" : "依頼を確定する");
   setText("#requestGuestPanel p", currentLanguage === "en" ? "To send a request, create an account first. Your request details, payment, chat, and delivery status are managed safely there." : currentLanguage === "ko" ? "의뢰하려면 먼저 계정 등록이 필요합니다. 의뢰 내용, 결제, 채팅, 납품 상태를 안전하게 관리할 수 있습니다." : "依頼するにはアカウント登録が必要です。登録すると依頼内容、支払い、チャット、納品状況を安全に管理できます。");
@@ -1738,6 +2427,11 @@ function applyLanguage({ rerender = false } = {}) {
     if (!requestManagerView.hidden) renderRequestManagerList();
     if (!requestManagerDetailView.hidden && activeRequestManagerItemId) renderRequestManagerDetailPage(activeRequestManagerItemId);
     if (!profileView.hidden && activeProfile) renderProfile(activeProfile);
+    if (!eventsView.hidden) renderEventsPage();
+    if (!eventDetailView.hidden) {
+      const eventMatch = location.hash.match(/^#event\/([^/]+)$/);
+      renderEventDetailPage(eventMatch?.[1] || activeEventIndex || 0);
+    }
     if (currentPin && modalIsOpen(dialog)) openPin(currentPin.id);
   }
 }
@@ -2243,11 +2937,12 @@ function showFeed() {
   settingsView.hidden = true;
   serviceView.hidden = true;
   eventDetailView.hidden = true;
+  eventsView.hidden = true;
   missionView.hidden = true;
   profileView.hidden = true;
   profileView.classList.remove("is-mine");
   feedView.hidden = false;
-  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#event/") || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#me") {
+  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#event/") || location.hash === "#events" || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#me") {
     history.pushState("", document.title, location.pathname + location.search);
   }
   renderPins();
@@ -2261,9 +2956,9 @@ function routeFromHash() {
     openPin(Number(postMatch[1]));
     return;
   }
-  const eventMatch = location.hash.match(/^#event\/(\d+)$/);
+  const eventMatch = location.hash.match(/^#event\/([^/]+)$/);
   if (eventMatch) {
-    renderEventDetailPage(Number(eventMatch[1]));
+    renderEventDetailPage(eventMatch[1]);
     return;
   }
   const requestDetailMatch = location.hash.match(/^#request-manager\/(\d+)$/);
@@ -2277,6 +2972,10 @@ function routeFromHash() {
   }
   if (location.hash === "#service") {
     renderServicePage();
+    return;
+  }
+  if (location.hash === "#events") {
+    renderEventsPage();
     return;
   }
   if (location.hash === "#mission") {
@@ -2330,6 +3029,7 @@ function openProfile(slug) {
   settingsView.hidden = true;
   serviceView.hidden = true;
   eventDetailView.hidden = true;
+  eventsView.hidden = true;
   missionView.hidden = true;
   location.hash = `profile/${slug}`;
   renderProfile(pin.creator);
@@ -2358,6 +3058,7 @@ function openMyProfile() {
   settingsView.hidden = true;
   serviceView.hidden = true;
   eventDetailView.hidden = true;
+  eventsView.hidden = true;
   missionView.hidden = true;
   location.hash = "me";
   renderProfile("You");
@@ -2414,6 +3115,7 @@ function closeAccountMenu() {
 function toggleAccountMenu() {
   if (!accountMenu) return;
   const willOpen = accountMenu.hidden;
+  if (willOpen) renderAccountSwitcher();
   accountMenu.hidden = !willOpen;
   accountMenu.classList.toggle("is-open", willOpen);
   avatarButton?.setAttribute("aria-expanded", willOpen ? "true" : "false");
@@ -2445,6 +3147,44 @@ function returnFromRequestPage() {
   routeFromHash();
 }
 
+function formatYen(amount) {
+  return `¥${Number(amount || 0).toLocaleString("ja-JP")}`;
+}
+
+function requestMinimumAmount(post) {
+  return Number(String(post?.request?.price || "").replace(/[^\d]/g, "")) || 3000;
+}
+
+function requestAmountTooLowMessage(minAmount) {
+  if (currentLanguage === "en") return `Enter at least ${formatYen(minAmount)}.`;
+  if (currentLanguage === "ko") return `최소 ${formatYen(minAmount)} 이상 입력해 주세요.`;
+  return `最低金額 ${formatYen(minAmount)} 以上で入力してください。`;
+}
+
+function updateRequestAmountState({ clamp = false } = {}) {
+  if (!requestAmountInput) return true;
+  const minAmount = Number(requestAmountInput.min || 0);
+  const amount = Number(requestAmountInput.value || 0);
+  const isValid = amount >= minAmount;
+  if (clamp && !isValid) {
+    requestAmountInput.value = String(minAmount);
+  }
+  const finalValid = Number(requestAmountInput.value || 0) >= minAmount;
+  requestAmountInput.classList.toggle("is-invalid", !finalValid);
+  if (requestAmountError) {
+    requestAmountError.hidden = finalValid;
+    requestAmountError.textContent = finalValid ? "" : requestAmountTooLowMessage(minAmount);
+  }
+  if (requestAmountHelp) {
+    requestAmountHelp.textContent = currentLanguage === "en"
+      ? `Minimum set by the creator: ${formatYen(minAmount)}. You can pay more freely.`
+      : currentLanguage === "ko"
+        ? `크리에이터 설정 최소 금액: ${formatYen(minAmount)}. 그 이상은 자유롭게 입력할 수 있습니다.`
+        : `クリエイター設定の最低金額: ${formatYen(minAmount)}。それ以上は自由に入力できます。`;
+  }
+  return finalValid;
+}
+
 function renderRequestPage(creator, postId = null) {
   const requestPosts = openRequestPostsForCreator(creator);
   const post = (postId ? requestPosts.find((item) => item.id === postId) : null) || requestPosts[0];
@@ -2462,6 +3202,7 @@ function renderRequestPage(creator, postId = null) {
   settingsView.hidden = true;
   serviceView.hidden = true;
   eventDetailView.hidden = true;
+  eventsView.hidden = true;
   missionView.hidden = true;
   requestView.hidden = false;
 
@@ -2483,7 +3224,7 @@ function renderRequestPage(creator, postId = null) {
   const capacityMatch = String(post.request?.capacity || "").match(/(\d+)\s*\/\s*(\d+)/);
   const currentCount = Number(capacityMatch?.[1] || 2);
   const maxCount = Number(capacityMatch?.[2] || 5);
-  const minAmount = Number(String(post.request?.price || "").replace(/[^\d]/g, "")) || 3000;
+  const minAmount = requestMinimumAmount(post);
   requestRequestMeta.innerHTML = [
     `<div><strong>${currentLanguage === "en" ? "Requested delivery" : currentLanguage === "ko" ? "희망 납기" : "希望納期"}</strong><span>${post.request?.delivery || "平均 7日"}</span></div>`,
     `<div><strong>${currentLanguage === "en" ? "Average delivery" : currentLanguage === "ko" ? "평균 납기" : "平均納期"}</strong><span>${post.category === "Photo" ? "2〜4日" : "7〜10日"}</span></div>`,
@@ -2504,7 +3245,9 @@ function renderRequestPage(creator, postId = null) {
   requestCreatorProfileButton.dataset.profile = slugify(post.creator);
   requestAmountInput.value = String(minAmount);
   requestAmountInput.min = String(minAmount);
+  requestAmountInput.placeholder = formatYen(minAmount);
   requestAgreement.checked = false;
+  updateRequestAmountState();
   updateRequestAuthView();
   renderOtherRequestCards(post.creator, post.id);
   scrollPageTop();
@@ -2526,15 +3269,18 @@ function openRequestCheckoutDialog() {
     updateRequestAuthView();
     return;
   }
+  if (!updateRequestAmountState()) {
+    requestAmountInput?.focus();
+    return;
+  }
   const amount = Number(requestAmountInput.value || 0);
   const minAmount = Number(requestAmountInput.min || 0);
-  const finalAmount = Math.max(amount, minAmount);
-  requestAmountInput.value = String(finalAmount);
+  const finalAmount = amount >= minAmount ? amount : minAmount;
   requestCheckoutSummary.innerHTML = [
     `<div><strong>依頼タイトル</strong><span>${post.request.title}</span></div>`,
     `<div><strong>投稿名</strong><span>${post.title}</span></div>`,
     `<div><strong>支払い方法</strong><span>${requestPaymentMethod.value}</span></div>`,
-    `<div><strong>金額</strong><span>¥${finalAmount.toLocaleString("ja-JP")}</span></div>`,
+    `<div><strong>金額</strong><span>${formatYen(finalAmount)}</span></div>`,
   ].join("");
   requestCheckoutAgreement.checked = false;
   requestCheckoutSubmit.disabled = true;
@@ -2602,6 +3348,7 @@ function renderNotificationsPage() {
   settingsView.hidden = true;
   serviceView.hidden = true;
   eventDetailView.hidden = true;
+  eventsView.hidden = true;
   missionView.hidden = true;
   notificationsView.hidden = false;
   notificationsList.innerHTML = notifications.map((source) => {
@@ -2630,6 +3377,7 @@ function renderSettingsPage() {
   requestManagerView.hidden = true;
   requestManagerDetailView.hidden = true;
   eventDetailView.hidden = true;
+  eventsView.hidden = true;
   missionView.hidden = true;
   settingsView.hidden = false;
   serviceView.hidden = true;
@@ -3470,6 +4218,7 @@ function renderRequestManagerPage() {
   settingsView.hidden = true;
   serviceView.hidden = true;
   eventDetailView.hidden = true;
+  eventsView.hidden = true;
   missionView.hidden = true;
   requestManagerView.hidden = false;
   renderRequestManagerList();
@@ -3759,6 +4508,7 @@ function renderRequestManagerDetailPage(itemId) {
   settingsView.hidden = true;
   serviceView.hidden = true;
   eventDetailView.hidden = true;
+  eventsView.hidden = true;
   missionView.hidden = true;
   requestManagerDetailView.hidden = false;
 
@@ -3860,6 +4610,7 @@ function renderServicePage() {
   settingsView.hidden = true;
   missionView.hidden = true;
   eventDetailView.hidden = true;
+  eventsView.hidden = true;
   serviceView.hidden = false;
   scrollPageTop();
 }
@@ -3900,6 +4651,7 @@ function renderMissionPage() {
   settingsView.hidden = true;
   serviceView.hidden = true;
   eventDetailView.hidden = true;
+  eventsView.hidden = true;
   missionView.hidden = false;
   scrollPageTop();
 }
@@ -4001,6 +4753,90 @@ function applyMyAvatarToChrome() {
     avatarButton.style.backgroundImage = "";
     avatarButton.classList.remove("has-image");
     avatarButton.textContent = (myProfile.displayName || "Y").slice(0, 1).toUpperCase();
+  }
+  renderAccountSwitcher();
+}
+
+function accountInitial(profile) {
+  return (profile?.displayName || "Y").slice(0, 1).toUpperCase();
+}
+
+function accountAvatarMarkup(account) {
+  const profile = account.profile || {};
+  const style = profile.avatar ? ` style="background-image:url('${profile.avatar}')"` : "";
+  const imageClass = profile.avatar ? " has-image" : "";
+  return `<span class="account-switcher-avatar${imageClass}"${style}>${profile.avatar ? "" : accountInitial(profile)}</span>`;
+}
+
+function persistActiveAccountProfile() {
+  userAccounts = userAccounts.map((account) => (
+    account.id === activeAccountId ? { ...account, profile: { ...myProfile } } : account
+  ));
+}
+
+function renderAccountSwitcher() {
+  if (!accountSwitcherCurrent || !accountSwitcherList) return;
+  const activeAccount = userAccounts.find((account) => account.id === activeAccountId) || userAccounts[0];
+  if (!activeAccount) return;
+  accountSwitcherCurrent.textContent = "";
+  accountSwitcherList.innerHTML = userAccounts
+    .map((account) => `
+      <button class="account-switcher-option${account.id === activeAccountId ? " is-active" : ""}" type="button" role="menuitem" data-account-switch="${account.id}" aria-label="${account.profile.displayName} ${account.id === activeAccountId ? "current" : "switch"}" title="${account.profile.displayName}">
+        ${accountAvatarMarkup(account)}
+        ${account.unread ? `<span class="account-switcher-badge">${account.unread}</span>` : ""}
+      </button>
+    `).join("");
+  if (accountAddButton) {
+    accountAddButton.querySelector("span").textContent = currentLanguage === "en" ? "Add account" : currentLanguage === "ko" ? "계정 추가" : "アカウントを追加";
+    accountAddButton.setAttribute("aria-label", accountAddButton.querySelector("span").textContent);
+    accountAddButton.setAttribute("title", accountAddButton.querySelector("span").textContent);
+  }
+}
+
+function switchAccount(accountId) {
+  const nextAccount = userAccounts.find((account) => account.id === accountId);
+  if (!nextAccount || nextAccount.id === activeAccountId) return;
+  persistActiveAccountProfile();
+  activeAccountId = nextAccount.id;
+  myProfile = { ...nextAccount.profile };
+  pendingAvatarSource = myProfile.avatar || "";
+  pendingBannerSource = myProfile.banner || "";
+  applyMyAvatarToChrome();
+  closeAccountMenu();
+  showProfileCopyToast(`${myProfile.displayName} に切り替えました`);
+  if (location.hash === "#me" || !profileView.hidden && profileView.classList.contains("is-mine")) {
+    renderProfile("You");
+  }
+}
+
+function addMockAccount() {
+  persistActiveAccountProfile();
+  const count = userAccounts.length + 1;
+  const newAccount = {
+    id: `account-${Date.now()}`,
+    handle: `@you_sub${count}`,
+    unread: 0,
+    profile: {
+      displayName: `You Sub ${count}`,
+      role: "VRChat creator",
+      bio: "新しく追加したサブアカウント。用途に応じてプロフィール編集から内容を変更できます。",
+      link: "",
+      links: [],
+      visibility: "Public",
+      avatar: "",
+      banner: vrchatImages.neon,
+    }
+  };
+  userAccounts = [newAccount, ...userAccounts];
+  activeAccountId = newAccount.id;
+  myProfile = { ...newAccount.profile };
+  pendingAvatarSource = "";
+  pendingBannerSource = myProfile.banner || "";
+  applyMyAvatarToChrome();
+  closeAccountMenu();
+  showProfileCopyToast("新しいアカウントを追加しました");
+  if (location.hash === "#me" || !profileView.hidden && profileView.classList.contains("is-mine")) {
+    renderProfile("You");
   }
 }
 
@@ -4557,6 +5393,24 @@ navPills.forEach((pill) => {
 searchInput.addEventListener("input", () => renderPins());
 eventPrev?.addEventListener("click", () => goToEventSlide(activeEventIndex - 1));
 eventNext?.addEventListener("click", () => goToEventSlide(activeEventIndex + 1));
+openEventProposalButton?.addEventListener("click", openEventProposalDialog);
+openEventProposalFromDetail?.addEventListener("click", openEventProposalDialog);
+eventsCreateButton?.addEventListener("click", openEventProposalDialog);
+eventsSearchInput?.addEventListener("input", renderEventsList);
+eventsQuickFilters?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-event-filter]");
+  if (!button) return;
+  activeEventsFilter = button.dataset.eventFilter || "official";
+  eventsQuickFilters.querySelectorAll("[data-event-filter]").forEach((item) => {
+    item.classList.toggle("is-active", item === button);
+  });
+  renderEventsList();
+});
+eventsGrid?.addEventListener("click", (event) => {
+  const card = event.target.closest("[data-event-open]");
+  if (!card) return;
+  openEventDetailPage(card.dataset.eventOpen);
+});
 eventCarouselDots?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-event-dot]");
   if (!button) return;
@@ -4584,6 +5438,11 @@ settingsView?.addEventListener("click", (event) => {
   event.preventDefault();
 });
 settingsView?.addEventListener("change", handleSettingsAutoSave);
+eventProposalCancel?.addEventListener("click", closeEventProposalDialog);
+eventProposalImageInput?.addEventListener("change", () => {
+  loadEventProposalImage(eventProposalImageInput.files?.[0]);
+});
+eventProposalForm?.addEventListener("submit", submitEventProposal);
 shuffleButton.addEventListener("click", shufflePins);
 createButton.addEventListener("click", openComposeHint);
 createRequestButton?.addEventListener("click", openRequestComposeDialog);
@@ -4638,6 +5497,16 @@ accountMenuLogout?.addEventListener("click", () => {
   closeAccountMenu();
   openAccountActionDialog("logout");
 });
+accountSwitcherList?.addEventListener("click", (event) => {
+  const option = event.target.closest("[data-account-switch]");
+  if (!option) return;
+  event.stopPropagation();
+  switchAccount(option.dataset.accountSwitch);
+});
+accountAddButton?.addEventListener("click", (event) => {
+  event.stopPropagation();
+  addMockAccount();
+});
 accountMenu?.addEventListener("click", (event) => {
   event.stopPropagation();
   const mobileAction = event.target.closest("[data-mobile-menu-action]");
@@ -4654,6 +5523,8 @@ accountMenu?.addEventListener("click", (event) => {
     openMyProfileArchive("folders");
   } else if (action === "requests") {
     openRequestManagerPage();
+  } else if (action === "events") {
+    openEventsPage();
   } else if (action === "notifications") {
     openNotificationsPage();
   }
@@ -4674,6 +5545,7 @@ backFromRequestManager?.addEventListener("click", returnFromRequestManager);
 backFromRequestDetail?.addEventListener("click", returnFromRequestManagerDetail);
 backFromService?.addEventListener("click", returnFromService);
 backFromEventDetail?.addEventListener("click", returnFromEventDetail);
+backFromEvents?.addEventListener("click", returnFromEvents);
 backFromMission?.addEventListener("click", returnFromMission);
 serviceMissionLink?.addEventListener("click", openMissionPage);
 document.addEventListener("click", (event) => {
@@ -4895,9 +5767,19 @@ function completeMockAuthFromRequest() {
 
 requestGuestSignUp?.addEventListener("click", completeMockAuthFromRequest);
 requestGuestSignIn?.addEventListener("click", completeMockAuthFromRequest);
+requestAmountInput?.addEventListener("input", () => {
+  updateRequestAmountState();
+});
+requestAmountInput?.addEventListener("blur", () => {
+  updateRequestAmountState();
+});
 requestConfirmButton?.addEventListener("click", () => {
   if (!requestViewerAuthenticated) {
     updateRequestAuthView();
+    return;
+  }
+  if (!updateRequestAmountState()) {
+    requestAmountInput?.focus();
     return;
   }
   if (!requestAgreement.checked) {
@@ -5600,6 +6482,15 @@ trustInfoDialog.addEventListener("cancel", (event) => {
   closeTrustInfoDialog();
 });
 
+eventProposalDialog?.addEventListener("click", (event) => {
+  if (event.target === eventProposalDialog) closeEventProposalDialog();
+});
+
+eventProposalDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeEventProposalDialog();
+});
+
 closeCompose.addEventListener("click", openComposeCloseConfirmDialog);
 
 composeDialog.addEventListener("click", (event) => {
@@ -6243,6 +7134,7 @@ function renderProfile(creator) {
   settingsView.hidden = true;
   serviceView.hidden = true;
   eventDetailView.hidden = true;
+  eventsView.hidden = true;
   missionView.hidden = true;
   profileView.hidden = false;
   profileView.classList.toggle("is-mine", isMine);
@@ -6331,6 +7223,8 @@ function saveEditProfile(event) {
     banner: pendingBannerSource,
   };
   editProfileNotice.hidden = false;
+  persistActiveAccountProfile();
+  renderAccountSwitcher();
   applyMyAvatarToChrome();
   renderProfile("You");
   window.setTimeout(closeEditProfileDialog, 260);

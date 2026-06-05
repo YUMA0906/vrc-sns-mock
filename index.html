@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="./styles.css?v=mobile-account-menu-1" />
+    <link rel="stylesheet" href="./styles.css?v=compact-account-switcher-1" />
   </head>
   <body>
     <header class="topbar">
@@ -63,6 +63,17 @@
         <div class="account-menu-wrap">
           <button id="avatarButton" class="avatar-button" type="button" aria-label="アカウントメニュー" aria-haspopup="menu" aria-expanded="false">Y</button>
           <div id="accountMenu" class="account-menu" role="menu" hidden>
+            <div class="account-switcher" aria-label="Account switcher">
+              <div id="accountSwitcherCurrent" class="account-switcher-current"></div>
+              <div id="accountSwitcherList" class="account-switcher-list"></div>
+              <button id="accountAddButton" class="account-add-button" type="button" role="menuitem">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M12 5v14" />
+                  <path d="M5 12h14" />
+                </svg>
+                <span>アカウントを追加</span>
+              </button>
+            </div>
             <div class="account-menu-mobile-actions" aria-label="Mobile quick actions">
               <button type="button" role="menuitem" data-mobile-menu-action="home">
                 <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -95,6 +106,16 @@
                   <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                 </svg>
                 <span>依頼確認</span>
+              </button>
+              <button type="button" role="menuitem" data-mobile-menu-action="events">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M8 2v4" />
+                  <path d="M16 2v4" />
+                  <rect x="3" y="4" width="18" height="18" rx="3" />
+                  <path d="M3 10h18" />
+                  <path d="m9 16 2 2 4-5" />
+                </svg>
+                <span>イベント</span>
               </button>
               <button type="button" role="menuitem" data-mobile-menu-action="notifications">
                 <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -150,6 +171,7 @@
               <h2 id="eventBannerHeading">開催中のイベント</h2>
             </div>
             <div class="event-banner-controls" aria-label="Event controls">
+              <button id="openEventProposalButton" class="soft-button event-proposal-trigger" type="button">イベント開催を提案</button>
               <button id="eventPrev" class="event-nav-button" type="button" aria-label="Previous event">
                 <svg aria-hidden="true" viewBox="0 0 24 24">
                   <path d="m15 18-6-6 6-6" />
@@ -408,6 +430,8 @@
               <label class="field">
                 <span>金額</span>
                 <input id="requestAmountInput" type="number" min="0" step="1000" />
+                <small id="requestAmountHelp" class="request-amount-help">クリエイター設定価格以上で自由に入力できます。</small>
+                <small id="requestAmountError" class="request-amount-error" hidden></small>
               </label>
               <label class="request-agreement">
                 <input id="requestAgreement" type="checkbox" />
@@ -1078,7 +1102,57 @@
             <h2 id="eventDetailStatsTitle">注目ポイント</h2>
             <div id="eventDetailStats" class="service-faq-grid"></div>
           </section>
+          <section class="mission-section mission-section-split" aria-labelledby="eventProposalSectionTitle">
+            <div>
+              <p id="eventProposalEyebrow" class="eyebrow">Community event</p>
+              <h2 id="eventProposalSectionTitle">ユーザー発案でイベントを提案する</h2>
+              <p id="eventProposalSectionLead">開催希望を送ると運営イベント窓口へメールが届き、内容確認と承認後にイベントとして公開される想定です。</p>
+              <button id="openEventProposalFromDetail" class="primary-button" type="button">イベント開催を提案</button>
+            </div>
+            <div id="eventProposalFlow" class="event-proposal-flow"></div>
+          </section>
+          <section class="mission-section" aria-labelledby="eventProposalStatusTitle">
+            <p id="eventProposalStatusEyebrow" class="eyebrow">Proposal status</p>
+            <h2 id="eventProposalStatusTitle">イベント提案の審査状況</h2>
+            <div id="eventProposalList" class="event-proposal-list"></div>
+          </section>
         </article>
+      </section>
+      <section id="eventsView" class="events-view app-view" hidden>
+        <button id="backFromEvents" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <div class="events-shell">
+          <header class="events-heading">
+            <div>
+              <p id="eventsEyebrow" class="eyebrow">Events</p>
+              <h1 id="eventsTitle">イベント</h1>
+              <p id="eventsLead">開催中のイベントを探したり、ユーザー発案の新しいイベントを運営へ提案できます。</p>
+            </div>
+            <button id="eventsCreateButton" class="primary-button" type="button">イベント開催を提案</button>
+          </header>
+          <section class="events-search-panel" aria-label="Event search">
+            <label class="events-search">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" />
+              </svg>
+              <input id="eventsSearchInput" type="search" placeholder="イベント名、主催者、#タグで検索" autocomplete="off" />
+            </label>
+            <div id="eventsQuickFilters" class="events-quick-filters" aria-label="Event filters">
+              <button class="is-active" type="button" data-event-filter="official">公式イベント</button>
+              <button type="button" data-event-filter="community">ユーザー発案</button>
+            </div>
+          </section>
+          <div id="eventsGrid" class="events-grid"></div>
+          <div id="eventsEmpty" class="empty-state" hidden>
+            <p>イベントが見つかりませんでした</p>
+            <span>検索語句やフィルタを変えてもう一度探してみてください。</span>
+          </div>
+        </div>
       </section>
       <section id="missionView" class="mission-view app-view" hidden>
         <button id="backFromMission" class="soft-button" type="button">
@@ -1347,6 +1421,66 @@
             <button class="primary-button" type="submit">投稿する</button>
           </div>
         </section>
+      </form>
+    </dialog>
+
+    <dialog id="eventProposalDialog" class="request-sheet-dialog event-proposal-dialog" aria-labelledby="eventProposalDialogTitle">
+      <form id="eventProposalForm" class="request-sheet-card event-proposal-card">
+        <p id="eventProposalDialogEyebrow" class="eyebrow">Community event</p>
+        <h2 id="eventProposalDialogTitle">イベント開催を提案</h2>
+        <p id="eventProposalDialogLead">送信すると運営イベント窓口へメール通知され、審査承認後に開催中イベントや特集枠へ掲載される想定です。</p>
+        <div class="compose-grid event-proposal-grid">
+          <label class="field wide">
+            <span id="eventProposalTitleLabel">イベント名</span>
+            <input id="eventProposalTitleInput" type="text" placeholder="例: Avatar styling showcase week" autocomplete="off" required />
+          </label>
+          <label class="field wide event-proposal-image-field">
+            <span id="eventProposalImageLabel">イベントバナー画像</span>
+            <input id="eventProposalImageInput" type="file" accept="image/*" />
+            <span id="eventProposalImageHelp" class="field-help">トップバナー掲載時の見え方やイベントの雰囲気を運営が確認するために使います。</span>
+            <span id="eventProposalImagePreview" class="event-proposal-image-preview" hidden>
+              <img id="eventProposalImagePreviewImg" alt="Event banner preview" />
+              <small id="eventProposalImagePreviewLabel">バナー画像プレビュー</small>
+            </span>
+          </label>
+          <label class="field">
+            <span id="eventProposalTypeLabel">イベント種別</span>
+            <select id="eventProposalTypeInput">
+              <option value="showcase">作品特集</option>
+              <option value="contest">コンテスト</option>
+              <option value="workshop">ワークショップ</option>
+              <option value="support">依頼促進キャンペーン</option>
+            </select>
+          </label>
+          <label class="field">
+            <span id="eventProposalWindowLabel">希望開催時期</span>
+            <input id="eventProposalWindowInput" type="text" placeholder="例: 7月前半 / 2週間" autocomplete="off" />
+          </label>
+          <label class="field">
+            <span id="eventProposalOrganizerLabel">主催者名</span>
+            <input id="eventProposalOrganizerInput" type="text" placeholder="Your display name" autocomplete="off" />
+          </label>
+          <label class="field">
+            <span id="eventProposalContactLabel">連絡先メール</span>
+            <input id="eventProposalContactInput" type="email" placeholder="organizer@example.com" autocomplete="off" />
+          </label>
+          <label class="field wide">
+            <span id="eventProposalSummaryLabel">開催概要</span>
+            <textarea id="eventProposalSummaryInput" rows="4" placeholder="何を開催したいか、誰に見てほしいか、どんな投稿を集めたいか"></textarea>
+          </label>
+          <label class="field wide">
+            <span id="eventProposalSupportLabel">運営に期待すること</span>
+            <textarea id="eventProposalSupportInput" rows="3" placeholder="特集掲載、募集導線、開催期間の設定、注意事項案内など"></textarea>
+          </label>
+        </div>
+        <div class="event-proposal-mail-note">
+          <strong id="eventProposalMailTitle">送信先</strong>
+          <span id="eventProposalMailBody">運営イベント窓口 events@vrc-sns.mock にメール通知されます。</span>
+        </div>
+        <div class="request-sheet-actions">
+          <button id="eventProposalCancel" class="soft-button" type="button">キャンセル</button>
+          <button id="eventProposalSubmit" class="primary-button" type="submit">提案を送信</button>
+        </div>
       </form>
     </dialog>
 
@@ -1638,6 +1772,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=mobile-account-menu-1"></script>
+    <script src="./app.js?v=compact-account-switcher-1"></script>
   </body>
 </html>
