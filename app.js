@@ -13,6 +13,13 @@
   fashion: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=85",
 };
 
+document.addEventListener("error", (event) => {
+  if (event.target instanceof HTMLImageElement) {
+    event.target.classList.add("is-broken-image");
+    event.target.alt = "";
+  }
+}, true);
+
 const pins = [
   {
     id: 1,
@@ -1739,7 +1746,9 @@ function updateViewTabActiveStates() {
   navPills.forEach((pill) => {
     pill.classList.toggle("is-active", !activeSavedSearchTabId && pill.dataset.view === activeView);
   });
-  updateViewTabActiveStates();
+  savedSearchTabs?.querySelectorAll("[data-saved-search-id]").forEach((pill) => {
+    pill.classList.toggle("is-active", pill.dataset.savedSearchId === activeSavedSearchTabId);
+  });
 }
 
 function activateSavedSearchTab(id) {
@@ -3538,6 +3547,9 @@ function showFeed() {
 }
 
 function routeFromHash() {
+  closeAccountMenu();
+  closeSavedSearchContextMenu();
+  hideFloatingPostActions();
   const postMatch = location.hash.match(/^#post\/(\d+)$/);
   if (postMatch) {
     showFeed();
