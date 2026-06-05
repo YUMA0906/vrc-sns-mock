@@ -205,7 +205,18 @@ const searchInput = document.querySelector("#searchInput");
 const eventBanner = document.querySelector(".event-banner");
 const pageTitle = document.querySelector("#pageTitle");
 const chips = [...document.querySelectorAll(".chip")];
-const navPills = [...document.querySelectorAll(".nav-pill")];
+const navPills = [...document.querySelectorAll(".nav-pill[data-view]")];
+const savedSearchTabs = document.querySelector("#savedSearchTabs");
+const addSavedSearchTabButton = document.querySelector("#addSavedSearchTab");
+const savedSearchDialog = document.querySelector("#savedSearchDialog");
+const savedSearchLabelInput = document.querySelector("#savedSearchLabelInput");
+const savedSearchQueryInput = document.querySelector("#savedSearchQueryInput");
+const savedSearchDelete = document.querySelector("#savedSearchDelete");
+const savedSearchCancel = document.querySelector("#savedSearchCancel");
+const savedSearchSave = document.querySelector("#savedSearchSave");
+const savedSearchContextMenu = document.querySelector("#savedSearchContextMenu");
+const savedSearchContextEdit = document.querySelector("#savedSearchContextEdit");
+const savedSearchContextDelete = document.querySelector("#savedSearchContextDelete");
 const emptyState = document.querySelector("#emptyState");
 const shuffleButton = document.querySelector("#shuffleButton");
 const createButton = document.querySelector("#createButton");
@@ -538,6 +549,9 @@ const editProfileNotice = document.querySelector("#editProfileNotice");
 
 let activeCategory = "All";
 let activeView = "discover";
+let activeSavedSearchTabId = null;
+let editingSavedSearchTabId = null;
+let contextSavedSearchTabId = null;
 let savedPins = new Set([3, 7]);
 let likedPins = new Set([1, 5, 12, 18]);
 let followedCreators = new Set(["Lumi Photo"]);
@@ -578,6 +592,10 @@ let eventVisualIndex = 0;
 let eventLoopResetIndex = null;
 let eventDragFrame = 0;
 let ignoreEventSlideClick = false;
+const eventCarouselMotion = {
+  duration: 980,
+  easing: "cubic-bezier(0.22, 1, 0.36, 1)"
+};
 const demoAccountPassword = "password";
 let approveHoldTimer = 0;
 let approveHoldCompleted = false;
@@ -603,6 +621,8 @@ savedPins = new Set(bookmarkFolders.flatMap((folder) => folder.pinIds || []));
 let profileArchivePinnedHeight = 0;
 const composeDraftStorageKey = "vrc-sns-compose-draft";
 const requestComposeDraftStorageKey = "vrc-sns-request-compose-draft";
+const savedSearchTabsStorageKey = "vrc-sns-saved-search-tabs";
+let savedSearchTabItems = loadSavedSearchTabItems();
 let myProfile = {
   displayName: "You",
   role: "VRChat creator",
@@ -1018,11 +1038,32 @@ const translations = {
     portfolioDesc: "改変・撮影・レタッチ・動画・ワールド制作を投稿",
     commissionDesc: "投稿やプロフィールから依頼受付へ接続",
     communityDesc: "閲覧・検索・プロフィール確認はログイン不要で快適に",
-    explore: "Explore",
-    requests: "Requests",
-    shuffle: "Shuffle",
+    explore: "おすすめ",
+    followingFeed: "フォロー中",
+    requests: "依頼受付中",
+    shuffle: "シャッフル",
     request: "Request",
     post: "Post",
+    addTab: "タブ追加",
+    editTab: "タブを編集",
+    updateTab: "更新",
+    deleteTab: "削除",
+    edit: "編集",
+    savedTabDialogTitle: "保存タブを追加",
+    savedTabEditTitle: "保存タブを編集",
+    savedTabDialogLead: "ホームに表示する名前と、内部で使う検索文言をそれぞれ設定できます。",
+    savedTabEditLead: "表示名や検索文言を更新したり、このタブ自体を削除できます。",
+    savedTabLabel: "タブのタイトル",
+    savedTabQuery: "検索文言",
+    savedTabHint: "AND / OR を使って検索条件を保存できます。",
+    savedTabLabelPlaceholder: "例: Booth衣装 / お気に入り改変",
+    savedTabQueryPlaceholder: "例: booth AND #衣装 OR Selestia",
+    savedTabEmpty: "検索語句を入力してください",
+    savedTabLabelEmpty: "タブのタイトルを入力してください",
+    savedTabAdded: "タブを追加しました",
+    savedTabExists: "同じタブを開きました",
+    savedTabUpdated: "タブを更新しました",
+    savedTabDeleted: "タブを削除しました",
     noResultsTitle: "見つかりませんでした",
     noResultsBody: "検索語句やカテゴリを変えてもう一度探してみてください。",
     back: "Back",
@@ -1191,10 +1232,31 @@ const translations = {
     commissionDesc: "Connect from posts and profiles to commission pages",
     communityDesc: "Browse, search, and view profiles comfortably without login",
     explore: "Explore",
-    requests: "Requests",
+    followingFeed: "Following",
+    requests: "Open requests",
     shuffle: "Shuffle",
     request: "Request",
     post: "Post",
+    addTab: "Add tab",
+    editTab: "Edit tab",
+    updateTab: "Update",
+    deleteTab: "Delete",
+    edit: "Edit",
+    savedTabDialogTitle: "Add a saved tab",
+    savedTabEditTitle: "Edit saved tab",
+    savedTabDialogLead: "Set the title shown on the home screen and the internal search query separately.",
+    savedTabEditLead: "Update the visible title or search query, or remove this tab completely.",
+    savedTabLabel: "Tab title",
+    savedTabQuery: "Search query",
+    savedTabHint: "You can save searches with AND / OR conditions.",
+    savedTabLabelPlaceholder: "Example: BOOTH outfits / Favorite edits",
+    savedTabQueryPlaceholder: "Example: booth AND #outfit OR Selestia",
+    savedTabEmpty: "Enter a search phrase first",
+    savedTabLabelEmpty: "Enter a tab title first",
+    savedTabAdded: "Tab added",
+    savedTabExists: "Opened the existing tab",
+    savedTabUpdated: "Tab updated",
+    savedTabDeleted: "Tab deleted",
     noResultsTitle: "No results found",
     noResultsBody: "Try another keyword or category.",
     back: "Back",
@@ -1362,11 +1424,32 @@ const translations = {
     portfolioDesc: "아바타 수정, 사진, 보정, 영상, 월드 작업을 게시",
     commissionDesc: "게시물과 프로필에서 의뢰 페이지로 연결",
     communityDesc: "로그인 없이도 검색과 프로필 확인을 편하게",
-    explore: "Explore",
-    requests: "Requests",
-    shuffle: "Shuffle",
+    explore: "탐색",
+    followingFeed: "팔로잉",
+    requests: "의뢰 접수중",
+    shuffle: "셔플",
     request: "Request",
     post: "Post",
+    addTab: "탭 추가",
+    editTab: "탭 편집",
+    updateTab: "업데이트",
+    deleteTab: "삭제",
+    edit: "편집",
+    savedTabDialogTitle: "저장 탭 추가",
+    savedTabEditTitle: "저장 탭 편집",
+    savedTabDialogLead: "홈에 보일 이름과 내부 검색어를 각각 설정할 수 있습니다.",
+    savedTabEditLead: "표시 이름과 검색어를 바꾸거나, 이 탭 자체를 삭제할 수 있습니다.",
+    savedTabLabel: "탭 제목",
+    savedTabQuery: "검색어",
+    savedTabHint: "AND / OR 조건으로 검색 탭을 저장할 수 있습니다.",
+    savedTabLabelPlaceholder: "예: Booth 의상 / 즐겨찾는 개변",
+    savedTabQueryPlaceholder: "예: booth AND #의상 OR Selestia",
+    savedTabEmpty: "검색어를 먼저 입력하세요",
+    savedTabLabelEmpty: "탭 제목을 먼저 입력하세요",
+    savedTabAdded: "탭을 추가했습니다",
+    savedTabExists: "같은 탭을 열었습니다",
+    savedTabUpdated: "탭을 업데이트했습니다",
+    savedTabDeleted: "탭을 삭제했습니다",
     noResultsTitle: "검색 결과가 없습니다",
     noResultsBody: "검색어나 카테고리를 바꿔 다시 찾아보세요.",
     back: "Back",
@@ -1518,11 +1601,12 @@ function setText(target, key) {
 const heroTitleWords = ["Discover", "Connect", "Commission"];
 let heroTitleWordIndex = 0;
 let heroTitleTimer = null;
+let heroTitleSwapTimer = null;
 
 function renderHeroTitleWord(animate = true) {
   if (!pageTitle) return;
   const word = heroTitleWords[heroTitleWordIndex % heroTitleWords.length];
-  const current = pageTitle.querySelector(".hero-word.is-visible") || pageTitle.querySelector(".hero-word");
+  const current = pageTitle.querySelector(".hero-word");
   if (!current || !animate || document.documentElement.dataset.reducedMotion === "true") {
     pageTitle.innerHTML = "";
     const stable = document.createElement("span");
@@ -1532,23 +1616,25 @@ function renderHeroTitleWord(animate = true) {
     return;
   }
   if (current.textContent === word) return;
-  const next = document.createElement("span");
-  next.className = "hero-word";
-  next.textContent = word;
-  pageTitle.append(next);
-  window.requestAnimationFrame(() => {
-    current.classList.remove("is-visible");
-    next.classList.add("is-visible");
-  });
-  window.setTimeout(() => {
-    [...pageTitle.querySelectorAll(".hero-word:not(.is-visible)")].forEach((node) => node.remove());
-  }, 960);
+  if (heroTitleSwapTimer) window.clearTimeout(heroTitleSwapTimer);
+  current.classList.add("is-transitioning");
+  current.classList.remove("is-visible");
+  heroTitleSwapTimer = window.setTimeout(() => {
+    current.textContent = word;
+    current.classList.remove("is-transitioning");
+    current.classList.add("is-visible");
+    heroTitleSwapTimer = null;
+  }, 300);
 }
 
 function resetHeroTitleRotation() {
   if (heroTitleTimer) {
     window.clearInterval(heroTitleTimer);
     heroTitleTimer = null;
+  }
+  if (heroTitleSwapTimer) {
+    window.clearTimeout(heroTitleSwapTimer);
+    heroTitleSwapTimer = null;
   }
   heroTitleWordIndex = 0;
   renderHeroTitleWord(false);
@@ -1573,6 +1659,233 @@ function setSelectOptionTexts(select, keys) {
   [...select.options].forEach((option, index) => {
     if (keys[index]) option.textContent = t(keys[index]);
   });
+}
+
+function categoryDisplayName(category) {
+  const labels = {
+    ja: {
+      All: "すべて",
+      Avatar: "アバター",
+      Photo: "写真",
+      Retouch: "レタッチ",
+      Video: "動画",
+      World: "ワールド",
+      Commission: "依頼受付",
+    },
+    en: {
+      All: "All",
+      Avatar: "Avatar",
+      Photo: "Photo",
+      Retouch: "Retouch",
+      Video: "Video",
+      World: "World",
+      Commission: "Commission",
+    },
+    ko: {
+      All: "전체",
+      Avatar: "아바타",
+      Photo: "사진",
+      Retouch: "리터치",
+      Video: "영상",
+      World: "월드",
+      Commission: "의뢰",
+    }
+  };
+  return labels[currentLanguage]?.[category] || labels.ja[category] || category;
+}
+
+function loadSavedSearchTabItems() {
+  try {
+    const raw = localStorage.getItem(savedSearchTabsStorageKey);
+    const parsed = JSON.parse(raw || "[]");
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((item) => item && typeof item.id === "string" && typeof item.query === "string")
+      .map((item) => ({
+        id: item.id,
+        query: item.query.trim(),
+        label: typeof item.label === "string" && item.label.trim() ? item.label.trim() : item.query.trim(),
+      }))
+      .filter((item) => item.query && item.label);
+  } catch {
+    return [];
+  }
+}
+
+function persistSavedSearchTabItems() {
+  localStorage.setItem(savedSearchTabsStorageKey, JSON.stringify(savedSearchTabItems));
+}
+
+function savedSearchTabLabel(label) {
+  const value = label.trim();
+  return value.length > 16 ? `${value.slice(0, 16)}...` : value;
+}
+
+function renderSavedSearchTabs() {
+  if (!savedSearchTabs) return;
+  savedSearchTabs.innerHTML = savedSearchTabItems.map((item) => `
+    <button class="nav-pill saved-search-pill${activeSavedSearchTabId === item.id ? " is-active" : ""}" type="button" data-saved-search-id="${item.id}" title="${item.label} | ${item.query}">
+      ${savedSearchTabLabel(item.label)}
+    </button>
+  `).join("");
+}
+
+function activateSavedSearchTab(id) {
+  const item = savedSearchTabItems.find((entry) => entry.id === id);
+  if (!item) return;
+  activeSavedSearchTabId = item.id;
+  if (searchInput) searchInput.value = item.query;
+  setView("discover", { preserveSavedSearch: true });
+}
+
+function updateSavedSearchSaveButtonState() {
+  if (!savedSearchSave) return;
+  const hasLabel = Boolean(savedSearchLabelInput?.value.trim());
+  const hasQuery = Boolean(savedSearchQueryInput?.value.trim());
+  savedSearchSave.disabled = !(hasLabel && hasQuery);
+}
+
+function syncSavedSearchDialogMode() {
+  const isEditing = Boolean(editingSavedSearchTabId);
+  setText("#savedSearchDialogTitle", isEditing ? "savedTabEditTitle" : "savedTabDialogTitle");
+  setText("#savedSearchDialogLead", isEditing ? "savedTabEditLead" : "savedTabDialogLead");
+  setText("#savedSearchSave", isEditing ? "updateTab" : "addTab");
+  if (savedSearchDelete) savedSearchDelete.hidden = !isEditing;
+}
+
+function openSavedSearchDialog(tabId = null) {
+  if (!savedSearchDialog) return;
+  closeSavedSearchContextMenu();
+  editingSavedSearchTabId = tabId;
+  const editingItem = tabId ? savedSearchTabItems.find((item) => item.id === tabId) : null;
+  const seed = searchInput?.value.trim() || "";
+  if (savedSearchLabelInput) savedSearchLabelInput.value = editingItem?.label || seed;
+  if (savedSearchQueryInput) savedSearchQueryInput.value = editingItem?.query || seed;
+  syncSavedSearchDialogMode();
+  updateSavedSearchSaveButtonState();
+  showModalElement(savedSearchDialog);
+  requestAnimationFrame(() => savedSearchLabelInput?.focus());
+}
+
+function closeSavedSearchDialog() {
+  if (!savedSearchDialog) return;
+  editingSavedSearchTabId = null;
+  syncSavedSearchDialogMode();
+  closeModalElement(savedSearchDialog);
+}
+
+function closeSavedSearchContextMenu() {
+  contextSavedSearchTabId = null;
+  if (savedSearchContextMenu) {
+    savedSearchContextMenu.hidden = true;
+  }
+}
+
+function openSavedSearchContextMenu(tabId, x, y) {
+  if (!savedSearchContextMenu) return;
+  contextSavedSearchTabId = tabId;
+  savedSearchContextMenu.hidden = false;
+  const width = 190;
+  const height = 56;
+  const left = Math.min(x, window.innerWidth - width - 12);
+  const top = Math.min(y, window.innerHeight - height - 12);
+  savedSearchContextMenu.style.left = `${Math.max(12, left)}px`;
+  savedSearchContextMenu.style.top = `${Math.max(12, top)}px`;
+}
+
+function saveSavedSearchTab() {
+  const label = savedSearchLabelInput?.value.trim() || "";
+  const query = savedSearchQueryInput?.value.trim() || "";
+  if (!label) {
+    showProfileCopyToast(t("savedTabLabelEmpty"), false);
+    savedSearchLabelInput?.focus();
+    return;
+  }
+  if (!query) {
+    showProfileCopyToast(t("savedTabEmpty"), false);
+    savedSearchQueryInput?.focus();
+    return;
+  }
+  if (editingSavedSearchTabId) {
+    const target = savedSearchTabItems.find((item) => item.id === editingSavedSearchTabId);
+    if (!target) {
+      closeSavedSearchDialog();
+      return;
+    }
+    const duplicate = savedSearchTabItems.find((item) => item.id !== editingSavedSearchTabId && item.query.toLowerCase() === query.toLowerCase());
+    if (duplicate) {
+      showProfileCopyToast(t("savedTabExists"));
+      closeSavedSearchDialog();
+      activateSavedSearchTab(duplicate.id);
+      return;
+    }
+    target.label = label;
+    target.query = query;
+    persistSavedSearchTabItems();
+    renderSavedSearchTabs();
+    showProfileCopyToast(t("savedTabUpdated"));
+    activateSavedSearchTab(target.id);
+    closeSavedSearchDialog();
+    return;
+  }
+  const existing = savedSearchTabItems.find((item) => item.query.toLowerCase() === query.toLowerCase());
+  if (existing) {
+    existing.label = label;
+    persistSavedSearchTabItems();
+    renderSavedSearchTabs();
+    showProfileCopyToast(t("savedTabExists"));
+    activateSavedSearchTab(existing.id);
+    closeSavedSearchDialog();
+    return;
+  }
+  const id = `saved-${Date.now().toString(36)}`;
+  savedSearchTabItems.unshift({ id, label, query });
+  persistSavedSearchTabItems();
+  renderSavedSearchTabs();
+  showProfileCopyToast(t("savedTabAdded"));
+  activateSavedSearchTab(id);
+  closeSavedSearchDialog();
+}
+
+function deleteSavedSearchTab() {
+  const targetId = editingSavedSearchTabId || contextSavedSearchTabId;
+  if (!targetId) return;
+  savedSearchTabItems = savedSearchTabItems.filter((item) => item.id !== targetId);
+  if (activeSavedSearchTabId === targetId) {
+    activeSavedSearchTabId = null;
+  }
+  persistSavedSearchTabItems();
+  renderSavedSearchTabs();
+  showProfileCopyToast(t("savedTabDeleted"));
+  closeSavedSearchContextMenu();
+  closeSavedSearchDialog();
+  renderPins();
+}
+
+function parseBooleanSearchQuery(query) {
+  const normalized = query.trim().replace(/\s+/g, " ");
+  if (!normalized) return { hasBoolean: false, groups: [] };
+  const hasBoolean = /\b(?:AND|OR)\b/i.test(normalized);
+  if (!hasBoolean) {
+    return { hasBoolean: false, groups: [[normalized.toLowerCase()]] };
+  }
+  const groups = normalized
+    .split(/\s+\bOR\b\s+/i)
+    .map((group) => group
+      .split(/\s+\bAND\b\s+/i)
+      .map((term) => term.trim().toLowerCase())
+      .filter(Boolean))
+    .filter((group) => group.length);
+  return { hasBoolean, groups };
+}
+
+function matchesSearchQuery(haystack, query) {
+  const parsed = parseBooleanSearchQuery(query);
+  if (!parsed.groups.length) return true;
+  if (!parsed.hasBoolean) {
+    return haystack.includes(parsed.groups[0][0]);
+  }
+  return parsed.groups.some((group) => group.every((term) => haystack.includes(term)));
 }
 
 function getEventCampaignList() {
@@ -1941,6 +2254,12 @@ function updateEventCarouselPosition(offsetPx = 0, visualIndex = eventVisualInde
   });
 }
 
+function setEventCarouselMotion(duration = eventCarouselMotion.duration, easing = eventCarouselMotion.easing) {
+  if (!eventCarouselTrack) return;
+  eventCarouselTrack.style.setProperty("--event-carousel-duration", `${duration}ms`);
+  eventCarouselTrack.style.setProperty("--event-carousel-easing", easing);
+}
+
 function cancelEventDragFrame() {
   if (!eventDragFrame) return;
   window.cancelAnimationFrame(eventDragFrame);
@@ -1952,7 +2271,8 @@ function scheduleEventDragPosition() {
   eventDragFrame = window.requestAnimationFrame(() => {
     eventDragFrame = 0;
     if (!eventDragState) return;
-    updateEventCarouselPosition(eventDragState.deltaX, eventVisualIndex, { skipDots: true });
+    const easedDeltaX = eventDragState.deltaX * 0.94;
+    updateEventCarouselPosition(easedDeltaX, eventVisualIndex, { skipDots: true });
   });
 }
 
@@ -1968,17 +2288,28 @@ function scheduleEventAutoplay() {
   if (campaigns.length <= 1) return;
   const delay = 9000;
   eventAutoplayTimer = window.setTimeout(() => {
-    goToEventSlide(activeEventIndex + 1);
+    goToEventSlide(activeEventIndex + 1, { reason: "autoplay" });
   }, delay);
 }
 
-function goToEventSlide(index) {
+function goToEventSlide(index, options = {}) {
   const campaigns = getEventCampaignList();
   if (!campaigns.length) return;
+  const reason = options.reason || "button";
   const previousIndex = activeEventIndex;
   const normalizedIndex = (index + campaigns.length) % campaigns.length;
   activeEventIndex = normalizedIndex;
   eventLoopResetIndex = null;
+  const motionDuration = document.documentElement.dataset.reducedMotion === "true"
+    ? 420
+    : reason === "autoplay"
+      ? 1220
+      : reason === "drag"
+        ? 860
+        : reason === "snap"
+          ? 760
+          : 980;
+  setEventCarouselMotion(motionDuration);
 
   if (campaigns.length > 1 && previousIndex === 0 && index < 0) {
     eventLoopResetIndex = normalizedIndex;
@@ -2048,6 +2379,7 @@ function endEventDrag(event) {
   ignoreEventSlideClick = !isTap;
   if (isCanceled || isVerticalScroll) {
     eventDragState = null;
+    setEventCarouselMotion(document.documentElement.dataset.reducedMotion === "true" ? 320 : 760);
     updateEventCarouselPosition(0, eventVisualIndex);
     scheduleEventAutoplay();
     return;
@@ -2061,7 +2393,7 @@ function endEventDrag(event) {
   }
   const targetIndex = absX > threshold ? activeEventIndex + (deltaX < 0 ? 1 : -1) : activeEventIndex;
   eventDragState = null;
-  goToEventSlide(targetIndex);
+  goToEventSlide(targetIndex, { reason: absX > threshold ? "drag" : "snap" });
 }
 
 function handleEventTrackTransitionEnd(event) {
@@ -2447,7 +2779,24 @@ function applyLanguage({ rerender = false } = {}) {
   const summary = [...document.querySelectorAll(".summary-strip:not([hidden]) > div span")];
   ["portfolioDesc", "commissionDesc", "communityDesc"].forEach((key, index) => setText(summary[index], key));
   setText("[data-view='discover']", "explore");
+  setText("[data-view='following']", "followingFeed");
   setText("[data-view='requests']", "requests");
+  setText("#addSavedSearchTab", "addTab");
+  setText("#savedSearchDialogEyebrow", currentLanguage === "en" ? "Custom tab" : currentLanguage === "ko" ? "사용자 탭" : "カスタムタブ");
+  setText("#savedSearchLabelText", "savedTabLabel");
+  setText("#savedSearchQueryText", "savedTabQuery");
+  setText("#savedSearchDialogHint", "savedTabHint");
+  setText("#savedSearchContextEdit", "edit");
+  setText("#savedSearchContextDelete", "deleteTab");
+  setText("#savedSearchDelete", "deleteTab");
+  setText("#savedSearchCancel", "cancel");
+  setAttr(savedSearchLabelInput, "placeholder", "savedTabLabelPlaceholder");
+  setAttr(savedSearchQueryInput, "placeholder", "savedTabQueryPlaceholder");
+  syncSavedSearchDialogMode();
+  chips.forEach((chip) => {
+    chip.textContent = categoryDisplayName(chip.dataset.category || "");
+  });
+  renderSavedSearchTabs();
   if (shuffleButton) {
     shuffleButton.innerHTML = `
       <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -2798,9 +3147,11 @@ function iconProfileAction(type, active = false) {
 }
 
 function filteredPins() {
-  const query = searchInput.value.trim().toLowerCase();
+  const query = searchInput.value.trim();
   return pins.filter((pin) => {
-    const matchesView = activeView === "discover" || pin.request?.open;
+    const matchesView = activeView === "discover"
+      || (activeView === "following" && followedCreators.has(pin.creator))
+      || (activeView === "requests" && pin.request?.open);
     const matchesCategory = activeCategory === "All" || pin.category === activeCategory;
     const haystack = [
       pin.title,
@@ -2812,7 +3163,7 @@ function filteredPins() {
       pin.request?.title || "",
       ...pin.tags,
     ].join(" ").toLowerCase();
-    return matchesView && matchesCategory && haystack.includes(query);
+    return matchesView && matchesCategory && matchesSearchQuery(haystack, query);
   });
 }
 
@@ -2877,6 +3228,7 @@ function renderPins(items = filteredPins()) {
   updateHomeEventBannerVisibility();
   board.innerHTML = items.map(pinCard).join("");
   emptyState.hidden = items.length !== 0;
+  renderSavedSearchTabs();
   bindPinCards(board);
 }
 
@@ -2900,8 +3252,11 @@ function setCategory(category) {
   renderPins();
 }
 
-function setView(view) {
+function setView(view, options = {}) {
   activeView = view;
+  if (!options.preserveSavedSearch) {
+    activeSavedSearchTabId = null;
+  }
   navPills.forEach((pill) => pill.classList.toggle("is-active", pill.dataset.view === view));
   renderPins();
 }
@@ -5548,9 +5903,67 @@ navPills.forEach((pill) => {
   pill.addEventListener("click", () => setView(pill.dataset.view));
 });
 
-searchInput.addEventListener("input", () => renderPins());
-eventPrev?.addEventListener("click", () => goToEventSlide(activeEventIndex - 1));
-eventNext?.addEventListener("click", () => goToEventSlide(activeEventIndex + 1));
+savedSearchTabs?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-saved-search-id]");
+  if (!button) return;
+  closeSavedSearchContextMenu();
+  activateSavedSearchTab(button.dataset.savedSearchId);
+});
+
+savedSearchTabs?.addEventListener("contextmenu", (event) => {
+  const button = event.target.closest("[data-saved-search-id]");
+  if (!button) return;
+  event.preventDefault();
+  openSavedSearchContextMenu(button.dataset.savedSearchId, event.clientX, event.clientY);
+});
+
+addSavedSearchTabButton?.addEventListener("click", () => openSavedSearchDialog());
+
+savedSearchContextEdit?.addEventListener("click", () => {
+  if (!contextSavedSearchTabId) return;
+  const id = contextSavedSearchTabId;
+  closeSavedSearchContextMenu();
+  openSavedSearchDialog(id);
+});
+savedSearchContextDelete?.addEventListener("click", deleteSavedSearchTab);
+savedSearchDelete?.addEventListener("click", deleteSavedSearchTab);
+savedSearchCancel?.addEventListener("click", closeSavedSearchDialog);
+savedSearchDialog?.addEventListener("click", (event) => {
+  if (event.target === savedSearchDialog) closeSavedSearchDialog();
+});
+savedSearchDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeSavedSearchDialog();
+});
+savedSearchLabelInput?.addEventListener("input", updateSavedSearchSaveButtonState);
+savedSearchQueryInput?.addEventListener("input", updateSavedSearchSaveButtonState);
+savedSearchDialog?.querySelector("form")?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  saveSavedSearchTab();
+});
+
+document.addEventListener("click", (event) => {
+  if (!savedSearchContextMenu || savedSearchContextMenu.hidden) return;
+  if (savedSearchContextMenu.contains(event.target)) return;
+  closeSavedSearchContextMenu();
+});
+
+window.addEventListener("scroll", closeSavedSearchContextMenu, { passive: true });
+window.addEventListener("resize", closeSavedSearchContextMenu);
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeSavedSearchContextMenu();
+});
+
+searchInput.addEventListener("input", () => {
+  const activeSavedItem = savedSearchTabItems.find((item) => item.id === activeSavedSearchTabId);
+  if (activeSavedItem && searchInput.value.trim() !== activeSavedItem.query) {
+    activeSavedSearchTabId = null;
+  }
+  renderPins();
+});
+eventPrev?.addEventListener("click", () => goToEventSlide(activeEventIndex - 1, { reason: "button" }));
+eventNext?.addEventListener("click", () => goToEventSlide(activeEventIndex + 1, { reason: "button" }));
 openEventProposalButton?.addEventListener("click", openEventsPage);
 openEventProposalFromDetail?.addEventListener("click", openEventProposalDialog);
 eventsCreateButton?.addEventListener("click", openEventProposalDialog);
@@ -5572,7 +5985,7 @@ eventsGrid?.addEventListener("click", (event) => {
 eventCarouselDots?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-event-dot]");
   if (!button) return;
-  goToEventSlide(Number(button.dataset.eventDot));
+  goToEventSlide(Number(button.dataset.eventDot), { reason: "button" });
 });
 eventCarouselTrack?.addEventListener("pointerdown", startEventDrag);
 eventCarouselTrack?.addEventListener("pointermove", moveEventDrag);

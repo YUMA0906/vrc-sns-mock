@@ -710,12 +710,13 @@ body[data-theme="dark"] .event-nav-button {
 
 .event-carousel-track {
   display: flex;
-  transition: transform 1050ms cubic-bezier(.2, .86, .2, 1);
+  transition: transform var(--event-carousel-duration, 980ms) var(--event-carousel-easing, cubic-bezier(0.22, 1, 0.36, 1));
   will-change: transform;
   cursor: grab;
   user-select: none;
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
+  transform-style: preserve-3d;
 }
 
 .event-carousel-track.is-dragging {
@@ -1061,26 +1062,27 @@ h1 {
 }
 
 .rotating-hero-title {
-  position: relative;
   display: block;
   min-width: min(58vw, 680px);
   min-height: 1.08em;
-  overflow: hidden;
 }
 
 .hero-word {
-  position: absolute;
-  inset: 0 auto auto 0;
-  display: block;
+  display: inline-block;
   will-change: opacity, transform;
   opacity: 0;
-  transform: translate3d(0, 14px, 0) scale(0.985);
-  transition: opacity 900ms cubic-bezier(0.2, 0.85, 0.2, 1), transform 900ms cubic-bezier(0.2, 0.85, 0.2, 1);
+  transform: translate3d(0, 10px, 0);
+  transition: opacity 520ms cubic-bezier(0.25, 0.8, 0.25, 1), transform 520ms cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .hero-word.is-visible {
   opacity: 1;
-  transform: translate3d(0, 0, 0) scale(1);
+  transform: translate3d(0, 0, 0);
+}
+
+.hero-word.is-transitioning {
+  opacity: 0.14;
+  transform: translate3d(0, -4px, 0);
 }
 
 .hero-actions,
@@ -1218,15 +1220,16 @@ body[data-theme="dark"] .summary-strip strong {
 }
 
 .view-tabs {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 8px;
-  width: max-content;
+  flex-wrap: wrap;
+  width: 100%;
   max-width: 100%;
   margin: 0 0 14px;
   padding: 4px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 26px;
   background: rgba(255,255,255,0.7);
   box-shadow: 0 14px 34px rgba(20,20,20,0.06);
 }
@@ -1234,6 +1237,119 @@ body[data-theme="dark"] .summary-strip strong {
 [data-theme="dark"] .view-tabs,
 body[data-theme="dark"] .view-tabs {
   background: rgba(28,28,27,0.78);
+}
+
+.view-tab-group,
+.saved-search-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.view-tab-group::-webkit-scrollbar,
+.saved-search-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.saved-search-tabs {
+  flex: 1 1 220px;
+}
+
+.nav-pill-add {
+  flex: 0 0 auto;
+  background: rgba(255,255,255,0.82);
+}
+
+.saved-search-pill {
+  max-width: 184px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.saved-search-dialog-card {
+  gap: 14px;
+}
+
+.saved-search-dialog-copy {
+  display: grid;
+  gap: 8px;
+}
+
+.saved-search-dialog-copy p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.saved-search-dialog-card .primary-button:disabled {
+  opacity: 0.46;
+  background: color-mix(in srgb, var(--muted) 24%, transparent);
+  border-color: color-mix(in srgb, var(--muted) 24%, transparent);
+  color: color-mix(in srgb, var(--muted) 82%, transparent);
+  box-shadow: none;
+  transform: none;
+}
+
+#savedSearchDelete {
+  color: #c83232;
+  border-color: color-mix(in srgb, #c83232 24%, var(--line));
+}
+
+[data-theme="dark"] #savedSearchDelete,
+body[data-theme="dark"] #savedSearchDelete {
+  color: #ff8f8f;
+  border-color: color-mix(in srgb, #ff8f8f 28%, var(--line));
+}
+
+.saved-search-context-menu {
+  position: fixed;
+  z-index: 120;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.94);
+  box-shadow: 0 20px 44px rgba(20,20,20,0.14);
+  backdrop-filter: blur(18px);
+}
+
+.saved-search-context-menu[hidden] {
+  display: none;
+}
+
+.saved-search-context-menu button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.88);
+  color: var(--ink);
+  font-weight: 760;
+}
+
+#savedSearchContextDelete {
+  color: #c83232;
+}
+
+[data-theme="dark"] .saved-search-context-menu,
+body[data-theme="dark"] .saved-search-context-menu {
+  background: rgba(24,24,23,0.94);
+}
+
+[data-theme="dark"] .saved-search-context-menu button,
+body[data-theme="dark"] .saved-search-context-menu button {
+  background: rgba(255,255,255,0.06);
+  color: #fffaf1;
+}
+
+[data-theme="dark"] #savedSearchContextDelete,
+body[data-theme="dark"] #savedSearchContextDelete {
+  color: #ff9f9f;
 }
 
 .filters {
@@ -8104,6 +8220,15 @@ body.is-dragging .drop-hint {
 
   .view-tabs {
     width: 100%;
+  }
+
+  .saved-search-tabs {
+    flex-basis: 100%;
+    order: 3;
+  }
+
+  .nav-pill-add {
+    margin-left: auto;
   }
 
   .filters {

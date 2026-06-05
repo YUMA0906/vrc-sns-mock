@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="./styles.css?v=clean-home-search-1" />
+    <link rel="stylesheet" href="./styles.css?v=clean-home-search-2" />
   </head>
   <body>
     <header class="topbar">
@@ -222,8 +222,13 @@
       </section>
 
       <section class="view-tabs" aria-label="View">
-        <button class="nav-pill is-active" type="button" data-view="discover">Explore</button>
-        <button class="nav-pill" type="button" data-view="requests">Requests</button>
+        <div class="view-tab-group">
+          <button class="nav-pill is-active" type="button" data-view="discover">Explore</button>
+          <button class="nav-pill" type="button" data-view="following">フォロー中</button>
+          <button class="nav-pill" type="button" data-view="requests">Requests</button>
+        </div>
+        <div id="savedSearchTabs" class="saved-search-tabs" aria-label="Saved searches"></div>
+        <button id="addSavedSearchTab" class="nav-pill nav-pill-add" type="button">タブ追加</button>
       </section>
 
       <section class="filters" aria-label="Categories">
@@ -996,6 +1001,33 @@
           </div>
         </form>
       </dialog>
+      <dialog id="savedSearchDialog" class="request-sheet-dialog" aria-labelledby="savedSearchDialogTitle">
+        <form method="dialog" class="request-sheet-card saved-search-dialog-card">
+          <p id="savedSearchDialogEyebrow" class="eyebrow">Custom tab</p>
+          <div class="saved-search-dialog-copy">
+            <h2 id="savedSearchDialogTitle">保存タブを追加</h2>
+            <p id="savedSearchDialogLead">ホームに表示する名前と、内部で使う検索文言をそれぞれ設定できます。</p>
+          </div>
+          <label class="field">
+            <span id="savedSearchLabelText">タブのタイトル</span>
+            <input id="savedSearchLabelInput" type="text" maxlength="24" placeholder="例: Booth衣装 / お気に入り改変" autocomplete="off" />
+          </label>
+          <label class="field">
+            <span id="savedSearchQueryText">検索文言</span>
+            <input id="savedSearchQueryInput" type="text" placeholder="例: booth AND #衣装 OR Selestia" autocomplete="off" />
+          </label>
+          <p id="savedSearchDialogHint" class="field-help">AND / OR を使って検索条件を保存できます。</p>
+          <div class="request-sheet-actions">
+            <button id="savedSearchDelete" class="soft-button" type="button" hidden>削除</button>
+            <button id="savedSearchCancel" class="soft-button" type="button">キャンセル</button>
+            <button id="savedSearchSave" class="primary-button" type="submit">タブを追加</button>
+          </div>
+        </form>
+      </dialog>
+      <div id="savedSearchContextMenu" class="saved-search-context-menu" role="menu" hidden>
+        <button id="savedSearchContextEdit" type="button" role="menuitem">編集</button>
+        <button id="savedSearchContextDelete" type="button" role="menuitem">削除</button>
+      </div>
       <section id="serviceView" class="mission-view app-view" hidden>
         <button id="backFromService" class="soft-button" type="button">
           <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -1786,6 +1818,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=clean-home-search-1"></script>
+    <script src="./app.js?v=clean-home-search-2"></script>
   </body>
 </html>
