@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="./styles.css?v=profile-archive-responsive-1" />
+    <link rel="stylesheet" href="./styles.css?v=archive-shortcuts-1" />
   </head>
   <body>
     <header class="topbar">
@@ -32,10 +32,19 @@
       </div>
 
       <nav class="nav-actions" aria-label="Primary">
-        <button id="missionButton" class="soft-button mission-nav-button" type="button">Our Mission</button>
         <button id="themeToggle" class="icon-button" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path class="theme-toggle-moon" d="M12 3a6.8 6.8 0 0 0 8.6 8.6 8 8 0 1 1-8.6-8.6Z" />
+          </svg>
+        </button>
+        <button id="likedPostsButton" class="icon-button" type="button" aria-label="いいねした投稿" title="いいねした投稿">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
+          </svg>
+        </button>
+        <button id="bookmarkFoldersButton" class="icon-button" type="button" aria-label="ブックマークフォルダ" title="ブックマークフォルダ">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M19 21 12 17 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z" />
           </svg>
         </button>
         <button id="requestManagerButton" class="icon-button" type="button" aria-label="Request manager" title="Request manager">
@@ -61,6 +70,14 @@
               </svg>
               <span>マイページ</span>
             </button>
+            <button id="accountMenuService" type="button" role="menuitem">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4 6h16" />
+                <path d="M4 12h16" />
+                <path d="M4 18h10" />
+              </svg>
+              <span>サービス説明</span>
+            </button>
             <button id="accountMenuSettings" type="button" role="menuitem">
               <svg aria-hidden="true" viewBox="0 0 24 24">
                 <path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z" />
@@ -83,6 +100,33 @@
 
     <main>
       <section id="feedView" class="app-view">
+      <section class="event-banner" aria-labelledby="eventBannerHeading">
+        <div class="event-banner-shell">
+          <div class="event-banner-head">
+            <div>
+              <p id="eventBannerEyebrow" class="eyebrow">Now live</p>
+              <h2 id="eventBannerHeading">開催中のイベント</h2>
+            </div>
+            <div class="event-banner-controls" aria-label="Event controls">
+              <button id="eventPrev" class="event-nav-button" type="button" aria-label="Previous event">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+              </button>
+              <button id="eventNext" class="event-nav-button" type="button" aria-label="Next event">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="event-carousel-window">
+            <div id="eventCarouselTrack" class="event-carousel-track"></div>
+          </div>
+          <div id="eventCarouselDots" class="event-carousel-dots" aria-label="Event pages"></div>
+        </div>
+      </section>
+
       <section class="hero" aria-labelledby="pageTitle">
         <div>
           <p class="eyebrow">VRChat creator network</p>
@@ -119,10 +163,10 @@
         </div>
       </section>
 
-      <section class="summary-strip mission-card-strip" aria-label="Mission link">
+      <section class="summary-strip mission-card-strip" aria-label="Service link">
         <button id="missionCardButton" class="summary-link-card" type="button">
-          <strong>Our Mission</strong>
-          <span>このサービスが目指す循環と、創作文化に向けた考え方を見る</span>
+          <strong id="serviceCardTitle">サービス説明</strong>
+          <span id="serviceCardLead">Our Mission に進む前に、このサービスで何ができるかを見る</span>
         </button>
       </section>
 
@@ -229,6 +273,11 @@
             <h2 id="profilePostsTitle" class="section-title">Past posts</h2>
           </div>
           <div class="profile-post-tools">
+            <div id="profileArchiveTabs" class="profile-archive-tabs" aria-label="Profile archive tabs">
+              <button class="is-active" type="button" data-profile-archive-tab="posts">自分の投稿</button>
+              <button type="button" data-profile-archive-tab="likes">いいねした投稿</button>
+              <button type="button" data-profile-archive-tab="folders">ブックマークフォルダ</button>
+            </div>
             <label class="profile-post-search">
               <svg aria-hidden="true" viewBox="0 0 24 24">
                 <path d="m21 21-4.3-4.3m1.3-5.2a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z" />
@@ -249,15 +298,16 @@
         <section id="savedPostsSection" class="trust-panel saved-posts-section" hidden aria-labelledby="savedPostsTitle">
           <div class="section-heading-row">
             <div>
-              <p class="eyebrow">Saved</p>
-              <h2 id="savedPostsTitle">保存した投稿</h2>
+              <p class="eyebrow">Bookmarks</p>
+              <h2 id="savedPostsTitle">ブックマークフォルダ</h2>
             </div>
           </div>
-          <div id="savedPostsBoard" class="masonry compact"></div>
+          <div id="bookmarkFoldersBoard" class="bookmark-folders-grid"></div>
+          <div id="savedPostsBoard" class="masonry compact" hidden></div>
         </section>
         <button class="summary-link-card" type="button" hidden>
-          <strong>Our Mission</strong>
-          <span>このサービスが目指す循環と、創作文化に向けた考え方を見る</span>
+          <strong>サービス説明</strong>
+          <span>Our Mission に進む前に、このサービスで何ができるかを見る</span>
         </button>
       </section>
 
@@ -850,6 +900,144 @@
         </svg>
         <span>リンクをコピーしました</span>
       </div>
+      <dialog id="bookmarkFolderDialog" class="request-sheet-dialog" aria-labelledby="bookmarkFolderTitle">
+        <form method="dialog" class="request-sheet-card">
+          <p class="eyebrow">Bookmark folder</p>
+          <h2 id="bookmarkFolderTitle">保存先フォルダを選ぶ</h2>
+          <div id="bookmarkFolderOptions" class="bookmark-folder-options"></div>
+          <label class="field">
+            <span>新しいフォルダ名</span>
+            <input id="bookmarkFolderName" type="text" placeholder="例: 撮影参考 / 改変メモ" autocomplete="off" />
+          </label>
+          <div class="request-sheet-actions">
+            <button id="bookmarkFolderCancel" class="soft-button" type="button">キャンセル</button>
+            <button id="bookmarkFolderCreate" class="soft-button" type="button">フォルダを作成</button>
+            <button id="bookmarkFolderSave" class="primary-button" type="button">このフォルダに追加</button>
+          </div>
+        </form>
+      </dialog>
+      <section id="serviceView" class="mission-view app-view" hidden>
+        <button id="backFromService" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <article class="mission-shell">
+          <header class="mission-hero">
+            <div class="mission-hero-copy">
+              <p id="serviceEyebrow" class="eyebrow">Service Guide</p>
+              <h1 id="serviceHeroTitle">最初にどこを見ればよくて、何ができるかをまとめた使い方ガイド。</h1>
+              <p id="serviceHeroLead">ホーム、投稿、プロフィール、依頼、通知、設定がそれぞれ何のためにあるのかを短く整理しています。身内テスト前の案内ページとしても使える想定です。</p>
+            </div>
+            <div class="mission-hero-panel" aria-label="Service overview">
+              <span id="servicePanelStep1">01 Explore</span>
+              <strong id="servicePanelTitle1">作品を探す</strong>
+              <span id="servicePanelStep2">02 Profile</span>
+              <strong id="servicePanelTitle2">相手を確認する</strong>
+              <span id="servicePanelStep3">03 Request</span>
+              <strong id="servicePanelTitle3">依頼と進行を管理する</strong>
+            </div>
+          </header>
+          <section class="mission-principles" aria-label="Quick start">
+            <article>
+              <span id="servicePillarLabel1">Step 1</span>
+              <strong id="servicePillarTitle1">ホームで作品を探す</strong>
+              <p id="servicePillarBody1">カテゴリ、検索、イベントカードから気になる作品や依頼受付を見つけます。</p>
+            </article>
+            <article>
+              <span id="servicePillarLabel2">Step 2</span>
+              <strong id="servicePillarTitle2">プロフィールで信用を見る</strong>
+              <p id="servicePillarBody2">代表作、実績、レビュー、リンク、依頼受付状況を見て相手を判断します。</p>
+            </article>
+            <article>
+              <span id="servicePillarLabel3">Step 3</span>
+              <strong id="servicePillarTitle3">依頼後は進行を追う</strong>
+              <p id="servicePillarBody3">承諾、進行中、納品、評価までを依頼管理画面とチャットで確認できます。</p>
+            </article>
+          </section>
+          <section class="mission-section mission-section-split" aria-labelledby="serviceWhatTitle">
+            <div>
+              <p id="serviceWhatEyebrow" class="eyebrow">Page guide</p>
+              <h2 id="serviceWhatTitle">どこに何があるか</h2>
+            </div>
+            <div class="service-page-list">
+              <p id="serviceWhatBody1"><strong>ホーム:</strong> 投稿一覧、検索、カテゴリ、開催中イベントの確認。</p>
+              <p id="serviceWhatBody2"><strong>投稿モーダル:</strong> 作品詳細、タグ、保存、フォロー、共有、依頼導線。</p>
+              <p id="serviceWhatBody3"><strong>プロフィール:</strong> 信用ページとして、実績・代表作・レビュー・外部リンクを表示。</p>
+              <p id="serviceWhatBody4"><strong>依頼管理:</strong> 未承諾から完了までの依頼進行、チャット、納品、評価を管理。</p>
+            </div>
+          </section>
+          <section class="mission-section" aria-labelledby="serviceFaqTitle">
+            <p id="serviceFaqEyebrow" class="eyebrow">FAQ</p>
+            <h2 id="serviceFaqTitle">よくある想定質問</h2>
+            <div class="service-faq-grid">
+              <article>
+                <strong id="serviceFaqQ1">普通の投稿と依頼受付投稿は何が違う？</strong>
+                <p id="serviceFaqA1">通常投稿は作品の公開用、依頼受付投稿は価格・納期・受付枠つきで依頼ページへつなぐための投稿です。</p>
+              </article>
+              <article>
+                <strong id="serviceFaqQ2">依頼前に何を見ればいい？</strong>
+                <p id="serviceFaqA2">プロフィールの代表作、完了実績、レビュー、外部リンク、現在の依頼受付状況を見る想定です。</p>
+              </article>
+              <article>
+                <strong id="serviceFaqQ3">依頼した後はどこで進捗を見る？</strong>
+                <p id="serviceFaqA3">依頼管理でステータス一覧を見て、個別詳細でチャット、添付、納品、評価へ進みます。</p>
+              </article>
+              <article>
+                <strong id="serviceFaqQ4">思想や背景はどこで確認できる？</strong>
+                <p id="serviceFaqA4">サービスの目的やVRChat創作文化に対する考え方は Our Mission にまとめています。</p>
+              </article>
+            </div>
+          </section>
+          <section class="mission-section mission-section-accent" aria-labelledby="serviceMissionLinkTitle">
+            <p id="serviceMissionEyebrow" class="eyebrow">Mission</p>
+            <h2 id="serviceMissionLinkTitle">サービスの背景や目指す方向を見る</h2>
+            <p id="serviceMissionBody">使い方ではなく、なぜこのサービスを作るのか、何を良くしたいのかを知りたい時は Our Mission を見てください。</p>
+            <button id="serviceMissionLink" class="primary-button" type="button">Our Missionを見る</button>
+          </section>
+        </article>
+      </section>
+      <section id="eventDetailView" class="mission-view app-view" hidden>
+        <button id="backFromEventDetail" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <article class="mission-shell event-detail-shell">
+          <header id="eventDetailHero" class="mission-hero event-detail-hero">
+            <div class="mission-hero-copy">
+              <p id="eventDetailEyebrow" class="eyebrow">Event</p>
+              <h1 id="eventDetailTitle">Event title</h1>
+              <p id="eventDetailLead">Event description</p>
+            </div>
+            <div class="mission-hero-panel" aria-label="Event summary">
+              <span id="eventDetailDateLabel">Date</span>
+              <strong id="eventDetailDate">6/5 - 6/19</strong>
+              <span id="eventDetailStatusLabel">Status</span>
+              <strong id="eventDetailStatus">Now live</strong>
+              <span id="eventDetailGuideLabel">Guide</span>
+              <strong id="eventDetailGuide">Details below</strong>
+            </div>
+          </header>
+          <section class="mission-section mission-section-split" aria-labelledby="eventDetailAboutTitle">
+            <div>
+              <p class="eyebrow">Overview</p>
+              <h2 id="eventDetailAboutTitle">イベント内容</h2>
+            </div>
+            <div>
+              <p id="eventDetailBody"></p>
+              <div id="eventDetailHighlights" class="mission-inline-tags"></div>
+            </div>
+          </section>
+          <section class="mission-section" aria-labelledby="eventDetailStatsTitle">
+            <p class="eyebrow">Metrics</p>
+            <h2 id="eventDetailStatsTitle">注目ポイント</h2>
+            <div id="eventDetailStats" class="service-faq-grid"></div>
+          </section>
+        </article>
+      </section>
       <section id="missionView" class="mission-view app-view" hidden>
         <button id="backFromMission" class="soft-button" type="button">
           <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -1364,18 +1552,50 @@
       </div>
     </dialog>
 
-    <button id="floatingPost" class="floating-post" type="button" aria-label="Create post">
-      <svg aria-hidden="true" viewBox="0 0 24 24">
-        <path d="M12 5v14" />
-        <path d="M5 12h14" />
-      </svg>
-    </button>
+    <div id="floatingPostDock" class="floating-post-dock">
+      <div id="floatingPostHint" class="floating-post-hint">長押しで下書き</div>
+      <div id="floatingPostActions" class="floating-post-actions" hidden>
+        <button id="floatingDraftsButton" class="floating-post-action" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M7 4h10a2 2 0 0 1 2 2v12" />
+            <path d="M5 8h10a2 2 0 0 1 2 2v10H7a2 2 0 0 1-2-2Z" />
+            <path d="M8.5 12h5" />
+            <path d="M8.5 15h5" />
+          </svg>
+          <span>下書き</span>
+        </button>
+        <button id="floatingNewPostButton" class="floating-post-action is-primary" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M12 5v14" />
+            <path d="M5 12h14" />
+          </svg>
+          <span>新規投稿</span>
+        </button>
+      </div>
+      <button id="floatingPost" class="floating-post" type="button" aria-label="Create post">
+        <svg aria-hidden="true" viewBox="0 0 24 24">
+          <path d="M12 5v14" />
+          <path d="M5 12h14" />
+        </svg>
+      </button>
+    </div>
+
+    <dialog id="composeDraftListDialog" class="request-sheet-dialog" aria-labelledby="composeDraftListTitle">
+      <form method="dialog" class="request-sheet-card">
+        <p class="eyebrow">Drafts</p>
+        <h2 id="composeDraftListTitle">下書きリスト</h2>
+        <div id="composeDraftListBody" class="compose-draft-list"></div>
+        <div class="request-sheet-actions">
+          <button id="composeDraftListClose" class="soft-button" type="button">閉じる</button>
+        </div>
+      </form>
+    </dialog>
 
     <div id="dropHint" class="drop-hint" hidden>
       <strong>画像をドロップして投稿</strong>
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=profile-archive-responsive-1"></script>
+    <script src="./app.js?v=archive-shortcuts-2"></script>
   </body>
 </html>

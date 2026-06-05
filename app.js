@@ -183,14 +183,21 @@ const board = document.querySelector("#board");
 const profileBoard = document.querySelector("#profileBoard");
 const profilePostSearch = document.querySelector("#profilePostSearch");
 const profilePostSortButtons = [...document.querySelectorAll("[data-profile-sort]")];
+const profileArchiveTabs = [...document.querySelectorAll("[data-profile-archive-tab]")];
 const profilePostEmpty = document.querySelector("#profilePostEmpty");
 const feedView = document.querySelector("#feedView");
+const eventCarouselTrack = document.querySelector("#eventCarouselTrack");
+const eventCarouselDots = document.querySelector("#eventCarouselDots");
+const eventPrev = document.querySelector("#eventPrev");
+const eventNext = document.querySelector("#eventNext");
 const profileView = document.querySelector("#profileView");
 const requestView = document.querySelector("#requestView");
 const notificationsView = document.querySelector("#notificationsView");
 const requestManagerView = document.querySelector("#requestManagerView");
 const requestManagerDetailView = document.querySelector("#requestManagerDetailView");
 const settingsView = document.querySelector("#settingsView");
+const serviceView = document.querySelector("#serviceView");
+const eventDetailView = document.querySelector("#eventDetailView");
 const missionView = document.querySelector("#missionView");
 const searchInput = document.querySelector("#searchInput");
 const chips = [...document.querySelectorAll(".chip")];
@@ -199,9 +206,20 @@ const emptyState = document.querySelector("#emptyState");
 const shuffleButton = document.querySelector("#shuffleButton");
 const createButton = document.querySelector("#createButton");
 const createRequestButton = document.querySelector("#createRequestButton");
+const floatingPostDock = document.querySelector("#floatingPostDock");
+const floatingPostHint = document.querySelector("#floatingPostHint");
+const floatingPostActions = document.querySelector("#floatingPostActions");
+const floatingDraftsButton = document.querySelector("#floatingDraftsButton");
+const floatingNewPostButton = document.querySelector("#floatingNewPostButton");
 const floatingPost = document.querySelector("#floatingPost");
+const composeDraftListDialog = document.querySelector("#composeDraftListDialog");
+const composeDraftListTitle = document.querySelector("#composeDraftListTitle");
+const composeDraftListBody = document.querySelector("#composeDraftListBody");
+const composeDraftListClose = document.querySelector("#composeDraftListClose");
 const dropHint = document.querySelector("#dropHint");
 const themeToggle = document.querySelector("#themeToggle");
+const likedPostsButton = document.querySelector("#likedPostsButton");
+const bookmarkFoldersButton = document.querySelector("#bookmarkFoldersButton");
 const missionButton = document.querySelector("#missionButton");
 const missionCardButton = document.querySelector("#missionCardButton");
 const requestManagerButton = document.querySelector("#requestManagerButton");
@@ -211,6 +229,7 @@ const notificationBadge = document.querySelector("#notificationBadge");
 const avatarButton = document.querySelector("#avatarButton");
 const accountMenu = document.querySelector("#accountMenu");
 const accountMenuProfile = document.querySelector("#accountMenuProfile");
+const accountMenuService = document.querySelector("#accountMenuService");
 const accountMenuSettings = document.querySelector("#accountMenuSettings");
 const accountMenuLogout = document.querySelector("#accountMenuLogout");
 const backToFeed = document.querySelector("#backToFeed");
@@ -219,6 +238,8 @@ const backFromNotifications = document.querySelector("#backFromNotifications");
 const backFromSettings = document.querySelector("#backFromSettings");
 const backFromRequestManager = document.querySelector("#backFromRequestManager");
 const backFromRequestDetail = document.querySelector("#backFromRequestDetail");
+const backFromService = document.querySelector("#backFromService");
+const backFromEventDetail = document.querySelector("#backFromEventDetail");
 const backFromMission = document.querySelector("#backFromMission");
 const profileBanner = document.querySelector("#profileBanner");
 const profileAvatar = document.querySelector("#profileAvatar");
@@ -246,6 +267,7 @@ const trustTimelineLabel = document.querySelector("#trustTimelineLabel");
 const profileReviews = document.querySelector("#profileReviews");
 const savedPostsSection = document.querySelector("#savedPostsSection");
 const savedPostsBoard = document.querySelector("#savedPostsBoard");
+const bookmarkFoldersBoard = document.querySelector("#bookmarkFoldersBoard");
 const requestPageImage = document.querySelector("#requestPageImage");
 const requestPageCreator = document.querySelector("#requestPageCreator");
 const requestPageTitle = document.querySelector("#requestPageTitle");
@@ -351,6 +373,8 @@ const accountDeletePassword = document.querySelector("#accountDeletePassword");
 const accountDeleteError = document.querySelector("#accountDeleteError");
 const accountDeleteBlocker = document.querySelector("#accountDeleteBlocker");
 const requestAcceptPopup = document.querySelector("#requestAcceptPopup");
+const requestAcceptPopupTitle = document.querySelector("#requestAcceptPopup strong");
+const requestAcceptPopupBody = document.querySelector("#requestAcceptPopup span:last-of-type");
 const requestRejectDialog = document.querySelector("#requestRejectDialog");
 const requestRejectMessage = document.querySelector("#requestRejectMessage");
 const requestRejectCancel = document.querySelector("#requestRejectCancel");
@@ -371,6 +395,21 @@ const requestReportMute = document.querySelector("#requestReportMute");
 const requestReportBlock = document.querySelector("#requestReportBlock");
 const requestReportResultClose = document.querySelector("#requestReportResultClose");
 const profileCopyToast = document.querySelector("#profileCopyToast");
+const serviceMissionLink = document.querySelector("#serviceMissionLink");
+const eventDetailHero = document.querySelector("#eventDetailHero");
+const eventDetailTitle = document.querySelector("#eventDetailTitle");
+const eventDetailLead = document.querySelector("#eventDetailLead");
+const eventDetailBody = document.querySelector("#eventDetailBody");
+const eventDetailDate = document.querySelector("#eventDetailDate");
+const eventDetailStatus = document.querySelector("#eventDetailStatus");
+const eventDetailHighlights = document.querySelector("#eventDetailHighlights");
+const eventDetailStats = document.querySelector("#eventDetailStats");
+const bookmarkFolderDialog = document.querySelector("#bookmarkFolderDialog");
+const bookmarkFolderOptions = document.querySelector("#bookmarkFolderOptions");
+const bookmarkFolderName = document.querySelector("#bookmarkFolderName");
+const bookmarkFolderCancel = document.querySelector("#bookmarkFolderCancel");
+const bookmarkFolderCreate = document.querySelector("#bookmarkFolderCreate");
+const bookmarkFolderSave = document.querySelector("#bookmarkFolderSave");
 const dialog = document.querySelector("#pinDialog");
 const closeDialog = document.querySelector("#closeDialog");
 const dialogImage = document.querySelector("#dialogImage");
@@ -467,6 +506,7 @@ const editProfileNotice = document.querySelector("#editProfileNotice");
 let activeCategory = "All";
 let activeView = "discover";
 let savedPins = new Set([3, 7]);
+let likedPins = new Set([1, 5, 12, 18]);
 let followedCreators = new Set(["Lumi Photo"]);
 let notificationEnabledCreators = new Set(["Lumi Photo"]);
 let mutedCreators = new Set();
@@ -476,11 +516,16 @@ let activeProfile = null;
 let activeProfilePosts = [];
 let profilePostSortMode = "recent";
 let profilePostQuery = "";
+let activeProfileArchiveTab = "posts";
+let activeBookmarkFolderId = null;
+let pendingBookmarkPinId = null;
 let notificationReturnHash = "";
 let settingsReturnHash = "";
 let requestManagerReturnHash = "";
+let serviceReturnHash = "";
 let activeRequestManagerItemId = null;
 let missionReturnHash = "";
+let eventDetailReturnHash = "";
 let activeRequestManagerState = "pending";
 let pendingRequestSort = "deadline";
 let activeRequestReportContext = { mode: "manager", target: null };
@@ -488,10 +533,18 @@ let activeRequestReviewContext = { mode: "client", itemId: null };
 let requestViewerAuthenticated = localStorage.getItem("vrc-sns-auth-state") !== "guest";
 let currentLanguage = localStorage.getItem("vrc-sns-language") || "ja";
 let settingsSaveTimer = 0;
+let activeEventIndex = 0;
+let eventAutoplayTimer = 0;
+let eventDragState = null;
+let eventVisualIndex = 0;
+let eventLoopResetIndex = null;
+let ignoreEventSlideClick = false;
 const demoAccountPassword = "password";
 let approveHoldTimer = 0;
 let approveHoldCompleted = false;
 let approveHoldButton = null;
+let floatingPostHoldTimer = 0;
+let floatingPostHoldTriggered = false;
 let accountDeleteHoldTimer = 0;
 let accountDeleteHoldCompleted = false;
 let acceptPopupTimer = 0;
@@ -502,6 +555,12 @@ let lockedScrollY = 0;
 let composeImages = [];
 let composeImageIndex = 0;
 let requestComposeImageData = "";
+let bookmarkFolders = [
+  { id: "folder-photo", name: "撮影参考", pinIds: [3, 12] },
+  { id: "folder-avatar", name: "改変メモ", pinIds: [7] },
+  { id: "folder-world", name: "World ideas", pinIds: [18] }
+];
+savedPins = new Set(bookmarkFolders.flatMap((folder) => folder.pinIds || []));
 const composeDraftStorageKey = "vrc-sns-compose-draft";
 const requestComposeDraftStorageKey = "vrc-sns-request-compose-draft";
 let myProfile = {
@@ -565,6 +624,132 @@ const publicReviewsByCreator = {
   ]
 };
 
+const eventCampaigns = {
+  ja: [
+    {
+      badge: "Now live",
+      date: "6/5 - 6/19",
+      title: "リリース記念 手数料無料キャンペーン",
+      image: vrchatImages.event,
+      body: "イベント期間中に依頼承諾が完了した依頼は、成約時のプラットフォーム手数料を無料化。最初の実績づくりと受注フローのテストを後押しする想定です。",
+      highlights: ["初回掲載向け", "手数料 0%", "限定 14日間"],
+      stats: [
+        { value: "0%", label: "掲載手数料" },
+        { value: "14 days", label: "開催期間" },
+        { value: "Open now", label: "受付状況" }
+      ]
+    },
+    {
+      badge: "Featured",
+      date: "This week",
+      title: "写真・改変クリエイター特集ウィーク",
+      image: vrchatImages.portrait,
+      body: "トップ表示と特集導線で、撮影・レタッチ・アバター改変の投稿を優先表示。公開プロフィールと依頼受付の両方を見てもらいやすくする想定です。",
+      highlights: ["トップ特集", "写真 / 改変", "導線強化"],
+      stats: [
+        { value: "3 slots", label: "注目カテゴリ" },
+        { value: "Top feed", label: "掲載面" },
+        { value: "Boosted", label: "表示強化" }
+      ]
+    },
+    {
+      badge: "Coming up",
+      date: "Next drop",
+      title: "依頼レビュー公開アップデート予告",
+      image: vrchatImages.neon,
+      body: "完了実績の見え方をより強くするため、評価コメントの公開面を拡張予定。依頼前に安心材料を確認しやすいUXへつなげる計画です。",
+      highlights: ["レビュー強化", "信用ページ更新", "近日反映"],
+      stats: [
+        { value: "Profiles", label: "反映先" },
+        { value: "Reviews", label: "追加要素" },
+        { value: "Soon", label: "公開予定" }
+      ]
+    }
+  ],
+  en: [
+    {
+      badge: "Now live",
+      date: "Jun 5 - Jun 19",
+      title: "Launch campaign with zero platform fees",
+      image: vrchatImages.event,
+      body: "Any request that reaches accepted status during the event period is treated as fee-free at deal completion, giving early creators a low-friction way to test the flow and collect first proof.",
+      highlights: ["Early creators", "0% fee", "14-day campaign"],
+      stats: [
+        { value: "0%", label: "Platform fee" },
+        { value: "14 days", label: "Campaign length" },
+        { value: "Open now", label: "Status" }
+      ]
+    },
+    {
+      badge: "Featured",
+      date: "This week",
+      title: "Photo and avatar edit spotlight week",
+      image: vrchatImages.portrait,
+      body: "Top placement and curated discovery paths highlight photo, retouch, and avatar edit posts so public profiles and request pages get seen together more naturally.",
+      highlights: ["Top placement", "Photo / edit", "Discovery boost"],
+      stats: [
+        { value: "3 lanes", label: "Focus areas" },
+        { value: "Top feed", label: "Placement" },
+        { value: "Boosted", label: "Visibility" }
+      ]
+    },
+    {
+      badge: "Coming up",
+      date: "Next drop",
+      title: "Public review update preview",
+      image: vrchatImages.neon,
+      body: "A coming profile update expands how completed-request reviews appear, making it easier to judge trust before sending a commission request.",
+      highlights: ["Review boost", "Trust profile", "Coming soon"],
+      stats: [
+        { value: "Profiles", label: "Surfaces" },
+        { value: "Reviews", label: "New layer" },
+        { value: "Soon", label: "Release" }
+      ]
+    }
+  ],
+  ko: [
+    {
+      badge: "Now live",
+      date: "6/5 - 6/19",
+      title: "출시 기념 수수료 무료 캠페인",
+      image: vrchatImages.event,
+      body: "이벤트 기간 중 의뢰 승낙이 완료된 건은 성사 시 플랫폼 수수료가 없는 상태로 처리됩니다. 첫 실적을 만들고 수주 흐름을 시험하기 좋은 시작점입니다.",
+      highlights: ["초기 크리에이터", "수수료 0%", "14일 한정"],
+      stats: [
+        { value: "0%", label: "플랫폼 수수료" },
+        { value: "14 days", label: "진행 기간" },
+        { value: "Open now", label: "상태" }
+      ]
+    },
+    {
+      badge: "Featured",
+      date: "This week",
+      title: "사진·아바타 개변 크리에이터 특집 주간",
+      image: vrchatImages.portrait,
+      body: "상단 노출과 큐레이션 동선을 통해 사진, 보정, 아바타 개변 게시물을 더 잘 보이게 하여 프로필과 의뢰 페이지를 함께 확인하기 쉽게 합니다.",
+      highlights: ["상단 특집", "사진 / 개변", "발견 강화"],
+      stats: [
+        { value: "3 lanes", label: "집중 카테고리" },
+        { value: "Top feed", label: "노출 위치" },
+        { value: "Boosted", label: "가시성" }
+      ]
+    },
+    {
+      badge: "Coming up",
+      date: "Next drop",
+      title: "공개 리뷰 업데이트 예고",
+      image: vrchatImages.neon,
+      body: "완료 실적이 더 잘 보이도록 평가 댓글 공개 영역을 확장할 예정입니다. 의뢰 전 신뢰 판단이 쉬워지는 방향의 업데이트입니다.",
+      highlights: ["리뷰 강화", "신뢰 프로필", "곧 반영"],
+      stats: [
+        { value: "Profiles", label: "반영 영역" },
+        { value: "Reviews", label: "추가 요소" },
+        { value: "Soon", label: "공개 예정" }
+      ]
+    }
+  ]
+};
+
 const translations = {
   ja: {
     searchPlaceholder: "作品、アバター、依頼を探す",
@@ -573,6 +758,8 @@ const translations = {
     logout: "ログアウト",
     mission: "Our Mission",
     toggleTheme: "ライト / ダーク切替",
+    likedPostsShortcut: "いいねした投稿",
+    bookmarkFoldersShortcut: "ブックマークフォルダ",
     requestManager: "依頼管理",
     notifications: "通知",
     unreadNotifications: "未読通知",
@@ -722,6 +909,8 @@ const translations = {
     logout: "Log out",
     mission: "Our Mission",
     toggleTheme: "Toggle light / dark",
+    likedPostsShortcut: "Liked posts",
+    bookmarkFoldersShortcut: "Bookmark folders",
     requestManager: "Request manager",
     notifications: "Notifications",
     unreadNotifications: "Unread notifications",
@@ -871,6 +1060,8 @@ const translations = {
     logout: "로그아웃",
     mission: "Our Mission",
     toggleTheme: "라이트 / 다크 전환",
+    likedPostsShortcut: "좋아요한 게시물",
+    bookmarkFoldersShortcut: "북마크 폴더",
     requestManager: "의뢰 관리",
     notifications: "알림",
     unreadNotifications: "읽지 않은 알림",
@@ -1036,6 +1227,246 @@ function setSelectOptionTexts(select, keys) {
   });
 }
 
+function getEventCampaignList() {
+  return eventCampaigns[currentLanguage] || eventCampaigns.ja;
+}
+
+function buildEventSlides(campaigns) {
+  if (campaigns.length <= 1) return campaigns;
+  return [
+    { ...campaigns[campaigns.length - 1], sourceIndex: campaigns.length - 1 },
+    ...campaigns.map((event, index) => ({ ...event, sourceIndex: index })),
+    { ...campaigns[0], sourceIndex: 0 }
+  ];
+}
+
+function handleInlineEventOpen(event, eventIndex) {
+  if (ignoreEventSlideClick) {
+    ignoreEventSlideClick = false;
+    event?.preventDefault?.();
+    return;
+  }
+  event?.preventDefault?.();
+  openEventDetailPage(Number(eventIndex));
+}
+
+window.handleInlineEventOpen = handleInlineEventOpen;
+
+function renderEventCarousel() {
+  if (!eventCarouselTrack || !eventCarouselDots) return;
+  const campaigns = getEventCampaignList();
+  activeEventIndex = Math.min(activeEventIndex, Math.max(campaigns.length - 1, 0));
+  const slides = buildEventSlides(campaigns);
+  eventVisualIndex = campaigns.length > 1 ? activeEventIndex + 1 : activeEventIndex;
+  eventLoopResetIndex = null;
+
+  eventCarouselTrack.innerHTML = slides.map((event) => `
+    <article class="event-slide" data-event-index="${event.sourceIndex ?? 0}" aria-roledescription="slide" aria-label="${event.title}">
+      <a class="event-slide-card" href="#event/${event.sourceIndex ?? 0}" draggable="false" onclick="handleInlineEventOpen(event, ${event.sourceIndex ?? 0})">
+        <div class="event-slide-copy">
+          <div class="event-slide-meta">
+            <span class="event-pill">${event.badge}</span>
+            <span class="event-date">${event.date}</span>
+          </div>
+          <div>
+            <h3>${event.title}</h3>
+            <p>${event.body}</p>
+          </div>
+          <div class="event-slide-highlights">
+            ${event.highlights.map((item) => `<span>${item}</span>`).join("")}
+          </div>
+        </div>
+        <div class="event-slide-side">
+          ${event.image ? `
+            <div class="event-slide-image-panel">
+              <img src="${event.image}" alt="${event.title}" draggable="false" loading="lazy" />
+            </div>
+          ` : `
+            <div class="event-slide-image-panel is-empty">
+              <strong>${currentLanguage === "en" ? "Image slot" : currentLanguage === "ko" ? "이미지 영역" : "画像エリア"}</strong>
+              <span>${currentLanguage === "en" ? "Add a campaign thumbnail here." : currentLanguage === "ko" ? "캠페인 썸네일을 배치하는 영역입니다." : "キャンペーンサムネイルを配置できます。"}</span>
+            </div>
+          `}
+        </div>
+      </a>
+    </article>
+  `).join("");
+
+  eventCarouselDots.innerHTML = campaigns.map((event, index) => `
+    <button class="event-dot${index === activeEventIndex ? " is-active" : ""}" type="button" data-event-dot="${index}" aria-label="${event.title}"></button>
+  `).join("");
+
+  updateEventCarouselPosition();
+}
+
+function updateEventCarouselPosition(offsetPx = 0, visualIndex = eventVisualIndex) {
+  if (!eventCarouselTrack || !eventCarouselDots) return;
+  eventVisualIndex = visualIndex;
+  eventCarouselTrack.style.transform = `translateX(calc(-${visualIndex * 100}% + ${offsetPx}px))`;
+  [...eventCarouselDots.querySelectorAll(".event-dot")].forEach((dot, index) => {
+    dot.classList.toggle("is-active", index === activeEventIndex);
+  });
+}
+
+function stopEventAutoplay() {
+  if (!eventAutoplayTimer) return;
+  window.clearTimeout(eventAutoplayTimer);
+  eventAutoplayTimer = 0;
+}
+
+function scheduleEventAutoplay() {
+  stopEventAutoplay();
+  const campaigns = getEventCampaignList();
+  if (campaigns.length <= 1) return;
+  const delay = 9000;
+  eventAutoplayTimer = window.setTimeout(() => {
+    goToEventSlide(activeEventIndex + 1);
+  }, delay);
+}
+
+function goToEventSlide(index) {
+  const campaigns = getEventCampaignList();
+  if (!campaigns.length) return;
+  const previousIndex = activeEventIndex;
+  const normalizedIndex = (index + campaigns.length) % campaigns.length;
+  activeEventIndex = normalizedIndex;
+  eventLoopResetIndex = null;
+
+  if (campaigns.length > 1 && previousIndex === 0 && index < 0) {
+    eventLoopResetIndex = normalizedIndex;
+    updateEventCarouselPosition(0, 0);
+  } else if (campaigns.length > 1 && previousIndex === campaigns.length - 1 && index >= campaigns.length) {
+    eventLoopResetIndex = normalizedIndex;
+    updateEventCarouselPosition(0, campaigns.length + 1);
+  } else {
+    updateEventCarouselPosition(0, campaigns.length > 1 ? normalizedIndex + 1 : normalizedIndex);
+  }
+  scheduleEventAutoplay();
+}
+
+function startEventDrag(event) {
+  const startLink = event.target.closest(".event-slide-card[href^='#event/']");
+  if (!eventCarouselTrack || !startLink) return;
+  if (event.pointerType === "mouse" && event.button !== 0) return;
+  if (location.hash && !location.hash.startsWith("#event/")) {
+    eventDetailReturnHash = location.hash;
+  } else if (!location.hash) {
+    eventDetailReturnHash = "";
+  }
+  stopEventAutoplay();
+  eventDragState = {
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    deltaX: 0,
+    width: eventCarouselTrack.parentElement?.clientWidth || 1,
+    linkHref: startLink.getAttribute("href") || "",
+    sourceIndex: Number(startLink.closest(".event-slide")?.dataset.eventIndex || activeEventIndex)
+  };
+  eventCarouselTrack.classList.add("is-dragging");
+  eventCarouselTrack.setPointerCapture?.(event.pointerId);
+}
+
+function moveEventDrag(event) {
+  if (!eventDragState || event.pointerId !== eventDragState.pointerId) return;
+  eventDragState.deltaX = event.clientX - eventDragState.startX;
+  updateEventCarouselPosition(eventDragState.deltaX, eventVisualIndex);
+}
+
+function endEventDrag(event) {
+  if (!eventDragState || (event && event.pointerId !== eventDragState.pointerId)) return;
+  const { deltaX, width, linkHref, sourceIndex } = eventDragState;
+  const threshold = Math.min(120, width * 0.18);
+  const tappedElement = Math.abs(deltaX) <= 8 && event
+    ? document.elementFromPoint(event.clientX, event.clientY)?.closest?.('.event-slide-card[href^="#event/"]')
+    : null;
+  eventCarouselTrack?.classList.remove("is-dragging");
+  ignoreEventSlideClick = Math.abs(deltaX) > 8;
+  if (Math.abs(deltaX) <= 8) {
+    eventDragState = null;
+    scheduleEventAutoplay();
+    const matchedIndex = tappedElement?.getAttribute("href")?.match(/#event\/(\d+)$/)?.[1] || linkHref.match(/#event\/(\d+)$/)?.[1];
+    openEventDetailPage(Number(matchedIndex || sourceIndex || activeEventIndex));
+    return;
+  }
+  const targetIndex = Math.abs(deltaX) > threshold ? activeEventIndex + (deltaX < 0 ? 1 : -1) : activeEventIndex;
+  eventDragState = null;
+  goToEventSlide(targetIndex);
+}
+
+function handleEventTrackTransitionEnd(event) {
+  if (!eventCarouselTrack || event.target !== eventCarouselTrack || event.propertyName !== "transform") return;
+  if (eventLoopResetIndex == null) return;
+  const resetIndex = eventLoopResetIndex;
+  eventLoopResetIndex = null;
+  eventCarouselTrack.classList.add("is-dragging");
+  updateEventCarouselPosition(0, resetIndex + 1);
+  void eventCarouselTrack.offsetWidth;
+  eventCarouselTrack.classList.remove("is-dragging");
+}
+
+function eventByIndex(index) {
+  return getEventCampaignList()[index] || null;
+}
+
+function renderEventDetailPage(index) {
+  const event = eventByIndex(index);
+  if (!event || !eventDetailView) {
+    showFeed();
+    return;
+  }
+  feedView.hidden = true;
+  profileView.hidden = true;
+  requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  settingsView.hidden = true;
+  serviceView.hidden = true;
+  missionView.hidden = true;
+  eventDetailView.hidden = false;
+  if (eventDetailHero) {
+    eventDetailHero.classList.toggle("is-glass", !event.image);
+    if (event.image) eventDetailHero.style.setProperty("--event-detail-bg", `url('${event.image}')`);
+    else eventDetailHero.style.removeProperty("--event-detail-bg");
+  }
+  if (eventDetailTitle) eventDetailTitle.textContent = event.title;
+  if (eventDetailLead) eventDetailLead.textContent = event.body;
+  if (eventDetailBody) eventDetailBody.textContent = event.body;
+  if (eventDetailDate) eventDetailDate.textContent = event.date;
+  if (eventDetailStatus) eventDetailStatus.textContent = event.badge;
+  if (eventDetailHighlights) eventDetailHighlights.innerHTML = event.highlights.map((item) => `<span>${item}</span>`).join("");
+  if (eventDetailStats) {
+    eventDetailStats.innerHTML = event.stats.map((stat) => `
+      <article>
+        <strong>${stat.value}</strong>
+        <p>${stat.label}</p>
+      </article>
+    `).join("");
+  }
+  scrollPageTop();
+}
+
+function openEventDetailPage(index) {
+  if (location.hash && !location.hash.startsWith("#event/")) {
+    eventDetailReturnHash = location.hash;
+  } else if (!location.hash) {
+    eventDetailReturnHash = "";
+  }
+  location.hash = `event/${index}`;
+  renderEventDetailPage(index);
+}
+
+function returnFromEventDetail() {
+  const targetHash = eventDetailReturnHash;
+  eventDetailReturnHash = "";
+  if (!targetHash) {
+    showFeed();
+    return;
+  }
+  history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
+  routeFromHash();
+}
+
 function updateSettingsPanelLanguage() {
   const panels = [...settingsView.querySelectorAll(".settings-panel")];
   setText(".settings-heading h1", "appSettings");
@@ -1095,9 +1526,13 @@ function applyLanguage({ rerender = false } = {}) {
   if (settingsLanguage) settingsLanguage.value = currentLanguage;
 
   setAttr(searchInput, "placeholder", "searchPlaceholder");
-  setText("#missionButton", "mission");
+  if (missionButton) missionButton.textContent = currentLanguage === "en" ? "Service" : currentLanguage === "ko" ? "서비스 설명" : "サービス説明";
   setAttr(themeToggle, "aria-label", "toggleTheme");
   setAttr(themeToggle, "title", "toggleTheme");
+  setAttr(likedPostsButton, "aria-label", "likedPostsShortcut");
+  setAttr(likedPostsButton, "title", "likedPostsShortcut");
+  setAttr(bookmarkFoldersButton, "aria-label", "bookmarkFoldersShortcut");
+  setAttr(bookmarkFoldersButton, "title", "bookmarkFoldersShortcut");
   setAttr(requestManagerButton, "aria-label", "requestManager");
   setAttr(requestManagerButton, "title", "requestManager");
   setAttr(notificationButton, "aria-label", "notifications");
@@ -1105,8 +1540,58 @@ function applyLanguage({ rerender = false } = {}) {
   setAttr(notificationBadge, "aria-label", "unreadNotifications");
   setAttr(avatarButton, "aria-label", "account");
   setText("#accountMenuProfile span", "myPage");
+  if (accountMenuService) accountMenuService.querySelector("span").textContent = currentLanguage === "en" ? "Service guide" : currentLanguage === "ko" ? "서비스 설명" : "サービス説明";
   setText("#accountMenuSettings span", "appSettings");
   setText("#accountMenuLogout span", "logout");
+  if (floatingPostHint) floatingPostHint.textContent = currentLanguage === "en" ? "Hold for drafts" : currentLanguage === "ko" ? "길게 눌러 초안 보기" : "長押しで下書き";
+  const floatingDraftsLabel = document.querySelector("#floatingDraftsButton span");
+  const floatingNewPostLabel = document.querySelector("#floatingNewPostButton span");
+  if (floatingDraftsLabel) floatingDraftsLabel.textContent = currentLanguage === "en" ? "Drafts" : currentLanguage === "ko" ? "초안" : "下書き";
+  if (floatingNewPostLabel) floatingNewPostLabel.textContent = currentLanguage === "en" ? "New post" : currentLanguage === "ko" ? "새 게시물" : "新規投稿";
+  if (composeDraftListTitle) composeDraftListTitle.textContent = currentLanguage === "en" ? "Draft list" : currentLanguage === "ko" ? "초안 목록" : "下書きリスト";
+  if (composeDraftListClose) composeDraftListClose.textContent = currentLanguage === "en" ? "Close" : currentLanguage === "ko" ? "닫기" : "閉じる";
+  setText("#eventBannerEyebrow", currentLanguage === "en" ? "Now live" : currentLanguage === "ko" ? "지금 진행 중" : "Now live");
+  setText("#eventBannerHeading", currentLanguage === "en" ? "Live events" : currentLanguage === "ko" ? "진행 중인 이벤트" : "開催中のイベント");
+  if (eventPrev) eventPrev.setAttribute("aria-label", currentLanguage === "en" ? "Previous event" : currentLanguage === "ko" ? "이전 이벤트" : "前のイベント");
+  if (eventNext) eventNext.setAttribute("aria-label", currentLanguage === "en" ? "Next event" : currentLanguage === "ko" ? "다음 이벤트" : "次のイベント");
+  if (missionCardButton) {
+    missionCardButton.querySelector("strong").textContent = currentLanguage === "en" ? "Service guide" : currentLanguage === "ko" ? "서비스 설명" : "サービス説明";
+    missionCardButton.querySelector("span").textContent = currentLanguage === "en" ? "See what this service does before opening Our Mission." : currentLanguage === "ko" ? "Our Mission으로 가기 전에 이 서비스가 무엇을 하는지 먼저 봅니다." : "Our Mission に進む前に、このサービスで何ができるかを見る";
+  }
+  renderEventCarousel();
+  scheduleEventAutoplay();
+  setText("#serviceEyebrow", currentLanguage === "en" ? "Service Guide" : currentLanguage === "ko" ? "서비스 설명" : "サービス説明");
+  setText("#serviceHeroTitle", currentLanguage === "en" ? "A simple guide to what to open first and how to use the mock." : currentLanguage === "ko" ? "무엇을 먼저 열어야 하는지와 주요 사용 흐름을 정리한 가이드입니다." : "最初にどこを見ればよくて、何ができるかをまとめた使い方ガイド。");
+  setText("#serviceHeroLead", currentLanguage === "en" ? "This page explains what each area is for: home, post details, profiles, requests, notifications, and settings. It is meant to work as a quick onboarding page before testing." : currentLanguage === "ko" ? "홈, 게시물 상세, 프로필, 의뢰, 알림, 설정이 각각 무엇을 위한 화면인지 짧게 정리합니다. 테스트 전에 보는 온보딩 페이지 역할입니다." : "ホーム、投稿、プロフィール、依頼、通知、設定がそれぞれ何のためにあるのかを短く整理しています。身内テスト前の案内ページとしても使える想定です。");
+  setText("#servicePanelTitle1", currentLanguage === "en" ? "Discover works" : currentLanguage === "ko" ? "작품을 찾는다" : "作品を探す");
+  setText("#servicePanelTitle2", currentLanguage === "en" ? "Check the creator" : currentLanguage === "ko" ? "상대를 확인한다" : "相手を確認する");
+  setText("#servicePanelTitle3", currentLanguage === "en" ? "Manage requests" : currentLanguage === "ko" ? "의뢰와 진행을 관리한다" : "依頼と進行を管理する");
+  setText("#servicePillarTitle1", currentLanguage === "en" ? "Start from the home feed" : currentLanguage === "ko" ? "홈에서 작품을 찾기" : "ホームで作品を探す");
+  setText("#servicePillarBody1", currentLanguage === "en" ? "Use categories, search, and event cards to find interesting works and commission posts." : currentLanguage === "ko" ? "카테고리, 검색, 이벤트 카드에서 흥미로운 작품과 의뢰 접수 게시물을 찾습니다." : "カテゴリ、検索、イベントカードから気になる作品や依頼受付を見つけます。");
+  setText("#servicePillarTitle2", currentLanguage === "en" ? "Use profiles as trust pages" : currentLanguage === "ko" ? "프로필로 신뢰를 확인하기" : "プロフィールで信用を見る");
+  setText("#servicePillarBody2", currentLanguage === "en" ? "Check featured work, completed jobs, reviews, external links, and current commission status before deciding." : currentLanguage === "ko" ? "대표작, 완료 실적, 리뷰, 외부 링크, 현재 의뢰 상태를 확인하고 판단합니다." : "代表作、実績、レビュー、リンク、依頼受付状況を見て相手を判断します。");
+  setText("#servicePillarTitle3", currentLanguage === "en" ? "Track progress after sending a request" : currentLanguage === "ko" ? "의뢰 후 진행 추적" : "依頼後は進行を追う");
+  setText("#servicePillarBody3", currentLanguage === "en" ? "Follow acceptance, work in progress, delivery, and reviews from the request manager and detail chat view." : currentLanguage === "ko" ? "의뢰 관리와 상세 채팅 화면에서 승인, 진행중, 납품, 평가 흐름을 확인합니다." : "承諾、進行中、納品、評価までを依頼管理画面とチャットで確認できます。");
+  setText("#serviceWhatEyebrow", currentLanguage === "en" ? "Page guide" : currentLanguage === "ko" ? "화면 안내" : "Page guide");
+  setText("#serviceWhatTitle", currentLanguage === "en" ? "What each screen is for" : currentLanguage === "ko" ? "어디에 무엇이 있는지" : "どこに何があるか");
+  setText("#serviceWhatBody1", currentLanguage === "en" ? "Home: browse posts, search, switch categories, and check live event banners." : currentLanguage === "ko" ? "홈: 게시물 목록, 검색, 카테고리, 진행 중 이벤트를 확인합니다." : "ホーム: 投稿一覧、検索、カテゴリ、開催中イベントの確認。");
+  setText("#serviceWhatBody2", currentLanguage === "en" ? "Post modal: view details, tags, save, follow, share, and jump toward a request page." : currentLanguage === "ko" ? "게시물 모달: 상세, 태그, 저장, 팔로우, 공유, 의뢰 페이지 이동." : "投稿モーダル: 作品詳細、タグ、保存、フォロー、共有、依頼導線。");
+  setText("#serviceWhatBody3", currentLanguage === "en" ? "Profile: a trust page with featured work, proof, reviews, links, and open request status." : currentLanguage === "ko" ? "프로필: 대표작, 실적, 리뷰, 링크, 의뢰 상태를 보여주는 신뢰 페이지입니다." : "プロフィール: 信用ページとして、実績・代表作・レビュー・外部リンクを表示。");
+  setText("#serviceWhatBody4", currentLanguage === "en" ? "Request manager: manage statuses from pending to complete, plus chat, delivery, and reviews." : currentLanguage === "ko" ? "의뢰 관리: 미승낙부터 완료까지 상태, 채팅, 납품, 평가를 관리합니다." : "依頼管理: 未承諾から完了までの依頼進行、チャット、納品、評価を管理。");
+  setText("#serviceFaqEyebrow", currentLanguage === "en" ? "FAQ" : currentLanguage === "ko" ? "자주 묻는 질문" : "FAQ");
+  setText("#serviceFaqTitle", currentLanguage === "en" ? "Common questions" : currentLanguage === "ko" ? "자주 나올 질문" : "よくある想定質問");
+  setText("#serviceFaqQ1", currentLanguage === "en" ? "What is the difference between a normal post and a commission post?" : currentLanguage === "ko" ? "일반 게시물과 의뢰 접수 게시물의 차이는?" : "普通の投稿と依頼受付投稿は何が違う？");
+  setText("#serviceFaqA1", currentLanguage === "en" ? "Normal posts are for showing work. Commission posts include price, delivery, and slots, and lead into a request page." : currentLanguage === "ko" ? "일반 게시물은 작품 공개용이고, 의뢰 게시물은 가격·납기·접수 슬롯이 있어 의뢰 페이지로 이어집니다." : "通常投稿は作品の公開用、依頼受付投稿は価格・納期・受付枠つきで依頼ページへつなぐための投稿です。");
+  setText("#serviceFaqQ2", currentLanguage === "en" ? "What should I check before sending a request?" : currentLanguage === "ko" ? "의뢰 전에 무엇을 봐야 하나요?" : "依頼前に何を見ればいい？");
+  setText("#serviceFaqA2", currentLanguage === "en" ? "Check featured work, completed jobs, reviews, external links, and whether requests are open on the profile." : currentLanguage === "ko" ? "프로필의 대표작, 완료 실적, 리뷰, 외부 링크, 현재 접수 상태를 확인하는 흐름입니다." : "プロフィールの代表作、完了実績、レビュー、外部リンク、現在の依頼受付状況を見る想定です。");
+  setText("#serviceFaqQ3", currentLanguage === "en" ? "Where do I follow progress after requesting?" : currentLanguage === "ko" ? "의뢰 후 진행 상황은 어디서 보나요?" : "依頼した後はどこで進捗を見る？");
+  setText("#serviceFaqA3", currentLanguage === "en" ? "Open the request manager to see the status list, then move into a request detail view for chat, attachments, delivery, and review." : currentLanguage === "ko" ? "의뢰 관리에서 상태를 보고, 상세 화면에서 채팅, 첨부, 납품, 평가로 이어집니다." : "依頼管理でステータス一覧を見て、個別詳細でチャット、添付、納品、評価へ進みます。");
+  setText("#serviceFaqQ4", currentLanguage === "en" ? "Where can I read the philosophy behind the service?" : currentLanguage === "ko" ? "서비스의 방향성과 배경은 어디서 보나요?" : "思想や背景はどこで確認できる？");
+  setText("#serviceFaqA4", currentLanguage === "en" ? "Open Our Mission when you want to read the purpose of the service and what it aims to improve for VRChat creative culture." : currentLanguage === "ko" ? "Our Mission에는 이 서비스의 목적과 VRChat 창작 문화에서 무엇을 개선하고 싶은지가 정리되어 있습니다." : "サービスの目的やVRChat創作文化に対する考え方は Our Mission にまとめています。");
+  setText("#serviceMissionEyebrow", currentLanguage === "en" ? "Mission" : currentLanguage === "ko" ? "미션" : "Mission");
+  setText("#serviceMissionLinkTitle", currentLanguage === "en" ? "See the background and direction" : currentLanguage === "ko" ? "서비스의 배경과 방향 보기" : "サービスの背景や目指す方向を見る");
+  setText("#serviceMissionBody", currentLanguage === "en" ? "Use Our Mission for the why behind the product rather than the how-to guide." : currentLanguage === "ko" ? "사용법이 아니라 왜 이 서비스를 만드는지 궁금할 때 Our Mission을 보면 됩니다." : "使い方ではなく、なぜこのサービスを作るのか、何を良くしたいのかを知りたい時は Our Mission を見てください。");
+  setText("#serviceMissionLink", currentLanguage === "en" ? "Open Our Mission" : currentLanguage === "ko" ? "Our Mission 보기" : "Our Missionを見る");
   setText("#pageTitle", "heroTitle");
   const summary = [...document.querySelectorAll(".summary-strip:not([hidden]) > div span")];
   ["portfolioDesc", "commissionDesc", "communityDesc"].forEach((key, index) => setText(summary[index], key));
@@ -1128,7 +1613,7 @@ function applyLanguage({ rerender = false } = {}) {
   setText("#createButton", "post");
   setText("#emptyState p", "noResultsTitle");
   setText("#emptyState span", "noResultsBody");
-  document.querySelectorAll("#backToFeed, #backFromRequest, #backFromNotifications, #backFromSettings, #backFromRequestManager, #backFromRequestDetail, #backFromMission").forEach((button) => {
+  document.querySelectorAll("#backToFeed, #backFromRequest, #backFromNotifications, #backFromSettings, #backFromRequestManager, #backFromRequestDetail, #backFromEventDetail, #backFromMission").forEach((button) => {
     const svg = button.querySelector("svg")?.outerHTML || "";
     button.innerHTML = `${svg}${t("back")}`;
   });
@@ -1534,13 +2019,26 @@ function setView(view) {
 
 function toggleSave(pinId) {
   if (savedPins.has(pinId)) {
-    savedPins.delete(pinId);
-  } else {
-    savedPins.add(pinId);
+    removePinFromAllBookmarkFolders(pinId);
+    syncSaveButtons(pinId);
+    if (currentPin?.id === pinId) updateDialogSave();
+    if (activeProfile === "You") renderSavedPostsSection();
+    showProfileCopyToast(currentLanguage === "en" ? "Removed from bookmarks" : currentLanguage === "ko" ? "북마크에서 제거했습니다" : "ブックマークから外しました");
+    return;
   }
-  syncSaveButtons(pinId);
-  if (currentPin?.id === pinId) updateDialogSave();
-  if (activeProfile === "You") renderSavedPostsSection();
+  openBookmarkFolderDialog(pinId);
+}
+
+function refreshSavedPinsFromFolders() {
+  savedPins = new Set(bookmarkFolders.flatMap((folder) => folder.pinIds || []));
+}
+
+function removePinFromAllBookmarkFolders(pinId) {
+  bookmarkFolders = bookmarkFolders.map((folder) => ({
+    ...folder,
+    pinIds: (folder.pinIds || []).filter((id) => id !== pinId)
+  }));
+  refreshSavedPinsFromFolders();
 }
 
 function syncSaveButtons(pinId) {
@@ -1705,11 +2203,13 @@ function showFeed() {
   requestManagerView.hidden = true;
   requestManagerDetailView.hidden = true;
   settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
   missionView.hidden = true;
   profileView.hidden = true;
   profileView.classList.remove("is-mine");
   feedView.hidden = false;
-  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#mission" || location.hash === "#me") {
+  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#event/") || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#me") {
     history.pushState("", document.title, location.pathname + location.search);
   }
   renderPins();
@@ -1723,6 +2223,11 @@ function routeFromHash() {
     openPin(Number(postMatch[1]));
     return;
   }
+  const eventMatch = location.hash.match(/^#event\/(\d+)$/);
+  if (eventMatch) {
+    renderEventDetailPage(Number(eventMatch[1]));
+    return;
+  }
   const requestDetailMatch = location.hash.match(/^#request-manager\/(\d+)$/);
   if (requestDetailMatch) {
     renderRequestManagerDetailPage(Number(requestDetailMatch[1]));
@@ -1730,6 +2235,10 @@ function routeFromHash() {
   }
   if (location.hash === "#request-manager") {
     renderRequestManagerPage();
+    return;
+  }
+  if (location.hash === "#service") {
+    renderServicePage();
     return;
   }
   if (location.hash === "#mission") {
@@ -1776,6 +2285,8 @@ function openProfile(slug) {
   requestManagerView.hidden = true;
   requestManagerDetailView.hidden = true;
   settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
   missionView.hidden = true;
   location.hash = `profile/${slug}`;
   renderProfile(pin.creator);
@@ -1791,9 +2302,37 @@ function openMyProfile() {
   requestManagerView.hidden = true;
   requestManagerDetailView.hidden = true;
   settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
   missionView.hidden = true;
   location.hash = "me";
   renderProfile("You");
+}
+
+function scrollProfileArchiveIntoView() {
+  const target = document.querySelector(".profile-posts-toolbar") || savedPostsSection || profileBoard;
+  if (!target) return;
+  const run = () => target.scrollIntoView({ block: "start", behavior: "auto" });
+  window.setTimeout(() => {
+    window.requestAnimationFrame(() => {
+      run();
+      window.requestAnimationFrame(run);
+    });
+  }, 120);
+}
+
+function openMyProfileArchive(tabName) {
+  activeProfileArchiveTab = tabName;
+  activeBookmarkFolderId = null;
+  profilePostQuery = "";
+  if (profilePostSearch) profilePostSearch.value = "";
+  closeAccountMenu();
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
+  if (modalIsOpen(composeDialog)) closeComposeDialog();
+  if (modalIsOpen(requestComposeDialog)) closeRequestComposeDialog();
+  history.pushState("", document.title, `${location.pathname}${location.search}#me`);
+  renderProfile("You");
+  scrollProfileArchiveIntoView();
 }
 
 function closeAccountMenu() {
@@ -1836,6 +2375,8 @@ function renderRequestPage(creator, postId = null) {
   requestManagerView.hidden = true;
   requestManagerDetailView.hidden = true;
   settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
   missionView.hidden = true;
   requestView.hidden = false;
 
@@ -1970,6 +2511,8 @@ function renderNotificationsPage() {
   requestManagerView.hidden = true;
   requestManagerDetailView.hidden = true;
   settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
   missionView.hidden = true;
   notificationsView.hidden = false;
   notificationsList.innerHTML = notifications.map((source) => {
@@ -1997,8 +2540,10 @@ function renderSettingsPage() {
   notificationsView.hidden = true;
   requestManagerView.hidden = true;
   requestManagerDetailView.hidden = true;
+  eventDetailView.hidden = true;
   missionView.hidden = true;
   settingsView.hidden = false;
+  serviceView.hidden = true;
   scrollPageTop();
 }
 
@@ -2156,10 +2701,10 @@ function decisionActionsForRequest(item) {
     return `<button class="primary-button approve-entry-button" type="button" data-request-action="approve">${t("approveAndChat")}</button><button class="soft-button" type="button" data-request-action="reject">${t("chooseRejectReason")}</button>`;
   }
   if (item.status === "accepted") {
-    return `<button class="primary-button" type="button" data-request-action="start-progress">${currentLanguage === "en" ? "Start work" : currentLanguage === "ko" ? "작업 시작" : "作業を開始する"}</button><button class="soft-button" type="button" data-request-action="open-chat">${t("openChat")}</button><button class="soft-button" type="button" data-request-action="report">${t("report")}</button>`;
+    return `<button class="primary-button hold-to-approve-button" type="button" data-request-action="start-progress"><span>${currentLanguage === "en" ? "Hold 1 sec to start work" : currentLanguage === "ko" ? "1초 길게 눌러 작업 시작" : "1秒長押しで作業を開始"}</span><small>${currentLanguage === "en" ? "Hold to start" : currentLanguage === "ko" ? "길게 눌러 시작" : "Hold to start"}</small></button><button class="soft-button" type="button" data-request-action="open-chat">${t("openChat")}</button>`;
   }
   if (item.status === "in_progress") {
-    return `<button class="primary-button" type="button" data-request-action="deliver">${t("markDelivered")}</button><button class="soft-button" type="button" data-request-action="open-chat">${t("openChat")}</button><button class="soft-button" type="button" data-request-action="report">${t("report")}</button>`;
+    return `<button class="primary-button" type="button" data-request-action="deliver">${t("markDelivered")}</button><button class="soft-button" type="button" data-request-action="open-chat">${t("openChat")}</button>`;
   }
   if (item.status === "awaiting_review") {
     return `<button class="primary-button" type="button" data-request-action="await-review">${t("waitReceive")}</button><button class="soft-button" type="button" data-request-action="retake">${t("backToRetake")}</button>`;
@@ -2258,12 +2803,108 @@ function renderProfileReviews(creator) {
 }
 
 function renderSavedPostsSection() {
-  if (!savedPostsSection || !savedPostsBoard) return;
-  const posts = pins.filter((post) => savedPins.has(post.id));
-  savedPostsSection.hidden = activeProfile !== "You";
-  if (activeProfile !== "You") return;
-  savedPostsBoard.innerHTML = posts.map(pinCard).join("");
-  bindPinCards(savedPostsBoard);
+  if (!savedPostsSection || !savedPostsBoard || !bookmarkFoldersBoard) return;
+  savedPostsSection.hidden = activeProfile !== "You" || activeProfileArchiveTab !== "folders";
+  if (activeProfile !== "You" || activeProfileArchiveTab !== "folders") return;
+
+  const folders = bookmarkFolders.filter((folder) => (folder.pinIds || []).length);
+  bookmarkFoldersBoard.hidden = false;
+  if (activeBookmarkFolderId) {
+    const folder = bookmarkFolders.find((entry) => entry.id === activeBookmarkFolderId);
+    const posts = pins.filter((post) => folder?.pinIds?.includes(post.id));
+    bookmarkFoldersBoard.innerHTML = `
+      <button class="soft-button bookmark-folder-back" type="button" data-folder-back="true">${currentLanguage === "en" ? "Back to folders" : currentLanguage === "ko" ? "폴더 목록으로" : "フォルダ一覧に戻る"}</button>
+      <div class="bookmark-folder-header">
+        <strong>${folder?.name || "Folder"}</strong>
+        <span>${posts.length} items</span>
+      </div>
+    `;
+    savedPostsBoard.hidden = false;
+    savedPostsBoard.innerHTML = posts.map(pinCard).join("");
+    bindPinCards(savedPostsBoard);
+    return;
+  }
+
+  savedPostsBoard.hidden = true;
+  if (!folders.length) {
+    bookmarkFoldersBoard.innerHTML = `
+      <article class="bookmark-folder-card is-empty">
+        <strong>ブックマークフォルダはまだありません</strong>
+        <span>投稿を保存するときにフォルダを作ってまとめられます。</span>
+      </article>
+    `;
+    return;
+  }
+  bookmarkFoldersBoard.innerHTML = folders.map((folder) => {
+    const covers = pins.filter((post) => folder.pinIds?.includes(post.id)).slice(0, 3);
+    return `
+      <button class="bookmark-folder-card" type="button" data-folder-id="${folder.id}">
+        <div class="bookmark-folder-covers">
+          ${covers.map((post) => `<img src="${post.image}" alt="${post.title}" loading="lazy" />`).join("")}
+        </div>
+        <strong>${folder.name}</strong>
+        <span>${folder.pinIds.length} posts</span>
+      </button>
+    `;
+  }).join("");
+}
+
+function openBookmarkFolderDialog(pinId) {
+  pendingBookmarkPinId = pinId;
+  if (!bookmarkFolderDialog || !bookmarkFolderOptions) return;
+  const options = bookmarkFolders.map((folder, index) => `
+    <label class="bookmark-folder-option">
+      <input type="radio" name="bookmarkFolderSelect" value="${folder.id}" ${index === 0 ? "checked" : ""} />
+      <span>${folder.name}</span>
+      <small>${folder.pinIds.length} posts</small>
+    </label>
+  `).join("");
+  bookmarkFolderOptions.innerHTML = options || `<p class="bookmark-folder-empty">${currentLanguage === "en" ? "Create your first folder" : currentLanguage === "ko" ? "첫 폴더를 만들어보세요" : "最初のフォルダを作成してください"}</p>`;
+  bookmarkFolderName.value = "";
+  showModalElement(bookmarkFolderDialog);
+}
+
+function closeBookmarkFolderDialog() {
+  closeModalElement(bookmarkFolderDialog);
+  pendingBookmarkPinId = null;
+}
+
+function selectedBookmarkFolderId() {
+  return bookmarkFolderDialog?.querySelector('input[name="bookmarkFolderSelect"]:checked')?.value || bookmarkFolders[0]?.id || null;
+}
+
+function createBookmarkFolder() {
+  const name = bookmarkFolderName?.value.trim();
+  if (!name) return null;
+  const id = `folder-${Date.now()}`;
+  bookmarkFolders.unshift({ id, name, pinIds: [] });
+  openBookmarkFolderDialog(pendingBookmarkPinId);
+  const radio = bookmarkFolderDialog?.querySelector(`input[value="${id}"]`);
+  if (radio) radio.checked = true;
+  bookmarkFolderName.value = "";
+  return id;
+}
+
+function savePinToSelectedBookmarkFolder() {
+  if (!pendingBookmarkPinId) return;
+  let folderId = selectedBookmarkFolderId();
+  if (!folderId) {
+    folderId = createBookmarkFolder();
+    if (!folderId) return;
+  }
+  bookmarkFolders = bookmarkFolders.map((folder) => {
+    if (folder.id !== folderId) return folder;
+    return {
+      ...folder,
+      pinIds: [...new Set([...(folder.pinIds || []), pendingBookmarkPinId])]
+    };
+  });
+  refreshSavedPinsFromFolders();
+  syncSaveButtons(pendingBookmarkPinId);
+  if (currentPin?.id === pendingBookmarkPinId) updateDialogSave();
+  if (activeProfile === "You") renderSavedPostsSection();
+  closeBookmarkFolderDialog();
+  showProfileCopyToast(currentLanguage === "en" ? "Saved to folder" : currentLanguage === "ko" ? "폴더에 저장했습니다" : "フォルダに保存しました");
 }
 
 function persistComposeDraft() {
@@ -2274,7 +2915,8 @@ function persistComposeDraft() {
     world: composeWorld.value,
     tags: composeTags.value,
     description: composeDescription.value,
-    images: composeImages
+    images: composeImages,
+    savedAt: Date.now()
   };
   localStorage.setItem(composeDraftStorageKey, JSON.stringify(payload));
 }
@@ -2298,6 +2940,70 @@ function restoreComposeDraft() {
 
 function clearComposeDraft() {
   localStorage.removeItem(composeDraftStorageKey);
+}
+
+function readComposeDraftSummary() {
+  const raw = localStorage.getItem(composeDraftStorageKey);
+  if (!raw) return null;
+  try {
+    const draft = JSON.parse(raw);
+    return {
+      title: draft.title?.trim() || "無題の下書き",
+      category: draft.category || "Photo",
+      description: draft.description?.trim() || "",
+      imageCount: Array.isArray(draft.images) ? draft.images.length : 0,
+      savedAt: draft.savedAt || null
+    };
+  } catch {
+    return null;
+  }
+}
+
+function hideFloatingPostActions() {
+  if (!floatingPostActions) return;
+  floatingPostActions.hidden = true;
+  floatingPostActions.classList.remove("is-visible");
+}
+
+function showFloatingPostActions() {
+  if (!floatingPostActions) return;
+  floatingPostActions.hidden = false;
+  window.requestAnimationFrame(() => {
+    floatingPostActions.classList.add("is-visible");
+  });
+}
+
+function openComposeDraftListDialog() {
+  const draft = readComposeDraftSummary();
+  if (!composeDraftListDialog || !composeDraftListBody) return;
+  hideFloatingPostActions();
+  if (!draft) {
+    composeDraftListBody.innerHTML = `<div class="compose-draft-empty">${currentLanguage === "en" ? "No drafts yet" : currentLanguage === "ko" ? "저장된 초안이 아직 없습니다" : "保存されている下書きはまだありません"}</div>`;
+  } else {
+    const savedLabel = draft.savedAt
+      ? new Date(draft.savedAt).toLocaleString(currentLanguage === "en" ? "en-US" : currentLanguage === "ko" ? "ko-KR" : "ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })
+      : (currentLanguage === "en" ? "Saved" : currentLanguage === "ko" ? "저장됨" : "保存済み");
+    const imageLabel = currentLanguage === "en"
+      ? `${draft.imageCount} images`
+      : currentLanguage === "ko"
+        ? `이미지 ${draft.imageCount}장`
+        : `画像 ${draft.imageCount}枚`;
+    composeDraftListBody.innerHTML = `
+      <article class="compose-draft-card">
+        <div>
+          <strong>${draft.title}</strong>
+          <p>${draft.category} / ${savedLabel}</p>
+        </div>
+        <small>${draft.description || (currentLanguage === "en" ? "No description yet" : currentLanguage === "ko" ? "설명이 아직 없습니다" : "説明はまだありません")}</small>
+        <small>${imageLabel}</small>
+        <footer>
+          <button class="primary-button" type="button" data-compose-draft-action="resume">${currentLanguage === "en" ? "Open draft" : currentLanguage === "ko" ? "초안 열기" : "下書きを開く"}</button>
+          <button class="soft-button" type="button" data-compose-draft-action="delete">${currentLanguage === "en" ? "Delete draft" : currentLanguage === "ko" ? "초안 삭제" : "下書きを削除"}</button>
+        </footer>
+      </article>
+    `;
+  }
+  showModalElement(composeDraftListDialog);
 }
 
 function persistRequestComposeDraft() {
@@ -2378,12 +3084,14 @@ function clearApproveHoldState(button = approveHoldButton) {
   approveHoldCompleted = false;
 }
 
-function showRequestAcceptPopup() {
+function showRequestAcceptPopup(title = null, body = null) {
   if (!requestAcceptPopup) return;
   if (acceptPopupTimer) {
     window.clearTimeout(acceptPopupTimer);
     acceptPopupTimer = 0;
   }
+  if (requestAcceptPopupTitle && title) requestAcceptPopupTitle.textContent = title;
+  if (requestAcceptPopupBody && body) requestAcceptPopupBody.textContent = body;
   requestAcceptPopup.hidden = false;
   requestAcceptPopup.classList.remove("is-visible", "is-hiding");
   void requestAcceptPopup.offsetWidth;
@@ -2409,7 +3117,23 @@ function completeApproveRequest() {
   }
   closeModalElement(requestApprovalDialog);
   renderRequestManagerDetailPage(item.id);
-  showRequestAcceptPopup();
+  showRequestAcceptPopup(
+    currentLanguage === "en" ? "Accepted!" : currentLanguage === "ko" ? "수락했어요!" : "受諾しました！！",
+    currentLanguage === "en" ? "Moved to request chat" : currentLanguage === "ko" ? "의뢰 채팅으로 이동했습니다" : "依頼チャットへ移動しました"
+  );
+}
+
+function completeStartProgressRequest() {
+  if (!activeRequestManagerItemId) return;
+  const item = requestManagerItemById(activeRequestManagerItemId);
+  if (!item) return;
+  item.status = "in_progress";
+  item.messages.push({ from: "you", time: "いま", text: "作業を開始しました。進捗や確認事項はこのチャットで共有します。" });
+  renderRequestManagerDetailPage(item.id);
+  showRequestAcceptPopup(
+    currentLanguage === "en" ? "Work started!" : currentLanguage === "ko" ? "작업을 시작했어요!" : "作業を開始しました！",
+    currentLanguage === "en" ? "The request is now in progress" : currentLanguage === "ko" ? "의뢰가 진행 중 상태로 이동했습니다" : "依頼が進行中ステータスに移動しました"
+  );
 }
 
 function startApproveHold(button, onComplete = null) {
@@ -2655,6 +3379,8 @@ function renderRequestManagerPage() {
   notificationsView.hidden = true;
   requestManagerDetailView.hidden = true;
   settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
   missionView.hidden = true;
   requestManagerView.hidden = false;
   renderRequestManagerList();
@@ -2942,6 +3668,8 @@ function renderRequestManagerDetailPage(itemId) {
   notificationsView.hidden = true;
   requestManagerView.hidden = true;
   settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
   missionView.hidden = true;
   requestManagerDetailView.hidden = false;
 
@@ -3032,6 +3760,46 @@ function openNotificationsPage() {
   renderNotificationsPage();
 }
 
+function renderServicePage() {
+  activeProfile = null;
+  feedView.hidden = true;
+  profileView.hidden = true;
+  requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  settingsView.hidden = true;
+  missionView.hidden = true;
+  eventDetailView.hidden = true;
+  serviceView.hidden = false;
+  scrollPageTop();
+}
+
+function openServicePage() {
+  closeAccountMenu();
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
+  if (modalIsOpen(composeDialog)) closeComposeDialog();
+  if (modalIsOpen(requestComposeDialog)) closeRequestComposeDialog();
+  if (location.hash && location.hash !== "#service") {
+    serviceReturnHash = location.hash;
+  } else if (!location.hash) {
+    serviceReturnHash = "";
+  }
+  location.hash = "service";
+  renderServicePage();
+}
+
+function returnFromService() {
+  const targetHash = serviceReturnHash;
+  serviceReturnHash = "";
+  if (!targetHash) {
+    showFeed();
+    return;
+  }
+  history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
+  routeFromHash();
+}
+
 function renderMissionPage() {
   activeProfile = null;
   feedView.hidden = true;
@@ -3041,6 +3809,8 @@ function renderMissionPage() {
   requestManagerView.hidden = true;
   requestManagerDetailView.hidden = true;
   settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
   missionView.hidden = false;
   scrollPageTop();
 }
@@ -3267,6 +4037,46 @@ function toggleTheme() {
   if (settingsThemeMode) settingsThemeMode.value = nextTheme;
   localStorage.setItem("vrc-sns-theme-mode", nextTheme);
   setTheme(nextTheme);
+}
+
+function clearFloatingPostHold() {
+  if (floatingPostHoldTimer) {
+    window.clearTimeout(floatingPostHoldTimer);
+    floatingPostHoldTimer = 0;
+  }
+  floatingPost?.classList.remove("is-holding");
+}
+
+function handleFloatingPostPointerDown(event) {
+  if (event.button !== undefined && event.button !== 0) return;
+  clearFloatingPostHold();
+  floatingPostHoldTriggered = false;
+  floatingPost?.classList.add("is-holding");
+  floatingPostHoldTimer = window.setTimeout(() => {
+    floatingPostHoldTriggered = true;
+    showFloatingPostActions();
+    floatingPost?.classList.remove("is-holding");
+    floatingPostHoldTimer = 0;
+  }, 420);
+}
+
+function handleFloatingPostPointerUp() {
+  clearFloatingPostHold();
+}
+
+function handleFloatingPostPointerLeave() {
+  clearFloatingPostHold();
+}
+
+function handleFloatingPostClick(event) {
+  if (floatingPostHoldTriggered) {
+    event.preventDefault();
+    event.stopPropagation();
+    floatingPostHoldTriggered = false;
+    return;
+  }
+  hideFloatingPostActions();
+  openComposeHint();
 }
 
 function openComposeHint() {
@@ -3656,6 +4466,24 @@ navPills.forEach((pill) => {
 });
 
 searchInput.addEventListener("input", () => renderPins());
+eventPrev?.addEventListener("click", () => goToEventSlide(activeEventIndex - 1));
+eventNext?.addEventListener("click", () => goToEventSlide(activeEventIndex + 1));
+eventCarouselDots?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-event-dot]");
+  if (!button) return;
+  goToEventSlide(Number(button.dataset.eventDot));
+});
+eventCarouselTrack?.addEventListener("pointerdown", startEventDrag);
+eventCarouselTrack?.addEventListener("pointermove", moveEventDrag);
+eventCarouselTrack?.addEventListener("pointerup", endEventDrag);
+eventCarouselTrack?.addEventListener("pointercancel", endEventDrag);
+eventCarouselTrack?.addEventListener("transitionend", handleEventTrackTransitionEnd);
+eventCarouselTrack?.addEventListener("pointerleave", (event) => {
+  if (eventDragState) {
+    endEventDrag(event);
+    return;
+  }
+});
 settingsLanguage?.addEventListener("change", () => {
   currentLanguage = settingsLanguage.value;
   applyLanguage({ rerender: true });
@@ -3670,10 +4498,35 @@ settingsView?.addEventListener("change", handleSettingsAutoSave);
 shuffleButton.addEventListener("click", shufflePins);
 createButton.addEventListener("click", openComposeHint);
 createRequestButton?.addEventListener("click", openRequestComposeDialog);
-floatingPost.addEventListener("click", openComposeHint);
+floatingPost?.addEventListener("pointerdown", handleFloatingPostPointerDown);
+floatingPost?.addEventListener("pointerup", handleFloatingPostPointerUp);
+floatingPost?.addEventListener("pointercancel", handleFloatingPostPointerLeave);
+floatingPost?.addEventListener("pointerleave", handleFloatingPostPointerLeave);
+floatingPost?.addEventListener("click", handleFloatingPostClick);
+floatingDraftsButton?.addEventListener("click", openComposeDraftListDialog);
+floatingNewPostButton?.addEventListener("click", () => {
+  hideFloatingPostActions();
+  openComposeHint();
+});
+composeDraftListClose?.addEventListener("click", () => closeModalElement(composeDraftListDialog));
+composeDraftListBody?.addEventListener("click", (event) => {
+  const action = event.target.closest("[data-compose-draft-action]");
+  if (!action) return;
+  if (action.dataset.composeDraftAction === "resume") {
+    closeModalElement(composeDraftListDialog);
+    openComposeHint();
+    return;
+  }
+  if (action.dataset.composeDraftAction === "delete") {
+    clearComposeDraft();
+    openComposeDraftListDialog();
+  }
+});
 themeToggle.addEventListener("click", toggleTheme);
-missionButton?.addEventListener("click", openMissionPage);
-missionCardButton?.addEventListener("click", openMissionPage);
+likedPostsButton?.addEventListener("click", () => openMyProfileArchive("likes"));
+bookmarkFoldersButton?.addEventListener("click", () => openMyProfileArchive("folders"));
+missionButton?.addEventListener("click", openServicePage);
+missionCardButton?.addEventListener("click", openServicePage);
 requestManagerButton?.addEventListener("click", openRequestManagerPage);
 requestManagerCreatePost?.addEventListener("click", openRequestComposeDialog);
 notificationButton.addEventListener("click", openNotificationsPage);
@@ -3684,6 +4537,10 @@ avatarButton.addEventListener("click", (event) => {
 accountMenuProfile?.addEventListener("click", () => {
   closeAccountMenu();
   openMyProfile();
+});
+accountMenuService?.addEventListener("click", () => {
+  closeAccountMenu();
+  openServicePage();
 });
 accountMenuSettings?.addEventListener("click", () => {
   openSettingsPage();
@@ -3709,7 +4566,13 @@ backFromNotifications.addEventListener("click", returnFromNotifications);
 backFromSettings?.addEventListener("click", returnFromSettings);
 backFromRequestManager?.addEventListener("click", returnFromRequestManager);
 backFromRequestDetail?.addEventListener("click", returnFromRequestManagerDetail);
+backFromService?.addEventListener("click", returnFromService);
+backFromEventDetail?.addEventListener("click", returnFromEventDetail);
 backFromMission?.addEventListener("click", returnFromMission);
+serviceMissionLink?.addEventListener("click", openMissionPage);
+document.addEventListener("click", (event) => {
+  if (!floatingPostDock?.contains(event.target)) hideFloatingPostActions();
+});
 accountEmailButton?.addEventListener("click", () => openAccountActionDialog("email"));
 accountPasswordButton?.addEventListener("click", () => openAccountActionDialog("password"));
 accountLogoutButton?.addEventListener("click", () => openAccountActionDialog("logout"));
@@ -3863,11 +4726,32 @@ profilePostSearch?.addEventListener("input", () => {
   renderProfilePostArchive();
 });
 
+profileArchiveTabs.forEach((button) => {
+  button.addEventListener("click", () => {
+    activeProfileArchiveTab = button.dataset.profileArchiveTab || "posts";
+    activeBookmarkFolderId = null;
+    renderProfilePostArchive();
+  });
+});
+
 profilePostSortButtons.forEach((button) => {
   button.addEventListener("click", () => {
     profilePostSortMode = button.dataset.profileSort || "recent";
     renderProfilePostArchive();
   });
+});
+
+bookmarkFoldersBoard?.addEventListener("click", (event) => {
+  const back = event.target.closest("[data-folder-back]");
+  if (back) {
+    activeBookmarkFolderId = null;
+    renderSavedPostsSection();
+    return;
+  }
+  const folder = event.target.closest("[data-folder-id]");
+  if (!folder) return;
+  activeBookmarkFolderId = folder.dataset.folderId;
+  renderSavedPostsSection();
 });
 
 board.addEventListener("keydown", (event) => {
@@ -3980,9 +4864,8 @@ requestDecisionActions?.addEventListener("click", (event) => {
     return;
   }
   if (action === "start-progress") {
-    item.status = "in_progress";
-    item.messages.push({ from: "you", time: "いま", text: "作業を開始しました。進捗や確認事項はこのチャットで共有します。" });
-    renderRequestManagerDetailPage(item.id);
+    if (actionButton.classList.contains("hold-to-approve-button")) return;
+    completeStartProgressRequest();
     return;
   }
   if (action === "deliver") {
@@ -4013,6 +4896,31 @@ requestDecisionActions?.addEventListener("click", (event) => {
     return;
   }
   requestDetailDecisionNote.textContent = "この操作はモックです。実際の実装ではここから詳細フローに進みます。";
+});
+
+requestDecisionActions?.addEventListener("pointerdown", (event) => {
+  const holdButton = event.target.closest('.hold-to-approve-button[data-request-action="start-progress"]');
+  if (!holdButton) return;
+  event.preventDefault();
+  startApproveHold(holdButton, completeStartProgressRequest);
+});
+
+requestDecisionActions?.addEventListener("pointerup", (event) => {
+  const holdButton = event.target.closest('.hold-to-approve-button[data-request-action="start-progress"]');
+  if (!holdButton) return;
+  if (!approveHoldCompleted) clearApproveHoldState(holdButton);
+});
+
+requestDecisionActions?.addEventListener("pointerleave", (event) => {
+  const holdButton = event.target.closest('.hold-to-approve-button[data-request-action="start-progress"]');
+  if (!holdButton) return;
+  if (!approveHoldCompleted) clearApproveHoldState(holdButton);
+});
+
+requestDecisionActions?.addEventListener("pointercancel", (event) => {
+  const holdButton = event.target.closest('.hold-to-approve-button[data-request-action="start-progress"]');
+  if (!holdButton) return;
+  if (!approveHoldCompleted) clearApproveHoldState(holdButton);
 });
 
 requestApprovalCancel?.addEventListener("click", () => closeModalElement(requestApprovalDialog));
@@ -4095,6 +5003,16 @@ requestReportBlock?.addEventListener("click", () => {
   if (name) blockedCreators.add(name);
   closeModalElement(requestReportResultDialog);
   showProfileCopyToast(currentLanguage === "en" ? "Blocked this account" : currentLanguage === "ko" ? "이 계정을 차단했습니다" : "このアカウントをブロックしました");
+});
+bookmarkFolderCancel?.addEventListener("click", closeBookmarkFolderDialog);
+bookmarkFolderCreate?.addEventListener("click", createBookmarkFolder);
+bookmarkFolderSave?.addEventListener("click", savePinToSelectedBookmarkFolder);
+bookmarkFolderDialog?.addEventListener("click", (event) => {
+  if (event.target === bookmarkFolderDialog) closeBookmarkFolderDialog();
+});
+bookmarkFolderDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeBookmarkFolderDialog();
 });
 
 dialogCreator.addEventListener("click", (event) => {
@@ -4689,6 +5607,10 @@ requestComposePreviewImage?.addEventListener("load", () => {
 });
 
 window.addEventListener("hashchange", routeFromHash);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) stopEventAutoplay();
+  else scheduleEventAutoplay();
+});
 window.addEventListener("dragenter", (event) => {
   if (!event.dataTransfer?.types?.includes("Files")) return;
   if (modalIsOpen(composeDialog) || modalIsOpen(requestComposeDialog)) return;
@@ -4906,16 +5828,41 @@ function sortedProfilePosts(posts) {
 }
 
 function renderProfilePostArchive() {
-  const posts = sortedProfilePosts([...activeProfilePosts]);
+  let sourcePosts = [...activeProfilePosts];
+  if (activeProfileArchiveTab === "likes") {
+    sourcePosts = pins.filter((post) => likedPins.has(post.id));
+  } else if (activeProfileArchiveTab === "posts") {
+    sourcePosts = [...activeProfilePosts];
+  }
+  const posts = sortedProfilePosts(sourcePosts);
+  profileArchiveTabs.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.profileArchiveTab === activeProfileArchiveTab);
+  });
   profilePostSortButtons.forEach((button) => {
     button.classList.toggle("is-active", button.dataset.profileSort === profilePostSortMode);
   });
   if (profilePostSearch && profilePostSearch.value !== profilePostQuery) {
     profilePostSearch.value = profilePostQuery;
   }
-  if (profilePostEmpty) profilePostEmpty.hidden = posts.length !== 0;
-  profileBoard.innerHTML = posts.map(pinCard).join("");
-  bindPinCards(profileBoard);
+  const showFolders = activeProfileArchiveTab === "folders";
+  profileBoard.hidden = showFolders;
+  if (savedPostsSection) savedPostsSection.hidden = activeProfile !== "You" || !showFolders;
+  const searchWrap = profilePostSearch?.closest(".profile-post-search");
+  const sortWrap = document.querySelector(".profile-post-sort");
+  if (searchWrap) searchWrap.hidden = showFolders;
+  if (sortWrap) sortWrap.hidden = showFolders;
+  if (profilePostEmpty) {
+    const isEmpty = showFolders
+      ? bookmarkFolders.every((folder) => !(folder.pinIds || []).length) && !activeBookmarkFolderId
+      : posts.length === 0;
+    profilePostEmpty.hidden = !isEmpty;
+  }
+  if (!showFolders) {
+    profileBoard.innerHTML = posts.map(pinCard).join("");
+    bindPinCards(profileBoard);
+  } else {
+    renderSavedPostsSection();
+  }
 }
 
 function trustScore(posts, trust) {
@@ -5184,6 +6131,8 @@ function renderProfile(creator) {
   requestManagerView.hidden = true;
   requestManagerDetailView.hidden = true;
   settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
   missionView.hidden = true;
   profileView.hidden = false;
   profileView.classList.toggle("is-mine", isMine);
@@ -5228,15 +6177,23 @@ function renderProfile(creator) {
   if (profileRating) profileRating.textContent = `${trust.saves} ${t("saves")}`;
   activeProfilePosts = posts;
   profilePostQuery = "";
+  activeBookmarkFolderId = null;
+  activeProfileArchiveTab = isMine ? activeProfileArchiveTab : "posts";
   renderProfilePostArchive();
-  renderSavedPostsSection();
 
   if (isMine) {
+    profileArchiveTabs.forEach((button) => {
+      button.hidden = false;
+    });
     profileFollow.hidden = true;
     if (profileEditButton) profileEditButton.hidden = false;
     updateProfileSocialButtons(creator, true);
     profileRequestButton.hidden = true;
   } else {
+    activeProfileArchiveTab = "posts";
+    profileArchiveTabs.forEach((button) => {
+      button.hidden = button.dataset.profileArchiveTab !== "posts";
+    });
     profileFollow.hidden = false;
     if (profileEditButton) profileEditButton.hidden = true;
     updateFollowButton(profileFollow, creator);
