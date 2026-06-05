@@ -6956,10 +6956,10 @@ body.is-dragging .drop-hint {
   }
 
   .event-slide-card {
-    grid-template-columns: minmax(0, 1fr) minmax(118px, 0.42fr);
-    gap: 12px;
-    height: 178px;
-    padding: 14px;
+    grid-template-columns: minmax(0, 1fr) minmax(108px, 0.34fr);
+    gap: 10px;
+    height: 156px;
+    padding: 12px;
   }
 
   .event-slide-card h3 {
@@ -7282,17 +7282,17 @@ body.is-dragging .drop-hint {
   }
 
   .event-slide-card {
-    grid-template-columns: minmax(0, 1fr) 92px;
-    gap: 10px;
-    height: 154px;
-    padding: 10px;
-    border-radius: 18px;
+    grid-template-columns: minmax(0, 1fr) 84px;
+    gap: 8px;
+    height: 124px;
+    padding: 8px;
+    border-radius: 17px;
   }
 
   .event-slide-copy {
-    gap: 6px;
-    padding: 10px 11px;
-    border-radius: 14px;
+    gap: 5px;
+    padding: 8px 9px;
+    border-radius: 13px;
   }
 
   .event-slide-meta {
@@ -7301,16 +7301,16 @@ body.is-dragging .drop-hint {
 
   .event-pill,
   .event-date {
-    min-height: 24px;
-    padding: 0 8px;
-    font-size: 0.7rem;
+    min-height: 22px;
+    padding: 0 7px;
+    font-size: 0.66rem;
   }
 
   .event-slide-card h3 {
     display: -webkit-box;
     overflow: hidden;
-    font-size: 1rem;
-    line-height: 1.1;
+    font-size: 0.92rem;
+    line-height: 1.08;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
   }
@@ -7318,9 +7318,9 @@ body.is-dragging .drop-hint {
   .event-slide-card p {
     display: -webkit-box;
     overflow: hidden;
-    font-size: 0.78rem;
-    line-height: 1.38;
-    -webkit-line-clamp: 2;
+    font-size: 0.72rem;
+    line-height: 1.3;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
   }
 
@@ -7330,9 +7330,9 @@ body.is-dragging .drop-hint {
   }
 
   .event-slide-highlights span {
-    min-height: 24px;
-    padding: 0 8px;
-    font-size: 0.68rem;
+    min-height: 21px;
+    padding: 0 7px;
+    font-size: 0.64rem;
   }
 
   .event-slide-side {
@@ -8310,14 +8310,18 @@ body[data-theme="dark"] .profile-block-button.is-active:not([disabled]):focus-vi
   }
 
   .event-slide-card {
-    grid-template-columns: minmax(0, 1fr) 78px;
-    gap: 8px;
-    height: 142px;
-    padding: 8px;
+    grid-template-columns: minmax(0, 1fr) 72px;
+    gap: 7px;
+    height: 112px;
+    padding: 7px;
   }
 
   .event-slide-copy {
-    padding: 9px;
+    padding: 7px 8px;
+  }
+
+  .event-slide-card p {
+    display: none;
   }
 
   .event-slide-highlights span:nth-child(n+3) {
