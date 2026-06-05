@@ -203,6 +203,7 @@ const eventsView = document.querySelector("#eventsView");
 const missionView = document.querySelector("#missionView");
 const searchInput = document.querySelector("#searchInput");
 const eventBanner = document.querySelector(".event-banner");
+const pageTitle = document.querySelector("#pageTitle");
 const chips = [...document.querySelectorAll(".chip")];
 const navPills = [...document.querySelectorAll(".nav-pill")];
 const emptyState = document.querySelector("#emptyState");
@@ -1514,6 +1515,54 @@ function setText(target, key) {
   if (node) node.textContent = t(key);
 }
 
+const heroTitleWords = ["Discover", "Connect", "Commission"];
+let heroTitleWordIndex = 0;
+let heroTitleTimer = null;
+
+function renderHeroTitleWord(animate = true) {
+  if (!pageTitle) return;
+  const word = heroTitleWords[heroTitleWordIndex % heroTitleWords.length];
+  const current = pageTitle.querySelector(".hero-word.is-visible") || pageTitle.querySelector(".hero-word");
+  if (!current || !animate || document.documentElement.dataset.reducedMotion === "true") {
+    pageTitle.innerHTML = "";
+    const stable = document.createElement("span");
+    stable.className = "hero-word is-visible";
+    stable.textContent = word;
+    pageTitle.append(stable);
+    return;
+  }
+  if (current.textContent === word) return;
+  const next = document.createElement("span");
+  next.className = "hero-word";
+  next.textContent = word;
+  pageTitle.append(next);
+  window.requestAnimationFrame(() => {
+    current.classList.remove("is-visible");
+    next.classList.add("is-visible");
+  });
+  window.setTimeout(() => {
+    [...pageTitle.querySelectorAll(".hero-word:not(.is-visible)")].forEach((node) => node.remove());
+  }, 960);
+}
+
+function resetHeroTitleRotation() {
+  if (heroTitleTimer) {
+    window.clearInterval(heroTitleTimer);
+    heroTitleTimer = null;
+  }
+  heroTitleWordIndex = 0;
+  renderHeroTitleWord(false);
+}
+
+function startHeroTitleRotation() {
+  if (!pageTitle || heroTitleTimer) return;
+  resetHeroTitleRotation();
+  heroTitleTimer = window.setInterval(() => {
+    heroTitleWordIndex = (heroTitleWordIndex + 1) % heroTitleWords.length;
+    renderHeroTitleWord(true);
+  }, 6400);
+}
+
 function setAttr(target, attr, key) {
   const node = typeof target === "string" ? document.querySelector(target) : target;
   if (node) node.setAttribute(attr, t(key));
@@ -2307,7 +2356,7 @@ function applyLanguage({ rerender = false } = {}) {
   if (composeDraftListTitle) composeDraftListTitle.textContent = currentLanguage === "en" ? "Draft list" : currentLanguage === "ko" ? "초안 목록" : "下書きリスト";
   if (composeDraftListClose) composeDraftListClose.textContent = currentLanguage === "en" ? "Close" : currentLanguage === "ko" ? "닫기" : "閉じる";
   setText("#eventBannerEyebrow", currentLanguage === "en" ? "Now live" : currentLanguage === "ko" ? "지금 진행 중" : "Now live");
-  setText("#eventBannerHeading", currentLanguage === "en" ? "Picked events" : currentLanguage === "ko" ? "픽업 이벤트" : "ピックアップイベント");
+  setText("#eventBannerHeading", "Featured Events");
   if (eventPrev) eventPrev.setAttribute("aria-label", currentLanguage === "en" ? "Previous event" : currentLanguage === "ko" ? "이전 이벤트" : "前のイベント");
   if (eventNext) eventNext.setAttribute("aria-label", currentLanguage === "en" ? "Next event" : currentLanguage === "ko" ? "다음 이벤트" : "次のイベント");
   if (missionCardButton) {
@@ -2394,7 +2443,7 @@ function applyLanguage({ rerender = false } = {}) {
   if (eventProposalSupportInput) eventProposalSupportInput.placeholder = currentLanguage === "en" ? "Feature placement, banner exposure, signup flow, moderation notes, and so on." : currentLanguage === "ko" ? "특집 노출, 배너 게재, 모집 동선, 운영 안내 등 기대하는 지원을 적어주세요." : "特集掲載、バナー露出、募集導線、運営案内など期待する支援を書いてください。";
   renderEventProposalFlow();
   renderEventProposalList();
-  setText("#pageTitle", "heroTitle");
+  renderHeroTitleWord(false);
   const summary = [...document.querySelectorAll(".summary-strip:not([hidden]) > div span")];
   ["portfolioDesc", "commissionDesc", "communityDesc"].forEach((key, index) => setText(summary[index], key));
   setText("[data-view='discover']", "explore");
@@ -6759,6 +6808,7 @@ normalizeProfileEditorText();
 updateComposePreview();
 updateNotificationBadge();
 applyLanguage();
+startHeroTitleRotation();
 renderPins();
 routeFromHash();
 

@@ -1060,6 +1060,29 @@ h1 {
   white-space: nowrap;
 }
 
+.rotating-hero-title {
+  position: relative;
+  display: block;
+  min-width: min(58vw, 680px);
+  min-height: 1.08em;
+  overflow: hidden;
+}
+
+.hero-word {
+  position: absolute;
+  inset: 0 auto auto 0;
+  display: block;
+  will-change: opacity, transform;
+  opacity: 0;
+  transform: translate3d(0, 14px, 0) scale(0.985);
+  transition: opacity 900ms cubic-bezier(0.2, 0.85, 0.2, 1), transform 900ms cubic-bezier(0.2, 0.85, 0.2, 1);
+}
+
+.hero-word.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
 .hero-actions,
 .dialog-actions {
   display: flex;
@@ -8046,6 +8069,10 @@ body.is-dragging .drop-hint {
   .hero {
     gap: 14px;
     margin-bottom: 18px;
+  }
+
+  .rotating-hero-title {
+    min-width: 100%;
   }
 
   .hero-actions {
