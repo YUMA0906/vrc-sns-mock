@@ -552,6 +552,11 @@ let activeView = "discover";
 let activeSavedSearchTabId = null;
 let editingSavedSearchTabId = null;
 let contextSavedSearchTabId = null;
+let savedSearchHoldTimer = 0;
+let savedSearchHoldTriggered = false;
+let savedSearchHoldPointerId = null;
+let savedSearchHoldStart = null;
+let savedSearchHoldTargetId = null;
 let savedPins = new Set([3, 7]);
 let likedPins = new Set([1, 5, 12, 18]);
 let followedCreators = new Set(["Lumi Photo"]);
@@ -1783,6 +1788,7 @@ function closeSavedSearchDialog() {
 
 function closeSavedSearchContextMenu() {
   contextSavedSearchTabId = null;
+  savedSearchHoldTriggered = false;
   if (savedSearchContextMenu) {
     savedSearchContextMenu.hidden = true;
   }
@@ -1798,6 +1804,54 @@ function openSavedSearchContextMenu(tabId, x, y) {
   const top = Math.min(y, window.innerHeight - height - 12);
   savedSearchContextMenu.style.left = `${Math.max(12, left)}px`;
   savedSearchContextMenu.style.top = `${Math.max(12, top)}px`;
+}
+
+function clearSavedSearchHold() {
+  if (savedSearchHoldTimer) {
+    window.clearTimeout(savedSearchHoldTimer);
+    savedSearchHoldTimer = 0;
+  }
+  savedSearchHoldPointerId = null;
+  savedSearchHoldStart = null;
+  savedSearchHoldTargetId = null;
+}
+
+function handleSavedSearchPointerDown(event) {
+  const button = event.target.closest("[data-saved-search-id]");
+  if (!button || event.pointerType !== "touch") return;
+  clearSavedSearchHold();
+  savedSearchHoldTriggered = false;
+  closeSavedSearchContextMenu();
+  savedSearchHoldPointerId = event.pointerId;
+  savedSearchHoldStart = { x: event.clientX, y: event.clientY };
+  savedSearchHoldTargetId = button.dataset.savedSearchId;
+  savedSearchHoldTimer = window.setTimeout(() => {
+    savedSearchHoldTriggered = true;
+    openSavedSearchContextMenu(
+      savedSearchHoldTargetId,
+      event.clientX,
+      event.clientY
+    );
+    window.setTimeout(() => {
+      savedSearchHoldTriggered = false;
+    }, 700);
+    clearSavedSearchHold();
+  }, 420);
+}
+
+function handleSavedSearchPointerMove(event) {
+  if (!savedSearchHoldStart || savedSearchHoldPointerId !== event.pointerId) return;
+  const deltaX = Math.abs(event.clientX - savedSearchHoldStart.x);
+  const deltaY = Math.abs(event.clientY - savedSearchHoldStart.y);
+  if (deltaX > 10 || deltaY > 10) {
+    clearSavedSearchHold();
+  }
+}
+
+function handleSavedSearchPointerEnd(event) {
+  if (savedSearchHoldPointerId !== null && savedSearchHoldPointerId === event.pointerId) {
+    clearSavedSearchHold();
+  }
 }
 
 function saveSavedSearchTab() {
@@ -5928,6 +5982,12 @@ navPills.forEach((pill) => {
 savedSearchTabs?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-saved-search-id]");
   if (!button) return;
+  if (savedSearchHoldTriggered) {
+    event.preventDefault();
+    event.stopPropagation();
+    savedSearchHoldTriggered = false;
+    return;
+  }
   closeSavedSearchContextMenu();
   activateSavedSearchTab(button.dataset.savedSearchId);
 });
@@ -5938,6 +5998,11 @@ savedSearchTabs?.addEventListener("contextmenu", (event) => {
   event.preventDefault();
   openSavedSearchContextMenu(button.dataset.savedSearchId, event.clientX, event.clientY);
 });
+savedSearchTabs?.addEventListener("pointerdown", handleSavedSearchPointerDown);
+savedSearchTabs?.addEventListener("pointermove", handleSavedSearchPointerMove);
+savedSearchTabs?.addEventListener("pointerup", handleSavedSearchPointerEnd);
+savedSearchTabs?.addEventListener("pointercancel", handleSavedSearchPointerEnd);
+savedSearchTabs?.addEventListener("pointerleave", handleSavedSearchPointerEnd);
 
 addSavedSearchTabButton?.addEventListener("click", () => openSavedSearchDialog());
 
@@ -5969,6 +6034,20 @@ document.addEventListener("click", (event) => {
   if (savedSearchContextMenu.contains(event.target)) return;
   closeSavedSearchContextMenu();
 });
+
+document.addEventListener("pointerdown", (event) => {
+  if (savedSearchContextMenu && !savedSearchContextMenu.hidden) {
+    if (!savedSearchContextMenu.contains(event.target)) {
+      closeSavedSearchContextMenu();
+    }
+  }
+  if (floatingPostActions && !floatingPostActions.hidden) {
+    const inFloatingDock = floatingPostDock?.contains(event.target);
+    if (!inFloatingDock) {
+      hideFloatingPostActions();
+    }
+  }
+}, true);
 
 window.addEventListener("scroll", closeSavedSearchContextMenu, { passive: true });
 window.addEventListener("resize", closeSavedSearchContextMenu);
