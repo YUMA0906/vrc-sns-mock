@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="./styles.css?v=event-mobile-wide-1" />
+    <link rel="stylesheet" href="./styles.css?v=mobile-account-menu-1" />
   </head>
   <body>
     <header class="topbar">
@@ -63,6 +63,41 @@
         <div class="account-menu-wrap">
           <button id="avatarButton" class="avatar-button" type="button" aria-label="アカウントメニュー" aria-haspopup="menu" aria-expanded="false">Y</button>
           <div id="accountMenu" class="account-menu" role="menu" hidden>
+            <div class="account-menu-mobile-actions" aria-label="Mobile quick actions">
+              <button type="button" role="menuitem" data-mobile-menu-action="theme">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path class="theme-toggle-moon" d="M12 3a6.8 6.8 0 0 0 8.6 8.6 8 8 0 1 1-8.6-8.6Z" />
+                </svg>
+                <span>ナイトモード</span>
+              </button>
+              <button type="button" role="menuitem" data-mobile-menu-action="likes">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
+                </svg>
+                <span>いいね</span>
+              </button>
+              <button type="button" role="menuitem" data-mobile-menu-action="bookmarks">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M19 21 12 17 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z" />
+                </svg>
+                <span>ブックマーク</span>
+              </button>
+              <button type="button" role="menuitem" data-mobile-menu-action="requests">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M9 11l3 3L22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                </svg>
+                <span>依頼確認</span>
+              </button>
+              <button type="button" role="menuitem" data-mobile-menu-action="notifications">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7" />
+                  <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+                </svg>
+                <span>通知</span>
+                <small id="mobileNotificationBadge" class="account-menu-count" hidden></small>
+              </button>
+            </div>
             <button id="accountMenuProfile" type="button" role="menuitem">
               <svg aria-hidden="true" viewBox="0 0 24 24">
                 <path d="M16 20v-1.4a4.6 4.6 0 0 0-4.6-4.6H6.6A4.6 4.6 0 0 0 2 18.6V20" />
@@ -1596,6 +1631,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=event-touch-polish-1"></script>
+    <script src="./app.js?v=mobile-account-menu-1"></script>
   </body>
 </html>

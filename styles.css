@@ -417,6 +417,30 @@ body[data-theme="dark"] .badge {
   color: #c83232;
 }
 
+.account-menu-mobile-actions {
+  display: none;
+}
+
+.account-menu-count {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #ff5f57;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 860;
+  line-height: 1;
+}
+
+.account-menu-count[hidden] {
+  display: none;
+}
+
 .account-menu svg {
   width: 18px;
   height: 18px;
@@ -7174,9 +7198,14 @@ body.is-dragging .drop-hint {
 
   .topbar {
     grid-template-columns: auto minmax(0, 1fr);
-    align-items: start;
+    align-items: center;
     gap: 10px 8px;
     padding: 12px;
+  }
+
+  .brand {
+    grid-column: 2;
+    grid-row: 1;
   }
 
   .brand-mark {
@@ -7185,10 +7214,17 @@ body.is-dragging .drop-hint {
   }
 
   .nav-actions {
-    justify-self: end;
-    flex-wrap: wrap;
-    gap: 6px;
-    max-width: 228px;
+    display: contents;
+  }
+
+  .nav-actions > .icon-button {
+    display: none;
+  }
+
+  .account-menu-wrap {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
   }
 
   .icon-button,
@@ -7206,14 +7242,41 @@ body.is-dragging .drop-hint {
     font-size: 0.62rem;
   }
 
-  .brand span:last-child,
+  .brand-mark,
   .nav-actions .nav-pill {
     display: none;
   }
 
   .search-shell {
+    grid-column: 1 / -1;
+    grid-row: 2;
     height: 42px;
     padding: 0 12px;
+  }
+
+  .account-menu {
+    top: calc(100% + 10px);
+    left: 0;
+    right: auto;
+    width: min(86vw, 320px);
+    padding: 10px;
+    border-radius: 20px;
+    transform-origin: top left;
+  }
+
+  .account-menu-mobile-actions {
+    display: grid;
+    gap: 3px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .account-menu button {
+    grid-template-columns: 24px minmax(0, 1fr) auto;
+    min-height: 46px;
+    border-radius: 14px;
+    font-size: 0.95rem;
   }
 
   .search-shell input {
@@ -8331,11 +8394,6 @@ body[data-theme="dark"] .profile-block-button.is-active:not([disabled]):focus-vi
   .topbar {
     gap: 8px 6px;
     padding: 10px 10px 8px;
-  }
-
-  .nav-actions {
-    gap: 5px;
-    max-width: 214px;
   }
 
   .icon-button,

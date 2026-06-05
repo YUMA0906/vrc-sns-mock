@@ -226,6 +226,7 @@ const requestManagerButton = document.querySelector("#requestManagerButton");
 const requestManagerCreatePost = document.querySelector("#requestManagerCreatePost");
 const notificationButton = document.querySelector("#notificationButton");
 const notificationBadge = document.querySelector("#notificationBadge");
+const mobileNotificationBadge = document.querySelector("#mobileNotificationBadge");
 const avatarButton = document.querySelector("#avatarButton");
 const accountMenu = document.querySelector("#accountMenu");
 const accountMenuProfile = document.querySelector("#accountMenuProfile");
@@ -1566,6 +1567,17 @@ function applyLanguage({ rerender = false } = {}) {
   if (accountMenuService) accountMenuService.querySelector("span").textContent = currentLanguage === "en" ? "Service guide" : currentLanguage === "ko" ? "서비스 설명" : "サービス説明";
   setText("#accountMenuSettings span", "appSettings");
   setText("#accountMenuLogout span", "logout");
+  const mobileMenuLabels = {
+    theme: currentLanguage === "en" ? "Night mode" : currentLanguage === "ko" ? "나이트 모드" : "ナイトモード",
+    likes: currentLanguage === "en" ? "Liked posts" : currentLanguage === "ko" ? "좋아요" : "いいね",
+    bookmarks: currentLanguage === "en" ? "Bookmarks" : currentLanguage === "ko" ? "북마크" : "ブックマーク",
+    requests: currentLanguage === "en" ? "Requests" : currentLanguage === "ko" ? "의뢰 확인" : "依頼確認",
+    notifications: currentLanguage === "en" ? "Notifications" : currentLanguage === "ko" ? "알림" : "通知",
+  };
+  Object.entries(mobileMenuLabels).forEach(([action, label]) => {
+    const target = accountMenu?.querySelector(`[data-mobile-menu-action="${action}"] span`);
+    if (target) target.textContent = label;
+  });
   if (floatingPostHint) floatingPostHint.textContent = currentLanguage === "en" ? "Hold for drafts" : currentLanguage === "ko" ? "길게 눌러 초안 보기" : "長押しで下書き";
   const floatingDraftsLabel = document.querySelector("#floatingDraftsButton span");
   const floatingNewPostLabel = document.querySelector("#floatingNewPostButton span");
@@ -2513,6 +2525,10 @@ function updateNotificationBadge() {
   if (!notificationBadge) return;
   notificationBadge.hidden = count === 0;
   notificationBadge.textContent = count > 99 ? "99+" : String(count);
+  if (mobileNotificationBadge) {
+    mobileNotificationBadge.hidden = count === 0;
+    mobileNotificationBadge.textContent = count > 99 ? "99+" : String(count);
+  }
   notificationButton?.setAttribute("aria-label", count ? `${t("notifications")}, ${count} ${t("unreadNotifications")}` : t("notifications"));
 }
 
@@ -4589,6 +4605,21 @@ accountMenuLogout?.addEventListener("click", () => {
 });
 accountMenu?.addEventListener("click", (event) => {
   event.stopPropagation();
+  const mobileAction = event.target.closest("[data-mobile-menu-action]");
+  if (!mobileAction) return;
+  const action = mobileAction.dataset.mobileMenuAction;
+  closeAccountMenu();
+  if (action === "theme") {
+    toggleTheme();
+  } else if (action === "likes") {
+    openMyProfileArchive("likes");
+  } else if (action === "bookmarks") {
+    openMyProfileArchive("folders");
+  } else if (action === "requests") {
+    openRequestManagerPage();
+  } else if (action === "notifications") {
+    openNotificationsPage();
+  }
 });
 document.addEventListener("click", (event) => {
   if (accountMenu?.hidden) return;
