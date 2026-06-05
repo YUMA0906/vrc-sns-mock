@@ -1357,8 +1357,12 @@ function startEventDrag(event) {
   stopEventAutoplay();
   eventDragState = {
     pointerId: event.pointerId,
+    pointerType: event.pointerType,
     startX: event.clientX,
+    startY: event.clientY,
     deltaX: 0,
+    deltaY: 0,
+    moved: false,
     width: eventCarouselTrack.parentElement?.clientWidth || 1,
     linkHref: startLink.getAttribute("href") || "",
     sourceIndex: Number(startLink.closest(".event-slide")?.dataset.eventIndex || activeEventIndex)
@@ -1370,26 +1374,44 @@ function startEventDrag(event) {
 function moveEventDrag(event) {
   if (!eventDragState || event.pointerId !== eventDragState.pointerId) return;
   eventDragState.deltaX = event.clientX - eventDragState.startX;
+  eventDragState.deltaY = event.clientY - eventDragState.startY;
+  const absX = Math.abs(eventDragState.deltaX);
+  const absY = Math.abs(eventDragState.deltaY);
+  if (absX > boardTapMoveTolerance || absY > boardTapMoveTolerance) {
+    eventDragState.moved = true;
+  }
+  if (absY > boardTapMoveTolerance && absY > absX) return;
   updateEventCarouselPosition(eventDragState.deltaX, eventVisualIndex);
 }
 
 function endEventDrag(event) {
   if (!eventDragState || (event && event.pointerId !== eventDragState.pointerId)) return;
-  const { deltaX, width, linkHref, sourceIndex } = eventDragState;
+  const { deltaX, deltaY, moved, width, linkHref, sourceIndex } = eventDragState;
+  const absX = Math.abs(deltaX);
+  const absY = Math.abs(deltaY);
   const threshold = Math.min(120, width * 0.18);
-  const tappedElement = Math.abs(deltaX) <= 8 && event
+  const isTap = !moved && absX <= boardTapMoveTolerance && absY <= boardTapMoveTolerance;
+  const isVerticalScroll = absY > boardTapMoveTolerance && absY >= absX;
+  const isCanceled = event?.type === "pointercancel";
+  const tappedElement = isTap && event
     ? document.elementFromPoint(event.clientX, event.clientY)?.closest?.('.event-slide-card[href^="#event/"]')
     : null;
   eventCarouselTrack?.classList.remove("is-dragging");
-  ignoreEventSlideClick = Math.abs(deltaX) > 8;
-  if (Math.abs(deltaX) <= 8) {
+  ignoreEventSlideClick = !isTap;
+  if (isCanceled || isVerticalScroll) {
+    eventDragState = null;
+    updateEventCarouselPosition(0, eventVisualIndex);
+    scheduleEventAutoplay();
+    return;
+  }
+  if (isTap) {
     eventDragState = null;
     scheduleEventAutoplay();
     const matchedIndex = tappedElement?.getAttribute("href")?.match(/#event\/(\d+)$/)?.[1] || linkHref.match(/#event\/(\d+)$/)?.[1];
     openEventDetailPage(Number(matchedIndex || sourceIndex || activeEventIndex));
     return;
   }
-  const targetIndex = Math.abs(deltaX) > threshold ? activeEventIndex + (deltaX < 0 ? 1 : -1) : activeEventIndex;
+  const targetIndex = absX > threshold ? activeEventIndex + (deltaX < 0 ? 1 : -1) : activeEventIndex;
   eventDragState = null;
   goToEventSlide(targetIndex);
 }
