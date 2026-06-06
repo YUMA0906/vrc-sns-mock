@@ -167,6 +167,22 @@
               </svg>
               <span>サービス説明</span>
             </button>
+            <button id="accountMenuAdmin" type="button" role="menuitem">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M12 3 4 7v5c0 4.6 2.9 8.7 7 10 4.1-1.3 7-5.4 7-10V7l-6-4Z" />
+                <path d="M9 12l2 2 4-5" />
+              </svg>
+              <span>運営管理</span>
+            </button>
+            <button id="accountMenuSpecs" type="button" role="menuitem">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
+                <path d="M14 2v6h6" />
+                <path d="M8 13h8" />
+                <path d="M8 17h5" />
+              </svg>
+              <span>画面仕様</span>
+            </button>
             <button id="accountMenuSettings" type="button" role="menuitem">
               <svg aria-hidden="true" viewBox="0 0 24 24">
                 <path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z" />
@@ -447,6 +463,26 @@
                 <small id="requestAmountHelp" class="request-amount-help">クリエイター設定価格以上で自由に入力できます。</small>
                 <small id="requestAmountError" class="request-amount-error" hidden></small>
               </label>
+              <label class="field">
+                <span>通常チャット</span>
+                <select id="requestChatPreference">
+                  <option value="use" selected>必要に応じて使う</option>
+                  <option value="minimal">できれば使わない</option>
+                </select>
+                <small class="request-amount-help">初回申請と納品完了時の連絡は必須です。</small>
+              </label>
+              <label class="field">
+                <span>希望納期</span>
+                <input id="requestDesiredDate" type="date" />
+              </label>
+              <label class="field wide">
+                <span>依頼内容</span>
+                <textarea id="requestBriefInput" rows="4" placeholder="やってほしい内容、参考URL、使用アセット、避けたい表現など"></textarea>
+              </label>
+              <label class="field wide">
+                <span>添付・参考資料</span>
+                <input id="requestReferenceInput" type="text" placeholder="Google Drive / BOOTH / VRChat URL など" autocomplete="off" />
+              </label>
               <label class="request-agreement">
                 <input id="requestAgreement" type="checkbox" />
                 <span>依頼内容と同意事項を確認しました</span>
@@ -492,6 +528,12 @@
               <h1>通知</h1>
             </div>
             <button id="markNotificationsRead" class="soft-button" type="button">すべて既読</button>
+          </div>
+          <div class="notification-filter-tabs" aria-label="Notification filters">
+            <button class="is-active" type="button" data-notification-filter="all">All</button>
+            <button type="button" data-notification-filter="unread">未読</button>
+            <button type="button" data-notification-filter="request">依頼</button>
+            <button type="button" data-notification-filter="important">重要</button>
           </div>
           <div id="notificationsList" class="notifications-list"></div>
         </div>
@@ -654,6 +696,52 @@
               </div>
             </section>
           </div>
+        </div>
+      </section>
+      <section id="adminView" class="admin-view app-view" hidden>
+        <button id="backFromAdmin" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <div class="admin-shell">
+          <header class="admin-heading">
+            <div>
+              <p class="eyebrow">Operations</p>
+              <h1>運営管理</h1>
+              <p>イベント申請、サークル参加申請、通報を一画面で確認する運営向けモックです。</p>
+            </div>
+            <div class="admin-summary-grid">
+              <span><strong id="adminEventCount">0</strong><small>イベント申請</small></span>
+              <span><strong id="adminCircleCount">0</strong><small>参加申請</small></span>
+              <span><strong id="adminReportCount">0</strong><small>通報</small></span>
+            </div>
+          </header>
+          <div class="admin-tabs" aria-label="Admin queues">
+            <button class="is-active" type="button" data-admin-tab="events">イベント承認</button>
+            <button type="button" data-admin-tab="circles">サークル承認</button>
+            <button type="button" data-admin-tab="reports">通報確認</button>
+          </div>
+          <div id="adminQueueList" class="admin-queue-list"></div>
+        </div>
+      </section>
+      <section id="backendSpecView" class="admin-view app-view" hidden>
+        <button id="backFromSpecs" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <div class="admin-shell">
+          <header class="admin-heading">
+            <div>
+              <p class="eyebrow">Backend handoff</p>
+              <h1>画面ベース仕様</h1>
+              <p>友達側のバックエンド実装と合流しやすいように、画面ごとに必要そうなデータを整理したメモです。</p>
+            </div>
+          </header>
+          <div id="backendSpecGrid" class="backend-spec-grid"></div>
         </div>
       </section>
       <section id="requestManagerView" class="request-manager-view app-view" hidden>
@@ -1013,14 +1101,24 @@
           <p class="eyebrow">Bookmark folder</p>
           <h2 id="bookmarkFolderTitle">保存先フォルダを選ぶ</h2>
           <div id="bookmarkFolderOptions" class="bookmark-folder-options"></div>
-          <label class="field">
-            <span>新しいフォルダ名</span>
-            <input id="bookmarkFolderName" type="text" placeholder="例: 撮影参考 / 改変メモ" autocomplete="off" />
-          </label>
           <div class="request-sheet-actions">
             <button id="bookmarkFolderCancel" class="soft-button" type="button">キャンセル</button>
-            <button id="bookmarkFolderCreate" class="soft-button" type="button">フォルダを作成</button>
             <button id="bookmarkFolderSave" class="primary-button" type="button">このフォルダに追加</button>
+          </div>
+        </form>
+      </dialog>
+      <dialog id="bookmarkFolderCreateDialog" class="request-sheet-dialog" aria-labelledby="bookmarkFolderCreateTitle">
+        <form method="dialog" class="request-sheet-card bookmark-folder-create-dialog-card">
+          <p class="eyebrow">New folder</p>
+          <h2 id="bookmarkFolderCreateTitle">新しいフォルダを作成</h2>
+          <p class="bookmark-folder-create-lead">保存先一覧に追加するフォルダ名を入力してください。</p>
+          <label class="field">
+            <span>フォルダ名</span>
+            <input id="bookmarkFolderName" type="text" placeholder="例: 撮影参考 / 改変メモ" autocomplete="off" />
+            <small id="bookmarkFolderNameError" class="bookmark-folder-name-error" hidden></small>
+          </label>
+          <div class="request-sheet-actions">
+            <button id="bookmarkFolderCreate" class="primary-button" type="button">作成する</button>
           </div>
         </form>
       </dialog>
@@ -1062,34 +1160,71 @@
           <header class="mission-hero">
             <div class="mission-hero-copy">
               <p id="serviceEyebrow" class="eyebrow">Service Guide</p>
-              <h1 id="serviceHeroTitle">最初にどこを見ればよくて、何ができるかをまとめた使い方ガイド。</h1>
-              <p id="serviceHeroLead">ホーム、投稿、プロフィール、依頼、通知、設定がそれぞれ何のためにあるのかを短く整理しています。身内テスト前の案内ページとしても使える想定です。</p>
+              <h1 id="serviceHeroTitle">テストで迷わないための最短ルート。</h1>
+              <p id="serviceHeroLead">初めて触る人は、まず「見る人」「依頼する人」「クリエイター」の3つの流れだけ試せば全体像がつかめます。各画面で押す場所と確認するポイントをまとめました。</p>
             </div>
             <div class="mission-hero-panel" aria-label="Service overview">
-              <span id="servicePanelStep1">01 Explore</span>
-              <strong id="servicePanelTitle1">作品を探す</strong>
-              <span id="servicePanelStep2">02 Profile</span>
-              <strong id="servicePanelTitle2">相手を確認する</strong>
-              <span id="servicePanelStep3">03 Request</span>
-              <strong id="servicePanelTitle3">依頼と進行を管理する</strong>
+              <span id="servicePanelStep1">For viewers</span>
+              <strong id="servicePanelTitle1">作品を見つけて保存</strong>
+              <span id="servicePanelStep2">For clients</span>
+              <strong id="servicePanelTitle2">依頼内容を送信</strong>
+              <span id="servicePanelStep3">For creators</span>
+              <strong id="servicePanelTitle3">依頼を受けて進行管理</strong>
             </div>
           </header>
           <section class="mission-principles" aria-label="Quick start">
             <article>
-              <span id="servicePillarLabel1">Step 1</span>
-              <strong id="servicePillarTitle1">ホームで作品を探す</strong>
-              <p id="servicePillarBody1">カテゴリ、検索、イベントカードから気になる作品や依頼受付を見つけます。</p>
+              <span id="servicePillarLabel1">Route 1</span>
+              <strong id="servicePillarTitle1">まず投稿を1つ開く</strong>
+              <p id="servicePillarBody1">ホームでサムネイルを押して、保存、フォロー、タグ検索、プロフィール遷移ができるか確認します。</p>
             </article>
             <article>
-              <span id="servicePillarLabel2">Step 2</span>
-              <strong id="servicePillarTitle2">プロフィールで信用を見る</strong>
-              <p id="servicePillarBody2">代表作、実績、レビュー、リンク、依頼受付状況を見て相手を判断します。</p>
+              <span id="servicePillarLabel2">Route 2</span>
+              <strong id="servicePillarTitle2">依頼ページで内容を入れる</strong>
+              <p id="servicePillarBody2">依頼受付中のカードから依頼ページへ進み、金額、希望納期、依頼内容、支払い前確認まで試します。</p>
             </article>
             <article>
-              <span id="servicePillarLabel3">Step 3</span>
-              <strong id="servicePillarTitle3">依頼後は進行を追う</strong>
-              <p id="servicePillarBody3">承諾、進行中、納品、評価までを依頼管理画面とチャットで確認できます。</p>
+              <span id="servicePillarLabel3">Route 3</span>
+              <strong id="servicePillarTitle3">依頼管理で状態を進める</strong>
+              <p id="servicePillarBody3">依頼管理を開いて、未承諾、承諾済、進行中、評価待ち、完了までの見え方を確認します。</p>
             </article>
+          </section>
+          <section class="service-guide-routes" aria-labelledby="serviceTestRouteTitle">
+            <div class="section-heading-row">
+              <div>
+                <p id="serviceTestRouteEyebrow" class="eyebrow">Test routes</p>
+                <h2 id="serviceTestRouteTitle">この順番で触ると分かりやすい</h2>
+              </div>
+            </div>
+            <div class="service-route-grid">
+              <article>
+                <span>01</span>
+                <strong id="serviceRouteTitle1">見る人として試す</strong>
+                <ol>
+                  <li id="serviceRouteStep1A">ホームでピックアップイベントを見る</li>
+                  <li id="serviceRouteStep1B">投稿を開いて保存、いいね、共有を試す</li>
+                  <li id="serviceRouteStep1C">タグやプロフィールから別画面へ移動する</li>
+                </ol>
+              </article>
+              <article>
+                <span>02</span>
+                <strong id="serviceRouteTitle2">依頼者として試す</strong>
+                <ol>
+                  <li id="serviceRouteStep2A">依頼受付中の投稿から依頼ページへ進む</li>
+                  <li id="serviceRouteStep2B">金額、希望納期、依頼内容、参考資料を入れる</li>
+                  <li id="serviceRouteStep2C">支払い前確認で内容がまとまるか見る</li>
+                </ol>
+              </article>
+              <article>
+                <span>03</span>
+                <strong id="serviceRouteTitle3">クリエイターとして試す</strong>
+                <ol>
+                  <li id="serviceRouteStep3A">依頼管理で未承諾の依頼を開く</li>
+                  <li id="serviceRouteStep3B">長押し承認、作業開始、納品、評価の流れを見る</li>
+                  <li id="serviceRouteStep3C">チャット添付、ZIP警告、通報導線も確認する</li>
+                </ol>
+              </article>
+            </div>
           </section>
           <section class="mission-section mission-section-split" aria-labelledby="serviceWhatTitle">
             <div>
@@ -1477,6 +1612,25 @@
       </div>
     </dialog>
 
+    <dialog id="onboardingDialog" class="request-sheet-dialog onboarding-dialog" aria-labelledby="onboardingTitle">
+      <form method="dialog" class="request-sheet-card onboarding-card">
+        <p class="eyebrow">Quick guide</p>
+        <h2 id="onboardingTitle">まずは3分だけ、この順番で触ってください</h2>
+        <p id="onboardingLead" class="onboarding-lead">細かい機能を見る前に、見る人、依頼する人、クリエイターの基本導線だけ確認すると迷いにくいです。</p>
+        <div class="onboarding-steps">
+          <article><span>1</span><strong id="onboardingStepTitle1">投稿を開く</strong><p id="onboardingStepBody1">ホームの画像を押して、保存、フォロー、共有、タグ検索を試します。</p></article>
+          <article><span>2</span><strong id="onboardingStepTitle2">信用を見る</strong><p id="onboardingStepBody2">投稿主のプロフィールで代表作、実績、レビュー、外部リンクを見ます。</p></article>
+          <article><span>3</span><strong id="onboardingStepTitle3">依頼する</strong><p id="onboardingStepBody3">依頼受付中カードから依頼ページへ進み、金額と依頼内容を入力します。</p></article>
+          <article><span>4</span><strong id="onboardingStepTitle4">進行を追う</strong><p id="onboardingStepBody4">依頼管理で承認、作業開始、納品、評価までの状態を確認します。</p></article>
+          <article><span>5</span><strong id="onboardingStepTitle5">広げる</strong><p id="onboardingStepBody5">イベント、サークル、通知、設定を見て運用イメージを確認します。</p></article>
+        </div>
+        <div class="request-sheet-actions">
+          <button id="onboardingServiceButton" class="soft-button" type="button">詳しい試用ルートを見る</button>
+          <button id="onboardingStartButton" class="primary-button" type="submit">ホームから試す</button>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="composeDialog" class="compose-dialog" aria-labelledby="composeTitle">
       <form id="composeForm" class="compose-shell">
         <button class="close-button" id="closeCompose" type="button" aria-label="Close">
@@ -1548,12 +1702,19 @@
               <span>公開範囲</span>
               <select id="composeVisibility">
                 <option>Public</option>
-                <option>Circle only</option>
                 <option>Followers</option>
                 <option>Private draft</option>
               </select>
             </label>
-            <label id="composeCircleField" class="field" hidden>
+            <label class="field circle-post-toggle-field">
+              <span>サークル投稿</span>
+              <span class="circle-post-toggle">
+                <input id="composeCircleToggle" type="checkbox" />
+                <span class="circle-post-toggle-box" aria-hidden="true"></span>
+                <span class="circle-post-toggle-copy">サークル向けに投稿する</span>
+              </span>
+            </label>
+            <label id="composeCircleField" class="field is-reserved-hidden" aria-hidden="true">
               <span>投稿先サークル</span>
               <select id="composeCircle"></select>
             </label>
@@ -1591,7 +1752,7 @@
       <form id="eventProposalForm" class="request-sheet-card event-proposal-card">
         <p id="eventProposalDialogEyebrow" class="eyebrow">Community event</p>
         <h2 id="eventProposalDialogTitle">イベント開催を申請</h2>
-        <p id="eventProposalDialogLead">送信すると運営イベント窓口へメール通知され、承認後は主催者が好きなタイミング・期間でイベント告知や投稿を行える想定です。</p>
+        <p id="eventProposalDialogLead">運営による承認後、主催者が好きなタイミング・期間でイベント告知や投稿を行える想定です。</p>
         <div class="compose-grid event-proposal-grid">
           <label class="field wide is-required">
             <span id="eventProposalTitleLabel">イベント名</span>
@@ -1606,16 +1767,31 @@
               <small id="eventProposalImagePreviewLabel">バナー画像プレビュー</small>
             </span>
           </label>
-          <label class="field is-required">
+          <div class="field is-required event-type-field">
             <span id="eventProposalTypeLabel">イベント種別</span>
-            <select id="eventProposalTypeInput" required>
+            <select id="eventProposalTypeInput" class="event-type-native-select" required>
               <option value="showcase">作品特集</option>
               <option value="contest">コンテスト</option>
               <option value="workshop">ワークショップ</option>
               <option value="support">依頼促進キャンペーン</option>
               <option value="other">その他</option>
             </select>
-          </label>
+            <div class="event-type-select" data-event-type-control>
+              <button id="eventProposalTypeButton" class="event-type-select-button" type="button" aria-haspopup="listbox" aria-expanded="false">
+                <span id="eventProposalTypeButtonText">作品特集</span>
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="m7 10 5 5 5-5" />
+                </svg>
+              </button>
+              <div id="eventProposalTypeMenu" class="event-type-select-menu" role="listbox" hidden>
+                <button type="button" role="option" data-event-type-option="showcase">作品特集</button>
+                <button type="button" role="option" data-event-type-option="contest">コンテスト</button>
+                <button type="button" role="option" data-event-type-option="workshop">ワークショップ</button>
+                <button type="button" role="option" data-event-type-option="support">依頼促進キャンペーン</button>
+                <button type="button" role="option" data-event-type-option="other">その他</button>
+              </div>
+            </div>
+          </div>
           <label id="eventProposalOtherTypeField" class="field wide event-proposal-other-field" hidden>
             <span id="eventProposalOtherTypeLabel">その他の種別</span>
             <input id="eventProposalOtherTypeInput" type="text" placeholder="例: アバター発売記念 / 同好会企画" autocomplete="off" maxlength="40" />
@@ -1749,6 +1925,13 @@
               <select id="requestPostRetake">
                 <option value="yes" selected>対応する</option>
                 <option value="no">対応しない</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>通常チャット</span>
+              <select id="requestPostChat">
+                <option value="enabled" selected>対応する</option>
+                <option value="limited">必要最低限のみ</option>
               </select>
             </label>
             <label class="field">

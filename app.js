@@ -462,6 +462,32 @@ const notifications = [
   { id: 2, type: "save", unread: true, title: "あなたの投稿が保存されました", body: "World walk archive が新しく保存されました。", time: "18分前", target: { kind: "post", postId: 103 } },
   { id: 3, type: "follow", unread: false, title: "Lumi Photoがあなたをフォローしました", body: "プロフィールと過去投稿を確認できます。", time: "1時間前", target: { kind: "profile", creator: "Lumi Photo" } },
   { id: 4, type: "message", unread: false, title: "依頼前相談に返信があります", body: "料金、納期、必要素材について返信が届いています。", time: "昨日", target: { kind: "request", creator: "Rin Works", postId: 7 } },
+  { id: 5, type: "important", unread: true, title: "イベント申請が承認待ちです", body: "夏のフォトリレー特集の開催許可申請を運営が確認中です。", time: "今日", target: { kind: "events" } },
+  { id: 6, type: "request", unread: false, title: "納品確認の期限が近づいています", body: "受け取り評価待ちの依頼があります。内容確認をお願いします。", time: "2日前", target: { kind: "manager", itemId: 7 } },
+];
+
+const adminQueues = {
+  events: [
+    { id: "event-01", title: "夏のフォトリレー特集", owner: "Lumi Photo", status: "審査待ち", detail: "写真投稿を集めるユーザー発案イベント。バナー画像あり、サークル参加条件なし。", action: "開催許可を付与" },
+    { id: "event-02", title: "ワールド制作ミニジャム", owner: "Orbit Build", status: "確認中", detail: "ワールド制作ラボ参加者向け。開催期間は承認後に主催者が設定予定。", action: "条件付き承認" },
+  ],
+  circles: [
+    { id: "circle-01", title: "アバター改変研究会", owner: "Mika Alterworks", status: "参加申請 7件", detail: "承認制サークル。申請者の投稿履歴と外部リンクを確認して承認する想定。", action: "申請一覧を見る" },
+    { id: "circle-02", title: "依頼テンプレ研究所", owner: "Rin Works", status: "参加申請 3件", detail: "依頼受付文や料金表を共有するため、過去取引の有無を確認。", action: "一括確認" },
+  ],
+  reports: [
+    { id: "report-01", title: "アバターデータ要求の疑い", owner: "Aoi Kisaragi", status: "高優先", detail: "依頼チャットで販売アセットの同梱を求めた可能性。添付ZIP警告ログあり。", action: "対応記録を開く" },
+    { id: "report-02", title: "不当なレビュー", owner: "Noa Frame", status: "確認中", detail: "納品後レビューが取引内容と矛盾しているという通報。チャット履歴と納品物を確認。", action: "レビューを保留" },
+  ],
+};
+
+const backendSpecCards = [
+  { title: "User / Profile", body: "表示名、アイコン、バナー、自己紹介、外部リンク、公開範囲、トラストレベル、通知/ミュート/ブロック状態。", fields: ["users", "profiles", "profile_links", "trust_scores"] },
+  { title: "Post / Feed", body: "通常投稿、依頼受付投稿、サークル限定投稿。画像複数枚、カテゴリ、タグ、Avatar/Worldメタ、保存/いいね/共有数。", fields: ["posts", "post_images", "post_tags", "reactions"] },
+  { title: "Request", body: "依頼受付ページ、依頼申請、見積もり、支払い前確認、チャット方針、リテイク可否、納品、評価。", fields: ["commission_posts", "requests", "deliveries", "reviews"] },
+  { title: "Chat / Attachment", body: "初回申請と納品完了時の必須連絡、通常チャットの利用可否、画像/ZIP添付、ZIP権利確認ログ。", fields: ["request_messages", "attachments", "zip_confirmations"] },
+  { title: "Event / Circle", body: "公式/ユーザー発案イベント、開催許可、イベント参加条件、サークル参加状態、承認制、限定投稿。", fields: ["events", "event_applications", "circles", "circle_members"] },
+  { title: "Notification / Admin", body: "未読、重要、依頼関連の通知分類。運営側のイベント承認、サークル申請、通報対応キュー。", fields: ["notifications", "admin_reviews", "reports"] },
 ];
 
 const requestManagerItems = [
@@ -508,6 +534,8 @@ const requestManagerView = document.querySelector("#requestManagerView");
 const requestManagerDetailView = document.querySelector("#requestManagerDetailView");
 const settingsView = document.querySelector("#settingsView");
 const serviceView = document.querySelector("#serviceView");
+const adminView = document.querySelector("#adminView");
+const backendSpecView = document.querySelector("#backendSpecView");
 const eventDetailView = document.querySelector("#eventDetailView");
 const eventsView = document.querySelector("#eventsView");
 const circleView = document.querySelector("#circleView");
@@ -563,12 +591,16 @@ const accountSwitcherList = document.querySelector("#accountSwitcherList");
 const accountAddButton = document.querySelector("#accountAddButton");
 const accountMenuProfile = document.querySelector("#accountMenuProfile");
 const accountMenuService = document.querySelector("#accountMenuService");
+const accountMenuAdmin = document.querySelector("#accountMenuAdmin");
+const accountMenuSpecs = document.querySelector("#accountMenuSpecs");
 const accountMenuSettings = document.querySelector("#accountMenuSettings");
 const accountMenuLogout = document.querySelector("#accountMenuLogout");
 const backToFeed = document.querySelector("#backToFeed");
 const backFromRequest = document.querySelector("#backFromRequest");
 const backFromNotifications = document.querySelector("#backFromNotifications");
 const backFromSettings = document.querySelector("#backFromSettings");
+const backFromAdmin = document.querySelector("#backFromAdmin");
+const backFromSpecs = document.querySelector("#backFromSpecs");
 const backFromRequestManager = document.querySelector("#backFromRequestManager");
 const backFromRequestDetail = document.querySelector("#backFromRequestDetail");
 const backFromService = document.querySelector("#backFromService");
@@ -624,6 +656,10 @@ const requestPaymentMethod = document.querySelector("#requestPaymentMethod");
 const requestAmountInput = document.querySelector("#requestAmountInput");
 const requestAmountHelp = document.querySelector("#requestAmountHelp");
 const requestAmountError = document.querySelector("#requestAmountError");
+const requestChatPreference = document.querySelector("#requestChatPreference");
+const requestDesiredDate = document.querySelector("#requestDesiredDate");
+const requestBriefInput = document.querySelector("#requestBriefInput");
+const requestReferenceInput = document.querySelector("#requestReferenceInput");
 const requestAgreement = document.querySelector("#requestAgreement");
 const requestConfirmButton = document.querySelector("#requestConfirmButton");
 const requestCreatorProfileButton = document.querySelector("#requestCreatorProfileButton");
@@ -632,6 +668,15 @@ const requestMoreSection = document.querySelector("#requestMoreSection");
 const requestMoreGrid = document.querySelector("#requestMoreGrid");
 const notificationsList = document.querySelector("#notificationsList");
 const markNotificationsRead = document.querySelector("#markNotificationsRead");
+const notificationFilterTabs = document.querySelector(".notification-filter-tabs");
+const adminQueueList = document.querySelector("#adminQueueList");
+const adminEventCount = document.querySelector("#adminEventCount");
+const adminCircleCount = document.querySelector("#adminCircleCount");
+const adminReportCount = document.querySelector("#adminReportCount");
+const backendSpecGrid = document.querySelector("#backendSpecGrid");
+const onboardingDialog = document.querySelector("#onboardingDialog");
+const onboardingStartButton = document.querySelector("#onboardingStartButton");
+const onboardingServiceButton = document.querySelector("#onboardingServiceButton");
 const settingsLanguage = document.querySelector("#settingsLanguage");
 const settingsThemeMode = document.querySelector("#settingsThemeMode");
 const settingsReducedMotion = document.querySelector("#settingsReducedMotion");
@@ -755,6 +800,9 @@ const eventProposalImageInput = document.querySelector("#eventProposalImageInput
 const eventProposalImagePreview = document.querySelector("#eventProposalImagePreview");
 const eventProposalImagePreviewImg = document.querySelector("#eventProposalImagePreviewImg");
 const eventProposalTypeInput = document.querySelector("#eventProposalTypeInput");
+const eventProposalTypeButton = document.querySelector("#eventProposalTypeButton");
+const eventProposalTypeButtonText = document.querySelector("#eventProposalTypeButtonText");
+const eventProposalTypeMenu = document.querySelector("#eventProposalTypeMenu");
 const eventProposalOtherTypeField = document.querySelector("#eventProposalOtherTypeField");
 const eventProposalOtherTypeInput = document.querySelector("#eventProposalOtherTypeInput");
 const eventProposalOrganizerInput = document.querySelector("#eventProposalOrganizerInput");
@@ -784,8 +832,10 @@ const circleFilterInputs = [...document.querySelectorAll("[data-circle-filter]")
 const circlePostsSection = document.querySelector(".circle-posts-section");
 const circleListSection = document.querySelector(".circle-list-section");
 const bookmarkFolderDialog = document.querySelector("#bookmarkFolderDialog");
+const bookmarkFolderCreateDialog = document.querySelector("#bookmarkFolderCreateDialog");
 const bookmarkFolderOptions = document.querySelector("#bookmarkFolderOptions");
 const bookmarkFolderName = document.querySelector("#bookmarkFolderName");
+const bookmarkFolderNameError = document.querySelector("#bookmarkFolderNameError");
 const bookmarkFolderCancel = document.querySelector("#bookmarkFolderCancel");
 const bookmarkFolderCreate = document.querySelector("#bookmarkFolderCreate");
 const bookmarkFolderSave = document.querySelector("#bookmarkFolderSave");
@@ -824,6 +874,7 @@ const composePreviewCard = document.querySelector("#composePreviewCard");
 const composePostTitle = document.querySelector("#composePostTitle");
 const composeCategory = document.querySelector("#composeCategory");
 const composeVisibility = document.querySelector("#composeVisibility");
+const composeCircleToggle = document.querySelector("#composeCircleToggle");
 const composeCircleField = document.querySelector("#composeCircleField");
 const composeCircle = document.querySelector("#composeCircle");
 const composeAvatar = document.querySelector("#composeAvatar");
@@ -848,6 +899,7 @@ const requestPostPrice = document.querySelector("#requestPostPrice");
 const requestPostDelivery = document.querySelector("#requestPostDelivery");
 const requestPostCapacity = document.querySelector("#requestPostCapacity");
 const requestPostRetake = document.querySelector("#requestPostRetake");
+const requestPostChat = document.querySelector("#requestPostChat");
 const requestPostAvatar = document.querySelector("#requestPostAvatar");
 const requestPostWorld = document.querySelector("#requestPostWorld");
 const requestPostTags = document.querySelector("#requestPostTags");
@@ -913,10 +965,13 @@ let profilePostQuery = "";
 let activeProfileArchiveTab = "posts";
 let activeBookmarkFolderId = null;
 let pendingBookmarkPinId = null;
+let pendingBookmarkFolderSelectionId = "";
 let notificationReturnHash = "";
 let settingsReturnHash = "";
 let requestManagerReturnHash = "";
 let serviceReturnHash = "";
+let adminReturnHash = "";
+let specsReturnHash = "";
 let profileReturnHash = "";
 let requestPageReturnHash = "";
 let activeRequestManagerItemId = null;
@@ -926,6 +981,8 @@ let eventsReturnHash = "";
 let activeRequestManagerState = "pending";
 let pendingRequestSort = "deadline";
 let activeEventsFilter = "all";
+let activeNotificationFilter = "all";
+let activeAdminTab = "events";
 let pendingEventProposalImage = "";
 let activeRequestReportContext = { mode: "manager", target: null };
 let activeRequestReviewContext = { mode: "client", itemId: null };
@@ -970,8 +1027,26 @@ savedPins = new Set(bookmarkFolders.flatMap((folder) => folder.pinIds || []));
 let profileArchivePinnedHeight = 0;
 const composeDraftStorageKey = "vrc-sns-compose-draft";
 const requestComposeDraftStorageKey = "vrc-sns-request-compose-draft";
+const onboardingStorageKey = "vrc-sns-onboarding-seen";
 const savedSearchTabsStorageKey = "vrc-sns-saved-search-tabs";
 let savedSearchTabItems = loadSavedSearchTabItems();
+const sheetCancelButtonIds = [
+  "zipSafetyCancel",
+  "requestCheckoutCancel",
+  "requestApprovalCancel",
+  "requestReviewCancel",
+  "accountActionCancel",
+  "accountDeleteCancel",
+  "requestRejectCancel",
+  "requestReportCancel",
+  "requestDeliveryCancel",
+  "bookmarkFolderCancel",
+  "savedSearchCancel",
+  "eventProposalCancel",
+  "composeCloseCancel",
+  "cancelEditProfile",
+  "composeDraftListClose"
+];
 let myProfile = {
   displayName: "You",
   role: "VRChat creator",
@@ -1034,6 +1109,7 @@ const requestTemplatePresets = {
     delivery: "平均 10日",
     capacity: "受付 2 / 5",
     retake: "yes",
+    chat: "enabled",
     tags: "#依頼受付 #avatar #booth",
     description: "衣装導入、表情調整、軽いギミック追加、撮影向けの見た目調整まで対応する依頼受付です。",
     requirements: "使用アセットの購入状況、アバター名、改変イメージ、希望納期、参考画像を依頼時に共有してください。"
@@ -1045,6 +1121,7 @@ const requestTemplatePresets = {
     delivery: "平均 3日",
     capacity: "受付 3 / 6",
     retake: "yes",
+    chat: "enabled",
     tags: "#依頼受付 #photo #world",
     description: "ワールド提案、ポーズ相談、SNS用トリミングまで含めた撮影依頼を受け付けます。",
     requirements: "希望ワールド、人数、使いたい用途、参考写真、納期を依頼時に共有してください。"
@@ -1056,6 +1133,7 @@ const requestTemplatePresets = {
     delivery: "平均 30日",
     capacity: "受付 1 / 2",
     retake: "yes",
+    chat: "limited",
     tags: "#依頼受付 #world #event",
     description: "撮影、展示、イベント用途の軽量ワールド制作を受け付けます。用途に応じて導線と最適化も調整します。",
     requirements: "用途、想定人数、必要な機能、納期、参考イメージ、既存アセットの有無を依頼時に共有してください。"
@@ -1397,7 +1475,7 @@ const translations = {
     eventProposalSectionLead: "申請が承認されるとイベント開催許可が付与され、主催者が好きなタイミングと期間で告知・投稿できる想定です。",
     eventProposalStatusTitle: "イベント申請の審査状況",
     eventProposalDialogTitle: "イベント開催を申請",
-    eventProposalDialogLead: "送信すると運営イベント窓口へメール通知され、承認後は主催者が好きなタイミング・期間でイベント告知や投稿を行える想定です。",
+    eventProposalDialogLead: "運営による承認後、主催者が好きなタイミング・期間でイベント告知や投稿を行える想定です。",
     eventProposalSubmit: "申請を送信",
     eventProposalSuccess: "運営へイベント申請を送信しました",
     eventOrganizer: "主催者",
@@ -1607,7 +1685,7 @@ const translations = {
     eventProposalSectionLead: "Once approved, the organizer receives event hosting permission and can choose the timing, duration, announcements, and posts.",
     eventProposalStatusTitle: "Application review status",
     eventProposalDialogTitle: "Apply to host event",
-    eventProposalDialogLead: "Submitting this form sends an email to the operations event inbox. After approval, the organizer can run announcements and posts at their preferred timing and duration.",
+    eventProposalDialogLead: "After operations approval, the organizer can run event announcements and posts at their preferred timing and duration.",
     eventProposalSubmit: "Send application",
     eventProposalSuccess: "Your event application was sent to operations",
     eventOrganizer: "Organizer",
@@ -1817,7 +1895,7 @@ const translations = {
     eventProposalSectionLead: "승인되면 이벤트 개최 권한이 부여되고, 주최자가 원하는 시기와 기간에 공지와 게시를 진행할 수 있습니다.",
     eventProposalStatusTitle: "이벤트 신청 심사 현황",
     eventProposalDialogTitle: "이벤트 개최 신청",
-    eventProposalDialogLead: "제출하면 운영 이벤트 메일함으로 알림이 가고, 승인 후 주최자가 원하는 시기와 기간에 이벤트 공지와 게시를 진행할 수 있습니다.",
+    eventProposalDialogLead: "운영 승인 후 주최자가 원하는 시기와 기간에 이벤트 공지와 게시를 진행할 수 있습니다.",
     eventProposalSubmit: "신청 보내기",
     eventProposalSuccess: "운영에 이벤트 신청을 보냈습니다",
     eventOrganizer: "주최자",
@@ -2587,6 +2665,125 @@ function renderEventProposalList() {
   }).join("");
 }
 
+function closeEventProposalTypeMenu() {
+  if (!eventProposalTypeMenu || !eventProposalTypeButton) return;
+  eventProposalTypeMenu.hidden = true;
+  eventProposalTypeButton.setAttribute("aria-expanded", "false");
+}
+
+function updateEventProposalTypeCustomControl() {
+  if (!eventProposalTypeInput) return;
+  const value = eventProposalTypeInput.value || "showcase";
+  if (eventProposalTypeButtonText) eventProposalTypeButtonText.textContent = eventProposalTypeLabel(value);
+  eventProposalTypeMenu?.querySelectorAll("[data-event-type-option]").forEach((button) => {
+    const selected = button.dataset.eventTypeOption === value;
+    button.classList.toggle("is-selected", selected);
+    button.setAttribute("aria-selected", String(selected));
+    button.textContent = eventProposalTypeLabel(button.dataset.eventTypeOption);
+  });
+}
+
+function setEventProposalType(value, { focusOther = true } = {}) {
+  if (!eventProposalTypeInput) return;
+  eventProposalTypeInput.value = value || "showcase";
+  updateEventProposalTypeCustomControl();
+  syncEventProposalOtherTypeField();
+  updateEventProposalSubmitState();
+  if (focusOther && eventProposalTypeInput.value === "other") {
+    window.setTimeout(() => eventProposalOtherTypeInput?.focus(), 180);
+  }
+}
+
+const postComposeCustomSelects = [
+  composeCategory,
+  composeVisibility,
+  composeCircle,
+  requestPostCategory,
+  requestPostVisibility,
+  requestPostRetake,
+  requestPostChat
+].filter(Boolean);
+
+function optionLabel(option) {
+  return option?.textContent?.trim() || option?.value || "";
+}
+
+function customSelectControlFor(select) {
+  return select?.nextElementSibling?.matches?.("[data-custom-select-control]")
+    ? select.nextElementSibling
+    : null;
+}
+
+function closeCustomSelect(select) {
+  const control = customSelectControlFor(select);
+  const button = control?.querySelector("[data-custom-select-button]");
+  const menu = control?.querySelector("[data-custom-select-menu]");
+  if (!control || !button || !menu) return;
+  menu.hidden = true;
+  button.setAttribute("aria-expanded", "false");
+}
+
+function openCustomSelect(select) {
+  const control = customSelectControlFor(select);
+  const button = control?.querySelector("[data-custom-select-button]");
+  const menu = control?.querySelector("[data-custom-select-menu]");
+  if (!control || !button || !menu) return;
+  closeAllCustomSelects(control);
+  refreshCustomSelect(select);
+  menu.hidden = false;
+  button.setAttribute("aria-expanded", "true");
+}
+
+function closeAllCustomSelects(exceptControl = null) {
+  postComposeCustomSelects.forEach((select) => {
+    const control = customSelectControlFor(select);
+    if (control && control !== exceptControl) closeCustomSelect(select);
+  });
+}
+
+function refreshCustomSelect(select) {
+  const control = customSelectControlFor(select);
+  if (!select || !control) return;
+  const selectedOption = select.selectedOptions?.[0] || select.options?.[0];
+  const text = control.querySelector("[data-custom-select-text]");
+  const menu = control.querySelector("[data-custom-select-menu]");
+  if (text) text.textContent = optionLabel(selectedOption);
+  if (!menu) return;
+  menu.innerHTML = [...select.options].map((option) => `
+    <button class="${option.selected ? "is-selected" : ""}" type="button" role="option" aria-selected="${String(option.selected)}" data-custom-select-option="${escapeHtml(option.value)}">
+      ${escapeHtml(optionLabel(option))}
+    </button>
+  `).join("");
+}
+
+function enhanceCustomSelect(select) {
+  if (!select || customSelectControlFor(select)) return;
+  select.classList.add("event-type-native-select");
+  const control = document.createElement("div");
+  control.className = "event-type-select custom-compose-select";
+  control.dataset.customSelectControl = select.id || "select";
+  control.innerHTML = `
+    <button class="event-type-select-button" type="button" aria-haspopup="listbox" aria-expanded="false" data-custom-select-button>
+      <span data-custom-select-text></span>
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="m7 10 5 5 5-5" />
+      </svg>
+    </button>
+    <div class="event-type-select-menu" role="listbox" hidden data-custom-select-menu></div>
+  `;
+  select.insertAdjacentElement("afterend", control);
+  refreshCustomSelect(select);
+}
+
+function refreshPostComposeCustomSelects() {
+  postComposeCustomSelects.forEach(refreshCustomSelect);
+}
+
+function enhancePostComposeCustomSelects() {
+  postComposeCustomSelects.forEach(enhanceCustomSelect);
+  refreshPostComposeCustomSelects();
+}
+
 function eventSearchText(event) {
   const requirementCircle = circleById(event.circleRequirement);
   return [
@@ -2645,6 +2842,8 @@ function renderEventsPage() {
   eventsView.hidden = true;
   circleView.hidden = true;
   missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
   eventsView.hidden = false;
   renderEventsList();
   scrollPageTop();
@@ -2968,6 +3167,8 @@ function renderEventDetailPage(index) {
   settingsView.hidden = true;
   serviceView.hidden = true;
   missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
   eventsView.hidden = true;
   circleView.hidden = true;
   eventDetailView.hidden = false;
@@ -3051,7 +3252,7 @@ function openEventProposalDialog() {
   if (eventProposalImagePreview) eventProposalImagePreview.hidden = true;
   if (eventProposalImagePreviewImg) eventProposalImagePreviewImg.removeAttribute("src");
   if (eventProposalTypeInput) eventProposalTypeInput.value = "showcase";
-  syncEventProposalOtherTypeField();
+  setEventProposalType("showcase", { focusOther: false });
   if (eventProposalOrganizerInput) eventProposalOrganizerInput.value = myProfile?.displayName || "You";
   if (eventProposalContactInput) eventProposalContactInput.value = "you@example.com";
   updateEventProposalSubmitState();
@@ -3061,6 +3262,7 @@ function openEventProposalDialog() {
 
 function closeEventProposalDialog() {
   if (!eventProposalDialog) return;
+  closeEventProposalTypeMenu();
   closeModalElement(eventProposalDialog);
 }
 
@@ -3216,6 +3418,15 @@ function applyLanguage({ rerender = false } = {}) {
   setAttr(likedPostsButton, "title", "likedPostsShortcut");
   setAttr(bookmarkFoldersButton, "aria-label", "bookmarkFoldersShortcut");
   setAttr(bookmarkFoldersButton, "title", "bookmarkFoldersShortcut");
+  setText("#bookmarkFolderTitle", currentLanguage === "en" ? "Choose a folder" : currentLanguage === "ko" ? "저장할 폴더 선택" : "保存先フォルダを選ぶ");
+  setText("#bookmarkFolderSave", currentLanguage === "en" ? "Add to this folder" : currentLanguage === "ko" ? "이 폴더에 추가" : "このフォルダに追加");
+  setText("#bookmarkFolderCreateTitle", currentLanguage === "en" ? "Create new folder" : currentLanguage === "ko" ? "새 폴더 만들기" : "新しいフォルダを作成");
+  setText(".bookmark-folder-create-lead", currentLanguage === "en" ? "Enter the folder name to add it to the destination list." : currentLanguage === "ko" ? "저장 위치 목록에 추가할 폴더 이름을 입력해 주세요." : "保存先一覧に追加するフォルダ名を入力してください。");
+  setText("#bookmarkFolderCreateDialog .field span", currentLanguage === "en" ? "Folder name" : currentLanguage === "ko" ? "폴더명" : "フォルダ名");
+  setText("#bookmarkFolderCreate", currentLanguage === "en" ? "Create" : currentLanguage === "ko" ? "만들기" : "作成する");
+  if (bookmarkFolderName) {
+    bookmarkFolderName.placeholder = currentLanguage === "en" ? "Example: Photo refs / Avatar notes" : currentLanguage === "ko" ? "예: 촬영 참고 / 개변 메모" : "例: 撮影参考 / 改変メモ";
+  }
   setAttr(circlePageButton, "aria-label", "circles");
   setAttr(circlePageButton, "title", "circles");
   if (eventPageButton) {
@@ -3230,6 +3441,8 @@ function applyLanguage({ rerender = false } = {}) {
   setAttr(avatarButton, "aria-label", "account");
   setText("#accountMenuProfile span", "myPage");
   if (accountMenuService) accountMenuService.querySelector("span").textContent = currentLanguage === "en" ? "Service guide" : currentLanguage === "ko" ? "서비스 설명" : "サービス説明";
+  if (accountMenuAdmin) accountMenuAdmin.querySelector("span").textContent = currentLanguage === "en" ? "Operations" : currentLanguage === "ko" ? "운영 관리" : "運営管理";
+  if (accountMenuSpecs) accountMenuSpecs.querySelector("span").textContent = currentLanguage === "en" ? "Screen specs" : currentLanguage === "ko" ? "화면 사양" : "画面仕様";
   setText("#accountMenuSettings span", "appSettings");
   setText("#accountMenuLogout span", "logout");
   const mobileMenuLabels = {
@@ -3264,17 +3477,51 @@ function applyLanguage({ rerender = false } = {}) {
   renderEventCarousel();
   scheduleEventAutoplay();
   setText("#serviceEyebrow", currentLanguage === "en" ? "Service Guide" : currentLanguage === "ko" ? "서비스 설명" : "サービス説明");
-  setText("#serviceHeroTitle", currentLanguage === "en" ? "A simple guide to what to open first and how to use the mock." : currentLanguage === "ko" ? "무엇을 먼저 열어야 하는지와 주요 사용 흐름을 정리한 가이드입니다." : "最初にどこを見ればよくて、何ができるかをまとめた使い方ガイド。");
-  setText("#serviceHeroLead", currentLanguage === "en" ? "This page explains what each area is for: home, post details, profiles, requests, notifications, and settings. It is meant to work as a quick onboarding page before testing." : currentLanguage === "ko" ? "홈, 게시물 상세, 프로필, 의뢰, 알림, 설정이 각각 무엇을 위한 화면인지 짧게 정리합니다. 테스트 전에 보는 온보딩 페이지 역할입니다." : "ホーム、投稿、プロフィール、依頼、通知、設定がそれぞれ何のためにあるのかを短く整理しています。身内テスト前の案内ページとしても使える想定です。");
-  setText("#servicePanelTitle1", currentLanguage === "en" ? "Discover works" : currentLanguage === "ko" ? "작품을 찾는다" : "作品を探す");
-  setText("#servicePanelTitle2", currentLanguage === "en" ? "Check the creator" : currentLanguage === "ko" ? "상대를 확인한다" : "相手を確認する");
-  setText("#servicePanelTitle3", currentLanguage === "en" ? "Manage requests" : currentLanguage === "ko" ? "의뢰와 진행을 관리한다" : "依頼と進行を管理する");
-  setText("#servicePillarTitle1", currentLanguage === "en" ? "Start from the home feed" : currentLanguage === "ko" ? "홈에서 작품을 찾기" : "ホームで作品を探す");
-  setText("#servicePillarBody1", currentLanguage === "en" ? "Use categories, search, and event cards to find interesting works and commission posts." : currentLanguage === "ko" ? "카테고리, 검색, 이벤트 카드에서 흥미로운 작품과 의뢰 접수 게시물을 찾습니다." : "カテゴリ、検索、イベントカードから気になる作品や依頼受付を見つけます。");
-  setText("#servicePillarTitle2", currentLanguage === "en" ? "Use profiles as trust pages" : currentLanguage === "ko" ? "프로필로 신뢰를 확인하기" : "プロフィールで信用を見る");
-  setText("#servicePillarBody2", currentLanguage === "en" ? "Check featured work, completed jobs, reviews, external links, and current commission status before deciding." : currentLanguage === "ko" ? "대표작, 완료 실적, 리뷰, 외부 링크, 현재 의뢰 상태를 확인하고 판단합니다." : "代表作、実績、レビュー、リンク、依頼受付状況を見て相手を判断します。");
-  setText("#servicePillarTitle3", currentLanguage === "en" ? "Track progress after sending a request" : currentLanguage === "ko" ? "의뢰 후 진행 추적" : "依頼後は進行を追う");
-  setText("#servicePillarBody3", currentLanguage === "en" ? "Follow acceptance, work in progress, delivery, and reviews from the request manager and detail chat view." : currentLanguage === "ko" ? "의뢰 관리와 상세 채팅 화면에서 승인, 진행중, 납품, 평가 흐름을 확인합니다." : "承諾、進行中、納品、評価までを依頼管理画面とチャットで確認できます。");
+  setText("#serviceHeroTitle", currentLanguage === "en" ? "The shortest route for testing without getting lost." : currentLanguage === "ko" ? "테스트할 때 헤매지 않는 최단 루트." : "テストで迷わないための最短ルート。");
+  setText("#serviceHeroLead", currentLanguage === "en" ? "First-time testers only need to try three flows: viewer, client, and creator. This guide shows what to press and what to check on each screen." : currentLanguage === "ko" ? "처음 쓰는 사람은 보는 사람, 의뢰하는 사람, 크리에이터의 세 흐름만 먼저 확인하면 전체상이 잡힙니다. 각 화면에서 무엇을 누르고 무엇을 보면 되는지 정리했습니다." : "初めて触る人は、まず「見る人」「依頼する人」「クリエイター」の3つの流れだけ試せば全体像がつかめます。各画面で押す場所と確認するポイントをまとめました。");
+  setText("#servicePanelStep1", currentLanguage === "en" ? "For viewers" : currentLanguage === "ko" ? "보는 사람" : "For viewers");
+  setText("#servicePanelStep2", currentLanguage === "en" ? "For clients" : currentLanguage === "ko" ? "의뢰자" : "For clients");
+  setText("#servicePanelStep3", currentLanguage === "en" ? "For creators" : currentLanguage === "ko" ? "크리에이터" : "For creators");
+  setText("#servicePanelTitle1", currentLanguage === "en" ? "Find and save works" : currentLanguage === "ko" ? "작품 찾고 저장" : "作品を見つけて保存");
+  setText("#servicePanelTitle2", currentLanguage === "en" ? "Send a request" : currentLanguage === "ko" ? "의뢰 내용 보내기" : "依頼内容を送信");
+  setText("#servicePanelTitle3", currentLanguage === "en" ? "Accept and manage work" : currentLanguage === "ko" ? "의뢰 수락과 진행 관리" : "依頼を受けて進行管理");
+  setText("#servicePillarLabel1", currentLanguage === "en" ? "Route 1" : currentLanguage === "ko" ? "루트 1" : "Route 1");
+  setText("#servicePillarLabel2", currentLanguage === "en" ? "Route 2" : currentLanguage === "ko" ? "루트 2" : "Route 2");
+  setText("#servicePillarLabel3", currentLanguage === "en" ? "Route 3" : currentLanguage === "ko" ? "루트 3" : "Route 3");
+  setText("#servicePillarTitle1", currentLanguage === "en" ? "Open one post first" : currentLanguage === "ko" ? "먼저 게시물 하나 열기" : "まず投稿を1つ開く");
+  setText("#servicePillarBody1", currentLanguage === "en" ? "Open a thumbnail on home and check save, follow, share, tag search, and profile navigation." : currentLanguage === "ko" ? "홈에서 썸네일을 눌러 저장, 팔로우, 공유, 태그 검색, 프로필 이동을 확인합니다." : "ホームでサムネイルを押して、保存、フォロー、共有、タグ検索、プロフィール遷移ができるか確認します。");
+  setText("#servicePillarTitle2", currentLanguage === "en" ? "Fill in a request page" : currentLanguage === "ko" ? "의뢰 페이지 입력하기" : "依頼ページで内容を入れる");
+  setText("#servicePillarBody2", currentLanguage === "en" ? "Move from an open commission card to the request page, then try amount, desired date, brief, and pre-payment review." : currentLanguage === "ko" ? "의뢰 접수 카드에서 의뢰 페이지로 이동해 금액, 희망 납기, 의뢰 내용, 결제 전 확인을 테스트합니다." : "依頼受付中のカードから依頼ページへ進み、金額、希望納期、依頼内容、支払い前確認まで試します。");
+  setText("#servicePillarTitle3", currentLanguage === "en" ? "Advance request status" : currentLanguage === "ko" ? "의뢰 상태 진행하기" : "依頼管理で状態を進める");
+  setText("#servicePillarBody3", currentLanguage === "en" ? "Open request manager and check pending, accepted, in progress, review waiting, and completed states." : currentLanguage === "ko" ? "의뢰 관리에서 미승낙, 승낙, 진행 중, 평가 대기, 완료 상태를 확인합니다." : "依頼管理を開いて、未承諾、承諾済、進行中、評価待ち、完了までの見え方を確認します。");
+  setText("#serviceTestRouteEyebrow", currentLanguage === "en" ? "Test routes" : currentLanguage === "ko" ? "테스트 루트" : "Test routes");
+  setText("#serviceTestRouteTitle", currentLanguage === "en" ? "Try it in this order" : currentLanguage === "ko" ? "이 순서로 만져보면 이해하기 쉽습니다" : "この順番で触ると分かりやすい");
+  setText("#serviceRouteTitle1", currentLanguage === "en" ? "Test as a viewer" : currentLanguage === "ko" ? "보는 사람으로 테스트" : "見る人として試す");
+  setText("#serviceRouteStep1A", currentLanguage === "en" ? "Check the picked event banner on home" : currentLanguage === "ko" ? "홈에서 픽업 이벤트를 확인" : "ホームでピックアップイベントを見る");
+  setText("#serviceRouteStep1B", currentLanguage === "en" ? "Open a post and try save, like, and share" : currentLanguage === "ko" ? "게시물을 열어 저장, 좋아요, 공유를 테스트" : "投稿を開いて保存、いいね、共有を試す");
+  setText("#serviceRouteStep1C", currentLanguage === "en" ? "Move through tags and profile links" : currentLanguage === "ko" ? "태그와 프로필에서 다른 화면으로 이동" : "タグやプロフィールから別画面へ移動する");
+  setText("#serviceRouteTitle2", currentLanguage === "en" ? "Test as a client" : currentLanguage === "ko" ? "의뢰자로 테스트" : "依頼者として試す");
+  setText("#serviceRouteStep2A", currentLanguage === "en" ? "Open a request page from an open commission post" : currentLanguage === "ko" ? "의뢰 접수 게시물에서 의뢰 페이지로 이동" : "依頼受付中の投稿から依頼ページへ進む");
+  setText("#serviceRouteStep2B", currentLanguage === "en" ? "Enter amount, desired date, brief, and references" : currentLanguage === "ko" ? "금액, 희망 납기, 의뢰 내용, 참고 자료 입력" : "金額、希望納期、依頼内容、参考資料を入れる");
+  setText("#serviceRouteStep2C", currentLanguage === "en" ? "Confirm that the pre-payment review summarizes it" : currentLanguage === "ko" ? "결제 전 확인 화면에 내용이 정리되는지 확인" : "支払い前確認で内容がまとまるか見る");
+  setText("#serviceRouteTitle3", currentLanguage === "en" ? "Test as a creator" : currentLanguage === "ko" ? "크리에이터로 테스트" : "クリエイターとして試す");
+  setText("#serviceRouteStep3A", currentLanguage === "en" ? "Open a pending request in request manager" : currentLanguage === "ko" ? "의뢰 관리에서 미승낙 의뢰를 열기" : "依頼管理で未承諾の依頼を開く");
+  setText("#serviceRouteStep3B", currentLanguage === "en" ? "Check hold-to-accept, start work, delivery, and review" : currentLanguage === "ko" ? "길게 눌러 승인, 작업 시작, 납품, 평가 흐름 확인" : "長押し承認、作業開始、納品、評価の流れを見る");
+  setText("#serviceRouteStep3C", currentLanguage === "en" ? "Also test chat attachments, ZIP warning, and report flow" : currentLanguage === "ko" ? "채팅 첨부, ZIP 경고, 신고 동선도 확인" : "チャット添付、ZIP警告、通報導線も確認する");
+  setText("#onboardingTitle", currentLanguage === "en" ? "Spend three minutes here first" : currentLanguage === "ko" ? "먼저 3분만 이 순서로 만져보세요" : "まずは3分だけ、この順番で触ってください");
+  setText("#onboardingLead", currentLanguage === "en" ? "Before checking every feature, try the basic viewer, client, and creator flows. It makes the mock much easier to understand." : currentLanguage === "ko" ? "세부 기능을 보기 전에 보는 사람, 의뢰자, 크리에이터의 기본 동선만 확인하면 이해하기 쉽습니다." : "細かい機能を見る前に、見る人、依頼する人、クリエイターの基本導線だけ確認すると迷いにくいです。");
+  setText("#onboardingStepTitle1", currentLanguage === "en" ? "Open a post" : currentLanguage === "ko" ? "게시물 열기" : "投稿を開く");
+  setText("#onboardingStepBody1", currentLanguage === "en" ? "Tap an image on home and try save, follow, share, and tag search." : currentLanguage === "ko" ? "홈의 이미지를 눌러 저장, 팔로우, 공유, 태그 검색을 테스트합니다." : "ホームの画像を押して、保存、フォロー、共有、タグ検索を試します。");
+  setText("#onboardingStepTitle2", currentLanguage === "en" ? "Check trust" : currentLanguage === "ko" ? "신뢰 확인" : "信用を見る");
+  setText("#onboardingStepBody2", currentLanguage === "en" ? "Open the creator profile and check featured work, proof, reviews, and links." : currentLanguage === "ko" ? "작성자 프로필에서 대표작, 실적, 리뷰, 외부 링크를 확인합니다." : "投稿主のプロフィールで代表作、実績、レビュー、外部リンクを見ます。");
+  setText("#onboardingStepTitle3", currentLanguage === "en" ? "Send a request" : currentLanguage === "ko" ? "의뢰하기" : "依頼する");
+  setText("#onboardingStepBody3", currentLanguage === "en" ? "Move from an open commission card to the request page and enter amount and brief." : currentLanguage === "ko" ? "의뢰 접수 카드에서 의뢰 페이지로 이동해 금액과 내용을 입력합니다." : "依頼受付中カードから依頼ページへ進み、金額と依頼内容を入力します。");
+  setText("#onboardingStepTitle4", currentLanguage === "en" ? "Track progress" : currentLanguage === "ko" ? "진행 확인" : "進行を追う");
+  setText("#onboardingStepBody4", currentLanguage === "en" ? "Use request manager to check acceptance, start work, delivery, and review states." : currentLanguage === "ko" ? "의뢰 관리에서 승인, 작업 시작, 납품, 평가 상태를 확인합니다." : "依頼管理で承認、作業開始、納品、評価までの状態を確認します。");
+  setText("#onboardingStepTitle5", currentLanguage === "en" ? "Explore more" : currentLanguage === "ko" ? "확장 기능 보기" : "広げる");
+  setText("#onboardingStepBody5", currentLanguage === "en" ? "Check events, circles, notifications, and settings to imagine real operation." : currentLanguage === "ko" ? "이벤트, 서클, 알림, 설정을 보고 운영 이미지를 확인합니다." : "イベント、サークル、通知、設定を見て運用イメージを確認します。");
+  setText("#onboardingServiceButton", currentLanguage === "en" ? "See detailed routes" : currentLanguage === "ko" ? "자세한 테스트 루트 보기" : "詳しい試用ルートを見る");
+  setText("#onboardingStartButton", currentLanguage === "en" ? "Start from home" : currentLanguage === "ko" ? "홈에서 시작" : "ホームから試す");
   setText("#serviceWhatEyebrow", currentLanguage === "en" ? "Page guide" : currentLanguage === "ko" ? "화면 안내" : "Page guide");
   setText("#serviceWhatTitle", currentLanguage === "en" ? "What each screen is for" : currentLanguage === "ko" ? "어디에 무엇이 있는지" : "どこに何があるか");
   setText("#serviceWhatBody1", currentLanguage === "en" ? "Home: browse posts, search, switch categories, and check live event banners." : currentLanguage === "ko" ? "홈: 게시물 목록, 검색, 카테고리, 진행 중 이벤트를 확인합니다." : "ホーム: 投稿一覧、検索、カテゴリ、開催中イベントの確認。");
@@ -3356,6 +3603,7 @@ function applyLanguage({ rerender = false } = {}) {
     [...eventProposalTypeInput.options].forEach((option) => {
       option.textContent = eventProposalTypeLabel(option.value);
     });
+    updateEventProposalTypeCustomControl();
   }
   if (eventProposalTitleInput) eventProposalTitleInput.placeholder = currentLanguage === "en" ? "Example: Avatar styling showcase week" : currentLanguage === "ko" ? "예: Avatar styling showcase week" : "例: Avatar styling showcase week";
   if (eventProposalOtherTypeInput) eventProposalOtherTypeInput.placeholder = currentLanguage === "en" ? "Example: Avatar release / Club event" : currentLanguage === "ko" ? "예: 아바타 출시 / 동호회 기획" : "例: アバター発売記念 / 同好会企画";
@@ -3406,12 +3654,16 @@ function applyLanguage({ rerender = false } = {}) {
   setText("#createButton", "post");
   setText("#emptyState p", "noResultsTitle");
   setText("#emptyState span", "noResultsBody");
-  document.querySelectorAll("#backToFeed, #backFromRequest, #backFromNotifications, #backFromSettings, #backFromRequestManager, #backFromRequestDetail, #backFromEventDetail, #backFromEvents, #backFromMission").forEach((button) => {
+  document.querySelectorAll("#backToFeed, #backFromRequest, #backFromNotifications, #backFromSettings, #backFromRequestManager, #backFromRequestDetail, #backFromEventDetail, #backFromEvents, #backFromMission, #backFromAdmin, #backFromSpecs").forEach((button) => {
     const svg = button.querySelector("svg")?.outerHTML || "";
     button.innerHTML = `${svg}${t("back")}`;
   });
   setText(".notifications-heading h1", "notifications");
   setText("#markNotificationsRead", "markAllRead");
+  setText("[data-notification-filter='all']", "All");
+  setText("[data-notification-filter='unread']", currentLanguage === "en" ? "Unread" : currentLanguage === "ko" ? "읽지 않음" : "未読");
+  setText("[data-notification-filter='request']", currentLanguage === "en" ? "Requests" : currentLanguage === "ko" ? "의뢰" : "依頼");
+  setText("[data-notification-filter='important']", currentLanguage === "en" ? "Important" : currentLanguage === "ko" ? "중요" : "重要");
   updateSettingsPanelLanguage();
   normalizeProfileEditorText();
 
@@ -3636,6 +3888,82 @@ function closeModalElement(modal) {
   modal.removeAttribute("open");
   modal.classList.remove("is-fallback-open");
   unlockPageScrollIfIdle();
+}
+
+function closeSheetDialog(modal) {
+  if (!modal) return;
+  if (modal === composeCloseConfirmDialog) {
+    closeComposeCloseConfirmDialog();
+    return;
+  }
+  if (modal === bookmarkFolderDialog) {
+    closeBookmarkFolderDialog();
+    return;
+  }
+  if (modal === bookmarkFolderCreateDialog) {
+    closeBookmarkFolderCreateDialog();
+    return;
+  }
+  if (modal === savedSearchDialog) {
+    closeSavedSearchDialog();
+    return;
+  }
+  if (modal === eventProposalDialog) {
+    closeEventProposalDialog();
+    return;
+  }
+  if (modal === requestReviewDialog) {
+    closeRequestReviewDialog();
+    return;
+  }
+  if (modal === requestReportDialog) {
+    closeRequestReportDialog();
+    return;
+  }
+  if (modal === requestDeliveryDialog) {
+    closeRequestDeliveryDialog();
+    return;
+  }
+  if (modal === accountActionDialog) {
+    closeAccountActionDialog();
+    return;
+  }
+  if (modal === accountDeleteDialog) {
+    closeAccountDeleteDialog();
+    return;
+  }
+  if (modal === editProfileDialog) {
+    closeEditProfileDialog();
+    return;
+  }
+  if (modal === zipSafetyDialog) {
+    cancelZipAttachments();
+    return;
+  }
+  closeModalElement(modal);
+}
+
+function enhanceSheetCloseButtons() {
+  sheetCancelButtonIds.forEach((id) => {
+    document.querySelector(`#${id}`)?.classList.add("sheet-cancel-button");
+  });
+  document.querySelectorAll("dialog").forEach((modal) => {
+    const card = modal.querySelector(".request-sheet-card, .zip-safety-card");
+    if (!card || card.querySelector("[data-sheet-close]")) return;
+    const button = document.createElement("button");
+    button.className = "close-button sheet-close-button";
+    button.type = "button";
+    button.dataset.sheetClose = "true";
+    button.setAttribute("aria-label", "Close");
+    button.innerHTML = `
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M18 6 6 18" />
+        <path d="m6 6 12 12" />
+      </svg>
+    `;
+    button.addEventListener("click", () => closeSheetDialog(modal));
+    card.prepend(button);
+  });
 }
 
 function lockPageScroll() {
@@ -3947,6 +4275,8 @@ function renderCirclesPage(circleId = null, options = {}) {
   eventsView.hidden = true;
   circleView.hidden = true;
   missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
   circleView.hidden = false;
   if (circleDetailPanel) {
     circleDetailPanel.hidden = !circle;
@@ -4340,11 +4670,13 @@ function showFeed() {
   eventsView.hidden = true;
   circleView.hidden = true;
   missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
   profileView.hidden = true;
   profileView.classList.remove("is-mine");
   feedView.hidden = false;
   updateTopbarSearchVisibility();
-  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#event/") || location.hash.startsWith("#circle/") || location.hash === "#circles" || location.hash === "#events" || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#me") {
+  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#event/") || location.hash.startsWith("#circle/") || location.hash === "#circles" || location.hash === "#events" || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#admin" || location.hash === "#backend-spec" || location.hash === "#me") {
     history.pushState("", document.title, location.pathname + location.search);
   }
   renderPins();
@@ -4398,6 +4730,14 @@ function routeFromHash() {
     renderMissionPage();
     return;
   }
+  if (location.hash === "#admin") {
+    renderAdminPage();
+    return;
+  }
+  if (location.hash === "#backend-spec") {
+    renderBackendSpecPage();
+    return;
+  }
   if (location.hash === "#notifications") {
     renderNotificationsPage();
     return;
@@ -4449,6 +4789,8 @@ function openProfile(slug) {
   eventsView.hidden = true;
   circleView.hidden = true;
   missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
   location.hash = `profile/${slug}`;
   renderProfile(profileName);
 }
@@ -4479,6 +4821,8 @@ function openMyProfile() {
   eventsView.hidden = true;
   circleView.hidden = true;
   missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
   location.hash = "me";
   renderProfile("You");
 }
@@ -4624,6 +4968,8 @@ function renderRequestPage(creator, postId = null) {
   eventsView.hidden = true;
   circleView.hidden = true;
   missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
   requestView.hidden = false;
 
   requestPageImage.src = post.image;
@@ -4651,6 +4997,7 @@ function renderRequestPage(creator, postId = null) {
     `<div><strong>${currentLanguage === "en" ? "Max slots" : currentLanguage === "ko" ? "접수 한도" : "受付上限"}</strong><span>${maxCount}${currentLanguage === "en" ? "" : "件"}</span></div>`,
     `<div><strong>${currentLanguage === "en" ? "Open slots" : currentLanguage === "ko" ? "현재 접수" : "現在受付中"}</strong><span>${currentCount}${currentLanguage === "en" ? "" : "件"}</span></div>`,
     `<div><strong>${currentLanguage === "en" ? "Retake" : currentLanguage === "ko" ? "리테이크" : "リテイク"}</strong><span>${requestRetakeLabel(post)}</span></div>`,
+    `<div><strong>${currentLanguage === "en" ? "Chat" : currentLanguage === "ko" ? "채팅" : "通常チャット"}</strong><span>${requestChatLabel(post)}</span></div>`,
   ].join("");
   requestServiceList.innerHTML = requestServiceLines(post).map((line) => `<span>${line}</span>`).join("");
   requestSampleGallery.innerHTML = sampleMediaForRequest(post, requestPosts).map((item) => `
@@ -4667,7 +5014,11 @@ function renderRequestPage(creator, postId = null) {
   requestAmountInput.value = String(minAmount);
   requestAmountInput.min = String(minAmount);
   requestAmountInput.placeholder = formatYen(minAmount);
+  if (requestDesiredDate) requestDesiredDate.value = "";
+  if (requestBriefInput) requestBriefInput.value = "";
+  if (requestReferenceInput) requestReferenceInput.value = "";
   requestAgreement.checked = false;
+  if (requestChatPreference) requestChatPreference.value = requestChatMode(post) === "limited" ? "minimal" : "use";
   updateRequestAmountState();
   updateRequestAuthView();
   renderOtherRequestCards(post.creator, post.id);
@@ -4697,11 +5048,19 @@ function openRequestCheckoutDialog() {
   const amount = Number(requestAmountInput.value || 0);
   const minAmount = Number(requestAmountInput.min || 0);
   const finalAmount = amount >= minAmount ? amount : minAmount;
+  const desiredDate = requestDesiredDate?.value || "未指定";
+  const requestBrief = requestBriefInput?.value.trim() || "依頼時に具体的な内容を入力する想定";
+  const requestReference = requestReferenceInput?.value.trim() || "未指定";
   requestCheckoutSummary.innerHTML = [
     `<div><strong>依頼タイトル</strong><span>${post.request.title}</span></div>`,
     `<div><strong>投稿名</strong><span>${post.title}</span></div>`,
     `<div><strong>支払い方法</strong><span>${requestPaymentMethod.value}</span></div>`,
     `<div><strong>金額</strong><span>${formatYen(finalAmount)}</span></div>`,
+    `<div><strong>希望納期</strong><span>${escapeHtml(desiredDate)}</span></div>`,
+    `<div><strong>依頼内容</strong><span>${escapeHtml(requestBrief)}</span></div>`,
+    `<div><strong>参考資料</strong><span>${escapeHtml(requestReference)}</span></div>`,
+    `<div><strong>通常チャット</strong><span>${requestChatLabel(post)} / ${requesterChatPreferenceLabel(requestChatPreference?.value || "use")}</span></div>`,
+    `<div><strong>必須連絡</strong><span>初回申請時と納品完了時</span></div>`,
   ].join("");
   requestCheckoutAgreement.checked = false;
   requestCheckoutSubmit.disabled = true;
@@ -4741,22 +5100,35 @@ function localizedNotification(item) {
       2: ["あなたの投稿が保存されました", "World walk archive が新しく保存されました。", "18分前"],
       3: ["Lumi Photoがあなたをフォローしました", "プロフィールと過去投稿を確認できます。", "1時間前"],
       4: ["依頼前相談に返信があります", "料金、納期、必要素材について返信が届いています。", "昨日"],
+      5: ["イベント申請が承認待ちです", "夏のフォトリレー特集の開催許可申請を運営が確認中です。", "今日"],
+      6: ["納品確認の期限が近づいています", "受け取り評価待ちの依頼があります。内容確認をお願いします。", "2日前"],
     },
     en: {
       1: ["Mika Alterworks updated commissions", "Slots and delivery time for avatar edit requests were updated.", "5 min ago"],
       2: ["Your post was saved", "World walk archive was saved by someone.", "18 min ago"],
       3: ["Lumi Photo followed you", "You can check their profile and past posts.", "1 hour ago"],
       4: ["You have a reply on a pre-request chat", "A reply about price, delivery, and required assets arrived.", "Yesterday"],
+      5: ["Event application is pending", "Operations is reviewing the Summer Photo Relay event permission request.", "Today"],
+      6: ["Delivery confirmation is due soon", "A request is waiting for receipt confirmation and review.", "2 days ago"],
     },
     ko: {
       1: ["Mika Alterworks가 의뢰 접수를 업데이트했습니다", "아바타 수정 의뢰의 접수 슬롯과 납기가 업데이트되었습니다.", "5분 전"],
       2: ["내 게시물이 저장되었습니다", "World walk archive가 새로 저장되었습니다.", "18분 전"],
       3: ["Lumi Photo가 나를 팔로우했습니다", "프로필과 과거 게시물을 확인할 수 있습니다.", "1시간 전"],
       4: ["의뢰 전 상담에 답장이 있습니다", "금액, 납기, 필요한 소재에 대한 답장이 도착했습니다.", "어제"],
+      5: ["이벤트 신청이 승인 대기 중입니다", "운영이 여름 포토 릴레이 특집 개최 허가 신청을 확인 중입니다.", "오늘"],
+      6: ["납품 확인 기한이 가까워졌습니다", "수령 확인과 평가를 기다리는 의뢰가 있습니다.", "2일 전"],
     },
   };
   const translated = copy[currentLanguage]?.[item.id] || copy.ja[item.id];
   return translated ? { ...item, title: translated[0], body: translated[1], time: translated[2] } : item;
+}
+
+function notificationMatchesFilter(item) {
+  if (activeNotificationFilter === "unread") return item.unread;
+  if (activeNotificationFilter === "request") return item.type === "request" || item.type === "message";
+  if (activeNotificationFilter === "important") return item.type === "important";
+  return true;
 }
 
 function renderNotificationsPage() {
@@ -4772,8 +5144,14 @@ function renderNotificationsPage() {
   eventsView.hidden = true;
   circleView.hidden = true;
   missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
   notificationsView.hidden = false;
-  notificationsList.innerHTML = notifications.map((source) => {
+  notificationFilterTabs?.querySelectorAll("[data-notification-filter]").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.notificationFilter === activeNotificationFilter);
+  });
+  const filteredNotifications = notifications.filter(notificationMatchesFilter);
+  notificationsList.innerHTML = filteredNotifications.length ? filteredNotifications.map((source) => {
     const item = localizedNotification(source);
     return `
     <button class="notification-item ${item.unread ? "is-unread" : ""}" type="button" data-notification-id="${item.id}">
@@ -4785,7 +5163,7 @@ function renderNotificationsPage() {
       <time>${item.time}</time>
     </button>
   `;
-  }).join("");
+  }).join("") : `<div class="notification-empty"><strong>通知はありません</strong><span>条件に合う通知はまだありません。</span></div>`;
   updateNotificationBadge();
   scrollPageTop();
 }
@@ -4802,6 +5180,8 @@ function renderSettingsPage() {
   eventsView.hidden = true;
   circleView.hidden = true;
   missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
   settingsView.hidden = false;
   serviceView.hidden = true;
   scrollPageTop();
@@ -4819,6 +5199,135 @@ function openSettingsPage() {
   }
   location.hash = "settings";
   renderSettingsPage();
+}
+
+function adminActionTone(tabName) {
+  if (tabName === "reports") return "danger";
+  if (tabName === "circles") return "circle";
+  return "event";
+}
+
+function renderAdminPage() {
+  activeProfile = null;
+  feedView.hidden = true;
+  profileView.hidden = true;
+  requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
+  eventsView.hidden = true;
+  circleView.hidden = true;
+  missionView.hidden = true;
+  backendSpecView.hidden = true;
+  adminView.hidden = false;
+
+  if (adminEventCount) adminEventCount.textContent = String(adminQueues.events.length);
+  if (adminCircleCount) adminCircleCount.textContent = String(adminQueues.circles.length);
+  if (adminReportCount) adminReportCount.textContent = String(adminQueues.reports.length);
+  document.querySelectorAll("[data-admin-tab]").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.adminTab === activeAdminTab);
+  });
+
+  const items = adminQueues[activeAdminTab] || [];
+  adminQueueList.innerHTML = items.map((item) => `
+    <article class="admin-queue-card is-${adminActionTone(activeAdminTab)}">
+      <div class="admin-queue-main">
+        <span>${escapeHtml(item.status)}</span>
+        <strong>${escapeHtml(item.title)}</strong>
+        <p>${escapeHtml(item.detail)}</p>
+      </div>
+      <div class="admin-queue-side">
+        <small>${escapeHtml(item.owner)}</small>
+        <button class="${activeAdminTab === "reports" ? "danger-solid-button" : "primary-button"}" type="button" data-admin-action="${escapeHtml(item.id)}">${escapeHtml(item.action)}</button>
+      </div>
+    </article>
+  `).join("");
+  scrollPageTop();
+}
+
+function openAdminPage() {
+  closeAccountMenu();
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
+  if (modalIsOpen(composeDialog)) closeComposeDialog();
+  if (modalIsOpen(requestComposeDialog)) closeRequestComposeDialog();
+  if (location.hash && location.hash !== "#admin") {
+    adminReturnHash = location.hash;
+  } else if (!location.hash) {
+    adminReturnHash = "";
+  }
+  location.hash = "admin";
+  renderAdminPage();
+}
+
+function returnFromAdmin() {
+  const targetHash = adminReturnHash;
+  adminReturnHash = "";
+  if (!targetHash) {
+    showFeed();
+    return;
+  }
+  history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
+  routeFromHash();
+}
+
+function renderBackendSpecPage() {
+  activeProfile = null;
+  feedView.hidden = true;
+  profileView.hidden = true;
+  requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
+  eventsView.hidden = true;
+  circleView.hidden = true;
+  missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = false;
+
+  backendSpecGrid.innerHTML = backendSpecCards.map((card) => `
+    <article class="backend-spec-card">
+      <div>
+        <p class="eyebrow">${escapeHtml(card.fields[0] || "schema")}</p>
+        <h2>${escapeHtml(card.title)}</h2>
+        <p>${escapeHtml(card.body)}</p>
+      </div>
+      <div class="backend-spec-fields">
+        ${card.fields.map((field) => `<span>${escapeHtml(field)}</span>`).join("")}
+      </div>
+    </article>
+  `).join("");
+  scrollPageTop();
+}
+
+function openBackendSpecPage() {
+  closeAccountMenu();
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
+  if (modalIsOpen(composeDialog)) closeComposeDialog();
+  if (modalIsOpen(requestComposeDialog)) closeRequestComposeDialog();
+  if (location.hash && location.hash !== "#backend-spec") {
+    specsReturnHash = location.hash;
+  } else if (!location.hash) {
+    specsReturnHash = "";
+  }
+  location.hash = "backend-spec";
+  renderBackendSpecPage();
+}
+
+function returnFromSpecs() {
+  const targetHash = specsReturnHash;
+  specsReturnHash = "";
+  if (!targetHash) {
+    showFeed();
+    return;
+  }
+  history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
+  routeFromHash();
 }
 
 function formatDeadlineLabel(deadline) {
@@ -4928,6 +5437,23 @@ function requestRetakeLabel(postOrRequest) {
     : (currentLanguage === "en" ? "No retakes" : currentLanguage === "ko" ? "리테이크 미대응" : "リテイク対応なし");
 }
 
+function requestChatMode(postOrRequest) {
+  const request = postOrRequest?.request || postOrRequest;
+  return request?.chat || "enabled";
+}
+
+function requestChatLabel(postOrRequest) {
+  return requestChatMode(postOrRequest) === "limited"
+    ? (currentLanguage === "en" ? "Minimal chat" : currentLanguage === "ko" ? "최소 채팅" : "通常チャットは必要最低限")
+    : (currentLanguage === "en" ? "Chat supported" : currentLanguage === "ko" ? "채팅 대응" : "通常チャット対応あり");
+}
+
+function requesterChatPreferenceLabel(value) {
+  return value === "minimal"
+    ? (currentLanguage === "en" ? "Prefer minimal chat" : currentLanguage === "ko" ? "채팅은 최소화 희망" : "通常チャットはできれば使わない")
+    : (currentLanguage === "en" ? "Chat when needed" : currentLanguage === "ko" ? "필요 시 채팅" : "必要に応じて通常チャットを使う");
+}
+
 function requestServiceLines(post) {
   const base = [
     `サービス内容: ${post.request?.title || post.category}`,
@@ -4936,15 +5462,19 @@ function requestServiceLines(post) {
     requestAllowsRetake(post)
       ? "リテイク: 事前合意した範囲で対応"
       : "リテイク: 対応なし",
+    requestChatMode(post) === "limited"
+      ? "通常チャット: 必要最低限のみ"
+      : "通常チャット: 必要に応じて対応",
+    "必須連絡: 初回申請時と納品完了時",
   ];
   if (post.category === "Photo") {
     base.push("納品形式: JPG / PNG");
-    base.push("依頼後はチャットで参考画像と要望を共有");
+    base.push(requestChatMode(post) === "limited" ? "参考画像と要望は申請時にまとめて共有" : "依頼後はチャットで参考画像と要望を共有");
   } else if (post.category === "Avatar") {
     base.push("データ受け渡し: ZIP / 画像添付対応");
     base.push("承認時に初回案内を自動送信する想定");
   } else {
-    base.push("やり取りは依頼チャットで継続");
+    base.push(requestChatMode(post) === "limited" ? "進行中の確認は節目ごとの連絡中心" : "やり取りは依頼チャットで継続");
     if (requestAllowsRetake(post)) base.push("必要に応じて納品後リテイク対応");
   }
   return base;
@@ -5141,12 +5671,32 @@ function updateBookmarkFolderOptionSelection() {
   });
 }
 
-function openBookmarkFolderDialog(pinId) {
-  pendingBookmarkPinId = pinId;
-  if (!bookmarkFolderDialog || !bookmarkFolderOptions) return;
+function bookmarkFolderCreateCardMarkup() {
+  const title = currentLanguage === "en" ? "New folder" : currentLanguage === "ko" ? "새 폴더" : "新しいフォルダ";
+  const body = currentLanguage === "en"
+    ? "Create a new destination folder."
+    : currentLanguage === "ko"
+      ? "새 저장 폴더를 만듭니다."
+      : "新しい保存先フォルダを作成します。";
+  return `
+    <button class="bookmark-folder-create-card" type="button" data-bookmark-folder-create-card="true">
+      <span class="bookmark-folder-create-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 5v14" />
+          <path d="M5 12h14" />
+        </svg>
+      </span>
+      <strong>${title}</strong>
+      <small>${body}</small>
+    </button>
+  `;
+}
+
+function renderBookmarkFolderOptions(selectedId = bookmarkFolders[0]?.id || "") {
+  if (!bookmarkFolderOptions) return;
   const options = bookmarkFolders.map((folder, index) => `
-    <label class="bookmark-folder-option-card${index === 0 ? " is-selected" : ""}">
-      <input class="visually-hidden" type="radio" name="bookmarkFolderSelect" value="${folder.id}" ${index === 0 ? "checked" : ""} />
+    <label class="bookmark-folder-option-card${folder.id === selectedId ? " is-selected" : ""}">
+      <input class="visually-hidden" type="radio" name="bookmarkFolderSelect" value="${folder.id}" ${folder.id === selectedId ? "checked" : ""} />
       <span class="bookmark-folder-card bookmark-folder-select-card">
         ${bookmarkFolderCoversMarkup(folder)}
         <strong>${folder.name}</strong>
@@ -5155,30 +5705,127 @@ function openBookmarkFolderDialog(pinId) {
       </span>
     </label>
   `).join("");
-  bookmarkFolderOptions.innerHTML = options || `<p class="bookmark-folder-empty">${currentLanguage === "en" ? "Create your first folder" : currentLanguage === "ko" ? "첫 폴더를 만들어보세요" : "最初のフォルダを作成してください"}</p>`;
-  bookmarkFolderName.value = "";
+  bookmarkFolderOptions.innerHTML = `${options}${bookmarkFolderCreateCardMarkup()}`;
+}
+
+function openBookmarkFolderDialog(pinId) {
+  pendingBookmarkPinId = pinId;
+  if (!bookmarkFolderDialog || !bookmarkFolderOptions) return;
+  renderBookmarkFolderOptions();
   showModalElement(bookmarkFolderDialog);
 }
 
 function closeBookmarkFolderDialog() {
+  if (bookmarkFolderCreateDialog && modalIsOpen(bookmarkFolderCreateDialog)) closeModalElement(bookmarkFolderCreateDialog);
   closeModalElement(bookmarkFolderDialog);
   pendingBookmarkPinId = null;
+  pendingBookmarkFolderSelectionId = "";
 }
 
 function selectedBookmarkFolderId() {
   return bookmarkFolderDialog?.querySelector('input[name="bookmarkFolderSelect"]:checked')?.value || bookmarkFolders[0]?.id || null;
 }
 
+function openBookmarkFolderCreateDialog() {
+  if (!bookmarkFolderCreateDialog || !bookmarkFolderName) return;
+  pendingBookmarkFolderSelectionId = selectedBookmarkFolderId() || pendingBookmarkFolderSelectionId || "";
+  if (bookmarkFolderDialog && modalIsOpen(bookmarkFolderDialog)) {
+    closeModalElement(bookmarkFolderDialog);
+  }
+  bookmarkFolderName.value = "";
+  clearBookmarkFolderNameError();
+  updateBookmarkFolderCreateState();
+  showModalElement(bookmarkFolderCreateDialog);
+  window.setTimeout(() => bookmarkFolderName?.focus(), 80);
+}
+
+function closeBookmarkFolderCreateDialog({ restoreFolderPicker = true } = {}) {
+  if (bookmarkFolderCreateDialog && modalIsOpen(bookmarkFolderCreateDialog)) {
+    closeModalElement(bookmarkFolderCreateDialog);
+  }
+  clearBookmarkFolderNameError();
+  if (!restoreFolderPicker || !pendingBookmarkPinId || !bookmarkFolderDialog) return;
+  renderBookmarkFolderOptions(pendingBookmarkFolderSelectionId || bookmarkFolders[0]?.id || "");
+  showModalElement(bookmarkFolderDialog);
+}
+
+function normalizedBookmarkFolderName(value) {
+  return String(value || "").trim().replace(/\s+/g, " ").toLocaleLowerCase();
+}
+
+function bookmarkFolderNameExists(name) {
+  const normalized = normalizedBookmarkFolderName(name);
+  return bookmarkFolders.some((folder) => normalizedBookmarkFolderName(folder.name) === normalized);
+}
+
+function bookmarkFolderNameErrorMessage(type) {
+  if (type === "duplicate") {
+    if (currentLanguage === "en") return "A folder with this name already exists.";
+    if (currentLanguage === "ko") return "같은 이름의 폴더가 이미 있습니다.";
+    return "同じ名前のフォルダがあります。";
+  }
+  if (currentLanguage === "en") return "Enter a folder name.";
+  if (currentLanguage === "ko") return "폴더명을 입력해 주세요.";
+  return "フォルダ名を入力してください。";
+}
+
+function showBookmarkFolderNameError(type) {
+  bookmarkFolderName?.classList.add("is-invalid");
+  if (!bookmarkFolderNameError) return;
+  bookmarkFolderNameError.textContent = bookmarkFolderNameErrorMessage(type);
+  bookmarkFolderNameError.hidden = false;
+}
+
+function clearBookmarkFolderNameError() {
+  bookmarkFolderName?.classList.remove("is-invalid");
+  if (!bookmarkFolderNameError) return;
+  bookmarkFolderNameError.hidden = true;
+  bookmarkFolderNameError.textContent = "";
+}
+
+function bookmarkFolderCreateValidation({ showDuplicate = false } = {}) {
+  const name = bookmarkFolderName?.value.trim() || "";
+  if (!name) return { valid: false, type: "empty" };
+  if (bookmarkFolderNameExists(name)) {
+    if (showDuplicate) showBookmarkFolderNameError("duplicate");
+    return { valid: false, type: "duplicate" };
+  }
+  return { valid: true, type: "" };
+}
+
+function updateBookmarkFolderCreateState() {
+  const validation = bookmarkFolderCreateValidation({ showDuplicate: true });
+  if (validation.valid || validation.type === "empty") clearBookmarkFolderNameError();
+  if (bookmarkFolderCreate) bookmarkFolderCreate.disabled = !validation.valid;
+  return validation.valid;
+}
+
 function createBookmarkFolder() {
   const name = bookmarkFolderName?.value.trim();
-  if (!name) return null;
+  if (!name) {
+    bookmarkFolderName?.focus();
+    showBookmarkFolderNameError("empty");
+    return null;
+  }
+  if (bookmarkFolderNameExists(name)) {
+    bookmarkFolderName?.focus();
+    showBookmarkFolderNameError("duplicate");
+    if (bookmarkFolderCreate) bookmarkFolderCreate.disabled = true;
+    return null;
+  }
   const id = `folder-${Date.now()}`;
-  bookmarkFolders.unshift({ id, name, pinIds: [] });
-  openBookmarkFolderDialog(pendingBookmarkPinId);
+  clearBookmarkFolderNameError();
+  bookmarkFolders.push({ id, name, pinIds: [] });
+  pendingBookmarkFolderSelectionId = id;
+  closeBookmarkFolderCreateDialog({ restoreFolderPicker: false });
+  renderBookmarkFolderOptions(id);
   const radio = bookmarkFolderDialog?.querySelector(`input[value="${id}"]`);
   if (radio) radio.checked = true;
   updateBookmarkFolderOptionSelection();
   bookmarkFolderName.value = "";
+  if (bookmarkFolderDialog && !modalIsOpen(bookmarkFolderDialog)) {
+    showModalElement(bookmarkFolderDialog);
+  }
   return id;
 }
 
@@ -5186,8 +5833,8 @@ function savePinToSelectedBookmarkFolder() {
   if (!pendingBookmarkPinId) return;
   let folderId = selectedBookmarkFolderId();
   if (!folderId) {
-    folderId = createBookmarkFolder();
-    if (!folderId) return;
+    openBookmarkFolderCreateDialog();
+    return;
   }
   bookmarkFolders = bookmarkFolders.map((folder) => {
     if (folder.id !== folderId) return folder;
@@ -5209,6 +5856,7 @@ function persistComposeDraft() {
     title: composePostTitle.value,
     category: composeCategory.value,
     visibility: composeVisibility?.value || "Public",
+    circlePost: Boolean(composeCircleToggle?.checked),
     circleId: composeCircle?.value || "",
     avatar: composeAvatar.value,
     world: composeWorld.value,
@@ -5227,7 +5875,9 @@ function restoreComposeDraft() {
     const draft = JSON.parse(raw);
     composePostTitle.value = draft.title || "";
     composeCategory.value = draft.category || "Photo";
-    if (composeVisibility) composeVisibility.value = draft.visibility || "Public";
+    const draftCirclePost = Boolean(draft.circlePost || draft.visibility === "Circle only");
+    if (composeVisibility) composeVisibility.value = draft.visibility === "Circle only" ? "Public" : (draft.visibility || "Public");
+    if (composeCircleToggle) composeCircleToggle.checked = draftCirclePost;
     if (composeCircle) composeCircle.value = draft.circleId || joinedCircleIds.values().next().value || "";
     composeAvatar.value = draft.avatar || "";
     composeWorld.value = draft.world || "";
@@ -5237,6 +5887,7 @@ function restoreComposeDraft() {
     composeImageIndex = 0;
     renderComposeImage();
     updateComposeCircleVisibility();
+    refreshPostComposeCustomSelects();
   } catch {}
 }
 
@@ -5265,11 +5916,13 @@ function hideFloatingPostActions() {
   if (!floatingPostActions) return;
   floatingPostActions.hidden = true;
   floatingPostActions.classList.remove("is-visible");
+  floatingPostDock?.classList.remove("is-menu-open");
 }
 
 function showFloatingPostActions() {
   if (!floatingPostActions) return;
   floatingPostActions.hidden = false;
+  floatingPostDock?.classList.add("is-menu-open");
   window.requestAnimationFrame(() => {
     floatingPostActions.classList.add("is-visible");
   });
@@ -5317,6 +5970,7 @@ function persistRequestComposeDraft() {
     delivery: requestPostDelivery.value,
     capacity: requestPostCapacity.value,
     retake: requestPostRetake?.value || "yes",
+    chat: requestPostChat?.value || "enabled",
     avatar: requestPostAvatar.value,
     world: requestPostWorld.value,
     tags: requestPostTags.value,
@@ -5339,6 +5993,7 @@ function restoreRequestComposeDraft() {
     requestPostDelivery.value = draft.delivery || "";
     requestPostCapacity.value = draft.capacity || "";
     if (requestPostRetake) requestPostRetake.value = draft.retake || "yes";
+    if (requestPostChat) requestPostChat.value = draft.chat || "enabled";
     requestPostAvatar.value = draft.avatar || "";
     requestPostWorld.value = draft.world || "";
     requestPostTags.value = draft.tags || "";
@@ -5350,6 +6005,7 @@ function restoreRequestComposeDraft() {
       requestComposePreviewImage.hidden = false;
       requestComposePreviewImage.closest(".upload-drop")?.classList.add("has-image");
     }
+    refreshPostComposeCustomSelects();
   } catch {}
 }
 
@@ -5366,9 +6022,11 @@ function applyRequestTemplate(kind) {
   requestPostDelivery.value = preset.delivery;
   requestPostCapacity.value = preset.capacity;
   if (requestPostRetake) requestPostRetake.value = preset.retake || "yes";
+  if (requestPostChat) requestPostChat.value = preset.chat || "enabled";
   requestPostTags.value = preset.tags;
   requestPostDescription.value = preset.description;
   requestPostRequirements.value = preset.requirements;
+  refreshPostComposeCustomSelects();
   updateRequestComposePreview();
   persistRequestComposeDraft();
 }
@@ -5689,6 +6347,8 @@ function renderRequestManagerPage() {
   eventsView.hidden = true;
   circleView.hidden = true;
   missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
   requestManagerView.hidden = false;
   renderRequestManagerList();
   scrollPageTop();
@@ -5983,6 +6643,8 @@ function renderRequestManagerDetailPage(itemId) {
   eventsView.hidden = true;
   circleView.hidden = true;
   missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
   requestManagerDetailView.hidden = false;
 
   requestDetailImage.src = item.thumbnail;
@@ -6084,6 +6746,8 @@ function renderServicePage() {
   requestManagerDetailView.hidden = true;
   settingsView.hidden = true;
   missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
   eventDetailView.hidden = true;
   eventsView.hidden = true;
   circleView.hidden = true;
@@ -6192,7 +6856,37 @@ function openNotificationTarget(item) {
   if (item.target.kind === "post") {
     showFeed();
     openPin(item.target.postId);
+    return;
   }
+  if (item.target.kind === "events") {
+    openEventsPage();
+    return;
+  }
+  if (item.target.kind === "manager") {
+    openRequestManagerDetail(Number(item.target.itemId));
+  }
+}
+
+function markOnboardingSeen() {
+  try {
+    localStorage.setItem(onboardingStorageKey, "1");
+  } catch {
+    // Ignore storage failures in the static mock.
+  }
+}
+
+function maybeShowOnboarding() {
+  if (!onboardingDialog) return;
+  try {
+    if (localStorage.getItem(onboardingStorageKey)) return;
+  } catch {
+    return;
+  }
+  window.setTimeout(() => {
+    if (document.body.classList.contains("is-dragging")) return;
+    if (modalIsOpen(dialog) || modalIsOpen(composeDialog) || modalIsOpen(requestComposeDialog)) return;
+    showModalElement(onboardingDialog);
+  }, 720);
 }
 
 function renderOtherRequestCards(creator, activePostId) {
@@ -6562,14 +7256,38 @@ function populateComposeCircleOptions() {
   if (selected && [...composeCircle.options].some((option) => option.value === selected)) {
     composeCircle.value = selected;
   }
+  refreshCustomSelect(composeCircle);
+}
+
+function isComposeCirclePost() {
+  return Boolean(composeCircleToggle?.checked);
 }
 
 function updateComposeCircleVisibility() {
   populateComposeCircleOptions();
-  const circleOnly = composeVisibility?.value === "Circle only";
-  if (composeCircleField) composeCircleField.hidden = !circleOnly;
+  const circleOnly = isComposeCirclePost();
+  if (composeCircleField) {
+    composeCircleField.classList.toggle("is-reserved-hidden", !circleOnly);
+    composeCircleField.setAttribute("aria-hidden", String(!circleOnly));
+  }
   if (circleOnly && composeCircle && !composeCircle.value) {
     composeCircle.value = joinedCircleIds.values().next().value || "";
+  }
+  if (!circleOnly) closeCustomSelect(composeCircle);
+  refreshPostComposeCustomSelects();
+}
+
+function handleComposeCircleToggleChange({ openMenu = false } = {}) {
+  updateComposeCircleVisibility();
+  updateComposePreview();
+  persistComposeDraft();
+  if (isComposeCirclePost()) {
+    window.requestAnimationFrame(() => {
+      refreshCustomSelect(composeCircle);
+      if (openMenu) openCustomSelect(composeCircle);
+    });
+  } else {
+    closeCustomSelect(composeCircle);
   }
 }
 
@@ -6578,7 +7296,7 @@ function updateComposePreview() {
   const title = composePostTitle.value.trim() || "新しい投稿タイトル";
   const tags = composeTags.value.trim() || "#vrchat #portfolio";
   const creator = "You";
-  const circle = composeVisibility?.value === "Circle only" ? circleById(composeCircle?.value) : null;
+  const circle = isComposeCirclePost() ? circleById(composeCircle?.value) : null;
 
   composePreviewCard.innerHTML = `
     <span>${category} / ${circle ? circle.name : creator}</span>
@@ -6594,10 +7312,11 @@ function requestComposeValues() {
   const delivery = requestPostDelivery.value.trim() || "平均 10日";
   const capacity = requestPostCapacity.value.trim() || "受付 2 / 5";
   const retake = requestPostRetake?.value !== "no";
+  const chat = requestPostChat?.value || "enabled";
   const tags = requestPostTags.value.trim() || "#依頼受付 #vrchat #portfolio";
   const description = requestPostDescription.value.trim() || "説明を入力すると、依頼受付ページの導入文として表示されます。";
   const requirements = requestPostRequirements.value.trim() || "参考画像、使用アセット、希望納期を依頼時に確認する想定です。";
-  return { title, category, price, delivery, capacity, retake, tags, description, requirements };
+  return { title, category, price, delivery, capacity, retake, chat, tags, description, requirements };
 }
 
 function updateRequestComposePreview() {
@@ -6605,7 +7324,7 @@ function updateRequestComposePreview() {
   requestComposePreviewCard.innerHTML = `
     <span>${values.category} / Commission · You</span>
     <strong>${values.title}</strong>
-    <small>${values.price} / ${values.delivery} / ${requestRetakeLabel(values)}</small>
+    <small>${values.price} / ${values.delivery} / ${requestRetakeLabel(values)} / ${requestChatLabel(values)}</small>
   `;
   requestComposePageTitle.textContent = values.title;
   requestComposePageDescription.textContent = values.description;
@@ -6614,6 +7333,7 @@ function updateRequestComposePreview() {
     <span>${values.capacity}</span>
     <span>${values.delivery}</span>
     <span>${requestRetakeLabel(values)}</span>
+    <span>${requestChatLabel(values)}</span>
   `;
 }
 
@@ -6694,7 +7414,7 @@ function removeCurrentComposeImage() {
 
 function handleMockSubmit(event) {
   event.preventDefault();
-  const circleOnly = composeVisibility?.value === "Circle only";
+  const circleOnly = isComposeCirclePost();
   const circleId = circleOnly ? composeCircle?.value : "";
   const circle = circleId ? circleById(circleId) : null;
   if (circleOnly && !circle) {
@@ -6766,6 +7486,7 @@ function handleRequestComposeSubmit(event) {
       capacity: values.capacity,
       delivery: values.delivery,
       retake: values.retake,
+      chat: values.chat,
     },
     description: `${values.description} ${values.requirements}`,
     image: requestComposeImageData || vrchatImages.creators,
@@ -6995,6 +7716,12 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("pointerdown", (event) => {
+  if (eventProposalTypeMenu && !eventProposalTypeMenu.hidden) {
+    const inEventTypeControl = event.target.closest("[data-event-type-control]");
+    if (!inEventTypeControl) closeEventProposalTypeMenu();
+  }
+  const inCustomSelect = event.target.closest("[data-custom-select-control]");
+  if (!inCustomSelect) closeAllCustomSelects();
   if (savedSearchContextMenu && !savedSearchContextMenu.hidden) {
     if (!savedSearchContextMenu.contains(event.target)) {
       closeSavedSearchContextMenu();
@@ -7077,10 +7804,47 @@ eventProposalImageInput?.addEventListener("change", () => {
   loadEventProposalImage(eventProposalImageInput.files?.[0]);
 });
 eventProposalTypeInput?.addEventListener("change", () => {
-  syncEventProposalOtherTypeField();
-  updateEventProposalSubmitState();
-  if (eventProposalTypeInput.value === "other") {
-    window.setTimeout(() => eventProposalOtherTypeInput?.focus(), 180);
+  setEventProposalType(eventProposalTypeInput.value);
+});
+eventProposalTypeButton?.addEventListener("click", () => {
+  if (!eventProposalTypeMenu || !eventProposalTypeButton) return;
+  const shouldOpen = eventProposalTypeMenu.hidden;
+  eventProposalTypeMenu.hidden = !shouldOpen;
+  eventProposalTypeButton.setAttribute("aria-expanded", String(shouldOpen));
+  if (shouldOpen) updateEventProposalTypeCustomControl();
+});
+eventProposalTypeMenu?.addEventListener("click", (event) => {
+  const option = event.target.closest("[data-event-type-option]");
+  if (!option) return;
+  setEventProposalType(option.dataset.eventTypeOption);
+  closeEventProposalTypeMenu();
+  eventProposalTypeButton?.focus();
+});
+document.addEventListener("click", (event) => {
+  const customButton = event.target.closest("[data-custom-select-button]");
+  if (customButton) {
+    const control = customButton.closest("[data-custom-select-control]");
+    const select = control?.previousElementSibling;
+    const menu = control?.querySelector("[data-custom-select-menu]");
+    if (!select || !menu) return;
+    const shouldOpen = menu.hidden;
+    closeAllCustomSelects(control);
+    menu.hidden = !shouldOpen;
+    customButton.setAttribute("aria-expanded", String(shouldOpen));
+    if (shouldOpen) refreshCustomSelect(select);
+    return;
+  }
+
+  const option = event.target.closest("[data-custom-select-option]");
+  if (option) {
+    const control = option.closest("[data-custom-select-control]");
+    const select = control?.previousElementSibling;
+    if (!select) return;
+    select.value = option.dataset.customSelectOption || "";
+    refreshCustomSelect(select);
+    closeCustomSelect(select);
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+    control.querySelector("[data-custom-select-button]")?.focus();
   }
 });
 [
@@ -7144,6 +7908,14 @@ accountMenuService?.addEventListener("click", () => {
   closeAccountMenu();
   openServicePage();
 });
+accountMenuAdmin?.addEventListener("click", () => {
+  closeAccountMenu();
+  openAdminPage();
+});
+accountMenuSpecs?.addEventListener("click", () => {
+  closeAccountMenu();
+  openBackendSpecPage();
+});
 accountMenuSettings?.addEventListener("click", () => {
   openSettingsPage();
 });
@@ -7185,6 +7957,13 @@ accountMenu?.addEventListener("click", (event) => {
     openNotificationsPage();
   }
 });
+onboardingStartButton?.addEventListener("click", markOnboardingSeen);
+onboardingServiceButton?.addEventListener("click", () => {
+  markOnboardingSeen();
+  closeModalElement(onboardingDialog);
+  openServicePage();
+});
+onboardingDialog?.addEventListener("close", markOnboardingSeen);
 document.addEventListener("click", (event) => {
   if (accountMenu?.hidden) return;
   if (event.target.closest(".account-menu-wrap")) return;
@@ -7204,6 +7983,8 @@ backFromEventDetail?.addEventListener("click", returnFromEventDetail);
 backFromEvents?.addEventListener("click", returnFromEvents);
 backFromCircles?.addEventListener("click", returnFromCircles);
 backFromMission?.addEventListener("click", returnFromMission);
+backFromAdmin?.addEventListener("click", returnFromAdmin);
+backFromSpecs?.addEventListener("click", returnFromSpecs);
 serviceMissionLink?.addEventListener("click", openMissionPage);
 eventDetailOrganizer?.addEventListener("click", (event) => {
   const profileButton = event.target.closest("[data-profile]");
@@ -7520,6 +8301,26 @@ notificationsList.addEventListener("click", (event) => {
   openNotificationTarget(item);
 });
 
+notificationFilterTabs?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-notification-filter]");
+  if (!button) return;
+  activeNotificationFilter = button.dataset.notificationFilter || "all";
+  renderNotificationsPage();
+});
+
+document.querySelector(".admin-tabs")?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-admin-tab]");
+  if (!button) return;
+  activeAdminTab = button.dataset.adminTab || "events";
+  renderAdminPage();
+});
+
+adminQueueList?.addEventListener("click", (event) => {
+  const action = event.target.closest("[data-admin-action]");
+  if (!action) return;
+  showProfileCopyToast("運営対応の記録を更新しました");
+});
+
 markNotificationsRead.addEventListener("click", () => {
   notifications.forEach((item) => {
     item.unread = false;
@@ -7690,6 +8491,26 @@ bookmarkFolderCancel?.addEventListener("click", closeBookmarkFolderDialog);
 bookmarkFolderCreate?.addEventListener("click", createBookmarkFolder);
 bookmarkFolderSave?.addEventListener("click", savePinToSelectedBookmarkFolder);
 bookmarkFolderOptions?.addEventListener("change", updateBookmarkFolderOptionSelection);
+bookmarkFolderOptions?.addEventListener("click", (event) => {
+  const createCard = event.target.closest("[data-bookmark-folder-create-card]");
+  if (!createCard) return;
+  event.preventDefault();
+  openBookmarkFolderCreateDialog();
+});
+bookmarkFolderName?.addEventListener("input", () => {
+  updateBookmarkFolderCreateState();
+});
+bookmarkFolderCreateDialog?.addEventListener("click", (event) => {
+  if (event.target === bookmarkFolderCreateDialog) closeBookmarkFolderCreateDialog();
+});
+bookmarkFolderCreateDialog?.querySelector("form")?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  createBookmarkFolder();
+});
+bookmarkFolderCreateDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeBookmarkFolderCreateDialog();
+});
 bookmarkFolderDialog?.addEventListener("click", (event) => {
   if (event.target === bookmarkFolderDialog) closeBookmarkFolderDialog();
 });
@@ -8232,6 +9053,10 @@ saveDraftButton.addEventListener("click", () => {
   });
 });
 
+composeCircleToggle?.addEventListener("change", () => {
+  handleComposeCircleToggleChange();
+});
+
 composeImage.addEventListener("change", () => {
   loadComposeImages(composeImage.files || [], false);
   window.setTimeout(persistComposeDraft, 40);
@@ -8280,7 +9105,7 @@ saveRequestDraftButton?.addEventListener("click", () => {
   requestComposeNotice.textContent = "依頼受付の下書きを保存しました。";
 });
 
-[requestPostTitle, requestPostCategory, requestPostVisibility, requestPostPrice, requestPostDelivery, requestPostCapacity, requestPostRetake, requestPostAvatar, requestPostWorld, requestPostTags, requestPostDescription, requestPostRequirements].filter(Boolean).forEach((input) => {
+[requestPostTitle, requestPostCategory, requestPostVisibility, requestPostPrice, requestPostDelivery, requestPostCapacity, requestPostRetake, requestPostChat, requestPostAvatar, requestPostWorld, requestPostTags, requestPostDescription, requestPostRequirements].filter(Boolean).forEach((input) => {
   input?.addEventListener("input", () => {
     updateRequestComposePreview();
     persistRequestComposeDraft();
@@ -8350,6 +9175,8 @@ applyContentDisplaySettings();
 applyThemeMode(localStorage.getItem("vrc-sns-theme-mode") || settingsThemeMode?.value || "system");
 applyMyAvatarToChrome();
 normalizeProfileEditorText();
+enhanceSheetCloseButtons();
+enhancePostComposeCustomSelects();
 updateComposePreview();
 updateNotificationBadge();
 applyLanguage();
@@ -8357,6 +9184,7 @@ startHeroTitleRotation();
 renderPins();
 routeFromHash();
 updateTopbarSearchVisibility();
+maybeShowOnboarding();
 
 function ensureEditLinkList() {
   return document.querySelector("#editLinkList");
@@ -8860,6 +9688,8 @@ function renderProfile(creator) {
   eventsView.hidden = true;
   circleView.hidden = true;
   missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
   profileView.hidden = false;
   profileView.classList.toggle("is-mine", isMine);
   const bannerImage = isMine ? myProfile.banner : first.image;
