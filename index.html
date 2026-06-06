@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="./styles.css?v=clean-home-search-2" />
+    <link rel="stylesheet" href="./styles.css?v=scrollable-mobile-tabs" />
   </head>
   <body>
     <header class="topbar">
@@ -527,7 +527,10 @@
               <p class="eyebrow">Notifications</p>
               <h1>通知</h1>
             </div>
-            <button id="markNotificationsRead" class="soft-button" type="button">すべて既読</button>
+            <div class="notifications-actions">
+              <button id="markNotificationsRead" class="soft-button" type="button">すべて既読</button>
+              <button id="deleteReadNotifications" class="soft-button" type="button">既読を削除</button>
+            </div>
           </div>
           <div class="notification-filter-tabs" aria-label="Notification filters">
             <button class="is-active" type="button" data-notification-filter="all">All</button>
@@ -1132,6 +1135,7 @@
           <label class="field">
             <span id="savedSearchLabelText">タブのタイトル</span>
             <input id="savedSearchLabelInput" type="text" maxlength="24" placeholder="例: Booth衣装 / お気に入り改変" autocomplete="off" />
+            <small id="savedSearchLabelError" class="saved-search-label-error" hidden></small>
           </label>
           <label class="field">
             <span id="savedSearchQueryText">検索文言</span>

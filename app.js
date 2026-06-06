@@ -550,6 +550,7 @@ const savedSearchTabs = document.querySelector("#savedSearchTabs");
 const addSavedSearchTabButton = document.querySelector("#addSavedSearchTab");
 const savedSearchDialog = document.querySelector("#savedSearchDialog");
 const savedSearchLabelInput = document.querySelector("#savedSearchLabelInput");
+const savedSearchLabelError = document.querySelector("#savedSearchLabelError");
 const savedSearchQueryInput = document.querySelector("#savedSearchQueryInput");
 const savedSearchDelete = document.querySelector("#savedSearchDelete");
 const savedSearchCancel = document.querySelector("#savedSearchCancel");
@@ -668,6 +669,7 @@ const requestMoreSection = document.querySelector("#requestMoreSection");
 const requestMoreGrid = document.querySelector("#requestMoreGrid");
 const notificationsList = document.querySelector("#notificationsList");
 const markNotificationsRead = document.querySelector("#markNotificationsRead");
+const deleteReadNotifications = document.querySelector("#deleteReadNotifications");
 const notificationFilterTabs = document.querySelector(".notification-filter-tabs");
 const adminQueueList = document.querySelector("#adminQueueList");
 const adminEventCount = document.querySelector("#adminEventCount");
@@ -1519,6 +1521,7 @@ const translations = {
     noResultsBody: "検索語句やカテゴリを変えてもう一度探してみてください。",
     back: "Back",
     markAllRead: "すべて既読",
+    deleteReadNotifications: "既読を削除",
     settingsLead: "通知、表示、言語、プライバシー、アカウントの基本設定をまとめて管理します。",
     autoSavedToast: "設定を自動保存しました",
     settingsNotificationsTitle: "通知設定",
@@ -1729,6 +1732,7 @@ const translations = {
     noResultsBody: "Try another keyword or category.",
     back: "Back",
     markAllRead: "Mark all read",
+    deleteReadNotifications: "Delete read",
     settingsLead: "Manage notifications, display, language, privacy, and account basics.",
     autoSavedToast: "Settings auto-saved",
     settingsNotificationsTitle: "Notifications",
@@ -1939,6 +1943,7 @@ const translations = {
     noResultsBody: "검색어나 카테고리를 바꿔 다시 찾아보세요.",
     back: "Back",
     markAllRead: "모두 읽음",
+    deleteReadNotifications: "읽은 알림 삭제",
     settingsLead: "알림, 표시, 언어, 개인정보, 계정 기본 설정을 관리합니다.",
     autoSavedToast: "설정을 자동 저장했습니다",
     settingsNotificationsTitle: "알림 설정",
@@ -2206,6 +2211,41 @@ function savedSearchTabLabel(label) {
   return value.length > 16 ? `${value.slice(0, 16)}...` : value;
 }
 
+function normalizedSavedSearchLabel(value) {
+  return String(value || "").trim().replace(/\s+/g, " ").toLocaleLowerCase();
+}
+
+function savedSearchLabelExists(label, ignoreId = null) {
+  const normalized = normalizedSavedSearchLabel(label);
+  if (!normalized) return false;
+  return savedSearchTabItems.some((item) => item.id !== ignoreId && normalizedSavedSearchLabel(item.label) === normalized);
+}
+
+function savedSearchLabelErrorMessage(type) {
+  if (type === "duplicate") {
+    if (currentLanguage === "en") return "A tab with this name already exists.";
+    if (currentLanguage === "ko") return "같은 이름의 탭이 이미 있습니다.";
+    return "同じ名前のタブがあります。";
+  }
+  if (currentLanguage === "en") return "Enter a tab title.";
+  if (currentLanguage === "ko") return "탭 제목을 입력해 주세요.";
+  return "タブのタイトルを入力してください。";
+}
+
+function showSavedSearchLabelError(type) {
+  savedSearchLabelInput?.classList.add("is-invalid");
+  if (!savedSearchLabelError) return;
+  savedSearchLabelError.textContent = savedSearchLabelErrorMessage(type);
+  savedSearchLabelError.hidden = false;
+}
+
+function clearSavedSearchLabelError() {
+  savedSearchLabelInput?.classList.remove("is-invalid");
+  if (!savedSearchLabelError) return;
+  savedSearchLabelError.hidden = true;
+  savedSearchLabelError.textContent = "";
+}
+
 function renderSavedSearchTabs() {
   if (!savedSearchTabs) return;
   savedSearchTabs.innerHTML = savedSearchTabItems.map((item) => `
@@ -2233,9 +2273,15 @@ function activateSavedSearchTab(id) {
 
 function updateSavedSearchSaveButtonState() {
   if (!savedSearchSave) return;
-  const hasLabel = Boolean(savedSearchLabelInput?.value.trim());
+  const label = savedSearchLabelInput?.value.trim() || "";
   const hasQuery = Boolean(savedSearchQueryInput?.value.trim());
-  savedSearchSave.disabled = !(hasLabel && hasQuery);
+  const duplicate = savedSearchLabelExists(label, editingSavedSearchTabId);
+  if (duplicate) {
+    showSavedSearchLabelError("duplicate");
+  } else {
+    clearSavedSearchLabelError();
+  }
+  savedSearchSave.disabled = !(label && hasQuery && !duplicate);
 }
 
 function syncSavedSearchDialogMode() {
@@ -2263,6 +2309,7 @@ function openSavedSearchDialog(tabId = null) {
 function closeSavedSearchDialog() {
   if (!savedSearchDialog) return;
   editingSavedSearchTabId = null;
+  clearSavedSearchLabelError();
   syncSavedSearchDialogMode();
   closeModalElement(savedSearchDialog);
 }
@@ -2340,6 +2387,13 @@ function saveSavedSearchTab() {
   const query = savedSearchQueryInput?.value.trim() || "";
   if (!label) {
     showProfileCopyToast(t("savedTabLabelEmpty"), false);
+    showSavedSearchLabelError("empty");
+    savedSearchLabelInput?.focus();
+    return;
+  }
+  if (savedSearchLabelExists(label, editingSavedSearchTabId)) {
+    showSavedSearchLabelError("duplicate");
+    if (savedSearchSave) savedSearchSave.disabled = true;
     savedSearchLabelInput?.focus();
     return;
   }
@@ -3659,6 +3713,7 @@ function applyLanguage({ rerender = false } = {}) {
   });
   setText(".notifications-heading h1", "notifications");
   setText("#markNotificationsRead", "markAllRead");
+  setText("#deleteReadNotifications", "deleteReadNotifications");
   setText("[data-notification-filter='all']", "All");
   setText("[data-notification-filter='unread']", currentLanguage === "en" ? "Unread" : currentLanguage === "ko" ? "읽지 않음" : "未読");
   setText("[data-notification-filter='request']", currentLanguage === "en" ? "Requests" : currentLanguage === "ko" ? "의뢰" : "依頼");
@@ -5076,8 +5131,18 @@ function notificationIcon(type) {
   return labels[type] || "通";
 }
 
+function unreadNotificationLabel() {
+  if (currentLanguage === "en") return "Unread";
+  if (currentLanguage === "ko") return "읽지 않음";
+  return "未読";
+}
+
 function unreadNotificationCount() {
   return notifications.filter((item) => item.unread).length;
+}
+
+function readNotificationCount() {
+  return notifications.filter((item) => !item.unread).length;
 }
 
 function updateNotificationBadge() {
@@ -5090,6 +5155,11 @@ function updateNotificationBadge() {
     mobileNotificationBadge.textContent = count > 99 ? "99+" : String(count);
   }
   notificationButton?.setAttribute("aria-label", count ? `${t("notifications")}, ${count} ${t("unreadNotifications")}` : t("notifications"));
+}
+
+function updateNotificationActions() {
+  if (markNotificationsRead) markNotificationsRead.disabled = unreadNotificationCount() === 0;
+  if (deleteReadNotifications) deleteReadNotifications.disabled = readNotificationCount() === 0;
 }
 
 function localizedNotification(item) {
@@ -5156,7 +5226,7 @@ function renderNotificationsPage() {
     <button class="notification-item ${item.unread ? "is-unread" : ""}" type="button" data-notification-id="${item.id}">
       <span class="notification-mark">${notificationIcon(item.type)}</span>
       <span class="notification-copy">
-        <strong>${item.title}</strong>
+        <strong><span>${item.title}</span>${item.unread ? `<span class="notification-unread-badge">${unreadNotificationLabel()}</span>` : ""}</strong>
         <span>${item.body}</span>
       </span>
       <time>${item.time}</time>
@@ -5164,6 +5234,7 @@ function renderNotificationsPage() {
   `;
   }).join("") : `<div class="notification-empty"><strong>通知はありません</strong><span>条件に合う通知はまだありません。</span></div>`;
   updateNotificationBadge();
+  updateNotificationActions();
   scrollPageTop();
 }
 
@@ -8391,6 +8462,14 @@ markNotificationsRead.addEventListener("click", () => {
   notifications.forEach((item) => {
     item.unread = false;
   });
+  renderNotificationsPage();
+  updateNotificationBadge();
+});
+
+deleteReadNotifications?.addEventListener("click", () => {
+  for (let index = notifications.length - 1; index >= 0; index -= 1) {
+    if (!notifications[index].unread) notifications.splice(index, 1);
+  }
   renderNotificationsPage();
   updateNotificationBadge();
 });
