@@ -447,6 +447,48 @@ const circleGroups = [
   },
 ];
 
+const circleManagementData = {
+  "photo-walkers": {
+    owner: "You",
+    managedByYou: true,
+    members: [
+      { id: "you", name: "You", role: "Owner", joined: "作成者", status: "管理者", avatar: "Y" },
+      { id: "lumi", name: "Lumi Photo", role: "Manager", joined: "2026-05-28", status: "イベント作成可", avatar: "L" },
+      { id: "yoru", name: "Yoru Snap", role: "Member", joined: "2026-06-01", status: "投稿可", avatar: "Y" },
+      { id: "nagi", name: "Nagi Closet", role: "Member", joined: "2026-06-03", status: "投稿可", avatar: "N" }
+    ],
+    requests: [
+      { id: "req-photo-1", name: "Kohaku Lens", note: "ポートレート作例とVRChatリンクあり。次回フォトウォーク参加希望。", requested: "今日" },
+      { id: "req-photo-2", name: "Mizuki Route", note: "ワールド巡りイベントを共同開催したい。過去投稿 12件。", requested: "昨日" }
+    ]
+  },
+  "world-lab": {
+    owner: "You",
+    managedByYou: true,
+    members: [
+      { id: "you", name: "You", role: "Owner", joined: "作成者", status: "管理者", avatar: "Y" },
+      { id: "orbit", name: "Orbit Build", role: "Manager", joined: "2026-05-18", status: "投稿管理可", avatar: "O" },
+      { id: "frame", name: "Frame Drift", role: "Member", joined: "2026-06-02", status: "投稿可", avatar: "F" }
+    ],
+    requests: [
+      { id: "req-world-1", name: "Mori Studio", note: "軽量化メモを共有したい。Quest対応ワールドの投稿あり。", requested: "2日前" }
+    ]
+  },
+  "event-host-lounge": {
+    owner: "You",
+    managedByYou: true,
+    members: [
+      { id: "you", name: "You", role: "Owner", joined: "作成者", status: "管理者", avatar: "Y" },
+      { id: "vrcsns", name: "VRC SNS運営", role: "Manager", joined: "2026-05-10", status: "運営補助", avatar: "V" },
+      { id: "rin", name: "Rin Works", role: "Member", joined: "2026-06-04", status: "投稿可", avatar: "R" }
+    ],
+    requests: [
+      { id: "req-event-1", name: "DJ Nemu", note: "イベント告知の相談をしたい。開催実績リンクあり。", requested: "今日" },
+      { id: "req-event-2", name: "Kite Atelier", note: "展示会イベントの共同主催者を探している。", requested: "3日前" }
+    ]
+  }
+};
+
 const trustProfiles = {
   You: { summary: "通常投稿、下書き、保存したアイデアをまとめる自分用の信用ページ。", style: "VRChat内の自然な空気感、日常ログ、ワールド散歩の記録を中心に整理しています。", scope: ["VRChat photo", "Avatar notes", "World archive", "Portfolio"], links: ["https://vrchat.com/home/user/example", "https://x.com/YUMA0906", "https://yuma0906.booth.pm/"], completed: 0, likes: 128, saves: 18, repeat: 0 },
   "Mika Alterworks": { summary: "衣装導入、表情調整、軽いギミック追加まで相談しやすいアバター改変クリエイター。", style: "ネオン、和風、柔らかい日常系まで、BOOTH衣装を自然に馴染ませる作風。", scope: ["Avatar edit", "Outfit setup", "Expression", "Booth assets"], links: ["https://vrchat.com/home/user/mika-alterworks", "https://x.com/mika_alterworks", "https://mika-alterworks.booth.pm/"], completed: 42, likes: 980, saves: 246, repeat: 18 },
@@ -792,6 +834,7 @@ const eventDetailStats = document.querySelector("#eventDetailStats");
 const eventCircleRequirement = document.querySelector("#eventCircleRequirement");
 const eventCircleRequirementBody = document.querySelector("#eventCircleRequirementBody");
 const eventCircleRequirementButton = document.querySelector("#eventCircleRequirementButton");
+const eventRelatedList = document.querySelector("#eventRelatedList");
 const openEventProposalFromDetail = document.querySelector("#openEventProposalFromDetail");
 const eventProposalFlow = document.querySelector("#eventProposalFlow");
 const eventProposalList = document.querySelector("#eventProposalList");
@@ -829,10 +872,36 @@ const circlePostsNote = document.querySelector("#circlePostsNote");
 const circleGrid = document.querySelector("#circleGrid");
 const circleViewTabs = document.querySelector("#circleViewTabs");
 const circleSearchInput = document.querySelector("#circleSearchInput");
+const circleSearchShell = document.querySelector(".circle-search");
 const circleFilterControls = document.querySelector("#circleFilterControls");
 const circleFilterInputs = [...document.querySelectorAll("[data-circle-filter]")];
 const circlePostsSection = document.querySelector(".circle-posts-section");
 const circleListSection = document.querySelector(".circle-list-section");
+const circleManagerSection = document.querySelector(".circle-manager-section");
+const circleManagerList = document.querySelector("#circleManagerList");
+const circleManagerSummary = document.querySelector("#circleManagerSummary");
+const circleManagerMembers = document.querySelector("#circleManagerMembers");
+const circleManagerRequests = document.querySelector("#circleManagerRequests");
+const circleManagerRoles = document.querySelector("#circleManagerRoles");
+const circleManagerInviteButton = document.querySelector("#circleManagerInviteButton");
+const circlePromoteDialog = document.querySelector("#circlePromoteDialog");
+const circlePromoteCopy = document.querySelector("#circlePromoteCopy");
+const circlePromoteConfirm = document.querySelector("#circlePromoteConfirm");
+const circleTransferDialog = document.querySelector("#circleTransferDialog");
+const circleTransferCopy = document.querySelector("#circleTransferCopy");
+const circleTransferCircleInput = document.querySelector("#circleTransferCircleInput");
+const circleTransferMemberInput = document.querySelector("#circleTransferMemberInput");
+const circleTransferCircleGhost = document.querySelector("#circleTransferCircleGhost");
+const circleTransferMemberGhost = document.querySelector("#circleTransferMemberGhost");
+const circleTransferConfirm = document.querySelector("#circleTransferConfirm");
+const circleRejectDialog = document.querySelector("#circleRejectDialog");
+const circleRejectCopy = document.querySelector("#circleRejectCopy");
+const circleRejectCancel = document.querySelector("#circleRejectCancel");
+const circleRejectConfirm = document.querySelector("#circleRejectConfirm");
+const circleKickDialog = document.querySelector("#circleKickDialog");
+const circleKickCopy = document.querySelector("#circleKickCopy");
+const circleKickCancel = document.querySelector("#circleKickCancel");
+const circleKickConfirm = document.querySelector("#circleKickConfirm");
 const bookmarkFolderDialog = document.querySelector("#bookmarkFolderDialog");
 const bookmarkFolderCreateDialog = document.querySelector("#bookmarkFolderCreateDialog");
 const bookmarkFolderOptions = document.querySelector("#bookmarkFolderOptions");
@@ -956,6 +1025,10 @@ let followedCreators = new Set(["Lumi Photo"]);
 let joinedCircleIds = new Set(["photo-walkers", "world-lab"]);
 let activeCircleTab = "browse";
 let activeCirclePageId = null;
+let activeManagedCircleId = "photo-walkers";
+let pendingCircleRoleAction = { action: "", circleId: "", memberId: "" };
+let pendingCircleRejectRequest = { circleId: "", requestId: "" };
+let pendingCircleKickMember = { circleId: "", memberId: "" };
 let notificationEnabledCreators = new Set(["Lumi Photo"]);
 let mutedCreators = new Set();
 let blockedCreators = new Set();
@@ -2748,15 +2821,11 @@ function setEventProposalType(value, { focusOther = true } = {}) {
   }
 }
 
-const postComposeCustomSelects = [
-  composeCategory,
-  composeVisibility,
-  composeCircle,
-  requestPostCategory,
-  requestPostVisibility,
-  requestPostRetake,
-  requestPostChat
-].filter(Boolean);
+function customSelectTargets() {
+  return [...document.querySelectorAll("select")]
+    .filter((select) => select.id !== "eventProposalTypeInput")
+    .filter((select) => !select.multiple);
+}
 
 function optionLabel(option) {
   return option?.textContent?.trim() || option?.value || "";
@@ -2789,7 +2858,7 @@ function openCustomSelect(select) {
 }
 
 function closeAllCustomSelects(exceptControl = null) {
-  postComposeCustomSelects.forEach((select) => {
+  customSelectTargets().forEach((select) => {
     const control = customSelectControlFor(select);
     if (control && control !== exceptControl) closeCustomSelect(select);
   });
@@ -2830,11 +2899,11 @@ function enhanceCustomSelect(select) {
 }
 
 function refreshPostComposeCustomSelects() {
-  postComposeCustomSelects.forEach(refreshCustomSelect);
+  customSelectTargets().forEach(refreshCustomSelect);
 }
 
 function enhancePostComposeCustomSelects() {
-  postComposeCustomSelects.forEach(enhanceCustomSelect);
+  customSelectTargets().forEach(enhanceCustomSelect);
   refreshPostComposeCustomSelects();
 }
 
@@ -3206,6 +3275,52 @@ function renderEventCircleRequirement(event) {
   eventCircleRequirementButton.dataset.circleOpen = circle.id;
 }
 
+function renderEventRelatedList(event) {
+  if (!eventRelatedList) return;
+  const organizer = event.organizer || t("officialOrganizer");
+  const currentKey = event.eventKey || (event.proposalId ? `community-${event.proposalId}` : "");
+  const allEvents = [...getOfficialEventCampaignList(), ...getCommunityEventCampaignList()];
+  const relatedByOrganizer = allEvents.filter((candidate) => {
+    const candidateKey = candidate.eventKey || (candidate.proposalId ? `community-${candidate.proposalId}` : "");
+    if (currentKey && candidateKey === currentKey) return false;
+    if (!currentKey && candidate.title === event.title && candidate.date === event.date) return false;
+    return (candidate.organizer || t("officialOrganizer")) === organizer;
+  });
+  const fallback = allEvents.filter((candidate) => {
+    const candidateKey = candidate.eventKey || (candidate.proposalId ? `community-${candidate.proposalId}` : "");
+    if (currentKey && candidateKey === currentKey) return false;
+    if (!currentKey && candidate.title === event.title && candidate.date === event.date) return false;
+    if (relatedByOrganizer.includes(candidate)) return false;
+    return candidate.eventKind === event.eventKind || candidate.eventKind === "community";
+  });
+  const cards = [...relatedByOrganizer, ...fallback].slice(0, 3);
+  if (!cards.length) {
+    eventRelatedList.innerHTML = `
+      <article class="event-related-empty">
+        <strong>${currentLanguage === "en" ? "No other events yet" : currentLanguage === "ko" ? "다른 이벤트는 아직 없습니다" : "他のイベントはまだありません"}</strong>
+        <p>${currentLanguage === "en" ? "When this organizer opens another event, it will appear here." : currentLanguage === "ko" ? "같은 주최자의 다른 이벤트가 열리면 여기에 표시됩니다." : "同じ主催者の別イベントが増えたらここに表示されます。"}</p>
+      </article>
+    `;
+    return;
+  }
+  eventRelatedList.innerHTML = cards.map((candidate) => {
+    const key = candidate.eventKey || (candidate.proposalId ? `community-${candidate.proposalId}` : "");
+    const href = key ? `#event/${key}` : "#events";
+    return `
+      <a class="event-related-card" href="${escapeHtml(href)}" data-event-related="${escapeHtml(key)}">
+        <span class="event-related-thumb">
+          <img src="${escapeHtml(candidate.image || vrchatImages.event)}" alt="" draggable="false" />
+        </span>
+        <span class="event-related-copy">
+          <small>${escapeHtml(candidate.badge || "Event")}</small>
+          <strong>${escapeHtml(candidate.title)}</strong>
+          <em>${escapeHtml(candidate.date)} / ${escapeHtml(candidate.organizer || t("officialOrganizer"))}</em>
+        </span>
+      </a>
+    `;
+  }).join("");
+}
+
 function renderEventDetailPage(index) {
   const event = eventByIndex(index);
   if (!event || !eventDetailView) {
@@ -3247,8 +3362,7 @@ function renderEventDetailPage(index) {
       </article>
     `).join("");
   }
-  renderEventProposalFlow();
-  renderEventProposalList();
+  renderEventRelatedList(event);
   scrollPageTop();
 }
 
@@ -3596,12 +3710,12 @@ function applyLanguage({ rerender = false } = {}) {
   setText("#serviceMissionBody", currentLanguage === "en" ? "Use Our Mission for the why behind the product rather than the how-to guide." : currentLanguage === "ko" ? "사용법이 아니라 왜 이 서비스를 만드는지 궁금할 때 Our Mission을 보면 됩니다." : "使い方ではなく、なぜこのサービスを作るのか、何を良くしたいのかを知りたい時は Our Mission を見てください。");
   setText("#serviceMissionLink", currentLanguage === "en" ? "Open Our Mission" : currentLanguage === "ko" ? "Our Mission 보기" : "Our Missionを見る");
   setText("#openEventProposalButton", currentLanguage === "en" ? "Open events" : currentLanguage === "ko" ? "이벤트 보기" : "イベントページへ");
-  setText("#eventProposalEyebrow", currentLanguage === "en" ? "Community event" : currentLanguage === "ko" ? "커뮤니티 이벤트" : "ユーザーイベント");
-  setText("#eventProposalSectionTitle", "eventProposalSectionTitle");
-  setText("#eventProposalSectionLead", "eventProposalSectionLead");
+  setText("#eventRelatedEyebrow", currentLanguage === "en" ? "More from organizer" : currentLanguage === "ko" ? "같은 주최자" : "More from organizer");
+  setText("#eventRelatedTitle", currentLanguage === "en" ? "Other events from this organizer" : currentLanguage === "ko" ? "같은 주최자의 다른 이벤트" : "同じ主催者のイベント");
+  setText("#eventCommunityCtaEyebrow", currentLanguage === "en" ? "Community event" : currentLanguage === "ko" ? "커뮤니티 이벤트" : "ユーザーイベント");
+  setText("#eventCommunityCtaTitle", currentLanguage === "en" ? "Want to host your own event?" : currentLanguage === "ko" ? "직접 이벤트를 열어볼까요?" : "あなたもイベントを開催してみませんか？");
+  setText("#eventCommunityCtaLead", currentLanguage === "en" ? "Submit a compact proposal for showcases, release events, circle-only projects, and other VRChat creation ideas." : currentLanguage === "ko" ? "작품 특집, 출시 기념, 서클 한정 기획 등 VRChat 창작에 맞는 이벤트를 제안할 수 있습니다." : "作品特集、発売記念、サークル限定企画など、VRChat創作に合うイベントを運営へ申請できます。");
   setText("#openEventProposalFromDetail", "eventProposalTrigger");
-  setText("#eventProposalStatusEyebrow", currentLanguage === "en" ? "Application status" : currentLanguage === "ko" ? "신청 현황" : "申請ステータス");
-  setText("#eventProposalStatusTitle", "eventProposalStatusTitle");
   setText("#eventProposalDialogEyebrow", currentLanguage === "en" ? "Community event" : currentLanguage === "ko" ? "커뮤니티 이벤트" : "ユーザーイベント");
   setText("#eventProposalDialogTitle", "eventProposalDialogTitle");
   setText("#eventProposalDialogLead", "eventProposalDialogLead");
@@ -3634,6 +3748,15 @@ function applyLanguage({ rerender = false } = {}) {
   setText("#circleListTitle", "circleListTitle");
   setText("[data-circle-tab='browse']", "circleBrowseTab");
   setText("[data-circle-tab='posts']", "circlePostsTab");
+  setText("[data-circle-tab='manage']", currentLanguage === "en" ? "Manage groups" : currentLanguage === "ko" ? "그룹 관리" : "グループを管理する");
+  setText("#circleManagerEyebrow", currentLanguage === "en" ? "Manager" : currentLanguage === "ko" ? "관리" : "Manager");
+  setText("#circleManagerTitle", currentLanguage === "en" ? "Group management" : currentLanguage === "ko" ? "그룹 관리" : "グループ管理");
+  setText("#circleManagerNote", currentLanguage === "en" ? "Check members, review join requests, and grant or transfer group management permissions." : currentLanguage === "ko" ? "멤버, 참가 신청, 관리 권한 부여와 이전을 확인합니다." : "作成したグループのメンバー確認、参加申請、管理権限の付与や移譲を行う想定です。");
+  setText("#circleManagerMembersTitle", currentLanguage === "en" ? "Members" : currentLanguage === "ko" ? "멤버" : "メンバー");
+  setText("#circleManagerRequestsTitle", currentLanguage === "en" ? "Join requests" : currentLanguage === "ko" ? "참가 신청" : "参加申請");
+  setText("#circleManagerInviteButton", currentLanguage === "en" ? "Copy invite link" : currentLanguage === "ko" ? "초대 링크 복사" : "招待リンクをコピー");
+  setText("#circleManagerRoleTitle", currentLanguage === "en" ? "Management permissions" : currentLanguage === "ko" ? "관리 권한" : "管理権限");
+  setText("#circleManagerRoleLead", currentLanguage === "en" ? "Add co-managers, transfer ownership, or grant post moderation permissions." : currentLanguage === "ko" ? "공동 관리자 추가, 오너 권한 이전, 게시 관리 권한 부여를 설정합니다." : "共同管理者の追加、オーナー権限の移譲、投稿管理権限の付与をここで行う想定です。");
   setAttr(circleSearchInput, "placeholder", "circleSearchPlaceholder");
   setText("#circleFilterLabel", "circleFilterLabel");
   setText("#circleFilterJoined", "circleFilterJoined");
@@ -4253,6 +4376,136 @@ function renderCircleCards(activeCircleId = null) {
     `;
 }
 
+function managedCircleIds() {
+  return Object.entries(circleManagementData)
+    .filter(([, data]) => data.managedByYou)
+    .map(([id]) => id)
+    .filter((id) => circleById(id));
+}
+
+function managedCircles() {
+  return managedCircleIds().map((id) => circleById(id)).filter(Boolean);
+}
+
+function circleManagementFor(id) {
+  return circleManagementData[id] || null;
+}
+
+function roleLabel(role) {
+  const labels = {
+    Owner: "オーナー",
+    Manager: "共同管理者",
+    Member: "メンバー"
+  };
+  return labels[role] || role;
+}
+
+function currentCircleManagerRole(data) {
+  return data?.members?.find((member) => member.id === "you" || member.name === "You")?.role || "Member";
+}
+
+function currentCircleManagerIsOwner(data) {
+  return currentCircleManagerRole(data) === "Owner";
+}
+
+function ensureActiveManagedCircle() {
+  const ids = managedCircleIds();
+  if (!ids.length) return null;
+  if (!ids.includes(activeManagedCircleId)) activeManagedCircleId = ids[0];
+  return circleById(activeManagedCircleId);
+}
+
+function renderCircleManager() {
+  if (!circleManagerList || !circleManagerSummary || !circleManagerMembers || !circleManagerRequests || !circleManagerRoles) return;
+  const circles = managedCircles();
+  const activeCircle = ensureActiveManagedCircle();
+  if (!circles.length || !activeCircle) {
+    circleManagerList.innerHTML = "";
+    circleManagerSummary.innerHTML = `
+      <article class="circle-manager-empty">
+        <strong>管理中のグループはありません</strong>
+        <p>自分で作成したグループや、管理権限を付与されたグループがここに表示されます。</p>
+      </article>
+    `;
+    circleManagerMembers.innerHTML = "";
+    circleManagerRequests.innerHTML = "";
+    circleManagerRoles.innerHTML = "";
+    return;
+  }
+  circleManagerList.innerHTML = circles.map((circle) => {
+    const data = circleManagementFor(circle.id);
+    const requestCount = data?.requests?.length || 0;
+    return `
+      <button class="circle-manager-group${circle.id === activeCircle.id ? " is-active" : ""}" type="button" data-managed-circle="${escapeHtml(circle.id)}">
+        <img src="${escapeHtml(circle.cover)}" alt="" loading="lazy" />
+        <span>
+          <strong>${escapeHtml(circle.name)}</strong>
+          <small>${escapeHtml(roleLabel(data?.members?.[0]?.role || "Owner"))} / 申請 ${requestCount}件</small>
+        </span>
+      </button>
+    `;
+  }).join("");
+
+  const data = circleManagementFor(activeCircle.id);
+  const canTransferOwner = currentCircleManagerIsOwner(data);
+  const managerCount = data.members.filter((member) => member.role !== "Member").length;
+  circleManagerSummary.innerHTML = `
+    <article class="circle-manager-hero">
+      <span class="circle-manager-hero-cover"><img src="${escapeHtml(activeCircle.cover)}" alt="" /></span>
+      <span class="circle-manager-hero-copy">
+        <small>${escapeHtml(activeCircle.visibility)}</small>
+        <strong>${escapeHtml(activeCircle.name)}</strong>
+        <em>${escapeHtml(activeCircle.description)}</em>
+      </span>
+      <span class="circle-manager-stats">
+        <span><strong>${activeCircle.members.toLocaleString()}</strong><small>members</small></span>
+        <span><strong>${managerCount}</strong><small>managers</small></span>
+        <span><strong>${data.requests.length}</strong><small>requests</small></span>
+      </span>
+    </article>
+  `;
+
+  circleManagerMembers.innerHTML = data.members.map((member) => `
+    <article class="circle-member-row">
+      <span class="circle-member-avatar">${escapeHtml(member.avatar || member.name.slice(0, 1))}</span>
+      <span class="circle-member-main">
+        <strong>${escapeHtml(member.name)}</strong>
+        <small>${escapeHtml(member.status)} / ${escapeHtml(member.joined)}</small>
+      </span>
+      <span class="circle-member-role is-${escapeHtml(member.role.toLowerCase())}">${escapeHtml(roleLabel(member.role))}</span>
+      <span class="circle-member-actions">
+        ${member.role === "Member" ? `<button class="soft-button" type="button" data-circle-role-action="promote" data-member="${escapeHtml(member.id)}">管理者にする</button>` : ""}
+        ${member.role === "Manager" ? `<button class="soft-button" type="button" data-circle-role-action="demote" data-member="${escapeHtml(member.id)}">権限を外す</button>` : ""}
+        ${canTransferOwner && member.role !== "Owner" ? `<button class="soft-button" type="button" data-circle-role-action="transfer" data-member="${escapeHtml(member.id)}">オーナー移譲</button>` : ""}
+        ${member.role !== "Owner" && member.id !== "you" ? `<button class="soft-button request-report-button" type="button" data-circle-role-action="kick" data-member="${escapeHtml(member.id)}">グループから外す</button>` : ""}
+      </span>
+    </article>
+  `).join("");
+
+  circleManagerRequests.innerHTML = data.requests.length
+    ? data.requests.map((request) => `
+      <article class="circle-request-row">
+        <span>
+          <strong>${escapeHtml(request.name)}</strong>
+          <small>${escapeHtml(request.requested)}</small>
+        </span>
+        <p>${escapeHtml(request.note)}</p>
+        <span class="circle-request-actions">
+          <button class="primary-button" type="button" data-circle-request-action="approve" data-request="${escapeHtml(request.id)}">承認</button>
+          <button class="soft-button" type="button" data-circle-request-action="reject" data-request="${escapeHtml(request.id)}">却下</button>
+        </span>
+      </article>
+    `).join("")
+    : `<article class="circle-manager-empty"><strong>参加申請はありません</strong><p>承認制グループへの申請が届くとここで確認できます。</p></article>`;
+
+  const transferableMembers = data.members.filter((member) => member.role !== "Owner");
+  circleManagerRoles.innerHTML = `
+    <button class="primary-button" type="button" data-circle-role-action="invite-manager">共同管理者を招待</button>
+    <button class="soft-button" type="button" data-circle-role-action="bulk-permission">投稿管理権限を一括設定</button>
+    ${canTransferOwner && transferableMembers[0] ? `<button class="soft-button" type="button" data-circle-role-action="transfer" data-member="${escapeHtml(transferableMembers[0].id)}">${escapeHtml(transferableMembers[0].name)}へオーナー移譲</button>` : ""}
+  `;
+}
+
 function renderCircleTabs() {
   const tabButtons = circleViewTabs ? [...circleViewTabs.querySelectorAll("[data-circle-tab]")] : [];
   tabButtons.forEach((button) => {
@@ -4263,7 +4516,10 @@ function renderCircleTabs() {
   });
   if (circleListSection) circleListSection.hidden = activeCircleTab !== "browse";
   if (circlePostsSection) circlePostsSection.hidden = activeCircleTab !== "posts";
+  if (circleManagerSection) circleManagerSection.hidden = activeCircleTab !== "manage";
   if (circleFilterControls) circleFilterControls.hidden = activeCircleTab !== "browse";
+  if (circleSearchShell) circleSearchShell.hidden = activeCircleTab === "manage";
+  if (activeCircleTab === "manage") renderCircleManager();
 }
 
 function renderCircleDetail(circle) {
@@ -4315,7 +4571,7 @@ function renderCirclePosts(circle) {
 function renderCirclesPage(circleId = null, options = {}) {
   const circle = circleId ? circleById(circleId) : null;
   activeCirclePageId = circle?.id || null;
-  if (!circle && !["browse", "posts"].includes(activeCircleTab)) activeCircleTab = "browse";
+  if (!circle && !["browse", "posts", "manage"].includes(activeCircleTab)) activeCircleTab = "browse";
   activeProfile = null;
   feedView.hidden = true;
   profileView.hidden = true;
@@ -4353,8 +4609,220 @@ function openCirclesPage(circleId = null) {
   renderCirclesPage(circleId);
 }
 
+function openCircleManagerPage(circleId = null) {
+  closeAccountMenu();
+  activeCircleTab = "manage";
+  if (circleId && circleManagementFor(circleId)) activeManagedCircleId = circleId;
+  location.hash = activeManagedCircleId ? `circle-manager/${activeManagedCircleId}` : "circle-manager";
+  renderCirclesPage(null);
+}
+
 function returnFromCircles() {
   showFeed();
+}
+
+function circleRoleContext(circleId = activeManagedCircleId, memberId = "") {
+  const circle = circleById(circleId);
+  const data = circle ? circleManagementFor(circle.id) : null;
+  const member = data?.members?.find((item) => item.id === memberId) || null;
+  return { circle, data, member };
+}
+
+function promoteCircleMember(circleId, memberId) {
+  const { circle, data, member } = circleRoleContext(circleId, memberId);
+  if (!circle || !data || !member || member.role !== "Member") return false;
+  member.role = "Manager";
+  member.status = "投稿管理可";
+  showProfileCopyToast(`${member.name}に管理権限を付与しました`);
+  renderCircleManager();
+  return true;
+}
+
+function transferCircleOwner(circleId, memberId) {
+  const { circle, data, member: nextOwner } = circleRoleContext(circleId, memberId);
+  if (!circle || !data || !nextOwner || nextOwner.role === "Owner") return false;
+  if (!currentCircleManagerIsOwner(data)) {
+    showProfileCopyToast("オーナー移譲はオーナーだけが実行できます");
+    return false;
+  }
+  const currentOwner = data.members.find((item) => item.role === "Owner");
+  if (currentOwner) {
+    currentOwner.role = "Manager";
+    currentOwner.status = "共同管理者";
+  }
+  nextOwner.role = "Owner";
+  nextOwner.status = "管理者";
+  data.owner = nextOwner.name;
+  showProfileCopyToast(`${nextOwner.name}へオーナー権限を移譲しました`);
+  renderCircleManager();
+  return true;
+}
+
+function resetCircleRoleDialogState() {
+  pendingCircleRoleAction = { action: "", circleId: "", memberId: "" };
+  clearApproveHoldState(circlePromoteConfirm);
+  if (circleTransferCircleInput) circleTransferCircleInput.value = "";
+  if (circleTransferMemberInput) circleTransferMemberInput.value = "";
+  if (circleTransferConfirm) circleTransferConfirm.disabled = true;
+}
+
+function openCirclePromoteDialog(memberId) {
+  const { circle, member } = circleRoleContext(activeManagedCircleId, memberId);
+  if (!circle || !member) return;
+  pendingCircleRoleAction = { action: "promote", circleId: circle.id, memberId: member.id };
+  if (circlePromoteCopy) {
+    circlePromoteCopy.textContent = `${circle.name}の管理者権限を${member.name}に付与してよろしいですか？`;
+  }
+  clearApproveHoldState(circlePromoteConfirm);
+  showModalElement(circlePromoteDialog);
+}
+
+function updateCircleTransferConfirmState() {
+  const { circle, member } = circleRoleContext(pendingCircleRoleAction.circleId, pendingCircleRoleAction.memberId);
+  const circleMatches = (circleTransferCircleInput?.value.trim() || "") === (circle?.name || "");
+  const memberMatches = (circleTransferMemberInput?.value.trim() || "") === (member?.name || "");
+  if (circleTransferConfirm) circleTransferConfirm.disabled = !(circleMatches && memberMatches);
+}
+
+function openCircleTransferDialog(memberId) {
+  const { circle, member } = circleRoleContext(activeManagedCircleId, memberId);
+  if (!circle || !member) return;
+  const data = circleManagementFor(circle.id);
+  if (!currentCircleManagerIsOwner(data)) {
+    showProfileCopyToast("オーナー移譲はオーナーだけが実行できます");
+    return;
+  }
+  pendingCircleRoleAction = { action: "transfer", circleId: circle.id, memberId: member.id };
+  if (circleTransferCopy) {
+    circleTransferCopy.textContent = `${circle.name}のオーナーを${member.name}に移譲してよろしいですか？`;
+  }
+  if (circleTransferCircleInput) {
+    circleTransferCircleInput.value = "";
+    circleTransferCircleInput.placeholder = "";
+  }
+  if (circleTransferCircleGhost) circleTransferCircleGhost.textContent = circle.name;
+  if (circleTransferMemberInput) {
+    circleTransferMemberInput.value = "";
+    circleTransferMemberInput.placeholder = "";
+  }
+  if (circleTransferMemberGhost) circleTransferMemberGhost.textContent = member.name;
+  updateCircleTransferConfirmState();
+  showModalElement(circleTransferDialog);
+  window.setTimeout(() => circleTransferCircleInput?.focus(), 80);
+}
+
+function confirmCirclePromoteHold() {
+  const { action, circleId, memberId } = pendingCircleRoleAction;
+  if (action !== "promote") return;
+  if (promoteCircleMember(circleId, memberId)) {
+    closeModalElement(circlePromoteDialog);
+    showRequestAcceptPopup("管理者にしました", "サークル管理権限を付与しました");
+  }
+  resetCircleRoleDialogState();
+}
+
+function confirmCircleTransfer() {
+  const { action, circleId, memberId } = pendingCircleRoleAction;
+  if (action !== "transfer" || circleTransferConfirm?.disabled) return;
+  if (transferCircleOwner(circleId, memberId)) {
+    closeModalElement(circleTransferDialog);
+    showRequestAcceptPopup("オーナーを移譲しました", "サークルの所有者を更新しました");
+  }
+  resetCircleRoleDialogState();
+}
+
+function resetCircleRejectDialogState() {
+  pendingCircleRejectRequest = { circleId: "", requestId: "" };
+}
+
+function circleRequestContext(circleId = activeManagedCircleId, requestId = "") {
+  const circle = circleById(circleId);
+  const data = circle ? circleManagementFor(circle.id) : null;
+  const request = data?.requests?.find((item) => item.id === requestId) || null;
+  return { circle, data, request };
+}
+
+function openCircleRejectDialog(requestId) {
+  const { circle, request } = circleRequestContext(activeManagedCircleId, requestId);
+  if (!circle || !request) return;
+  pendingCircleRejectRequest = { circleId: circle.id, requestId: request.id };
+  if (circleRejectCopy) {
+    circleRejectCopy.textContent = `${circle.name}への${request.name}の参加申請を却下してよろしいですか？`;
+  }
+  showModalElement(circleRejectDialog);
+}
+
+function confirmCircleReject() {
+  const { circleId, requestId } = pendingCircleRejectRequest;
+  const { circle, data, request } = circleRequestContext(circleId, requestId);
+  if (!circle || !data || !request) return;
+  data.requests = data.requests.filter((item) => item.id !== requestId);
+  closeModalElement(circleRejectDialog);
+  showProfileCopyToast(`${request.name}の参加申請を却下しました`);
+  resetCircleRejectDialogState();
+  renderCircleManager();
+}
+
+function resetCircleKickDialogState() {
+  pendingCircleKickMember = { circleId: "", memberId: "" };
+}
+
+function openCircleKickDialog(memberId) {
+  const { circle, member } = circleRoleContext(activeManagedCircleId, memberId);
+  if (!circle || !member || member.role === "Owner" || member.id === "you") return;
+  pendingCircleKickMember = { circleId: circle.id, memberId: member.id };
+  if (circleKickCopy) {
+    circleKickCopy.textContent = `${circle.name}から${member.name}を外してよろしいですか？`;
+  }
+  showModalElement(circleKickDialog);
+}
+
+function confirmCircleKick() {
+  const { circleId, memberId } = pendingCircleKickMember;
+  const { circle, data, member } = circleRoleContext(circleId, memberId);
+  if (!circle || !data || !member || member.role === "Owner" || member.id === "you") return;
+  data.members = data.members.filter((item) => item.id !== memberId);
+  closeModalElement(circleKickDialog);
+  showProfileCopyToast(`${member.name}を${circle.name}から外しました`);
+  resetCircleKickDialogState();
+  renderCircleManager();
+}
+
+function handleCircleManagerAction(action, detailId) {
+  const circle = ensureActiveManagedCircle();
+  const data = circle ? circleManagementFor(circle.id) : null;
+  if (!circle || !data) return;
+  if (action === "approve") {
+    const request = data.requests.find((item) => item.id === detailId);
+    if (!request) return;
+    data.requests = data.requests.filter((item) => item.id !== detailId);
+    data.members.push({ id: detailId, name: request.name, role: "Member", joined: "今日", status: "投稿可", avatar: request.name.slice(0, 1).toUpperCase() });
+    showProfileCopyToast(`${request.name}を${circle.name}に承認しました`);
+  } else if (action === "reject") {
+    openCircleRejectDialog(detailId);
+    return;
+  } else if (action === "promote") {
+    openCirclePromoteDialog(detailId);
+    return;
+  } else if (action === "demote") {
+    const member = data.members.find((item) => item.id === detailId);
+    if (member && member.role === "Manager") {
+      member.role = "Member";
+      member.status = "投稿可";
+      showProfileCopyToast(`${member.name}の管理権限を外しました`);
+    }
+  } else if (action === "transfer") {
+    openCircleTransferDialog(detailId);
+    return;
+  } else if (action === "kick") {
+    openCircleKickDialog(detailId);
+    return;
+  } else if (action === "invite-manager") {
+    showProfileCopyToast("共同管理者の招待リンクをコピーしました");
+  } else if (action === "bulk-permission") {
+    showProfileCopyToast("投稿管理権限の一括設定モックです");
+  }
+  renderCircleManager();
 }
 
 function toggleCircleJoin(circleId) {
@@ -4730,7 +5198,7 @@ function showFeed() {
   profileView.classList.remove("is-mine");
   feedView.hidden = false;
   updateTopbarSearchVisibility();
-  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#event/") || location.hash.startsWith("#circle/") || location.hash === "#circles" || location.hash === "#events" || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#admin" || location.hash === "#backend-spec" || location.hash === "#me") {
+  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#event/") || location.hash.startsWith("#circle/") || location.hash.startsWith("#circle-manager") || location.hash === "#circles" || location.hash === "#events" || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#admin" || location.hash === "#backend-spec" || location.hash === "#me") {
     history.pushState("", document.title, location.pathname + location.search);
   }
   renderPins();
@@ -4761,6 +5229,13 @@ function routeFromHash() {
   if (location.hash === "#circles") {
     activeCircleTab = "browse";
     renderCirclesPage();
+    return;
+  }
+  const circleManagerMatch = location.hash.match(/^#circle-manager(?:\/([^/]+))?$/);
+  if (circleManagerMatch) {
+    activeCircleTab = "manage";
+    if (circleManagerMatch[1] && circleManagementFor(circleManagerMatch[1])) activeManagedCircleId = circleManagerMatch[1];
+    renderCirclesPage(null);
     return;
   }
   const requestDetailMatch = location.hash.match(/^#request-manager\/(\d+)$/);
@@ -5681,7 +6156,7 @@ function renderSavedPostsSection() {
   savedPostsSection.hidden = activeProfile !== "You" || activeProfileArchiveTab !== "folders";
   if (activeProfile !== "You" || activeProfileArchiveTab !== "folders") return;
 
-  const folders = bookmarkFolders.filter((folder) => (folder.pinIds || []).length);
+  const folders = bookmarkFolders;
   bookmarkFoldersBoard.hidden = false;
   if (activeBookmarkFolderId) {
     const folder = bookmarkFolders.find((entry) => entry.id === activeBookmarkFolderId);
@@ -8139,6 +8614,10 @@ circleViewTabs?.addEventListener("click", (event) => {
   const tab = event.target.closest("[data-circle-tab]");
   if (!tab) return;
   activeCircleTab = tab.dataset.circleTab;
+  if (activeCircleTab === "manage") {
+    openCircleManagerPage(activeManagedCircleId);
+    return;
+  }
   renderCirclesPage(activeCirclePageId, { scroll: false });
 });
 circleSearchInput?.addEventListener("input", () => {
@@ -8154,6 +8633,102 @@ circleFilterInputs.forEach((input) => {
 circleJoinButton?.addEventListener("click", (event) => {
   const circleId = event.currentTarget.dataset.circleJoin;
   if (circleId) toggleCircleJoin(circleId);
+});
+circleManagerList?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-managed-circle]");
+  if (!button) return;
+  activeManagedCircleId = button.dataset.managedCircle;
+  history.replaceState("", document.title, `${location.pathname}${location.search}#circle-manager/${activeManagedCircleId}`);
+  renderCircleManager();
+});
+circleManagerInviteButton?.addEventListener("click", () => {
+  const circle = ensureActiveManagedCircle();
+  showProfileCopyToast(`${circle?.name || "グループ"}の招待リンクをコピーしました`);
+});
+circleManagerMembers?.addEventListener("click", (event) => {
+  const action = event.target.closest("[data-circle-role-action]");
+  if (!action) return;
+  handleCircleManagerAction(action.dataset.circleRoleAction, action.dataset.member);
+});
+circleManagerRequests?.addEventListener("click", (event) => {
+  const action = event.target.closest("[data-circle-request-action]");
+  if (!action) return;
+  handleCircleManagerAction(action.dataset.circleRequestAction, action.dataset.request);
+});
+circleManagerRoles?.addEventListener("click", (event) => {
+  const action = event.target.closest("[data-circle-role-action]");
+  if (!action) return;
+  handleCircleManagerAction(action.dataset.circleRoleAction, action.dataset.member);
+});
+circlePromoteConfirm?.addEventListener("click", (event) => {
+  event.preventDefault();
+});
+circlePromoteConfirm?.addEventListener("pointerdown", (event) => {
+  event.preventDefault();
+  circlePromoteConfirm.setPointerCapture?.(event.pointerId);
+  startApproveHold(circlePromoteConfirm, confirmCirclePromoteHold);
+});
+circlePromoteConfirm?.addEventListener("pointerup", () => {
+  if (!approveHoldCompleted) clearApproveHoldState(circlePromoteConfirm);
+});
+circlePromoteConfirm?.addEventListener("pointerleave", () => {
+  if (!approveHoldCompleted) clearApproveHoldState(circlePromoteConfirm);
+});
+circlePromoteConfirm?.addEventListener("pointercancel", () => {
+  if (!approveHoldCompleted) clearApproveHoldState(circlePromoteConfirm);
+});
+circlePromoteDialog?.addEventListener("click", (event) => {
+  if (event.target !== circlePromoteDialog) return;
+  closeModalElement(circlePromoteDialog);
+  resetCircleRoleDialogState();
+});
+circlePromoteDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeModalElement(circlePromoteDialog);
+  resetCircleRoleDialogState();
+});
+circleTransferCircleInput?.addEventListener("input", updateCircleTransferConfirmState);
+circleTransferMemberInput?.addEventListener("input", updateCircleTransferConfirmState);
+circleTransferConfirm?.addEventListener("click", confirmCircleTransfer);
+circleTransferDialog?.addEventListener("click", (event) => {
+  if (event.target !== circleTransferDialog) return;
+  closeModalElement(circleTransferDialog);
+  resetCircleRoleDialogState();
+});
+circleTransferDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeModalElement(circleTransferDialog);
+  resetCircleRoleDialogState();
+});
+circleRejectCancel?.addEventListener("click", () => {
+  closeModalElement(circleRejectDialog);
+  resetCircleRejectDialogState();
+});
+circleRejectConfirm?.addEventListener("click", confirmCircleReject);
+circleRejectDialog?.addEventListener("click", (event) => {
+  if (event.target !== circleRejectDialog) return;
+  closeModalElement(circleRejectDialog);
+  resetCircleRejectDialogState();
+});
+circleRejectDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeModalElement(circleRejectDialog);
+  resetCircleRejectDialogState();
+});
+circleKickCancel?.addEventListener("click", () => {
+  closeModalElement(circleKickDialog);
+  resetCircleKickDialogState();
+});
+circleKickConfirm?.addEventListener("click", confirmCircleKick);
+circleKickDialog?.addEventListener("click", (event) => {
+  if (event.target !== circleKickDialog) return;
+  closeModalElement(circleKickDialog);
+  resetCircleKickDialogState();
+});
+circleKickDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeModalElement(circleKickDialog);
+  resetCircleKickDialogState();
 });
 document.addEventListener("click", (event) => {
   if (!floatingPostDock?.contains(event.target)) hideFloatingPostActions();
@@ -9537,7 +10112,7 @@ function renderProfilePostArchive() {
   if (sortWrap) sortWrap.hidden = showFolders;
   if (profilePostEmpty) {
     const isEmpty = showFolders
-      ? bookmarkFolders.every((folder) => !(folder.pinIds || []).length) && !activeBookmarkFolderId
+      ? bookmarkFolders.length === 0 && !activeBookmarkFolderId
       : posts.length === 0;
     profilePostEmpty.hidden = !isEmpty;
   }

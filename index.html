@@ -1080,6 +1080,66 @@
           </div>
         </form>
       </dialog>
+      <dialog id="circlePromoteDialog" class="request-sheet-dialog" aria-labelledby="circlePromoteTitle">
+        <form method="dialog" class="request-sheet-card">
+          <p class="eyebrow">Circle permission</p>
+          <h2 id="circlePromoteTitle">管理者権限を付与しますか？</h2>
+          <p id="circlePromoteCopy" class="circle-confirm-copy"></p>
+          <div class="request-sheet-actions">
+            <button id="circlePromoteConfirm" class="primary-button hold-to-approve-button" type="button">
+              <span>1秒長押しで管理者にする</span>
+              <small>Hold to grant</small>
+            </button>
+          </div>
+        </form>
+      </dialog>
+      <dialog id="circleTransferDialog" class="request-sheet-dialog" aria-labelledby="circleTransferTitle">
+        <form method="dialog" class="request-sheet-card">
+          <p class="eyebrow">Owner transfer</p>
+          <h2 id="circleTransferTitle">オーナーを移譲しますか？</h2>
+          <p id="circleTransferCopy" class="circle-confirm-copy"></p>
+          <label class="field">
+            <span>サークル名</span>
+            <span class="circle-transfer-input-wrap">
+              <input id="circleTransferCircleInput" type="text" autocomplete="off" />
+              <small id="circleTransferCircleGhost" aria-hidden="true"></small>
+            </span>
+          </label>
+          <label class="field">
+            <span>譲渡相手の名前</span>
+            <span class="circle-transfer-input-wrap">
+              <input id="circleTransferMemberInput" type="text" autocomplete="off" />
+              <small id="circleTransferMemberGhost" aria-hidden="true"></small>
+            </span>
+          </label>
+          <small id="circleTransferHint" class="circle-transfer-hint">両方が一致するとOKボタンを押せます。</small>
+          <div class="request-sheet-actions">
+            <button id="circleTransferConfirm" class="primary-button" type="button" disabled>OK</button>
+          </div>
+        </form>
+      </dialog>
+      <dialog id="circleRejectDialog" class="request-sheet-dialog" aria-labelledby="circleRejectTitle">
+        <form method="dialog" class="request-sheet-card">
+          <p class="eyebrow">Join request</p>
+          <h2 id="circleRejectTitle">参加申請を却下しますか？</h2>
+          <p id="circleRejectCopy" class="circle-confirm-copy"></p>
+          <div class="request-sheet-actions">
+            <button id="circleRejectCancel" class="soft-button" type="button">戻る</button>
+            <button id="circleRejectConfirm" class="primary-button request-report-submit" type="button">却下する</button>
+          </div>
+        </form>
+      </dialog>
+      <dialog id="circleKickDialog" class="request-sheet-dialog" aria-labelledby="circleKickTitle">
+        <form method="dialog" class="request-sheet-card">
+          <p class="eyebrow">Remove member</p>
+          <h2 id="circleKickTitle">メンバーを外しますか？</h2>
+          <p id="circleKickCopy" class="circle-confirm-copy"></p>
+          <div class="request-sheet-actions">
+            <button id="circleKickCancel" class="soft-button" type="button">戻る</button>
+            <button id="circleKickConfirm" class="primary-button request-report-submit" type="button">外す</button>
+          </div>
+        </form>
+      </dialog>
       <div id="requestAcceptPopup" class="request-accept-popup" role="status" aria-live="polite" hidden>
         <div class="request-accept-card">
           <span class="request-accept-icon" aria-hidden="true">
@@ -1320,19 +1380,20 @@
             </div>
             <button id="eventCircleRequirementButton" class="primary-button" type="button">サークルを見る</button>
           </section>
-          <section class="mission-section mission-section-split" aria-labelledby="eventProposalSectionTitle">
+          <section class="mission-section event-related-section" aria-labelledby="eventRelatedTitle">
             <div>
-              <p id="eventProposalEyebrow" class="eyebrow">Community event</p>
-              <h2 id="eventProposalSectionTitle">ユーザー発案イベントの開催許可を申請する</h2>
-              <p id="eventProposalSectionLead">申請が承認されるとイベント開催許可が付与され、主催者が好きなタイミングと期間で告知・投稿できる想定です。</p>
-              <button id="openEventProposalFromDetail" class="primary-button" type="button">イベント開催を申請</button>
+              <p id="eventRelatedEyebrow" class="eyebrow">More from organizer</p>
+              <h2 id="eventRelatedTitle">同じ主催者のイベント</h2>
             </div>
-            <div id="eventProposalFlow" class="event-proposal-flow"></div>
+            <div id="eventRelatedList" class="event-related-list"></div>
           </section>
-          <section class="mission-section" aria-labelledby="eventProposalStatusTitle">
-            <p id="eventProposalStatusEyebrow" class="eyebrow">申請ステータス</p>
-            <h2 id="eventProposalStatusTitle">イベント申請の審査状況</h2>
-            <div id="eventProposalList" class="event-proposal-list"></div>
+          <section id="eventCommunityCta" class="mission-section event-community-cta" aria-labelledby="eventCommunityCtaTitle">
+            <div>
+              <p id="eventCommunityCtaEyebrow" class="eyebrow">Community event</p>
+              <h2 id="eventCommunityCtaTitle">あなたもイベントを開催してみませんか？</h2>
+              <p id="eventCommunityCtaLead">作品特集、発売記念、サークル限定企画など、VRChat創作に合うイベントを運営へ申請できます。</p>
+            </div>
+            <button id="openEventProposalFromDetail" class="primary-button" type="button">イベント開催を申請</button>
           </section>
         </article>
       </section>
@@ -1392,6 +1453,7 @@
             <div id="circleViewTabs" class="circle-view-tabs" role="tablist" aria-label="Circle tabs">
               <button class="is-active" type="button" role="tab" aria-selected="true" data-circle-tab="browse">サークル一覧</button>
               <button type="button" role="tab" aria-selected="false" data-circle-tab="posts">限定投稿</button>
+              <button type="button" role="tab" aria-selected="false" data-circle-tab="manage">グループを管理する</button>
             </div>
             <label class="circle-search">
               <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -1447,6 +1509,53 @@
               <p id="circlePostsNote">参加中のサークルでは、メンバーだけが見られる投稿が表示されます。</p>
             </div>
             <div id="circlePostsBoard" class="circle-posts-board"></div>
+          </section>
+          <section class="circle-manager-section" aria-labelledby="circleManagerTitle" hidden>
+            <div class="circle-section-head">
+              <div>
+                <p id="circleManagerEyebrow" class="eyebrow">Manager</p>
+                <h2 id="circleManagerTitle">グループ管理</h2>
+              </div>
+              <p id="circleManagerNote">作成したグループのメンバー確認、参加申請、管理権限の付与や移譲を行う想定です。</p>
+            </div>
+            <div class="circle-manager-layout">
+              <aside class="circle-manager-sidebar">
+                <p class="eyebrow">Managed groups</p>
+                <div id="circleManagerList" class="circle-manager-list"></div>
+              </aside>
+              <div class="circle-manager-main">
+                <div id="circleManagerSummary" class="circle-manager-summary"></div>
+                <div class="circle-manager-columns">
+                  <section class="circle-manager-card" aria-labelledby="circleManagerMembersTitle">
+                    <div class="circle-manager-card-head">
+                      <div>
+                        <p class="eyebrow">Members</p>
+                        <h3 id="circleManagerMembersTitle">メンバー</h3>
+                      </div>
+                      <button id="circleManagerInviteButton" class="soft-button" type="button">招待リンクをコピー</button>
+                    </div>
+                    <div id="circleManagerMembers" class="circle-member-list"></div>
+                  </section>
+                  <section class="circle-manager-card" aria-labelledby="circleManagerRequestsTitle">
+                    <div class="circle-manager-card-head">
+                      <div>
+                        <p class="eyebrow">Requests</p>
+                        <h3 id="circleManagerRequestsTitle">参加申請</h3>
+                      </div>
+                    </div>
+                    <div id="circleManagerRequests" class="circle-request-list"></div>
+                  </section>
+                </div>
+                <section class="circle-manager-card circle-transfer-card" aria-labelledby="circleManagerRoleTitle">
+                  <div>
+                    <p class="eyebrow">Permission</p>
+                    <h3 id="circleManagerRoleTitle">管理権限</h3>
+                    <p id="circleManagerRoleLead">共同管理者の追加、オーナー権限の移譲、投稿管理権限の付与をここで行う想定です。</p>
+                  </div>
+                  <div id="circleManagerRoles" class="circle-role-actions"></div>
+                </section>
+              </div>
+            </div>
           </section>
         </div>
       </section>
