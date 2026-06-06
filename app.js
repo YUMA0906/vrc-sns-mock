@@ -3277,18 +3277,17 @@ function updateEventProposalImagePreview(source) {
   }
 }
 
-function loadEventProposalImage(file) {
+async function loadEventProposalImage(file) {
   if (!file || !file.type.startsWith("image/")) {
     updateEventProposalImagePreview("");
     updateEventProposalSubmitState();
     return;
   }
-  const reader = new FileReader();
-  reader.addEventListener("load", () => {
-    updateEventProposalImagePreview(String(reader.result || ""));
+  const image = await readImageFile(file);
+  if (image) {
+    updateEventProposalImagePreview(image.src);
     updateEventProposalSubmitState();
-  });
-  reader.readAsDataURL(file);
+  }
 }
 
 function syncEventProposalOtherTypeField() {
@@ -7337,19 +7336,86 @@ function updateRequestComposePreview() {
   `;
 }
 
-function readImageFile(file) {
+const uploadImageLimits = {
+  landscape: { width: 1920, height: 1080 },
+  portrait: { width: 1080, height: 1920 },
+  square: { width: 1080, height: 1080 }
+};
+
+function uploadImageLimitFor(width, height) {
+  if (width === height) return uploadImageLimits.square;
+  return width > height ? uploadImageLimits.landscape : uploadImageLimits.portrait;
+}
+
+function canvasToDataUrl(canvas, type = "image/jpeg", quality = 0.88) {
   return new Promise((resolve) => {
-    if (!file || !file.type.startsWith("image/")) {
-      resolve(null);
+    if (!canvas.toBlob) {
+      resolve(canvas.toDataURL(type, quality));
       return;
     }
-
-    const reader = new FileReader();
-    reader.addEventListener("load", () => {
-      resolve({ src: reader.result, name: file.name });
-    });
-    reader.readAsDataURL(file);
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        resolve(canvas.toDataURL(type, quality));
+        return;
+      }
+      const reader = new FileReader();
+      reader.addEventListener("load", () => resolve(String(reader.result || "")));
+      reader.readAsDataURL(blob);
+    }, type, quality);
   });
+}
+
+async function normalizeUploadImage(file, options = {}) {
+  if (!file || !file.type.startsWith("image/")) return null;
+  const source = URL.createObjectURL(file);
+  const image = new Image();
+  image.decoding = "async";
+  image.src = source;
+
+  try {
+    await (image.decode ? image.decode() : new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = reject;
+    }));
+
+    const sourceWidth = image.naturalWidth || image.width;
+    const sourceHeight = image.naturalHeight || image.height;
+    if (!sourceWidth || !sourceHeight) return null;
+
+    const maxSize = options.maxSize || uploadImageLimitFor(sourceWidth, sourceHeight);
+    const scale = Math.min(1, maxSize.width / sourceWidth, maxSize.height / sourceHeight);
+    const width = Math.max(1, Math.round(sourceWidth * scale));
+    const height = Math.max(1, Math.round(sourceHeight * scale));
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d", { colorSpace: "srgb", alpha: false }) || canvas.getContext("2d");
+    if (!ctx) return null;
+
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(image, 0, 0, width, height);
+
+    const src = await canvasToDataUrl(canvas, options.type || "image/jpeg", options.quality ?? 0.88);
+    return {
+      src,
+      name: file.name,
+      width,
+      height,
+      originalWidth: sourceWidth,
+      originalHeight: sourceHeight,
+      normalized: true,
+      resized: width !== sourceWidth || height !== sourceHeight
+    };
+  } catch (error) {
+    return null;
+  } finally {
+    URL.revokeObjectURL(source);
+  }
+}
+
+async function readImageFile(file, options = {}) {
+  return normalizeUploadImage(file, options);
 }
 
 async function loadComposeImages(files, append = true) {
@@ -8803,23 +8869,24 @@ function updateAvatarCropTransform() {
   avatarCropImage.style.setProperty("--avatar-zoom", String(zoom));
 }
 
-function loadAvatarEditorImage(file) {
+async function loadAvatarEditorImage(file) {
   if (!file || !file.type.startsWith("image/")) return;
-  const reader = new FileReader();
-  reader.addEventListener("load", () => {
-    if (mediaEditMode === "banner") {
-      pendingBannerSource = reader.result;
-    } else {
-      pendingAvatarSource = reader.result;
-    }
-    avatarCropPanel.hidden = false;
-    avatarCropImage.src = reader.result;
-    avatarZoom.value = "1";
-    avatarOffsetX.value = "0";
-    avatarOffsetY.value = "0";
-    updateEditProfilePreview();
+  const image = await readImageFile(file, {
+    maxSize: mediaEditMode === "banner" ? { width: 1920, height: 1080 } : uploadImageLimits.square,
+    quality: mediaEditMode === "banner" ? 0.9 : 0.92
   });
-  reader.readAsDataURL(file);
+  if (!image) return;
+  if (mediaEditMode === "banner") {
+    pendingBannerSource = image.src;
+  } else {
+    pendingAvatarSource = image.src;
+  }
+  avatarCropPanel.hidden = false;
+  avatarCropImage.src = image.src;
+  avatarZoom.value = "1";
+  avatarOffsetX.value = "0";
+  avatarOffsetY.value = "0";
+  updateEditProfilePreview();
 }
 
 function getCropRectFromPreview(naturalWidth, naturalHeight) {
