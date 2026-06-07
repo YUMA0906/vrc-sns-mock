@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="./styles.css?v=unread-filter-contrast" />
+    <link rel="stylesheet" href="./styles.css?v=bookmark-shortcut-scroll" />
   </head>
   <body>
     <header class="topbar">
@@ -722,22 +722,37 @@
             <div>
               <p class="eyebrow">Operations</p>
               <h1>運営管理</h1>
-              <p>イベント申請、サークル参加申請、通報を一画面で確認する運営向けモックです。</p>
+              <p>イベント申請と通報を一画面で確認する運営向けモックです。サークル参加申請は各サークル主が管理します。</p>
             </div>
             <div class="admin-summary-grid">
               <span><strong id="adminEventCount">0</strong><small>イベント申請</small></span>
-              <span><strong id="adminCircleCount">0</strong><small>参加申請</small></span>
               <span><strong id="adminReportCount">0</strong><small>通報</small></span>
             </div>
           </header>
           <div class="admin-tabs" aria-label="Admin queues">
             <button class="is-active" type="button" data-admin-tab="events">イベント承認</button>
-            <button type="button" data-admin-tab="circles">サークル承認</button>
             <button type="button" data-admin-tab="reports">通報確認</button>
           </div>
           <div id="adminQueueList" class="admin-queue-list"></div>
         </div>
       </section>
+      <dialog id="adminEventReviewDialog" class="request-sheet-dialog admin-event-review-dialog" aria-labelledby="adminEventReviewTitle">
+        <form method="dialog" class="request-sheet-card admin-event-review-card">
+          <button id="adminEventReviewClose" class="modal-close" type="button" aria-label="Close">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+          </button>
+          <p class="eyebrow">Event application</p>
+          <h2 id="adminEventReviewTitle">イベント申請を確認</h2>
+          <div id="adminEventReviewBody" class="admin-event-review-body"></div>
+          <div class="request-sheet-actions admin-event-review-actions">
+            <button id="adminEventReject" class="danger-solid-button" type="button">拒否する</button>
+            <button id="adminEventApprove" class="primary-button" type="button">承認する</button>
+          </div>
+        </form>
+      </dialog>
       <section id="backendSpecView" class="admin-view app-view" hidden>
         <button id="backFromSpecs" class="soft-button" type="button">
           <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -1163,14 +1178,25 @@
             <span>説明</span>
             <textarea id="circleCreateDescriptionInput" rows="4" placeholder="活動内容、参加条件、投稿できる内容など" required></textarea>
           </label>
-          <div class="circle-create-grid">
+          <div class="circle-create-grid circle-create-policy-grid">
             <label class="field">
-              <span>公開方式</span>
+              <span>参加方式</span>
               <select id="circleCreateVisibilityInput" required>
                 <option value="自由参加OK">自由参加OK</option>
                 <option value="承認制">承認制</option>
               </select>
             </label>
+            <label class="field">
+              <span>投稿公開先</span>
+              <select id="circleCreatePostAudienceInput" required>
+                <option value="CircleOnly">CircleOnly</option>
+                <option value="Public">Public</option>
+                <option value="Both">Public / CircleOnly</option>
+              </select>
+              <small class="field-help">サークル投稿を限定にするか、全体公開にするか、投稿時に選べるようにするかを決めます。</small>
+            </label>
+          </div>
+          <div class="circle-create-grid">
             <label class="field">
               <span>タグ</span>
               <input id="circleCreateTagsInput" type="text" placeholder="#photo #avatar #world" autocomplete="off" />
@@ -1860,7 +1886,7 @@
               <span>タイトル</span>
               <input id="composePostTitle" type="text" placeholder="例: Neon shrine avatar edit" autocomplete="off" required />
             </label>
-            <label class="field">
+            <label class="field wide">
               <span>カテゴリ</span>
               <select id="composeCategory">
                 <option>Avatar</option>
@@ -1870,14 +1896,6 @@
                 <option>World</option>
               </select>
             </label>
-            <label class="field">
-              <span>公開範囲</span>
-              <select id="composeVisibility">
-                <option>Public</option>
-                <option>Followers</option>
-                <option>Private draft</option>
-              </select>
-            </label>
             <label class="field circle-post-toggle-field">
               <span>サークル投稿</span>
               <span class="circle-post-toggle">
@@ -1885,6 +1903,18 @@
                 <span class="circle-post-toggle-box" aria-hidden="true"></span>
                 <span class="circle-post-toggle-copy">サークル向けに投稿する</span>
               </span>
+            </label>
+            <label id="composeCircleField" class="field is-reserved-hidden" aria-hidden="true">
+              <span>投稿先サークル</span>
+              <select id="composeCircle"></select>
+            </label>
+            <label id="composeVisibilityField" class="field wide">
+              <span>公開範囲</span>
+              <select id="composeVisibility">
+                <option>Public</option>
+                <option>FollowerOnly</option>
+              </select>
+              <small class="compose-audience-note" hidden>サークル側の設定に同期します。Public / CircleOnly 両対応のサークルでは投稿時に選べます。</small>
             </label>
             <div class="field wide compose-sensitive-flags">
               <span>コンテンツ属性</span>
@@ -1901,10 +1931,6 @@
                 </label>
               </div>
             </div>
-            <label id="composeCircleField" class="field is-reserved-hidden" aria-hidden="true">
-              <span>投稿先サークル</span>
-              <select id="composeCircle"></select>
-            </label>
             <label class="field">
               <span>Avatar</span>
               <input id="composeAvatar" type="text" placeholder="Selestia" autocomplete="off" />
@@ -1953,7 +1979,7 @@
               <small id="eventProposalImagePreviewLabel">バナー画像プレビュー</small>
             </span>
           </label>
-          <div class="field is-required event-type-field">
+          <div class="field event-type-field">
             <span id="eventProposalTypeLabel">イベント種別</span>
             <select id="eventProposalTypeInput" class="event-type-native-select" required>
               <option value="showcase">作品特集</option>
@@ -1985,11 +2011,11 @@
           </label>
           <label class="field is-required">
             <span id="eventProposalOrganizerLabel">主催者名</span>
-            <input id="eventProposalOrganizerInput" type="text" placeholder="Your display name" autocomplete="off" required />
+            <input id="eventProposalOrganizerInput" type="text" placeholder="Your display name" autocomplete="off" required readonly />
           </label>
           <label class="field is-required">
             <span id="eventProposalContactLabel">連絡先メール</span>
-            <input id="eventProposalContactInput" type="email" placeholder="organizer@example.com" autocomplete="off" required />
+            <input id="eventProposalContactInput" type="email" placeholder="organizer@example.com" autocomplete="off" required readonly />
           </label>
           <label class="field wide is-required">
             <span id="eventProposalSummaryLabel">開催概要</span>
@@ -1999,10 +2025,6 @@
             <span id="eventProposalSupportLabel">運営に期待すること(※サポートを確約するものではありません)</span>
             <textarea id="eventProposalSupportInput" rows="3" placeholder="特集掲載、バナー露出、募集導線、注意事項案内など"></textarea>
           </label>
-        </div>
-        <div class="event-proposal-mail-note">
-          <strong id="eventProposalMailTitle">送信先</strong>
-          <span id="eventProposalMailBody">運営イベント窓口 events@vrc-sns.mock にメール通知されます。</span>
         </div>
         <div class="request-sheet-actions">
           <button id="eventProposalCancel" class="soft-button" type="button">キャンセル</button>
@@ -2312,6 +2334,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=unread-filter-contrast"></script>
+    <script src="./app.js?v=bookmark-shortcut-scroll"></script>
   </body>
 </html>

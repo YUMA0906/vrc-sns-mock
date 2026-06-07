@@ -447,6 +447,16 @@ const circleGroups = [
   },
 ];
 
+circleGroups.forEach((circle, index) => {
+  if (!circle.postAudience) {
+    if ([2, 6, 10, 13, 18, 22, 26].includes(index)) {
+      circle.postAudience = "Both";
+    } else {
+      circle.postAudience = [0, 3, 5, 8, 11, 14, 17, 21, 24].includes(index) ? "Public" : "CircleOnly";
+    }
+  }
+});
+
 const circleManagementData = {
   "photo-walkers": {
     owner: "You",
@@ -510,12 +520,36 @@ const notifications = [
 
 const adminQueues = {
   events: [
-    { id: "event-01", title: "夏のフォトリレー特集", owner: "Lumi Photo", status: "審査待ち", detail: "写真投稿を集めるユーザー発案イベント。バナー画像あり、サークル参加条件なし。", action: "開催許可を付与" },
-    { id: "event-02", title: "ワールド制作ミニジャム", owner: "Orbit Build", status: "確認中", detail: "ワールド制作ラボ参加者向け。開催期間は承認後に主催者が設定予定。", action: "条件付き承認" },
-  ],
-  circles: [
-    { id: "circle-01", title: "アバター改変研究会", owner: "Mika Alterworks", status: "参加申請 7件", detail: "承認制サークル。申請者の投稿履歴と外部リンクを確認して承認する想定。", action: "申請一覧を見る" },
-    { id: "circle-02", title: "依頼テンプレ研究所", owner: "Rin Works", status: "参加申請 3件", detail: "依頼受付文や料金表を共有するため、過去取引の有無を確認。", action: "一括確認" },
+    {
+      id: "event-01",
+      title: "夏のフォトリレー特集",
+      owner: "Lumi Photo",
+      contact: "lumi@example.com",
+      status: "審査待ち",
+      type: "写真特集",
+      submittedAt: "2026-06-05",
+      detail: "写真投稿を集めるユーザー発案イベント。バナー画像あり、サークル参加条件なし。",
+      summary: "夏のワールド写真を集める2週間の投稿企画。#SummerVRCPhoto を付けた投稿をイベントページに集約し、参加者同士が撮影ワールドを探しやすくする想定。",
+      support: "トップバナー掲載とイベントページ内のピックアップ枠があると助かります。",
+      banner: vrchatImages.event,
+      tags: ["#SummerVRCPhoto", "#world", "#photo"],
+      action: "確認する"
+    },
+    {
+      id: "event-02",
+      title: "ワールド制作ミニジャム",
+      owner: "Orbit Build",
+      contact: "orbit@example.com",
+      status: "確認中",
+      type: "制作イベント",
+      submittedAt: "2026-06-04",
+      detail: "ワールド制作ラボ参加者向け。開催期間は承認後に主催者が設定予定。",
+      summary: "小規模なワールド制作テーマを出し、参加者が1週間でプロトタイプを投稿する企画。参加条件はワールド制作ラボのサークル参加者。",
+      support: "注意事項の文面確認と、イベント公開時の告知導線を相談したいです。",
+      banner: vrchatImages.world,
+      tags: ["#world", "#jam", "#circle"],
+      action: "確認する"
+    },
   ],
   reports: [
     { id: "report-01", title: "アバターデータ要求の疑い", owner: "Aoi Kisaragi", status: "高優先", detail: "依頼チャットで販売アセットの同梱を求めた可能性。添付ZIP警告ログあり。", action: "対応記録を開く" },
@@ -529,7 +563,7 @@ const backendSpecCards = [
   { title: "Request", body: "依頼受付ページ、依頼申請、見積もり、支払い前確認、チャット方針、リテイク可否、納品、評価。", fields: ["commission_posts", "requests", "deliveries", "reviews"] },
   { title: "Chat / Attachment", body: "初回申請と納品完了時の必須連絡、通常チャットの利用可否、画像/ZIP添付、ZIP権利確認ログ。", fields: ["request_messages", "attachments", "zip_confirmations"] },
   { title: "Event / Circle", body: "公式/ユーザー発案イベント、開催許可、イベント参加条件、サークル参加状態、承認制、限定投稿。", fields: ["events", "event_applications", "circles", "circle_members"] },
-  { title: "Notification / Admin", body: "未読、重要、依頼関連の通知分類。運営側のイベント承認、サークル申請、通報対応キュー。", fields: ["notifications", "admin_reviews", "reports"] },
+  { title: "Notification / Admin", body: "未読、重要、依頼関連の通知分類。運営側のイベント承認と通報対応キュー。サークル作成は承認なしで即時作成、参加申請はサークル主が管理。", fields: ["notifications", "admin_reviews", "reports"] },
 ];
 
 const requestManagerItems = [
@@ -716,8 +750,13 @@ const deleteReadNotifications = document.querySelector("#deleteReadNotifications
 const notificationFilterTabs = document.querySelector(".notification-filter-tabs");
 const adminQueueList = document.querySelector("#adminQueueList");
 const adminEventCount = document.querySelector("#adminEventCount");
-const adminCircleCount = document.querySelector("#adminCircleCount");
 const adminReportCount = document.querySelector("#adminReportCount");
+const adminEventReviewDialog = document.querySelector("#adminEventReviewDialog");
+const adminEventReviewClose = document.querySelector("#adminEventReviewClose");
+const adminEventReviewTitle = document.querySelector("#adminEventReviewTitle");
+const adminEventReviewBody = document.querySelector("#adminEventReviewBody");
+const adminEventApprove = document.querySelector("#adminEventApprove");
+const adminEventReject = document.querySelector("#adminEventReject");
 const backendSpecGrid = document.querySelector("#backendSpecGrid");
 const onboardingDialog = document.querySelector("#onboardingDialog");
 const onboardingStartButton = document.querySelector("#onboardingStartButton");
@@ -892,6 +931,7 @@ const circleCreateForm = document.querySelector("#circleCreateForm");
 const circleCreateNameInput = document.querySelector("#circleCreateNameInput");
 const circleCreateDescriptionInput = document.querySelector("#circleCreateDescriptionInput");
 const circleCreateVisibilityInput = document.querySelector("#circleCreateVisibilityInput");
+const circleCreatePostAudienceInput = document.querySelector("#circleCreatePostAudienceInput");
 const circleCreateTagsInput = document.querySelector("#circleCreateTagsInput");
 const circleCreateCoverInput = document.querySelector("#circleCreateCoverInput");
 const circleCreateNameError = document.querySelector("#circleCreateNameError");
@@ -1074,6 +1114,7 @@ let pendingRequestSort = "deadline";
 let activeEventsFilter = "all";
 let activeNotificationFilter = "all";
 let activeAdminTab = "events";
+let activeAdminEventId = null;
 let pendingEventProposalImage = "";
 let activeRequestReportContext = { mode: "manager", target: null };
 let activeRequestReviewContext = { mode: "client", itemId: null };
@@ -1108,6 +1149,7 @@ let requestChatAttachments = new Map();
 let lockedScrollY = 0;
 let composeImages = [];
 let composeImageIndex = 0;
+let composePreviousVisibility = "Public";
 let requestComposeImageData = "";
 let bookmarkFolders = [
   { id: "folder-photo", name: "撮影参考", pinIds: [3, 12] },
@@ -1143,6 +1185,7 @@ let myProfile = {
   role: "VRChat creator",
   bio: "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。通常投稿の作成、プロフィール編集、過去投稿の見返しをここから行う想定です。",
   link: "https://vrchat.com/home/user/example",
+  email: "you@example.com",
   visibility: "Public",
   avatar: "",
   banner: "",
@@ -1165,6 +1208,7 @@ let userAccounts = [
       bio: "アバター改変、衣装導入、撮影向けセットアップを中心に公開するクリエイターアカウント。",
       link: "https://x.com/YUMA0906",
       links: ["https://x.com/YUMA0906", "https://yuma0906.booth.pm/"],
+      email: "creator@example.com",
       visibility: "Public",
       avatar: "",
       banner: vrchatImages.portrait,
@@ -1180,6 +1224,7 @@ let userAccounts = [
       bio: "依頼相談、保存、ブックマーク整理を中心に使う依頼者用アカウント。",
       link: "https://vrchat.com/home/user/example",
       links: ["https://vrchat.com/home/user/example"],
+      email: "request@example.com",
       visibility: "Private",
       avatar: "",
       banner: vrchatImages.community,
@@ -2860,6 +2905,12 @@ function customSelectControlFor(select) {
     : null;
 }
 
+function selectForCustomControl(control) {
+  const previous = control?.previousElementSibling;
+  if (previous?.matches?.("select")) return previous;
+  return control?.closest(".field, .settings-row, .settings-panel")?.querySelector("select") || null;
+}
+
 function closeCustomSelect(select) {
   const control = customSelectControlFor(select);
   const button = control?.querySelector("[data-custom-select-button]");
@@ -2874,6 +2925,7 @@ function openCustomSelect(select) {
   const button = control?.querySelector("[data-custom-select-button]");
   const menu = control?.querySelector("[data-custom-select-menu]");
   if (!control || !button || !menu) return;
+  if (select.disabled) return;
   closeAllCustomSelects(control);
   refreshCustomSelect(select);
   menu.hidden = false;
@@ -2893,7 +2945,10 @@ function refreshCustomSelect(select) {
   const selectedOption = select.selectedOptions?.[0] || select.options?.[0];
   const text = control.querySelector("[data-custom-select-text]");
   const menu = control.querySelector("[data-custom-select-menu]");
-  if (text) text.textContent = optionLabel(selectedOption);
+  control.classList.toggle("is-disabled", select.disabled);
+  const button = control.querySelector("[data-custom-select-button]");
+  if (button) button.disabled = select.disabled;
+  if (text) text.textContent = select.disabled && select.dataset.disabledLabel ? select.dataset.disabledLabel : optionLabel(selectedOption);
   if (!menu) return;
   menu.innerHTML = [...select.options].map((option) => `
     <button class="${option.selected ? "is-selected" : ""}" type="button" role="option" aria-selected="${String(option.selected)}" data-custom-select-option="${escapeHtml(option.value)}">
@@ -2918,7 +2973,35 @@ function enhanceCustomSelect(select) {
     <div class="event-type-select-menu" role="listbox" hidden data-custom-select-menu></div>
   `;
   select.insertAdjacentElement("afterend", control);
+  control.addEventListener("pointerdown", (event) => {
+    const option = event.target.closest("[data-custom-select-option]");
+    if (!option) return;
+    if (chooseCustomSelectOption(option)) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  }, true);
+  control.addEventListener("click", (event) => {
+    const option = event.target.closest("[data-custom-select-option]");
+    if (!option) return;
+    if (chooseCustomSelectOption(option)) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  }, true);
   refreshCustomSelect(select);
+}
+
+function chooseCustomSelectOption(option) {
+  const control = option?.closest("[data-custom-select-control]");
+  const select = selectForCustomControl(control);
+  if (!select || select.disabled) return false;
+  select.value = option.dataset.customSelectOption || "";
+  refreshCustomSelect(select);
+  closeCustomSelect(select);
+  select.dispatchEvent(new Event("change", { bubbles: true }));
+  control.querySelector("[data-custom-select-button]")?.focus();
+  return true;
 }
 
 function refreshPostComposeCustomSelects() {
@@ -3444,8 +3527,8 @@ function openEventProposalDialog() {
   if (eventProposalImagePreviewImg) eventProposalImagePreviewImg.removeAttribute("src");
   if (eventProposalTypeInput) eventProposalTypeInput.value = "showcase";
   setEventProposalType("showcase", { focusOther: false });
-  if (eventProposalOrganizerInput) eventProposalOrganizerInput.value = myProfile?.displayName || "You";
-  if (eventProposalContactInput) eventProposalContactInput.value = "you@example.com";
+  syncEventProposalOrganizer();
+  syncEventProposalContact();
   updateEventProposalSubmitState();
   showModalElement(eventProposalDialog);
   window.setTimeout(() => eventProposalTitleInput?.focus(), 140);
@@ -3488,18 +3571,73 @@ function syncEventProposalOtherTypeField() {
   if (eventProposalOtherTypeInput) {
     eventProposalOtherTypeInput.required = isOther;
     eventProposalOtherTypeInput.disabled = !isOther;
-    if (!isOther) eventProposalOtherTypeInput.value = "";
+    if (!isOther) {
+      eventProposalOtherTypeInput.value = "";
+      eventProposalOtherTypeInput.setCustomValidity("");
+      eventProposalOtherTypeInput.closest(".field")?.classList.remove("is-trim-invalid");
+    }
   }
+}
+
+function isTrimRequiredField(field) {
+  if (!field?.matches?.("input[required], textarea[required]")) return false;
+  if (field.matches("input[type='file'], input[type='checkbox'], input[type='radio']")) return false;
+  return true;
+}
+
+function syncTrimRequiredField(field) {
+  if (!isTrimRequiredField(field)) return true;
+  const isWhitespaceOnly = field.value.length > 0 && !field.value.trim();
+  field.setCustomValidity(isWhitespaceOnly ? "空白だけでは入力できません。" : "");
+  field.closest(".field")?.classList.toggle("is-trim-invalid", isWhitespaceOnly);
+  return !isWhitespaceOnly;
+}
+
+function syncTrimRequiredFields(root = document) {
+  root.querySelectorAll?.("input[required], textarea[required]").forEach(syncTrimRequiredField);
+  return !root.querySelector?.("input:invalid, textarea:invalid, select:invalid");
+}
+
+function setupTrimRequiredValidation(root = document) {
+  root.querySelectorAll?.("input[required], textarea[required]").forEach((field) => {
+    field.addEventListener("input", () => syncTrimRequiredField(field));
+    field.addEventListener("change", () => syncTrimRequiredField(field));
+    syncTrimRequiredField(field);
+  });
+}
+
+function currentUserDisplayName() {
+  return myProfile?.displayName?.trim() || "You";
+}
+
+function currentUserEmail() {
+  return myProfile?.email?.trim() || "you@example.com";
+}
+
+function syncEventProposalOrganizer() {
+  if (!eventProposalOrganizerInput) return;
+  eventProposalOrganizerInput.value = currentUserDisplayName();
+  syncTrimRequiredField(eventProposalOrganizerInput);
+}
+
+function syncEventProposalContact() {
+  if (!eventProposalContactInput) return;
+  eventProposalContactInput.value = currentUserEmail();
+  syncTrimRequiredField(eventProposalContactInput);
 }
 
 function updateEventProposalSubmitState() {
   if (!eventProposalForm || !eventProposalSubmit) return;
   syncEventProposalOtherTypeField();
+  syncEventProposalOrganizer();
+  syncEventProposalContact();
+  syncTrimRequiredFields(eventProposalForm);
   eventProposalSubmit.disabled = !eventProposalForm.checkValidity();
 }
 
 function submitEventProposal(event) {
   event.preventDefault();
+  syncTrimRequiredFields(eventProposalForm);
   if (!eventProposalForm?.reportValidity()) {
     updateEventProposalSubmitState();
     return;
@@ -3754,8 +3892,6 @@ function applyLanguage({ rerender = false } = {}) {
   setText("#eventProposalContactLabel", currentLanguage === "en" ? "Contact email" : currentLanguage === "ko" ? "연락처 이메일" : "連絡先メール");
   setText("#eventProposalSummaryLabel", currentLanguage === "en" ? "Overview" : currentLanguage === "ko" ? "개최 개요" : "開催概要");
   setText("#eventProposalSupportLabel", currentLanguage === "en" ? "Requested support from ops (*Support is not guaranteed.)" : currentLanguage === "ko" ? "운영에 기대하는 지원(*지원이 보장되는 것은 아닙니다.)" : "運営に期待すること(※サポートを確約するものではありません)");
-  setText("#eventProposalMailTitle", currentLanguage === "en" ? "Sent to" : currentLanguage === "ko" ? "전송 대상" : "送信先");
-  setText("#eventProposalMailBody", currentLanguage === "en" ? "An email notification is sent to the operations event inbox: events@vrc-sns.mock." : currentLanguage === "ko" ? "운영 이벤트 메일함 events@vrc-sns.mock 으로 알림 메일이 전송됩니다." : "運営イベント窓口 events@vrc-sns.mock にメール通知されます。");
   setText("#eventProposalCancel", currentLanguage === "en" ? "Cancel" : currentLanguage === "ko" ? "취소" : "キャンセル");
   setText("#eventProposalSubmit", "eventProposalSubmit");
   setText("#eventsEyebrow", currentLanguage === "en" ? "Events" : currentLanguage === "ko" ? "이벤트" : "Events");
@@ -4409,9 +4545,11 @@ function resetCircleCreateForm() {
     circleCreateNameError.textContent = "";
   }
   circleCreateNameInput?.classList.remove("is-invalid");
+  syncTrimRequiredFields(circleCreateForm);
 }
 
 function updateCircleCreateState() {
+  syncTrimRequiredFields(circleCreateForm);
   const name = circleCreateNameInput?.value || "";
   const duplicate = circleNameExists(name);
   if (circleCreateNameError) {
@@ -4434,6 +4572,8 @@ function closeCircleCreateDialog() {
 async function createCircleFromForm(event) {
   event.preventDefault();
   if (!circleCreateNameInput || !circleCreateDescriptionInput || !circleCreateVisibilityInput) return;
+  syncTrimRequiredFields(circleCreateForm);
+  if (!circleCreateForm?.reportValidity()) return;
   const name = circleCreateNameInput.value.trim().replace(/\s+/g, " ");
   const description = circleCreateDescriptionInput.value.trim();
   if (!name || !description) return;
@@ -4454,6 +4594,9 @@ async function createCircleFromForm(event) {
     tags: tags.length ? tags : ["#circle"],
     members: 1,
     visibility: circleCreateVisibilityInput.value,
+    postAudience: ["Public", "CircleOnly", "Both"].includes(circleCreatePostAudienceInput?.value)
+      ? circleCreatePostAudienceInput.value
+      : "CircleOnly",
     eventRule: "イベント参加条件として設定可能",
   };
   circleGroups.unshift(circle);
@@ -4490,6 +4633,7 @@ function circleCard(circle) {
         <span class="circle-card-meta">
           <small>${circle.members.toLocaleString()} members</small>
           <small>${postCount} posts</small>
+          <small>${circlePostAudienceValue(circle)}</small>
           <small>${circle.owner}</small>
         </span>
       </span>
@@ -4591,7 +4735,7 @@ function renderCircleManager() {
     <article class="circle-manager-hero">
       <span class="circle-manager-hero-cover"><img src="${escapeHtml(activeCircle.cover)}" alt="" /></span>
       <span class="circle-manager-hero-copy">
-        <small>${escapeHtml(activeCircle.visibility)}</small>
+        <small>${escapeHtml(activeCircle.visibility)} / ${escapeHtml(circlePostAudienceValue(activeCircle))}</small>
         <strong>${escapeHtml(activeCircle.name)}</strong>
         <em>${escapeHtml(activeCircle.description)}</em>
       </span>
@@ -5580,9 +5724,17 @@ function applyProfileArchivePinnedHeight() {
   if (savedPostsBoard) savedPostsBoard.style.minHeight = "";
 }
 
-function openMyProfileArchive(tabName) {
+function prepareProfileArchiveTab(tabName) {
+  const previousHeight = currentProfileArchiveHeight();
+  profileArchivePinnedHeight = tabName === "folders"
+    ? Math.max(previousHeight, Math.ceil(window.innerHeight * 0.9), 520)
+    : 0;
   activeProfileArchiveTab = tabName;
   activeBookmarkFolderId = null;
+}
+
+function openMyProfileArchive(tabName) {
+  prepareProfileArchiveTab(tabName);
   profilePostQuery = "";
   if (profilePostSearch) profilePostSearch.value = "";
   closeAccountMenu();
@@ -5945,7 +6097,6 @@ function openSettingsPage() {
 
 function adminActionTone(tabName) {
   if (tabName === "reports") return "danger";
-  if (tabName === "circles") return "circle";
   return "event";
 }
 
@@ -5966,8 +6117,8 @@ function renderAdminPage() {
   backendSpecView.hidden = true;
   adminView.hidden = false;
 
+  if (!adminQueues[activeAdminTab]) activeAdminTab = "events";
   if (adminEventCount) adminEventCount.textContent = String(adminQueues.events.length);
-  if (adminCircleCount) adminCircleCount.textContent = String(adminQueues.circles.length);
   if (adminReportCount) adminReportCount.textContent = String(adminQueues.reports.length);
   document.querySelectorAll("[data-admin-tab]").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.adminTab === activeAdminTab);
@@ -5988,6 +6139,69 @@ function renderAdminPage() {
     </article>
   `).join("");
   scrollPageTop();
+}
+
+function adminEventById(eventId) {
+  return adminQueues.events.find((item) => item.id === eventId) || null;
+}
+
+function closeAdminEventReviewDialog() {
+  closeModalElement(adminEventReviewDialog);
+  activeAdminEventId = null;
+}
+
+function openAdminEventReview(eventId) {
+  const item = adminEventById(eventId);
+  if (!item || !adminEventReviewDialog || !adminEventReviewBody) return;
+  activeAdminEventId = item.id;
+  if (adminEventReviewTitle) adminEventReviewTitle.textContent = item.title;
+  adminEventReviewBody.innerHTML = `
+    <article class="admin-event-review-hero">
+      <img src="${escapeHtml(item.banner || vrchatImages.event)}" alt="${escapeHtml(item.title)}" loading="lazy" />
+      <div>
+        <span>${escapeHtml(item.status)}</span>
+        <strong>${escapeHtml(item.title)}</strong>
+        <p>${escapeHtml(item.detail)}</p>
+      </div>
+    </article>
+    <dl class="admin-event-review-grid">
+      <div><dt>主催者</dt><dd>${escapeHtml(item.owner)}</dd></div>
+      <div><dt>連絡先</dt><dd>${escapeHtml(item.contact || "未設定")}</dd></div>
+      <div><dt>イベント種別</dt><dd>${escapeHtml(item.type || "その他")}</dd></div>
+      <div><dt>申請日</dt><dd>${escapeHtml(item.submittedAt || "未設定")}</dd></div>
+    </dl>
+    <section class="admin-event-review-section">
+      <h3>開催概要</h3>
+      <p>${escapeHtml(item.summary || item.detail)}</p>
+    </section>
+    <section class="admin-event-review-section">
+      <h3>運営に期待すること</h3>
+      <p>${escapeHtml(item.support || "特になし")}</p>
+    </section>
+    <section class="admin-event-review-section">
+      <h3>タグ</h3>
+      <div class="admin-event-review-tags">
+        ${(item.tags || []).map((tag) => `<span>${escapeHtml(tag)}</span>`).join("") || "<span>タグなし</span>"}
+      </div>
+    </section>
+  `;
+  showModalElement(adminEventReviewDialog);
+}
+
+function decideAdminEvent(decision) {
+  const item = adminEventById(activeAdminEventId);
+  if (!item) return;
+  if (decision === "approve") {
+    item.status = "承認済み";
+    item.detail = `${item.title} の開催許可を付与しました。主催者が好きなタイミングと期間で告知・投稿できます。`;
+    showRequestAcceptPopup("イベントを承認しました", `${item.owner}へ開催許可を付与しました`);
+  } else {
+    item.status = "拒否済み";
+    item.detail = `${item.title} は内容確認の結果、今回は開催許可を付与しない判断です。`;
+    showProfileCopyToast("イベント申請を拒否しました");
+  }
+  closeAdminEventReviewDialog();
+  renderAdminPage();
 }
 
 function openAdminPage() {
@@ -6612,6 +6826,90 @@ function persistComposeDraft() {
   localStorage.setItem(composeDraftStorageKey, JSON.stringify(payload));
 }
 
+function normalizeComposeVisibility(value) {
+  if (value === "FollowerOnly" || value === "FriendOnly" || value === "Followers") return "FollowerOnly";
+  return "Public";
+}
+
+function normalizeCircleAudience(value) {
+  return value === "Public" ? "Public" : "CircleOnly";
+}
+
+function circlePostAudienceValue(circle) {
+  if (circle?.postAudience === "Both") return "Public / CircleOnly";
+  return circle?.postAudience === "Public" ? "Public" : "CircleOnly";
+}
+
+function circleAllowsAudienceChoice(circle) {
+  return circle?.postAudience === "Both";
+}
+
+function setComposeVisibilityOptions(options, selectedValue) {
+  if (!composeVisibility) return;
+  const current = composeVisibility.value;
+  composeVisibility.innerHTML = options
+    .map((value) => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`)
+    .join("");
+  composeVisibility.value = options.includes(selectedValue) ? selectedValue : (options.includes(current) ? current : options[0]);
+  refreshCustomSelect(composeVisibility);
+}
+
+function composeCircleAudienceLabel() {
+  const circle = circleById(composeCircle?.value);
+  if (!circle) return "CircleOnly";
+  if (circleAllowsAudienceChoice(circle)) return normalizeCircleAudience(composeVisibility?.value);
+  return circlePostAudienceValue(circle);
+}
+
+function setComposeAudienceMode(circleOnly) {
+  if (!composeVisibility) return;
+  const field = composeVisibility.closest(".field");
+  const note = field?.querySelector(".compose-audience-note");
+  const currentVisibility = normalizeComposeVisibility(composeVisibility.value);
+  field?.classList.toggle("is-circle-audience", circleOnly);
+  if (circleOnly) {
+    const circle = circleById(composeCircle?.value);
+    composePreviousVisibility = currentVisibility;
+    setComposeVisibilityOptions(["Public", "CircleOnly"], normalizeCircleAudience(composeVisibility.value));
+    if (circleAllowsAudienceChoice(circle)) {
+      composeVisibility.disabled = false;
+      delete composeVisibility.dataset.disabledLabel;
+    } else {
+      const fixedAudience = normalizeCircleAudience(circle?.postAudience);
+      composeVisibility.value = fixedAudience;
+      composeVisibility.dataset.disabledLabel = fixedAudience;
+      composeVisibility.disabled = true;
+      closeCustomSelect(composeVisibility);
+    }
+  } else {
+    setComposeVisibilityOptions(["Public", "FollowerOnly"], normalizeComposeVisibility(composeVisibility.value));
+    composeVisibility.disabled = false;
+    if (!["Public", "FollowerOnly"].includes(composeVisibility.value)) {
+      composeVisibility.value = normalizeComposeVisibility(composePreviousVisibility);
+    }
+    composePreviousVisibility = normalizeComposeVisibility(composeVisibility.value);
+    delete composeVisibility.dataset.disabledLabel;
+  }
+  if (note) note.hidden = !circleOnly;
+  refreshCustomSelect(composeVisibility);
+}
+
+function unlockComposeVisibilityWhenCircleOff() {
+  if (!composeVisibility || isComposeCirclePost()) return;
+  const field = composeVisibility.closest(".field");
+  const note = field?.querySelector(".compose-audience-note");
+  setComposeVisibilityOptions(["Public", "FollowerOnly"], normalizeComposeVisibility(composeVisibility.value));
+  composeVisibility.disabled = false;
+  if (!["Public", "FollowerOnly"].includes(composeVisibility.value)) {
+    composeVisibility.value = normalizeComposeVisibility(composePreviousVisibility);
+  }
+  composePreviousVisibility = normalizeComposeVisibility(composeVisibility.value);
+  delete composeVisibility.dataset.disabledLabel;
+  field?.classList.remove("is-circle-audience");
+  if (note) note.hidden = true;
+  refreshCustomSelect(composeVisibility);
+}
+
 function restoreComposeDraft() {
   const raw = localStorage.getItem(composeDraftStorageKey);
   if (!raw) return;
@@ -6620,7 +6918,10 @@ function restoreComposeDraft() {
     composePostTitle.value = draft.title || "";
     composeCategory.value = draft.category || "Photo";
     const draftCirclePost = Boolean(draft.circlePost || draft.visibility === "Circle only");
-    if (composeVisibility) composeVisibility.value = draft.visibility === "Circle only" ? "Public" : (draft.visibility || "Public");
+    if (composeVisibility) {
+      composePreviousVisibility = normalizeComposeVisibility(draft.visibility);
+      composeVisibility.value = composePreviousVisibility;
+    }
     if (composeCircleToggle) composeCircleToggle.checked = draftCirclePost;
     if (composeR18Toggle) composeR18Toggle.checked = Boolean(draft.r18);
     if (composeGoreToggle) composeGoreToggle.checked = Boolean(draft.gore);
@@ -6645,6 +6946,7 @@ function resetComposeFormState() {
   composePostTitle.value = "";
   composeCategory.value = "Photo";
   if (composeVisibility) composeVisibility.value = "Public";
+  composePreviousVisibility = "Public";
   if (composeCircleToggle) composeCircleToggle.checked = false;
   if (composeR18Toggle) composeR18Toggle.checked = false;
   if (composeGoreToggle) composeGoreToggle.checked = false;
@@ -6658,6 +6960,7 @@ function resetComposeFormState() {
   renderComposeImage();
   updateComposeCircleVisibility();
   refreshPostComposeCustomSelects();
+  syncTrimRequiredFields(composeForm);
 }
 
 function composeHasDraftableInput() {
@@ -7779,6 +8082,7 @@ function addMockAccount() {
       bio: "新しく追加したサブアカウント。用途に応じてプロフィール編集から内容を変更できます。",
       link: "",
       links: [],
+      email: `sub${count}@example.com`,
       visibility: "Public",
       avatar: "",
       banner: vrchatImages.neon,
@@ -7974,8 +8278,11 @@ function openComposeHint({ restoreDraft = false } = {}) {
   resetComposeFormState();
   if (restoreDraft) restoreComposeDraft();
   updateComposeCircleVisibility();
+  unlockComposeVisibilityWhenCircleOff();
+  syncTrimRequiredFields(composeForm);
   updateComposePreview();
   showModalElement(composeDialog);
+  window.requestAnimationFrame(unlockComposeVisibilityWhenCircleOff);
   window.setTimeout(() => composePostTitle.focus(), 140);
 }
 
@@ -8022,6 +8329,7 @@ function openRequestComposeDialog() {
   dropHint.hidden = true;
   requestComposeNotice.hidden = true;
   restoreRequestComposeDraft();
+  syncTrimRequiredFields(requestComposeForm);
   updateRequestComposePreview();
   showModalElement(requestComposeDialog);
   window.setTimeout(() => requestPostTitle.focus(), 140);
@@ -8057,6 +8365,7 @@ function isComposeCirclePost() {
 function updateComposeCircleVisibility() {
   populateComposeCircleOptions();
   const circleOnly = isComposeCirclePost();
+  setComposeAudienceMode(circleOnly);
   if (composeCircleField) {
     composeCircleField.classList.toggle("is-reserved-hidden", !circleOnly);
     composeCircleField.setAttribute("aria-hidden", String(!circleOnly));
@@ -8096,7 +8405,7 @@ function updateComposePreview() {
   composePreviewCard.innerHTML = `
     <span>${category} / ${circle ? circle.name : creator}</span>
     <strong>${title}</strong>
-    <small>${circle ? "Circle only / " : ""}${contentFlags ? `${contentFlags} / ` : ""}${tags}</small>
+    <small>${circle ? `${composeCircleAudienceLabel()} / ` : `${normalizeComposeVisibility(composeVisibility?.value)} / `}${contentFlags ? `${contentFlags} / ` : ""}${tags}</small>
   `;
 }
 
@@ -8276,6 +8585,12 @@ function removeCurrentComposeImage() {
 
 function handleMockSubmit(event) {
   event.preventDefault();
+  syncTrimRequiredFields(composeForm);
+  if (!composeForm?.reportValidity()) return;
+  if (!composePostTitle.value.trim()) {
+    composePostTitle.focus();
+    return;
+  }
   const circleOnly = isComposeCirclePost();
   const circleId = circleOnly ? composeCircle?.value : "";
   const circle = circleId ? circleById(circleId) : null;
@@ -8291,6 +8606,9 @@ function handleMockSubmit(event) {
     id: Date.now(),
     title: composePostTitle.value.trim() || "新しい投稿",
     category: composeCategory.value || "Photo",
+    visibility: circle ? composeCircleAudienceLabel() : normalizeComposeVisibility(composeVisibility?.value),
+    circleVisibility: circle?.visibility || null,
+    circlePostAudience: circle ? circle.postAudience : null,
     creator: "You",
     role: "VRChat creator",
     avatar: composeAvatar.value.trim() || "Rurune",
@@ -8329,6 +8647,8 @@ function handleMockSubmit(event) {
 
 function handleRequestComposeSubmit(event) {
   event.preventDefault();
+  syncTrimRequiredFields(requestComposeForm);
+  if (!requestComposeForm?.reportValidity()) return;
   if (!requestPostTitle.value.trim()) {
     requestComposeNotice.hidden = false;
     requestComposeNotice.textContent = "依頼受付タイトルは必須です。";
@@ -8692,9 +9012,13 @@ document.addEventListener("click", (event) => {
   const customButton = event.target.closest("[data-custom-select-button]");
   if (customButton) {
     const control = customButton.closest("[data-custom-select-control]");
-    const select = control?.previousElementSibling;
+    const select = selectForCustomControl(control);
     const menu = control?.querySelector("[data-custom-select-menu]");
     if (!select || !menu) return;
+    if (select.disabled) {
+      closeCustomSelect(select);
+      return;
+    }
     const shouldOpen = menu.hidden;
     closeAllCustomSelects(control);
     menu.hidden = !shouldOpen;
@@ -8705,16 +9029,19 @@ document.addEventListener("click", (event) => {
 
   const option = event.target.closest("[data-custom-select-option]");
   if (option) {
-    const control = option.closest("[data-custom-select-control]");
-    const select = control?.previousElementSibling;
-    if (!select) return;
-    select.value = option.dataset.customSelectOption || "";
-    refreshCustomSelect(select);
-    closeCustomSelect(select);
-    select.dispatchEvent(new Event("change", { bubbles: true }));
-    control.querySelector("[data-custom-select-button]")?.focus();
+    chooseCustomSelectOption(option);
   }
 });
+
+document.addEventListener("pointerdown", (event) => {
+  const option = event.target.closest("[data-custom-select-option]");
+  if (!option) return;
+  if (chooseCustomSelectOption(option)) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+}, true);
+setupTrimRequiredValidation();
 [
   eventProposalTitleInput,
   eventProposalOtherTypeInput,
@@ -9158,10 +9485,7 @@ profilePostSearch?.addEventListener("input", () => {
 profileArchiveTabs.forEach((button) => {
   button.addEventListener("click", () => {
     const nextTab = button.dataset.profileArchiveTab || "posts";
-    const previousHeight = currentProfileArchiveHeight();
-    profileArchivePinnedHeight = nextTab === "folders" ? Math.max(previousHeight, 320) : 0;
-    activeProfileArchiveTab = nextTab;
-    activeBookmarkFolderId = null;
+    prepareProfileArchiveTab(nextTab);
     renderProfilePostArchive();
   });
 });
@@ -9297,8 +9621,23 @@ document.querySelector(".admin-tabs")?.addEventListener("click", (event) => {
 adminQueueList?.addEventListener("click", (event) => {
   const action = event.target.closest("[data-admin-action]");
   if (!action) return;
+  if (activeAdminTab === "events") {
+    openAdminEventReview(action.dataset.adminAction);
+    return;
+  }
   showProfileCopyToast("運営対応の記録を更新しました");
 });
+
+adminEventReviewClose?.addEventListener("click", closeAdminEventReviewDialog);
+adminEventReviewDialog?.addEventListener("click", (event) => {
+  if (event.target === adminEventReviewDialog) closeAdminEventReviewDialog();
+});
+adminEventReviewDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeAdminEventReviewDialog();
+});
+adminEventApprove?.addEventListener("click", () => decideAdminEvent("approve"));
+adminEventReject?.addEventListener("click", () => decideAdminEvent("reject"));
 
 markNotificationsRead.addEventListener("click", () => {
   notifications.forEach((item) => {
@@ -10060,6 +10399,7 @@ saveDraftButton?.addEventListener("click", () => {
 
 composeCircleToggle?.addEventListener("change", () => {
   handleComposeCircleToggleChange();
+  unlockComposeVisibilityWhenCircleOff();
 });
 
 composeImage.addEventListener("change", () => {

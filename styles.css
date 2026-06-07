@@ -3103,6 +3103,42 @@ body[data-theme="dark"] .compose-mode label:has(input:checked) {
   font-weight: 760;
 }
 
+.field small {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 720;
+  line-height: 1.45;
+}
+
+.field small[hidden] {
+  display: none;
+}
+
+.field.is-circle-audience {
+  position: relative;
+}
+
+.field.is-circle-audience > span::after {
+  content: "Synced";
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  margin-left: 8px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(24,24,23,0.88);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 900;
+  vertical-align: middle;
+}
+
+[data-theme="dark"] .field.is-circle-audience > span::after,
+body[data-theme="dark"] .field.is-circle-audience > span::after {
+  background: #f4f1eb;
+  color: #111;
+}
+
 .field input,
 .field select,
 .field textarea {
@@ -5823,6 +5859,38 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   gap: 12px;
 }
 
+.circle-create-policy-grid {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.72), rgba(247,244,238,0.5)),
+    rgba(255,255,255,0.52);
+}
+
+.circle-create-policy-grid .field {
+  align-content: start;
+}
+
+.circle-create-policy-grid .field > span {
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.circle-create-policy-grid .field-help {
+  max-width: 28em;
+  color: color-mix(in srgb, var(--muted) 86%, var(--ink));
+}
+
+[data-theme="dark"] .circle-create-policy-grid,
+body[data-theme="dark"] .circle-create-policy-grid {
+  background:
+    linear-gradient(135deg, rgba(255,247,232,0.08), rgba(255,247,232,0.035)),
+    rgba(255,247,232,0.035);
+  border-color: rgba(255,247,232,0.14);
+}
+
 #circleCreateNameInput.is-invalid {
   border-color: #d94b4b;
   box-shadow: 0 0 0 3px rgba(217,75,75,0.12);
@@ -7496,15 +7564,38 @@ body[data-theme="dark"] .service-faq-grid article {
   padding: 10px;
 }
 
-.event-proposal-card .field.is-required > span:first-child::after {
-  content: " *";
-  color: #c74141;
+.field:has(input[required]) > span:first-child::after,
+.field:has(textarea[required]) > span:first-child::after,
+.field.is-required > span:first-child::after {
+  content: "必須";
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  margin-left: 8px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: rgba(199, 65, 65, 0.12);
+  color: #b73535;
+  font-size: 0.66rem;
   font-weight: 900;
+  line-height: 1;
+  vertical-align: middle;
 }
 
-.event-proposal-card .field.is-required input,
-.event-proposal-card .field.is-required select,
-.event-proposal-card .field.is-required textarea {
+.field:has(input[required]:placeholder-shown) input,
+.field:has(textarea[required]:placeholder-shown) textarea,
+.field:has(input[required]:not(:placeholder-shown):invalid) input,
+.field:has(textarea[required]:not(:placeholder-shown):invalid) textarea,
+.field:has(select[required]:invalid) select,
+.field:has(select[required]:invalid) .event-type-select-button,
+.field.is-required:has(input[required]:placeholder-shown) input,
+.field.is-required:has(textarea[required]:placeholder-shown) textarea,
+.field.is-required:has(input[required]:not(:placeholder-shown):invalid) input,
+.field.is-required:has(textarea[required]:not(:placeholder-shown):invalid) textarea,
+.field.is-required:has(select[required]:invalid) select,
+.field.is-required:has(select[required]:invalid) .event-type-select-button,
+.field.is-trim-invalid input,
+.field.is-trim-invalid textarea {
   border-color: rgba(199, 65, 65, 0.56);
   box-shadow: 0 0 0 1px rgba(199, 65, 65, 0.08);
 }
@@ -7598,6 +7689,29 @@ body[data-theme="dark"] .service-faq-grid article {
   transform: rotate(180deg);
 }
 
+.event-type-select.is-disabled .event-type-select-button,
+.event-type-select-button:disabled {
+  cursor: default;
+  opacity: 1;
+  background: rgba(248, 245, 238, 0.78);
+  color: #5b554d;
+  border-color: rgba(25,25,24,0.12);
+}
+
+.event-type-select.is-disabled .event-type-select-button svg,
+.event-type-select-button:disabled svg {
+  opacity: 0.42;
+}
+
+[data-theme="dark"] .event-type-select.is-disabled .event-type-select-button,
+[data-theme="dark"] .event-type-select-button:disabled,
+body[data-theme="dark"] .event-type-select.is-disabled .event-type-select-button,
+body[data-theme="dark"] .event-type-select-button:disabled {
+  background: rgba(255,247,232,0.08);
+  color: #e8dfd0;
+  border-color: rgba(255,247,232,0.16);
+}
+
 .event-type-select-menu {
   position: absolute;
   top: calc(100% + 6px);
@@ -7652,9 +7766,20 @@ body[data-theme="dark"] .service-faq-grid article {
   transform: rotate(45deg);
 }
 
-.event-proposal-card .field.is-required input:focus,
-.event-proposal-card .field.is-required select:focus,
-.event-proposal-card .field.is-required textarea:focus {
+.field:has(input[required]:placeholder-shown) input:focus,
+.field:has(textarea[required]:placeholder-shown) textarea:focus,
+.field:has(input[required]:not(:placeholder-shown):invalid) input:focus,
+.field:has(textarea[required]:not(:placeholder-shown):invalid) textarea:focus,
+.field:has(select[required]:invalid) select:focus,
+.field:has(select[required]:invalid) .event-type-select-button:focus-visible,
+.field.is-required:has(input[required]:placeholder-shown) input:focus,
+.field.is-required:has(textarea[required]:placeholder-shown) textarea:focus,
+.field.is-required:has(input[required]:not(:placeholder-shown):invalid) input:focus,
+.field.is-required:has(textarea[required]:not(:placeholder-shown):invalid) textarea:focus,
+.field.is-required:has(select[required]:invalid) select:focus,
+.field.is-required:has(select[required]:invalid) .event-type-select-button:focus-visible,
+.field.is-trim-invalid input:focus,
+.field.is-trim-invalid textarea:focus {
   border-color: rgba(199, 65, 65, 0.92);
   box-shadow: 0 0 0 3px rgba(199, 65, 65, 0.16);
 }
@@ -7742,24 +7867,78 @@ body[data-reduced-motion="true"] .event-proposal-other-field {
 [data-theme="dark"] .event-proposal-step,
 [data-theme="dark"] .event-proposal-item,
 [data-theme="dark"] .event-proposal-mail-note,
-[data-theme="dark"] .event-proposal-card .field.is-required input,
-[data-theme="dark"] .event-proposal-card .field.is-required select,
-[data-theme="dark"] .event-proposal-card .field.is-required textarea,
+[data-theme="dark"] .field:has(input[required]:placeholder-shown) input,
+[data-theme="dark"] .field:has(textarea[required]:placeholder-shown) textarea,
+[data-theme="dark"] .field:has(input[required]:not(:placeholder-shown):invalid) input,
+[data-theme="dark"] .field:has(textarea[required]:not(:placeholder-shown):invalid) textarea,
+[data-theme="dark"] .field:has(select[required]:invalid) select,
+[data-theme="dark"] .field:has(select[required]:invalid) .event-type-select-button,
+[data-theme="dark"] .field.is-required:has(input[required]:placeholder-shown) input,
+[data-theme="dark"] .field.is-required:has(textarea[required]:placeholder-shown) textarea,
+[data-theme="dark"] .field.is-required:has(input[required]:not(:placeholder-shown):invalid) input,
+[data-theme="dark"] .field.is-required:has(textarea[required]:not(:placeholder-shown):invalid) textarea,
+[data-theme="dark"] .field.is-required:has(select[required]:invalid) select,
+[data-theme="dark"] .field.is-required:has(select[required]:invalid) .event-type-select-button,
+[data-theme="dark"] .field.is-trim-invalid input,
+[data-theme="dark"] .field.is-trim-invalid textarea,
 body[data-theme="dark"] .event-proposal-step,
 body[data-theme="dark"] .event-proposal-item,
 body[data-theme="dark"] .event-proposal-mail-note,
-body[data-theme="dark"] .event-proposal-card .field.is-required input,
-body[data-theme="dark"] .event-proposal-card .field.is-required select,
-body[data-theme="dark"] .event-proposal-card .field.is-required textarea {
+body[data-theme="dark"] .field:has(input[required]:placeholder-shown) input,
+body[data-theme="dark"] .field:has(textarea[required]:placeholder-shown) textarea,
+body[data-theme="dark"] .field:has(input[required]:not(:placeholder-shown):invalid) input,
+body[data-theme="dark"] .field:has(textarea[required]:not(:placeholder-shown):invalid) textarea,
+body[data-theme="dark"] .field:has(select[required]:invalid) select,
+body[data-theme="dark"] .field:has(select[required]:invalid) .event-type-select-button,
+body[data-theme="dark"] .field.is-required:has(input[required]:placeholder-shown) input,
+body[data-theme="dark"] .field.is-required:has(textarea[required]:placeholder-shown) textarea,
+body[data-theme="dark"] .field.is-required:has(input[required]:not(:placeholder-shown):invalid) input,
+body[data-theme="dark"] .field.is-required:has(textarea[required]:not(:placeholder-shown):invalid) textarea,
+body[data-theme="dark"] .field.is-required:has(select[required]:invalid) select,
+body[data-theme="dark"] .field.is-required:has(select[required]:invalid) .event-type-select-button,
+body[data-theme="dark"] .field.is-trim-invalid input,
+body[data-theme="dark"] .field.is-trim-invalid textarea {
   background: rgba(255,255,255,0.04);
 }
 
-[data-theme="dark"] .event-proposal-card .field.is-required input,
-[data-theme="dark"] .event-proposal-card .field.is-required select,
-[data-theme="dark"] .event-proposal-card .field.is-required textarea,
-body[data-theme="dark"] .event-proposal-card .field.is-required input,
-body[data-theme="dark"] .event-proposal-card .field.is-required select,
-body[data-theme="dark"] .event-proposal-card .field.is-required textarea {
+[data-theme="dark"] .field:has(input[required]) > span:first-child::after,
+[data-theme="dark"] .field:has(textarea[required]) > span:first-child::after,
+[data-theme="dark"] .field.is-required > span:first-child::after,
+body[data-theme="dark"] .field:has(input[required]) > span:first-child::after,
+body[data-theme="dark"] .field:has(textarea[required]) > span:first-child::after,
+body[data-theme="dark"] .field.is-required > span:first-child::after {
+  background: rgba(255, 114, 114, 0.16);
+  color: #ff9f9f;
+}
+
+[data-theme="dark"] .field:has(input[required]:placeholder-shown) input,
+[data-theme="dark"] .field:has(textarea[required]:placeholder-shown) textarea,
+[data-theme="dark"] .field:has(input[required]:not(:placeholder-shown):invalid) input,
+[data-theme="dark"] .field:has(textarea[required]:not(:placeholder-shown):invalid) textarea,
+[data-theme="dark"] .field:has(select[required]:invalid) select,
+[data-theme="dark"] .field:has(select[required]:invalid) .event-type-select-button,
+[data-theme="dark"] .field.is-required:has(input[required]:placeholder-shown) input,
+[data-theme="dark"] .field.is-required:has(textarea[required]:placeholder-shown) textarea,
+[data-theme="dark"] .field.is-required:has(input[required]:not(:placeholder-shown):invalid) input,
+[data-theme="dark"] .field.is-required:has(textarea[required]:not(:placeholder-shown):invalid) textarea,
+[data-theme="dark"] .field.is-required:has(select[required]:invalid) select,
+[data-theme="dark"] .field.is-required:has(select[required]:invalid) .event-type-select-button,
+[data-theme="dark"] .field.is-trim-invalid input,
+[data-theme="dark"] .field.is-trim-invalid textarea,
+body[data-theme="dark"] .field:has(input[required]:placeholder-shown) input,
+body[data-theme="dark"] .field:has(textarea[required]:placeholder-shown) textarea,
+body[data-theme="dark"] .field:has(input[required]:not(:placeholder-shown):invalid) input,
+body[data-theme="dark"] .field:has(textarea[required]:not(:placeholder-shown):invalid) textarea,
+body[data-theme="dark"] .field:has(select[required]:invalid) select,
+body[data-theme="dark"] .field:has(select[required]:invalid) .event-type-select-button,
+body[data-theme="dark"] .field.is-required:has(input[required]:placeholder-shown) input,
+body[data-theme="dark"] .field.is-required:has(textarea[required]:placeholder-shown) textarea,
+body[data-theme="dark"] .field.is-required:has(input[required]:not(:placeholder-shown):invalid) input,
+body[data-theme="dark"] .field.is-required:has(textarea[required]:not(:placeholder-shown):invalid) textarea,
+body[data-theme="dark"] .field.is-required:has(select[required]:invalid) select,
+body[data-theme="dark"] .field.is-required:has(select[required]:invalid) .event-type-select-button,
+body[data-theme="dark"] .field.is-trim-invalid input,
+body[data-theme="dark"] .field.is-trim-invalid textarea {
   border-color: rgba(255, 114, 114, 0.5);
   box-shadow: 0 0 0 1px rgba(255, 114, 114, 0.12);
 }
@@ -9516,6 +9695,161 @@ body[data-theme="dark"] .admin-tabs button.is-active {
 .admin-queue-side small {
   color: var(--muted);
   font-weight: 780;
+}
+
+.admin-event-review-card {
+  position: relative;
+  max-width: min(780px, calc(100vw - 28px));
+  padding-top: 28px;
+}
+
+.admin-event-review-card .modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: var(--text);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+}
+
+.admin-event-review-card .modal-close svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.admin-event-review-card .modal-close:hover,
+.admin-event-review-card .modal-close:focus-visible {
+  transform: none;
+  background: color-mix(in srgb, var(--text) 10%, var(--surface));
+  box-shadow: 0 12px 28px rgba(0,0,0,0.16);
+}
+
+.admin-event-review-body {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-event-review-hero {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.9fr) minmax(0, 1.1fr);
+  gap: 16px;
+  align-items: stretch;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+}
+
+.admin-event-review-hero img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 16px;
+  background: var(--soft);
+}
+
+.admin-event-review-hero div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+.admin-event-review-hero span {
+  width: max-content;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.admin-event-review-hero strong {
+  font-size: clamp(1.35rem, 3vw, 2rem);
+  line-height: 1.05;
+}
+
+.admin-event-review-hero p,
+.admin-event-review-section p {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 650;
+  line-height: 1.65;
+}
+
+.admin-event-review-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.admin-event-review-grid div,
+.admin-event-review-section {
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+}
+
+.admin-event-review-grid dt {
+  margin: 0 0 5px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+
+.admin-event-review-grid dd {
+  margin: 0;
+  color: var(--text);
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.admin-event-review-section h3 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+}
+
+.admin-event-review-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-event-review-tags span {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 850;
+}
+
+.admin-event-review-actions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-content: stretch;
+  align-items: center;
+}
+
+.admin-event-review-actions .primary-button,
+.admin-event-review-actions .danger-solid-button {
+  width: 100%;
+  justify-content: center;
 }
 
 .backend-spec-grid {
@@ -11549,6 +11883,15 @@ body.is-dragging .drop-hint {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
     justify-items: start;
+  }
+
+  .admin-event-review-hero,
+  .admin-event-review-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-event-review-hero img {
+    height: 160px;
   }
 
   .backend-spec-grid {
