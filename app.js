@@ -140,9 +140,14 @@ const pins = [
   { id: 21, title: "Photo walk route notes", category: "Photo", creator: "Lumi Photo", role: "Circle host", avatar: "Manuka", world: "Amber Station", tags: ["#circle", "#worldphoto", "#ロケハン"], request: null, description: "VRC写真散歩同好会の参加者向けに、次回フォトウォーク候補のワールド導線と撮影ポイントを共有する限定投稿。", image: vrchatImages.community, circleId: "photo-walkers" },
   { id: 22, title: "Prototype lighting kit", category: "World", creator: "Orbit Build", role: "Circle host", avatar: "World sample", world: "Creator Room", tags: ["#circle", "#world", "#lighting"], request: null, description: "ワールド制作ラボの参加者だけに共有される、軽量ライト配置と検証用ギミックのメモ。", image: vrchatImages.world, circleId: "world-lab" },
   { id: 23, title: "Selestia expression study", category: "Avatar", creator: "Mika Alterworks", role: "Avatar editor", avatar: "Selestia", world: "Private Studio", tags: ["#circle", "#avatar", "#表情差分"], request: null, description: "アバター改変研究会の参加者だけが見られる、表情差分と衣装合わせの途中検証ログ。", image: vrchatImages.fashion, circleId: "avatar-lab" },
+  { id: 24, title: "Subscriber memo: booth fitting notes", category: "Avatar", creator: "Mika Alterworks", role: "Avatar editor", avatar: "Selestia", world: "Atelier room", tags: ["#subscriber", "#booth", "#fitting"], request: null, description: "サブスク加入者だけが見られる衣装合わせメモ。購入前の比較や、どの衣装が相性良いかの途中記録をまとめています。", image: vrchatImages.fashion, visibility: "SubscriberOnly" },
+  { id: 25, title: "Members album: hidden cuts", category: "Photo", creator: "Lumi Photo", role: "Photographer", avatar: "Manuka", world: "Moonlit Harbor", tags: ["#subscriber", "#album", "#portrait"], request: null, description: "サブスク向けの未公開カット集。通常投稿には出していない構図やレタッチ前後の比較も載せる想定です。", image: vrchatImages.portrait, visibility: "SubscriberOnly" },
+  { id: 26, title: "Devlog: optimization breakdown", category: "World", creator: "Orbit Build", role: "World creator", avatar: "World sample", world: "Soft Club", tags: ["#subscriber", "#optimization", "#devlog"], request: null, description: "支援者限定の制作ログ。容量削減やライティング調整の判断理由を詳しく共有する想定です。", image: vrchatImages.world, visibility: "SubscriberOnly" },
   { id: 101, title: "Draft avatar board", category: "Avatar", creator: "You", role: "VRChat creator", avatar: "Rurune", world: "Creator Room", tags: ["#draft", "#avatar", "#memo"], request: null, description: "自分用の下書きアバターボード。", image: vrchatImages.portrait },
   { id: 102, title: "Saved outfit ideas", category: "Avatar", creator: "You", role: "VRChat creator", avatar: "Shinra", world: "Soft Garden", tags: ["#saved", "#outfit", "#booth"], request: null, description: "保存した衣装アイデアをまとめたマイページ用投稿。", image: vrchatImages.fashion },
   { id: 103, title: "World walk archive", category: "World", creator: "You", role: "VRChat creator", avatar: "Rurune", world: "Silent Harbor", tags: ["#world", "#archive", "#photo"], request: null, description: "お気に入りワールドの散歩ログ。", image: vrchatImages.world },
+  { id: 104, title: "Subscriber-only setup memo", category: "Avatar", creator: "You", role: "VRChat creator", avatar: "Rurune", world: "Creator Room", tags: ["#subscriber", "#memo", "#setup"], request: null, description: "支援者だけに共有する導入手順や細かな設定メモの想定投稿。", image: vrchatImages.desk, visibility: "SubscriberOnly" },
+  { id: 105, title: "Backstage WIP notes", category: "Photo", creator: "You", role: "VRChat creator", avatar: "Shinra", world: "Soft Garden", tags: ["#subscriber", "#wip", "#photo"], request: null, description: "支援プラン向けの制作途中メモや未公開カットのまとめ。", image: vrchatImages.community, visibility: "SubscriberOnly" },
 ];
 
 const myPosts = pins.filter((pin) => pin.creator === "You");
@@ -485,11 +490,11 @@ const circleManagementData = {
     ]
   },
   "event-host-lounge": {
-    owner: "You",
+    owner: "VRC SNS運営",
     managedByYou: true,
     members: [
-      { id: "you", name: "You", role: "Owner", joined: "作成者", status: "管理者", avatar: "Y" },
-      { id: "vrcsns", name: "VRC SNS運営", role: "Manager", joined: "2026-05-10", status: "運営補助", avatar: "V" },
+      { id: "you", name: "You", role: "Manager", joined: "2026-05-12", status: "イベント運営補助", avatar: "Y" },
+      { id: "vrcsns", name: "VRC SNS運営", role: "Owner", joined: "作成者", status: "管理者", avatar: "V" },
       { id: "rin", name: "Rin Works", role: "Member", joined: "2026-06-04", status: "投稿可", avatar: "R" }
     ],
     requests: [
@@ -935,6 +940,9 @@ const circleCreatePostAudienceInput = document.querySelector("#circleCreatePostA
 const circleCreateTagsInput = document.querySelector("#circleCreateTagsInput");
 const circleCreateCoverInput = document.querySelector("#circleCreateCoverInput");
 const circleCreateNameError = document.querySelector("#circleCreateNameError");
+const circleCreateTitle = document.querySelector("#circleCreateTitle");
+const circleCreateLead = document.querySelector("#circleCreateLead");
+const circleCreateCoverHelp = document.querySelector("#circleCreateCoverHelp");
 const circlePromoteDialog = document.querySelector("#circlePromoteDialog");
 const circlePromoteCopy = document.querySelector("#circlePromoteCopy");
 const circlePromoteConfirm = document.querySelector("#circlePromoteConfirm");
@@ -953,6 +961,10 @@ const circleKickDialog = document.querySelector("#circleKickDialog");
 const circleKickCopy = document.querySelector("#circleKickCopy");
 const circleKickCancel = document.querySelector("#circleKickCancel");
 const circleKickConfirm = document.querySelector("#circleKickConfirm");
+const circleLeaveDialog = document.querySelector("#circleLeaveDialog");
+const circleLeaveCopy = document.querySelector("#circleLeaveCopy");
+const circleLeaveCancel = document.querySelector("#circleLeaveCancel");
+const circleLeaveConfirm = document.querySelector("#circleLeaveConfirm");
 const bookmarkFolderDialog = document.querySelector("#bookmarkFolderDialog");
 const followingListDialog = document.querySelector("#followingListDialog");
 const followingListBody = document.querySelector("#followingListBody");
@@ -1009,6 +1021,7 @@ const composeWorld = document.querySelector("#composeWorld");
 const composeTags = document.querySelector("#composeTags");
 const composeDescription = document.querySelector("#composeDescription");
 const composeNotice = document.querySelector("#composeNotice");
+const composeSubmit = document.querySelector("#composeSubmit");
 const saveDraftButton = document.querySelector("#saveDraftButton");
 const requestComposeDialog = document.querySelector("#requestComposeDialog");
 const requestComposeForm = document.querySelector("#requestComposeForm");
@@ -1024,6 +1037,7 @@ const requestPostCategory = document.querySelector("#requestPostCategory");
 const requestPostVisibility = document.querySelector("#requestPostVisibility");
 const requestPostPrice = document.querySelector("#requestPostPrice");
 const requestPostDelivery = document.querySelector("#requestPostDelivery");
+const requestPostAverageDeliveryHint = document.querySelector("#requestPostAverageDeliveryHint");
 const requestPostCapacity = document.querySelector("#requestPostCapacity");
 const requestPostRetake = document.querySelector("#requestPostRetake");
 const requestPostChat = document.querySelector("#requestPostChat");
@@ -1033,6 +1047,7 @@ const requestPostTags = document.querySelector("#requestPostTags");
 const requestPostDescription = document.querySelector("#requestPostDescription");
 const requestPostRequirements = document.querySelector("#requestPostRequirements");
 const requestComposeNotice = document.querySelector("#requestComposeNotice");
+const requestComposeSubmit = document.querySelector("#requestComposeSubmit");
 const saveRequestDraftButton = document.querySelector("#saveRequestDraftButton");
 const requestTemplateButtons = [...document.querySelectorAll("[data-request-template]")];
 const editProfileDialog = document.querySelector("#editProfileDialog");
@@ -1064,6 +1079,23 @@ const editBio = document.querySelector("#editBio");
 const editLink = document.querySelector("#editLink");
 const editVisibility = document.querySelector("#editVisibility");
 const editProfileNotice = document.querySelector("#editProfileNotice");
+const circleCreateSubmit = document.querySelector("#circleCreateSubmit");
+const profileSupportBadges = document.querySelector("#profileSupportBadges");
+const profileSubscriptionSection = document.querySelector("#profileSubscriptionSection");
+const profileSubscriptionEyebrow = document.querySelector("#profileSubscriptionEyebrow");
+const profileSubscriptionLead = document.querySelector("#profileSubscriptionLead");
+const profileSubscriptionPlans = document.querySelector("#profileSubscriptionPlans");
+const profileSupportCards = document.querySelector("#profileSupportCards");
+const subscriptionPlanManageButton = document.querySelector("#subscriptionPlanManageButton");
+const subscriptionPlanDialog = document.querySelector("#subscriptionPlanDialog");
+const subscriptionPlanForm = document.querySelector("#subscriptionPlanForm");
+const subscriptionPlanTitle = document.querySelector("#subscriptionPlanTitle");
+const subscriptionPlanLead = document.querySelector("#subscriptionPlanLead");
+const subscriptionPlanName = document.querySelector("#subscriptionPlanName");
+const subscriptionPlanPrice = document.querySelector("#subscriptionPlanPrice");
+const subscriptionPlanSummary = document.querySelector("#subscriptionPlanSummary");
+const subscriptionPlanPerks = document.querySelector("#subscriptionPlanPerks");
+const subscriptionPlanSubmit = document.querySelector("#subscriptionPlanSubmit");
 
 let activeCategory = "All";
 let activeView = "discover";
@@ -1085,6 +1117,9 @@ let activeManagedCircleId = "photo-walkers";
 let pendingCircleRoleAction = { action: "", circleId: "", memberId: "" };
 let pendingCircleRejectRequest = { circleId: "", requestId: "" };
 let pendingCircleKickMember = { circleId: "", memberId: "" };
+let pendingCircleLeave = { circleId: "" };
+let editingCircleId = "";
+let editingSubscriptionPlanId = "";
 let notificationEnabledCreators = new Set(["Lumi Photo"]);
 let mutedCreators = new Set();
 let blockedCreators = new Set();
@@ -1189,6 +1224,9 @@ let myProfile = {
   visibility: "Public",
   avatar: "",
   banner: "",
+  joinedAt: "2024-08-21",
+  premiumSince: "2024-09-03",
+  earlyPremiumSupporter: true,
 };
 let activeAccountId = "main";
 let userAccounts = [
@@ -1212,6 +1250,9 @@ let userAccounts = [
       visibility: "Public",
       avatar: "",
       banner: vrchatImages.portrait,
+      joinedAt: "2023-11-18",
+      premiumSince: "2024-01-12",
+      earlyPremiumSupporter: true,
     }
   },
   {
@@ -1228,8 +1269,44 @@ let userAccounts = [
       visibility: "Private",
       avatar: "",
       banner: vrchatImages.community,
+      joinedAt: "2025-02-04",
+      premiumSince: "",
+      earlyPremiumSupporter: false,
     }
   }
+];
+const creatorProfileMeta = {
+  "Mika Alterworks": { joinedAt: "2022-05-09", premiumSince: "2024-06-01", earlyPremiumSupporter: true },
+  "Lumi Photo": { joinedAt: "2023-01-20", premiumSince: "2024-07-03", earlyPremiumSupporter: true },
+  "Aoi Retouch": { joinedAt: "2023-09-14", premiumSince: "", earlyPremiumSupporter: false },
+  "Frame Drift": { joinedAt: "2022-11-03", premiumSince: "2024-10-07", earlyPremiumSupporter: false },
+  "Orbit Build": { joinedAt: "2021-12-26", premiumSince: "2024-06-12", earlyPremiumSupporter: true },
+  "Rin Works": { joinedAt: "2024-02-16", premiumSince: "", earlyPremiumSupporter: false },
+  "Yoru Snap": { joinedAt: "2025-01-28", premiumSince: "", earlyPremiumSupporter: false },
+  "Nagi Closet": { joinedAt: "2024-05-05", premiumSince: "2025-01-09", earlyPremiumSupporter: false },
+  "VRC SNS運営": { joinedAt: "2026-06-01", premiumSince: "2026-06-01", earlyPremiumSupporter: false }
+};
+const creatorSubscriptionPrograms = {
+  "You": [
+    { id: "you-supporter", name: "Supporter", price: 700, summary: "限定投稿と支援カードの基本プラン", perks: ["限定投稿", "支援カード", "イベント先行案内"] },
+    { id: "you-backstage", name: "Backstage", price: 1500, summary: "制作ログやWIPも見られる上位プラン", perks: ["Supporterの全特典", "制作ログ", "WIP先行公開"] }
+  ],
+  "Mika Alterworks": [
+    { id: "mika-supporter", name: "Atelier", price: 900, summary: "改変メモと限定進捗", perks: ["限定投稿", "改変メモ", "月1の進捗まとめ"] },
+    { id: "mika-vip", name: "Backstage", price: 1800, summary: "制作途中の比較画像やイベント先行案内", perks: ["Atelierの全特典", "WIP比較", "先行案内"] }
+  ],
+  "Lumi Photo": [
+    { id: "lumi-photo-club", name: "Photo Club", price: 800, summary: "限定アルバムと撮影ルート共有", perks: ["限定投稿", "撮影ルート", "未公開カット"] },
+    { id: "lumi-location-note", name: "Location Notes", price: 1400, summary: "ロケハンメモ込みの上位プラン", perks: ["Photo Clubの全特典", "ロケハンメモ", "イベント先行募集"] }
+  ],
+  "Orbit Build": [
+    { id: "orbit-devlog", name: "Devlog", price: 1000, summary: "ワールド制作の進捗共有", perks: ["限定投稿", "制作ログ", "最適化メモ"] }
+  ]
+};
+let creatorSubscriptions = [
+  { accountId: "main", creator: "Mika Alterworks", planId: "mika-supporter", startedAt: "2025-10-02", visibleOnProfile: true, earlySupporter: true },
+  { accountId: "main", creator: "Lumi Photo", planId: "lumi-photo-club", startedAt: "2026-01-18", visibleOnProfile: true, earlySupporter: false },
+  { accountId: "creator", creator: "Orbit Build", planId: "orbit-devlog", startedAt: "2026-02-14", visibleOnProfile: true, earlySupporter: false }
 ];
 let pendingAvatarSource = "";
 let pendingBannerSource = "";
@@ -1242,7 +1319,7 @@ const requestTemplatePresets = {
     title: "アバター改変依頼",
     category: "Avatar",
     price: "¥12,000〜",
-    delivery: "平均 10日",
+    delivery: "10日以内",
     capacity: "受付 2 / 5",
     retake: "yes",
     chat: "enabled",
@@ -1254,7 +1331,7 @@ const requestTemplatePresets = {
     title: "VRChat撮影依頼",
     category: "Photo",
     price: "¥4,000〜",
-    delivery: "平均 3日",
+    delivery: "3日以内",
     capacity: "受付 3 / 6",
     retake: "yes",
     chat: "enabled",
@@ -1266,7 +1343,7 @@ const requestTemplatePresets = {
     title: "ワールド制作依頼",
     category: "World",
     price: "¥60,000〜",
-    delivery: "平均 30日",
+    delivery: "30日以内",
     capacity: "受付 1 / 2",
     retake: "yes",
     chat: "limited",
@@ -4369,8 +4446,59 @@ function isOfficialProfileName(name) {
   return officialProfileNames().some((officialName) => slugify(officialName) === target);
 }
 
+function currentAccountRecord() {
+  return userAccounts.find((account) => account.id === activeAccountId) || userAccounts[0] || null;
+}
+
+function profileMetaFor(name) {
+  if (name === "You") return currentAccountRecord()?.profile || myProfile;
+  return creatorProfileMeta[name] || {};
+}
+
+function monthsBetween(startDate, endDate = new Date()) {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return 0;
+  let months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+  if (end.getDate() < start.getDate()) months -= 1;
+  return Math.max(0, months);
+}
+
+function membershipYearLabel(startDate) {
+  const months = monthsBetween(startDate);
+  const years = Math.max(1, Math.floor(months / 12) + 1);
+  return `${years}年目`;
+}
+
+function currentCreatorSubscriptions() {
+  return creatorSubscriptions.filter((entry) => entry.accountId === activeAccountId);
+}
+
+function subscriptionProgramFor(creator) {
+  return creatorSubscriptionPrograms[creator] || [];
+}
+
+function subscriptionPlanById(creator, planId) {
+  return subscriptionProgramFor(creator).find((plan) => plan.id === planId) || null;
+}
+
+function currentSubscriptionFor(creator) {
+  return currentCreatorSubscriptions().find((entry) => entry.creator === creator) || null;
+}
+
+function isSubscribedToCreator(creator) {
+  return Boolean(currentSubscriptionFor(creator));
+}
+
+function canViewPin(pin) {
+  if (!pin) return false;
+  if (pin.circleId && !joinedCircleIds.has(pin.circleId)) return false;
+  if (pin.visibility === "SubscriberOnly" && pin.creator !== "You" && !isSubscribedToCreator(pin.creator)) return false;
+  return true;
+}
+
 function creatorPosts(creator) {
-  return pins.filter((pin) => pin.creator === creator);
+  return pins.filter((pin) => pin.creator === creator && canViewPin(pin));
 }
 
 function requestItemsByClient(client) {
@@ -4501,10 +4629,10 @@ function normalizeCircleName(name) {
   return name.trim().replace(/\s+/g, " ").toLowerCase();
 }
 
-function circleNameExists(name) {
+function circleNameExists(name, ignoreId = "") {
   const normalized = normalizeCircleName(name);
   if (!normalized) return false;
-  return circleGroups.some((circle) => normalizeCircleName(circle.name) === normalized);
+  return circleGroups.some((circle) => circle.id !== ignoreId && normalizeCircleName(circle.name) === normalized);
 }
 
 function uniqueCircleId(name) {
@@ -4539,28 +4667,58 @@ function readCircleCoverFile() {
 }
 
 function resetCircleCreateForm() {
+  editingCircleId = "";
   circleCreateForm?.reset();
   if (circleCreateNameError) {
     circleCreateNameError.hidden = true;
     circleCreateNameError.textContent = "";
   }
   circleCreateNameInput?.classList.remove("is-invalid");
+  if (circleCreateTitle) circleCreateTitle.textContent = "サークルを作る";
+  if (circleCreateLead) circleCreateLead.textContent = "サークル名と参加条件を設定すると、作成後すぐにサークル一覧と管理画面に追加されます。";
+  if (circleCreateCoverHelp) circleCreateCoverHelp.textContent = "未選択の場合はサンプル画像を使用します。";
+  if (circleCreateSubmit) circleCreateSubmit.textContent = "作成する";
   syncTrimRequiredFields(circleCreateForm);
+  updateCircleCreateState();
 }
 
 function updateCircleCreateState() {
   syncTrimRequiredFields(circleCreateForm);
   const name = circleCreateNameInput?.value || "";
-  const duplicate = circleNameExists(name);
+  const duplicate = circleNameExists(name, editingCircleId);
   if (circleCreateNameError) {
     circleCreateNameError.hidden = !duplicate;
     circleCreateNameError.textContent = duplicate ? "同じ名前のサークルは作成できません。" : "";
   }
   circleCreateNameInput?.classList.toggle("is-invalid", duplicate);
+  if (circleCreateSubmit) {
+    circleCreateSubmit.disabled = !(Boolean(circleCreateForm?.checkValidity()) && !duplicate);
+  }
 }
 
 function openCircleCreateDialog() {
   resetCircleCreateForm();
+  showModalElement(circleCreateDialog);
+  window.setTimeout(() => circleCreateNameInput?.focus(), 100);
+}
+
+function openCircleEditDialog(circleId = activeManagedCircleId) {
+  const circle = circleById(circleId);
+  if (!circle || !circleCreateForm) return;
+  resetCircleCreateForm();
+  editingCircleId = circle.id;
+  if (circleCreateTitle) circleCreateTitle.textContent = "サークル設定を編集";
+  if (circleCreateLead) circleCreateLead.textContent = "サークル作成時に設定した項目をここで更新できます。保存すると一覧、管理画面、投稿先の表示に反映されます。";
+  if (circleCreateCoverHelp) circleCreateCoverHelp.textContent = "新しい画像を選んだときだけ更新します。未選択なら現在のカバー画像を維持します。";
+  if (circleCreateSubmit) circleCreateSubmit.textContent = "更新する";
+  if (circleCreateNameInput) circleCreateNameInput.value = circle.name || "";
+  if (circleCreateDescriptionInput) circleCreateDescriptionInput.value = circle.description || "";
+  if (circleCreateVisibilityInput) circleCreateVisibilityInput.value = circle.visibility || "自由参加OK";
+  if (circleCreatePostAudienceInput) circleCreatePostAudienceInput.value = ["Public", "CircleOnly", "Both"].includes(circle.postAudience) ? circle.postAudience : "CircleOnly";
+  if (circleCreateTagsInput) circleCreateTagsInput.value = (circle.tags || []).join(" ");
+  if (circleCreateCoverInput) circleCreateCoverInput.value = "";
+  syncTrimRequiredFields(circleCreateForm);
+  updateCircleCreateState();
   showModalElement(circleCreateDialog);
   window.setTimeout(() => circleCreateNameInput?.focus(), 100);
 }
@@ -4577,14 +4735,34 @@ async function createCircleFromForm(event) {
   const name = circleCreateNameInput.value.trim().replace(/\s+/g, " ");
   const description = circleCreateDescriptionInput.value.trim();
   if (!name || !description) return;
-  if (circleNameExists(name)) {
+  if (circleNameExists(name, editingCircleId)) {
     updateCircleCreateState();
     return;
   }
 
-  const id = uniqueCircleId(name);
   const tags = parseCircleTags(circleCreateTagsInput?.value || "");
   const cover = await readCircleCoverFile();
+  const postAudience = ["Public", "CircleOnly", "Both"].includes(circleCreatePostAudienceInput?.value)
+    ? circleCreatePostAudienceInput.value
+    : "CircleOnly";
+  if (editingCircleId) {
+    const circle = circleById(editingCircleId);
+    if (!circle) return;
+    circle.name = name;
+    circle.description = description;
+    circle.tags = tags.length ? tags : ["#circle"];
+    circle.visibility = circleCreateVisibilityInput.value;
+    circle.postAudience = postAudience;
+    if (cover) circle.cover = cover;
+    const data = circleManagementFor(circle.id);
+    if (data) data.owner = data.owner || circle.owner;
+    closeCircleCreateDialog();
+    renderCirclesPage(null, { scroll: false });
+    showProfileCopyToast(`${circle.name}の設定を更新しました`);
+    return;
+  }
+
+  const id = uniqueCircleId(name);
   const circle = {
     id,
     name,
@@ -4594,9 +4772,7 @@ async function createCircleFromForm(event) {
     tags: tags.length ? tags : ["#circle"],
     members: 1,
     visibility: circleCreateVisibilityInput.value,
-    postAudience: ["Public", "CircleOnly", "Both"].includes(circleCreatePostAudienceInput?.value)
-      ? circleCreatePostAudienceInput.value
-      : "CircleOnly",
+    postAudience,
     eventRule: "イベント参加条件として設定可能",
   };
   circleGroups.unshift(circle);
@@ -4616,6 +4792,88 @@ async function createCircleFromForm(event) {
   history.pushState("", document.title, `${location.pathname}${location.search}#circle-manager/${id}`);
   renderCirclesPage(null, { scroll: false });
   showRequestAcceptPopup("サークルを作成しました", `${name}の管理画面へ移動しました`);
+}
+
+function resetSubscriptionPlanForm() {
+  editingSubscriptionPlanId = "";
+  subscriptionPlanForm?.reset();
+  if (subscriptionPlanTitle) subscriptionPlanTitle.textContent = "サブスクプランを作成";
+  if (subscriptionPlanLead) subscriptionPlanLead.textContent = "公式承認なしで、自分のプロフィール上に複数の支援プランを作成できます。";
+  syncTrimRequiredFields(subscriptionPlanForm);
+  updateSubscriptionPlanState();
+}
+
+function updateSubscriptionPlanState() {
+  if (!subscriptionPlanForm || !subscriptionPlanSubmit) return;
+  syncTrimRequiredFields(subscriptionPlanForm);
+  subscriptionPlanSubmit.disabled = !subscriptionPlanForm.checkValidity();
+}
+
+function openSubscriptionPlanDialog(planId = "") {
+  resetSubscriptionPlanForm();
+  const plans = creatorSubscriptionPrograms.You || [];
+  const plan = planId ? plans.find((item) => item.id === planId) : null;
+  if (plan) {
+    editingSubscriptionPlanId = plan.id;
+    if (subscriptionPlanTitle) subscriptionPlanTitle.textContent = "サブスクプランを編集";
+    if (subscriptionPlanLead) subscriptionPlanLead.textContent = "価格、概要、特典内容を更新するとプロフィールの支援導線に即時反映されます。";
+    if (subscriptionPlanName) subscriptionPlanName.value = plan.name || "";
+    if (subscriptionPlanPrice) subscriptionPlanPrice.value = String(plan.price || "");
+    if (subscriptionPlanSummary) subscriptionPlanSummary.value = plan.summary || "";
+    if (subscriptionPlanPerks) subscriptionPlanPerks.value = (plan.perks || []).join("\n");
+  }
+  updateSubscriptionPlanState();
+  showModalElement(subscriptionPlanDialog);
+  window.setTimeout(() => subscriptionPlanName?.focus(), 100);
+}
+
+function closeSubscriptionPlanDialog() {
+  closeModalElement(subscriptionPlanDialog);
+}
+
+function saveSubscriptionPlan(event) {
+  event.preventDefault();
+  syncTrimRequiredFields(subscriptionPlanForm);
+  if (!subscriptionPlanForm?.reportValidity()) return;
+  const plan = {
+    id: editingSubscriptionPlanId || `you-plan-${Date.now()}`,
+    name: subscriptionPlanName?.value.trim() || "Supporter",
+    price: Number(subscriptionPlanPrice?.value || 0),
+    summary: subscriptionPlanSummary?.value.trim() || "",
+    perks: String(subscriptionPlanPerks?.value || "")
+      .split(/\n+/)
+      .map((item) => item.trim())
+      .filter(Boolean)
+  };
+  const plans = creatorSubscriptionPrograms.You || [];
+  if (editingSubscriptionPlanId) {
+    const index = plans.findIndex((item) => item.id === editingSubscriptionPlanId);
+    if (index >= 0) plans.splice(index, 1, plan);
+  } else {
+    plans.push(plan);
+  }
+  creatorSubscriptionPrograms.You = plans;
+  closeSubscriptionPlanDialog();
+  if (activeProfile === "You") renderProfile("You");
+  showProfileCopyToast("サブスクプランを更新しました");
+}
+
+function subscribeToCreatorPlan(creator, planId) {
+  const existingIndex = creatorSubscriptions.findIndex((entry) => entry.accountId === activeAccountId && entry.creator === creator);
+  const earlySupporter = !creatorSubscriptions.some((entry) => entry.creator === creator);
+  const entry = {
+    accountId: activeAccountId,
+    creator,
+    planId,
+    startedAt: new Date().toISOString().slice(0, 10),
+    visibleOnProfile: true,
+    earlySupporter
+  };
+  if (existingIndex >= 0) creatorSubscriptions.splice(existingIndex, 1, entry);
+  else creatorSubscriptions.push(entry);
+  if (activeProfile) renderProfile(activeProfile);
+  renderPins();
+  showProfileCopyToast(`${creator}を支援中にしました`);
 }
 
 function circleCard(circle) {
@@ -4730,6 +4988,7 @@ function renderCircleManager() {
 
   const data = circleManagementFor(activeCircle.id);
   const canTransferOwner = currentCircleManagerIsOwner(data);
+  const currentRole = currentCircleManagerRole(data);
   const managerCount = data.members.filter((member) => member.role !== "Member").length;
   circleManagerSummary.innerHTML = `
     <article class="circle-manager-hero">
@@ -4738,11 +4997,15 @@ function renderCircleManager() {
         <small>${escapeHtml(activeCircle.visibility)} / ${escapeHtml(circlePostAudienceValue(activeCircle))}</small>
         <strong>${escapeHtml(activeCircle.name)}</strong>
         <em>${escapeHtml(activeCircle.description)}</em>
+        ${!canTransferOwner ? `<small>現在の権限: ${escapeHtml(roleLabel(currentRole))}</small>` : ""}
       </span>
       <span class="circle-manager-stats">
         <span><strong>${activeCircle.members.toLocaleString()}</strong><small>members</small></span>
         <span><strong>${managerCount}</strong><small>managers</small></span>
         <span><strong>${data.requests.length}</strong><small>requests</small></span>
+      </span>
+      <span class="circle-manager-hero-actions">
+        <button class="soft-button" type="button" data-circle-role-action="edit-settings">サークル設定を編集</button>
       </span>
     </article>
   `;
@@ -4785,6 +5048,7 @@ function renderCircleManager() {
     <button class="primary-button" type="button" data-circle-role-action="invite-manager">共同管理者を招待</button>
     <button class="soft-button" type="button" data-circle-role-action="bulk-permission">投稿管理権限を一括設定</button>
     ${canTransferOwner && transferableMembers[0] ? `<button class="soft-button" type="button" data-circle-role-action="transfer" data-member="${escapeHtml(transferableMembers[0].id)}">${escapeHtml(transferableMembers[0].name)}へオーナー移譲</button>` : ""}
+    ${!canTransferOwner ? `<button class="soft-button request-report-button" type="button" data-circle-role-action="leave">サークルを退会</button>` : ""}
   `;
 }
 
@@ -5070,6 +5334,44 @@ function confirmCircleKick() {
   renderCircleManager();
 }
 
+function resetCircleLeaveDialogState() {
+  pendingCircleLeave = { circleId: "" };
+}
+
+function openCircleLeaveDialog() {
+  const circle = ensureActiveManagedCircle();
+  const data = circle ? circleManagementFor(circle.id) : null;
+  if (!circle || !data || currentCircleManagerIsOwner(data)) return;
+  pendingCircleLeave = { circleId: circle.id };
+  if (circleLeaveCopy) {
+    circleLeaveCopy.textContent = `${circle.name}を退会すると、このサークルの管理画面には戻れなくなります。退会してよろしいですか？`;
+  }
+  showModalElement(circleLeaveDialog);
+}
+
+function confirmCircleLeave() {
+  const circleId = pendingCircleLeave.circleId;
+  const circle = circleById(circleId);
+  const data = circle ? circleManagementFor(circle.id) : null;
+  if (!circle || !data || currentCircleManagerIsOwner(data)) return;
+  data.members = data.members.filter((member) => member.id !== "you" && member.name !== "You");
+  data.managedByYou = false;
+  joinedCircleIds.delete(circle.id);
+  closeModalElement(circleLeaveDialog);
+  resetCircleLeaveDialogState();
+  showProfileCopyToast(`${circle.name}を退会しました`);
+  const remainingManaged = managedCircleIds();
+  if (remainingManaged.length) {
+    if (!remainingManaged.includes(activeManagedCircleId)) activeManagedCircleId = remainingManaged[0];
+    renderCircleManager();
+    return;
+  }
+  activeManagedCircleId = "";
+  activeCircleTab = "browse";
+  history.pushState("", document.title, `${location.pathname}${location.search}#circles`);
+  renderCirclesPage(null, { scroll: false });
+}
+
 function handleCircleManagerAction(action, detailId) {
   const circle = ensureActiveManagedCircle();
   const data = circle ? circleManagementFor(circle.id) : null;
@@ -5098,6 +5400,12 @@ function handleCircleManagerAction(action, detailId) {
     return;
   } else if (action === "kick") {
     openCircleKickDialog(detailId);
+    return;
+  } else if (action === "leave") {
+    openCircleLeaveDialog();
+    return;
+  } else if (action === "edit-settings") {
+    openCircleEditDialog(circle.id);
     return;
   } else if (action === "invite-manager") {
     showProfileCopyToast("共同管理者の招待リンクをコピーしました");
@@ -5154,7 +5462,7 @@ function filteredPins() {
   const query = searchInput.value.trim();
   const savedSearchQuery = savedSearchTabItems.find((item) => item.id === activeSavedSearchTabId)?.query || "";
   return pins.filter((pin) => {
-    if (pin.circleId && !joinedCircleIds.has(pin.circleId)) return false;
+    if (!canViewPin(pin)) return false;
     const matchesView = activeView === "discover"
       || (activeView === "following" && followedCreators.has(pin.creator))
       || (activeView === "requests" && pin.request?.open);
@@ -5211,7 +5519,7 @@ window.handleInlinePinOpen = handleInlinePinOpen;
 function pinCard(pin) {
   const saved = savedPins.has(pin.id);
   const circle = pin.circleId ? circleById(pin.circleId) : null;
-  const status = requestLabel(pin) || (circle ? "サークル限定" : "");
+  const status = requestLabel(pin) || (pin.visibility === "SubscriberOnly" ? "サブスク限定" : (circle ? "サークル限定" : ""));
   return `
     <article class="pin-card" role="button" tabindex="0" data-id="${pin.id}" aria-label="${pin.title}" onclick="handleInlinePinOpen(event, ${pin.id}, this)">
       <div class="pin-media">
@@ -5435,17 +5743,22 @@ function setDialogOrigin(sourceElement) {
 function openPin(pinId, sourceElement = null) {
   currentPin = findPostById(pinId);
   if (!currentPin) return;
+  if (!canViewPin(currentPin)) {
+    showProfileCopyToast("この投稿は現在の閲覧条件では表示できません", false);
+    return;
+  }
 
   setDialogOrigin(sourceElement);
   dialogImage.src = currentPin.image;
   dialogImage.alt = currentPin.title;
   const currentCircle = currentPin.circleId ? circleById(currentPin.circleId) : null;
+  const visibilityLabel = currentPin.circleId ? "サークル限定" : currentPin.visibility === "SubscriberOnly" ? "サブスク限定" : t("normalPost");
   const circleTrail = currentCircle
     ? ` / <button class="category-link" type="button" data-circle-open="${currentCircle.id}">${currentCircle.name}</button>`
     : "";
   dialogCategory.innerHTML = currentPin.request
     ? `${categoryLink(currentPin.category)} / ${currentPin.request.title}${circleTrail}`
-    : `${categoryLink(currentPin.category)} / ${currentPin.circleId ? "サークル限定" : t("normalPost")}${circleTrail}`;
+    : `${categoryLink(currentPin.category)} / ${visibilityLabel}${circleTrail}`;
   dialogTitle.textContent = currentPin.title;
   dialogDescription.textContent = currentPin.description;
   dialogCreator.innerHTML = `<button class="creator-link" type="button" data-profile="${slugify(currentPin.creator)}">${currentPin.creator}</button>`;
@@ -5453,6 +5766,7 @@ function openPin(pinId, sourceElement = null) {
   dialogWorld.innerHTML = metaSearchLink("World", currentPin.world, "World");
   dialogTags.innerHTML = tagLinks(currentPin.tags);
   const creatorOpenRequest = primaryOpenRequestForCreator(currentPin.creator);
+  const creatorPlans = subscriptionProgramFor(currentPin.creator);
   dialogRequest.innerHTML = creatorOpenRequest
     ? `
       <strong>${t("requestOpen")}</strong>
@@ -5460,14 +5774,21 @@ function openPin(pinId, sourceElement = null) {
       <span>${creatorOpenRequest.capacity} / ${creatorOpenRequest.delivery}</span>
       <span>${t("requestCtaBody")}</span>
     `
+    : creatorPlans.length
+      ? `
+        <strong>サブスク受付中</strong>
+        <span>${creatorPlans.length} プラン / 最安 ${formatSubscriptionPrice(Math.min(...creatorPlans.map((plan) => plan.price || 0)))}</span>
+        <span>${currentPin.visibility === "SubscriberOnly" ? "この投稿は支援者限定です。" : "限定投稿や支援カードを公開できるクリエイター支援プランがあります。"}</span>
+        <span>プロフィールからプラン詳細を確認できます。</span>
+      `
     : `
       <strong>${t("normalPost")}</strong>
       <span>閲覧、検索、保存、プロフィール遷移を中心にした投稿です。</span>
       <span>このクリエイターは現在、依頼受付を公開していません。</span>
     `;
-  dialogRequest.hidden = !creatorOpenRequest;
-  dialogRequest.disabled = !creatorOpenRequest;
-  dialogRequest.classList.toggle("is-action", Boolean(creatorOpenRequest));
+  dialogRequest.hidden = !(creatorOpenRequest || creatorPlans.length);
+  dialogRequest.disabled = !(creatorOpenRequest || creatorPlans.length);
+  dialogRequest.classList.toggle("is-action", Boolean(creatorOpenRequest || creatorPlans.length));
   updateDialogSave();
   updateFollowButton(dialogFollow, currentPin.creator);
   showModalElement(dialog);
@@ -5870,8 +6191,8 @@ function renderRequestPage(creator, postId = null) {
   const maxCount = Number(capacityMatch?.[2] || 5);
   const minAmount = requestMinimumAmount(post);
   requestRequestMeta.innerHTML = [
-    `<div><strong>${currentLanguage === "en" ? "Requested delivery" : currentLanguage === "ko" ? "희망 납기" : "希望納期"}</strong><span>${post.request?.delivery || "平均 7日"}</span></div>`,
-    `<div><strong>${currentLanguage === "en" ? "Average delivery" : currentLanguage === "ko" ? "평균 납기" : "平均納期"}</strong><span>${post.category === "Photo" ? "2〜4日" : "7〜10日"}</span></div>`,
+    `<div><strong>${currentLanguage === "en" ? "Requested delivery" : currentLanguage === "ko" ? "희망 납기" : "希望納期"}</strong><span>${requestDesiredDeliveryLabel(post)}</span></div>`,
+    `<div><strong>${currentLanguage === "en" ? "Average delivery" : currentLanguage === "ko" ? "평균 납기" : "平均納期"}</strong><span>${post.request?.delivery || averageRequestDeliveryLabel()}</span></div>`,
     `<div><strong>${currentLanguage === "en" ? "Max slots" : currentLanguage === "ko" ? "접수 한도" : "受付上限"}</strong><span>${maxCount}${currentLanguage === "en" ? "" : "件"}</span></div>`,
     `<div><strong>${currentLanguage === "en" ? "Open slots" : currentLanguage === "ko" ? "현재 접수" : "現在受付中"}</strong><span>${currentCount}${currentLanguage === "en" ? "" : "件"}</span></div>`,
     `<div><strong>${currentLanguage === "en" ? "Retake" : currentLanguage === "ko" ? "리테이크" : "リテイク"}</strong><span>${requestRetakeLabel(post)}</span></div>`,
@@ -6413,7 +6734,8 @@ function requesterChatPreferenceLabel(value) {
 function requestServiceLines(post) {
   const base = [
     `サービス内容: ${post.request?.title || post.category}`,
-    `希望納期: ${post.request?.delivery || "平均 7日"}`,
+    `希望納期: ${requestDesiredDeliveryLabel(post)}`,
+    `平均納期: ${post.request?.delivery || averageRequestDeliveryLabel()}`,
     `受付枠: ${post.request?.capacity || "受付中"}`,
     requestAllowsRetake(post)
       ? "リテイク: 事前合意した範囲で対応"
@@ -6562,6 +6884,107 @@ function renderProfileReviews(creator) {
   `).join("");
 }
 
+function renderProfileSupportBadges(creator) {
+  if (!profileSupportBadges) return;
+  const meta = profileMetaFor(creator);
+  const badges = [];
+  if (meta?.joinedAt) badges.push(`<span>${membershipYearLabel(meta.joinedAt)}</span>`);
+  if (meta?.earlyPremiumSupporter) badges.push(`<span>早期プレミアム</span>`);
+  if (currentSubscriptionFor(creator)) badges.push(`<span>支援中</span>`);
+  profileSupportBadges.hidden = badges.length === 0;
+  profileSupportBadges.innerHTML = badges.join("");
+}
+
+function formatSubscriptionPrice(value) {
+  return `¥${Number(value || 0).toLocaleString("ja-JP")} / 月`;
+}
+
+function subscriptionDurationLabel(startedAt) {
+  const months = monthsBetween(startedAt);
+  if (months < 1) return "今月から支援";
+  if (months < 12) return `${months}か月継続`;
+  const years = Math.floor(months / 12);
+  const rest = months % 12;
+  return rest ? `${years}年${rest}か月継続` : `${years}年継続`;
+}
+
+function currentSupportCards() {
+  return currentCreatorSubscriptions()
+    .filter((entry) => entry.visibleOnProfile)
+    .map((entry) => ({
+      ...entry,
+      plan: subscriptionPlanById(entry.creator, entry.planId)
+    }))
+    .filter((entry) => entry.plan);
+}
+
+function renderProfileSubscriptionSection(creator, posts, isMine) {
+  if (!profileSubscriptionSection || !profileSubscriptionPlans || !profileSupportCards || !profileSubscriptionLead) return;
+  const plans = subscriptionProgramFor(creator);
+  const currentSubscription = currentSubscriptionFor(creator);
+  const supportCards = currentSupportCards();
+  const subscriberOnlyPosts = posts.filter((post) => post.visibility === "SubscriberOnly");
+
+  if (isMine) {
+    profileSubscriptionSection.hidden = false;
+    if (profileSubscriptionEyebrow) profileSubscriptionEyebrow.textContent = "Membership / Support";
+    profileSubscriptionLead.textContent = "公式承認なしで支援プランを作成できます。支援中の履歴カードはプロフィールに掲載され、限定投稿の導線にもなります。";
+    subscriptionPlanManageButton.hidden = false;
+    profileSubscriptionPlans.innerHTML = plans.length
+      ? plans.map((plan) => `
+        <article class="subscription-plan-card-item">
+          <div>
+            <strong>${escapeHtml(plan.name)}</strong>
+            <span>${formatSubscriptionPrice(plan.price)}</span>
+          </div>
+          <p>${escapeHtml(plan.summary || "限定投稿や更新を提供する月額プランです。")}</p>
+          <small>${escapeHtml((plan.perks || []).join(" / "))}</small>
+          <button class="soft-button" type="button" data-plan-edit="${escapeHtml(plan.id)}">編集</button>
+        </article>
+      `).join("")
+      : `<article class="subscription-plan-card-item is-empty"><strong>まだプランがありません</strong><p>限定投稿や支援カードを使いたい場合は、まず1つプランを作成してください。</p></article>`;
+    profileSupportCards.innerHTML = supportCards.length
+      ? supportCards.map((entry) => `
+        <article class="support-history-card">
+          <span class="support-history-badge">${entry.earlySupporter ? "Early supporter" : "Supporter card"}</span>
+          <strong>${escapeHtml(entry.creator)}</strong>
+          <p>${escapeHtml(entry.plan.name)} / ${formatSubscriptionPrice(entry.plan.price)}</p>
+          <small>${subscriptionDurationLabel(entry.startedAt)} / ${entry.startedAt}</small>
+        </article>
+      `).join("")
+      : `<article class="support-history-card is-empty"><strong>支援カードはまだありません</strong><p>他のクリエイターのプランに加入すると、ここに継続履歴カードを掲載できます。</p></article>`;
+    return;
+  }
+
+  subscriptionPlanManageButton.hidden = true;
+  const hasContent = plans.length || subscriberOnlyPosts.length;
+  profileSubscriptionSection.hidden = !hasContent;
+  if (profileSubscriptionSection.hidden) return;
+  if (profileSubscriptionEyebrow) profileSubscriptionEyebrow.textContent = "Fan membership";
+  profileSubscriptionLead.textContent = subscriberOnlyPosts.length
+    ? `限定投稿 ${subscriberOnlyPosts.length} 件を含む、クリエイター支援プランです。`
+    : "限定投稿や制作ログ向けのクリエイター支援プランです。";
+  profileSubscriptionPlans.innerHTML = plans.length
+    ? plans.map((plan) => {
+      const joined = currentSubscription?.planId === plan.id;
+      return `
+        <article class="subscription-plan-card-item ${joined ? "is-active" : ""}">
+          <div>
+            <strong>${escapeHtml(plan.name)}</strong>
+            <span>${formatSubscriptionPrice(plan.price)}</span>
+          </div>
+          <p>${escapeHtml(plan.summary || "限定投稿や更新を提供する月額プランです。")}</p>
+          <small>${escapeHtml((plan.perks || []).join(" / "))}</small>
+          <button class="${joined ? "soft-button" : "primary-button"}" type="button" data-plan-subscribe="${escapeHtml(plan.id)}" data-plan-creator="${escapeHtml(creator)}">${joined ? "加入中" : "加入する"}</button>
+        </article>
+      `;
+    }).join("")
+    : "";
+  profileSupportCards.innerHTML = subscriberOnlyPosts.length
+    ? `<article class="support-history-card is-note"><strong>限定投稿</strong><p>加入すると、通常投稿とは別に支援者限定の作品・WIP・制作メモを閲覧できます。</p></article>`
+    : "";
+}
+
 function renderSavedPostsSection() {
   if (!savedPostsSection || !savedPostsBoard || !bookmarkFoldersBoard) return;
   savedPostsSection.hidden = activeProfile !== "You" || activeProfileArchiveTab !== "folders";
@@ -6571,7 +6994,7 @@ function renderSavedPostsSection() {
   bookmarkFoldersBoard.hidden = false;
   if (activeBookmarkFolderId) {
     const folder = bookmarkFolders.find((entry) => entry.id === activeBookmarkFolderId);
-    const posts = pins.filter((post) => folder?.pinIds?.includes(post.id));
+    const posts = pins.filter((post) => folder?.pinIds?.includes(post.id) && canViewPin(post));
     bookmarkFoldersBoard.innerHTML = `
       <button class="soft-button bookmark-folder-back" type="button" data-folder-back="true">${currentLanguage === "en" ? "Back to folders" : currentLanguage === "ko" ? "폴더 목록으로" : "フォルダ一覧に戻る"}</button>
       <div class="bookmark-folder-header">
@@ -6607,7 +7030,7 @@ function renderSavedPostsSection() {
 }
 
 function bookmarkFolderCoversMarkup(folder) {
-  const covers = pins.filter((post) => folder.pinIds?.includes(post.id)).slice(0, 3);
+  const covers = pins.filter((post) => folder.pinIds?.includes(post.id) && canViewPin(post)).slice(0, 3);
   const placeholders = Array.from({ length: Math.max(0, 3 - covers.length) }, (_, index) => (
     `<span class="bookmark-folder-cover-placeholder" aria-hidden="true">${index === 0 && !covers.length ? "+" : ""}</span>`
   )).join("");
@@ -6828,6 +7251,7 @@ function persistComposeDraft() {
 
 function normalizeComposeVisibility(value) {
   if (value === "FollowerOnly" || value === "FriendOnly" || value === "Followers") return "FollowerOnly";
+  if (value === "SubscriberOnly") return "SubscriberOnly";
   return "Public";
 }
 
@@ -6861,6 +7285,13 @@ function composeCircleAudienceLabel() {
   return circlePostAudienceValue(circle);
 }
 
+function updateComposeSubmitState() {
+  if (!composeForm || !composeSubmit) return;
+  syncTrimRequiredFields(composeForm);
+  const hasValidCircleSelection = !isComposeCirclePost() || Boolean(circleById(composeCircle?.value));
+  composeSubmit.disabled = !(composeForm.checkValidity() && hasValidCircleSelection);
+}
+
 function setComposeAudienceMode(circleOnly) {
   if (!composeVisibility) return;
   const field = composeVisibility.closest(".field");
@@ -6882,9 +7313,9 @@ function setComposeAudienceMode(circleOnly) {
       closeCustomSelect(composeVisibility);
     }
   } else {
-    setComposeVisibilityOptions(["Public", "FollowerOnly"], normalizeComposeVisibility(composeVisibility.value));
+    setComposeVisibilityOptions(["Public", "FollowerOnly", "SubscriberOnly"], normalizeComposeVisibility(composeVisibility.value));
     composeVisibility.disabled = false;
-    if (!["Public", "FollowerOnly"].includes(composeVisibility.value)) {
+    if (!["Public", "FollowerOnly", "SubscriberOnly"].includes(composeVisibility.value)) {
       composeVisibility.value = normalizeComposeVisibility(composePreviousVisibility);
     }
     composePreviousVisibility = normalizeComposeVisibility(composeVisibility.value);
@@ -6898,9 +7329,9 @@ function unlockComposeVisibilityWhenCircleOff() {
   if (!composeVisibility || isComposeCirclePost()) return;
   const field = composeVisibility.closest(".field");
   const note = field?.querySelector(".compose-audience-note");
-  setComposeVisibilityOptions(["Public", "FollowerOnly"], normalizeComposeVisibility(composeVisibility.value));
+  setComposeVisibilityOptions(["Public", "FollowerOnly", "SubscriberOnly"], normalizeComposeVisibility(composeVisibility.value));
   composeVisibility.disabled = false;
-  if (!["Public", "FollowerOnly"].includes(composeVisibility.value)) {
+  if (!["Public", "FollowerOnly", "SubscriberOnly"].includes(composeVisibility.value)) {
     composeVisibility.value = normalizeComposeVisibility(composePreviousVisibility);
   }
   composePreviousVisibility = normalizeComposeVisibility(composeVisibility.value);
@@ -6935,6 +7366,7 @@ function restoreComposeDraft() {
     renderComposeImage();
     updateComposeCircleVisibility();
     refreshPostComposeCustomSelects();
+    updateComposeSubmitState();
   } catch {}
 }
 
@@ -6961,6 +7393,7 @@ function resetComposeFormState() {
   updateComposeCircleVisibility();
   refreshPostComposeCustomSelects();
   syncTrimRequiredFields(composeForm);
+  updateComposeSubmitState();
 }
 
 function composeHasDraftableInput() {
@@ -7095,6 +7528,7 @@ function restoreRequestComposeDraft() {
       requestComposePreviewImage.closest(".upload-drop")?.classList.add("has-image");
     }
     refreshPostComposeCustomSelects();
+    updateRequestComposeSubmitState();
   } catch {}
 }
 
@@ -7117,6 +7551,7 @@ function applyRequestTemplate(kind) {
   requestPostRequirements.value = preset.requirements;
   refreshPostComposeCustomSelects();
   updateRequestComposePreview();
+  updateRequestComposeSubmitState();
   persistRequestComposeDraft();
 }
 
@@ -8280,6 +8715,7 @@ function openComposeHint({ restoreDraft = false } = {}) {
   updateComposeCircleVisibility();
   unlockComposeVisibilityWhenCircleOff();
   syncTrimRequiredFields(composeForm);
+  updateComposeSubmitState();
   updateComposePreview();
   showModalElement(composeDialog);
   window.requestAnimationFrame(unlockComposeVisibilityWhenCircleOff);
@@ -8330,6 +8766,7 @@ function openRequestComposeDialog() {
   requestComposeNotice.hidden = true;
   restoreRequestComposeDraft();
   syncTrimRequiredFields(requestComposeForm);
+  updateRequestComposeSubmitState();
   updateRequestComposePreview();
   showModalElement(requestComposeDialog);
   window.setTimeout(() => requestPostTitle.focus(), 140);
@@ -8375,6 +8812,7 @@ function updateComposeCircleVisibility() {
   }
   if (!circleOnly) closeCustomSelect(composeCircle);
   refreshPostComposeCustomSelects();
+  updateComposeSubmitState();
 }
 
 function handleComposeCircleToggleChange({ openMenu = false } = {}) {
@@ -8409,36 +8847,77 @@ function updateComposePreview() {
   `;
 }
 
+function requestCompletedItems() {
+  return requestManagerItems.filter((item) => ["awaiting_review", "awaiting_your_review", "completed"].includes(item.status));
+}
+
+function requestCycleDays(item) {
+  const requestedAtRaw = item?.requestedAt ? String(item.requestedAt).split(" ")[0] : "";
+  const deadlineRaw = item?.deadline || "";
+  if (!requestedAtRaw || !deadlineRaw) return null;
+  const requestedAt = new Date(`${requestedAtRaw}T00:00:00+09:00`);
+  const deadline = new Date(`${deadlineRaw}T00:00:00+09:00`);
+  if (Number.isNaN(requestedAt.getTime()) || Number.isNaN(deadline.getTime())) return null;
+  const diff = Math.round((deadline.getTime() - requestedAt.getTime()) / 86400000);
+  return diff >= 1 ? diff : null;
+}
+
+function averageRequestDeliveryDays() {
+  const values = requestCompletedItems().map(requestCycleDays).filter((value) => Number.isFinite(value));
+  if (!values.length) return null;
+  return Math.max(1, Math.round(values.reduce((sum, value) => sum + value, 0) / values.length));
+}
+
+function averageRequestDeliveryLabel() {
+  const days = averageRequestDeliveryDays();
+  return days ? `平均 ${days}日` : "平均 7日";
+}
+
+function requestDesiredDeliveryLabel(postOrRequest) {
+  return postOrRequest?.request?.desiredDelivery || postOrRequest?.desiredDelivery || postOrRequest?.request?.delivery || postOrRequest?.delivery || "7日以内";
+}
+
 function requestComposeValues() {
   const title = requestPostTitle.value.trim() || "依頼受付タイトル";
   const category = requestPostCategory.value || "Avatar";
   const price = requestPostPrice.value.trim() || "¥12,000〜";
-  const delivery = requestPostDelivery.value.trim() || "平均 10日";
+  const desiredDelivery = requestPostDelivery.value.trim() || "7日以内";
+  const averageDelivery = averageRequestDeliveryLabel();
   const capacity = requestPostCapacity.value.trim() || "受付 2 / 5";
   const retake = requestPostRetake?.value !== "no";
   const chat = requestPostChat?.value || "enabled";
   const tags = requestPostTags.value.trim() || "#依頼受付 #vrchat #portfolio";
   const description = requestPostDescription.value.trim() || "説明を入力すると、依頼受付ページの導入文として表示されます。";
   const requirements = requestPostRequirements.value.trim() || "参考画像、使用アセット、希望納期を依頼時に確認する想定です。";
-  return { title, category, price, delivery, capacity, retake, chat, tags, description, requirements };
+  return { title, category, price, desiredDelivery, averageDelivery, capacity, retake, chat, tags, description, requirements };
 }
 
 function updateRequestComposePreview() {
   const values = requestComposeValues();
+  if (requestPostAverageDeliveryHint) {
+    requestPostAverageDeliveryHint.textContent = `現在の平均納期: ${values.averageDelivery}`;
+  }
   requestComposePreviewCard.innerHTML = `
     <span>${values.category} / Commission · You</span>
     <strong>${values.title}</strong>
-    <small>${values.price} / ${values.delivery} / ${requestRetakeLabel(values)} / ${requestChatLabel(values)}</small>
+    <small>${values.price} / 希望 ${values.desiredDelivery} / ${values.averageDelivery} / ${requestRetakeLabel(values)} / ${requestChatLabel(values)}</small>
   `;
   requestComposePageTitle.textContent = values.title;
   requestComposePageDescription.textContent = values.description;
   requestComposePageMeta.innerHTML = `
     <span>${values.price}</span>
     <span>${values.capacity}</span>
-    <span>${values.delivery}</span>
+    <span>希望 ${values.desiredDelivery}</span>
+    <span>${values.averageDelivery}</span>
     <span>${requestRetakeLabel(values)}</span>
     <span>${requestChatLabel(values)}</span>
   `;
+}
+
+function updateRequestComposeSubmitState() {
+  if (!requestComposeForm || !requestComposeSubmit) return;
+  syncTrimRequiredFields(requestComposeForm);
+  requestComposeSubmit.disabled = !requestComposeForm.checkValidity();
 }
 
 const uploadImageLimits = {
@@ -8672,7 +9151,8 @@ function handleRequestComposeSubmit(event) {
       title: values.title,
       price: values.price,
       capacity: values.capacity,
-      delivery: values.delivery,
+      delivery: values.averageDelivery,
+      desiredDelivery: values.desiredDelivery,
       retake: values.retake,
       chat: values.chat,
     },
@@ -9231,6 +9711,9 @@ circleManagerInviteButton?.addEventListener("click", () => {
 circleCreateTopButton?.addEventListener("click", openCircleCreateDialog);
 circleCreateManagerButton?.addEventListener("click", openCircleCreateDialog);
 circleCreateNameInput?.addEventListener("input", updateCircleCreateState);
+circleCreateDescriptionInput?.addEventListener("input", updateCircleCreateState);
+circleCreateVisibilityInput?.addEventListener("change", updateCircleCreateState);
+circleCreatePostAudienceInput?.addEventListener("change", updateCircleCreateState);
 circleCreateForm?.addEventListener("submit", createCircleFromForm);
 circleCreateDialog?.addEventListener("click", (event) => {
   if (event.target === circleCreateDialog) closeCircleCreateDialog();
@@ -9240,6 +9723,11 @@ circleCreateDialog?.addEventListener("cancel", (event) => {
   closeCircleCreateDialog();
 });
 circleManagerMembers?.addEventListener("click", (event) => {
+  const action = event.target.closest("[data-circle-role-action]");
+  if (!action) return;
+  handleCircleManagerAction(action.dataset.circleRoleAction, action.dataset.member);
+});
+circleManagerSummary?.addEventListener("click", (event) => {
   const action = event.target.closest("[data-circle-role-action]");
   if (!action) return;
   handleCircleManagerAction(action.dataset.circleRoleAction, action.dataset.member);
@@ -9323,6 +9811,21 @@ circleKickDialog?.addEventListener("cancel", (event) => {
   event.preventDefault();
   closeModalElement(circleKickDialog);
   resetCircleKickDialogState();
+});
+circleLeaveCancel?.addEventListener("click", () => {
+  closeModalElement(circleLeaveDialog);
+  resetCircleLeaveDialogState();
+});
+circleLeaveConfirm?.addEventListener("click", confirmCircleLeave);
+circleLeaveDialog?.addEventListener("click", (event) => {
+  if (event.target !== circleLeaveDialog) return;
+  closeModalElement(circleLeaveDialog);
+  resetCircleLeaveDialogState();
+});
+circleLeaveDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeModalElement(circleLeaveDialog);
+  resetCircleLeaveDialogState();
 });
 document.addEventListener("click", (event) => {
   if (!floatingPostDock?.contains(event.target)) hideFloatingPostActions();
@@ -9459,6 +9962,28 @@ profileRequestButton.addEventListener("click", () => {
   openRequestPage(activeProfile);
 });
 profileShareButton?.addEventListener("click", shareCurrentProfile);
+subscriptionPlanManageButton?.addEventListener("click", () => openSubscriptionPlanDialog());
+subscriptionPlanForm?.addEventListener("submit", saveSubscriptionPlan);
+subscriptionPlanDialog?.addEventListener("click", (event) => {
+  if (event.target === subscriptionPlanDialog) closeSubscriptionPlanDialog();
+});
+subscriptionPlanDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeSubscriptionPlanDialog();
+});
+[subscriptionPlanName, subscriptionPlanPrice, subscriptionPlanSummary, subscriptionPlanPerks].filter(Boolean).forEach((input) => {
+  input.addEventListener("input", updateSubscriptionPlanState);
+  input.addEventListener("change", updateSubscriptionPlanState);
+});
+profileSubscriptionSection?.addEventListener("click", (event) => {
+  const subscribeButton = event.target.closest("[data-plan-subscribe]");
+  if (subscribeButton) {
+    subscribeToCreatorPlan(subscribeButton.dataset.planCreator, subscribeButton.dataset.planSubscribe);
+    return;
+  }
+  const editButton = event.target.closest("[data-plan-edit]");
+  if (editButton) openSubscriptionPlanDialog(editButton.dataset.planEdit);
+});
 trustFeaturedWorks?.addEventListener("click", (event) => {
   const featured = event.target.closest("[data-featured-id]");
   if (!featured) return;
@@ -9528,8 +10053,12 @@ dialog.addEventListener("cancel", (event) => {
 });
 
 dialogRequest.addEventListener("click", (event) => {
-  if (!currentPin || !creatorHasOpenRequest(currentPin.creator)) return;
-  openRequestPage(currentPin.creator);
+  if (!currentPin) return;
+  if (creatorHasOpenRequest(currentPin.creator)) {
+    openRequestPage(currentPin.creator);
+    return;
+  }
+  if (subscriptionProgramFor(currentPin.creator).length) openProfile(slugify(currentPin.creator));
 });
 
 requestPaymentButton.addEventListener("click", openRequestCheckoutDialog);
@@ -10388,11 +10917,13 @@ saveDraftButton?.addEventListener("click", () => {
   input.addEventListener("input", () => {
     updateComposeCircleVisibility();
     updateComposePreview();
+    updateComposeSubmitState();
     persistComposeDraft();
   });
   input.addEventListener("change", () => {
     updateComposeCircleVisibility();
     updateComposePreview();
+    updateComposeSubmitState();
     persistComposeDraft();
   });
 });
@@ -10453,10 +10984,12 @@ saveRequestDraftButton?.addEventListener("click", () => {
 [requestPostTitle, requestPostCategory, requestPostVisibility, requestPostPrice, requestPostDelivery, requestPostCapacity, requestPostRetake, requestPostChat, requestPostAvatar, requestPostWorld, requestPostTags, requestPostDescription, requestPostRequirements].filter(Boolean).forEach((input) => {
   input?.addEventListener("input", () => {
     updateRequestComposePreview();
+    updateRequestComposeSubmitState();
     persistRequestComposeDraft();
   });
   input?.addEventListener("change", () => {
     updateRequestComposePreview();
+    updateRequestComposeSubmitState();
     persistRequestComposeDraft();
   });
 });
@@ -10713,7 +11246,7 @@ function sortedProfilePosts(posts) {
 function renderProfilePostArchive() {
   let sourcePosts = [...activeProfilePosts];
   if (activeProfileArchiveTab === "likes") {
-    sourcePosts = pins.filter((post) => likedPins.has(post.id));
+    sourcePosts = pins.filter((post) => likedPins.has(post.id) && canViewPin(post));
   } else if (activeProfileArchiveTab === "posts") {
     sourcePosts = [...activeProfilePosts];
   }
@@ -11067,6 +11600,7 @@ function renderProfile(creator) {
   }
 
   renderProfileLinks(isMine ? getProfileLinks() : []);
+  renderProfileSupportBadges(creator);
   if (profileRequest) profileRequest.textContent = isMine ? `${savedPins.size} ${t("saves")}` : posts.some((pin) => pin.request?.open) ? t("requestOpen") : t("normalPost");
   if (profileRating) profileRating.textContent = isMine ? "Drafts 2" : `${t("rating")} ${requestItemsByClient(creator)[0]?.rating || "4.8 / 5.0"}`;
   const trust = getTrustProfile(creator, posts, isMine);
@@ -11074,6 +11608,7 @@ function renderProfile(creator) {
   renderProfileLevelBadge(posts, trust, creator);
   renderTrustProfile(creator, posts, isMine);
   renderProfileReviews(creator);
+  renderProfileSubscriptionSection(creator, posts, isMine);
   if (profileRequest) profileRequest.textContent = openRequest ? t("requestOpen") : `${trust.completed} ${t("completedMetric")}`;
   if (profileRating) profileRating.textContent = `${trust.saves} ${t("saves")}`;
   activeProfilePosts = posts;

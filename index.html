@@ -309,6 +309,7 @@
               <p id="profileRole" class="eyebrow"></p>
               <h1 id="profileName"></h1>
               <button id="profileLevelBadge" class="profile-level-badge" type="button" data-trust-info-trigger hidden></button>
+              <div id="profileSupportBadges" class="profile-support-badges" hidden></div>
               <p id="profileBio"></p>
               <div class="profile-actions">
                 <button id="profileFollow" class="primary-button" type="button">Follow</button>
@@ -369,6 +370,18 @@
             </div>
           </div>
           <div id="profileReviews" class="profile-reviews"></div>
+        </section>
+        <section id="profileSubscriptionSection" class="trust-panel profile-subscription-section" hidden aria-labelledby="profileSubscriptionTitle">
+          <div class="section-heading-row">
+            <div>
+              <p class="eyebrow" id="profileSubscriptionEyebrow">Membership</p>
+              <h2 id="profileSubscriptionTitle">サブスク / 支援</h2>
+            </div>
+            <button id="subscriptionPlanManageButton" class="soft-button" type="button" hidden>プランを作成</button>
+          </div>
+          <p id="profileSubscriptionLead" class="profile-subscription-lead"></p>
+          <div id="profileSubscriptionPlans" class="profile-subscription-plans"></div>
+          <div id="profileSupportCards" class="profile-support-cards"></div>
         </section>
         <section class="profile-posts-toolbar" aria-labelledby="profilePostsTitle">
           <div>
@@ -1164,6 +1177,17 @@
           </div>
         </form>
       </dialog>
+      <dialog id="circleLeaveDialog" class="request-sheet-dialog" aria-labelledby="circleLeaveTitle">
+        <form method="dialog" class="request-sheet-card">
+          <p class="eyebrow">Leave circle</p>
+          <h2 id="circleLeaveTitle">サークルを退会しますか？</h2>
+          <p id="circleLeaveCopy" class="circle-confirm-copy"></p>
+          <div class="request-sheet-actions">
+            <button id="circleLeaveCancel" class="soft-button" type="button">戻る</button>
+            <button id="circleLeaveConfirm" class="primary-button request-report-submit" type="button">退会する</button>
+          </div>
+        </form>
+      </dialog>
       <dialog id="circleCreateDialog" class="request-sheet-dialog circle-create-dialog" aria-labelledby="circleCreateTitle">
         <form id="circleCreateForm" method="dialog" class="request-sheet-card circle-create-card">
           <p class="eyebrow">New circle</p>
@@ -1205,7 +1229,7 @@
           <label class="field">
             <span>カバー画像</span>
             <input id="circleCreateCoverInput" type="file" accept="image/*" />
-            <small class="field-help">未選択の場合はサンプル画像を使用します。</small>
+            <small id="circleCreateCoverHelp" class="field-help">未選択の場合はサンプル画像を使用します。</small>
           </label>
           <div class="request-sheet-actions">
             <button id="circleCreateSubmit" class="primary-button" type="submit">作成する</button>
@@ -1913,6 +1937,7 @@
               <select id="composeVisibility">
                 <option>Public</option>
                 <option>FollowerOnly</option>
+                <option>SubscriberOnly</option>
               </select>
               <small class="compose-audience-note" hidden>サークル側の設定に同期します。Public / CircleOnly 両対応のサークルでは投稿時に選べます。</small>
             </label>
@@ -1954,7 +1979,7 @@
           </div>
 
           <div class="compose-actions">
-            <button class="primary-button" type="submit">投稿する</button>
+            <button id="composeSubmit" class="primary-button" type="submit">投稿する</button>
           </div>
         </section>
       </form>
@@ -2046,6 +2071,35 @@
       </form>
     </dialog>
 
+    <dialog id="subscriptionPlanDialog" class="request-sheet-dialog subscription-plan-dialog" aria-labelledby="subscriptionPlanTitle">
+      <form id="subscriptionPlanForm" class="request-sheet-card subscription-plan-card">
+        <p class="eyebrow">Creator membership</p>
+        <h2 id="subscriptionPlanTitle">サブスクプランを作成</h2>
+        <p id="subscriptionPlanLead" class="subscription-plan-lead">公式承認なしで、自分のプロフィール上に複数の支援プランを作成できます。</p>
+        <div class="compose-grid">
+          <label class="field is-required">
+            <span>プラン名</span>
+            <input id="subscriptionPlanName" type="text" maxlength="28" placeholder="例: Backstage / Supporter" autocomplete="off" required />
+          </label>
+          <label class="field is-required">
+            <span>月額</span>
+            <input id="subscriptionPlanPrice" type="number" min="300" step="100" placeholder="1000" required />
+          </label>
+          <label class="field wide">
+            <span>概要</span>
+            <input id="subscriptionPlanSummary" type="text" maxlength="80" placeholder="限定投稿、制作メモ、先行公開など" autocomplete="off" />
+          </label>
+          <label class="field wide is-required">
+            <span>特典</span>
+            <textarea id="subscriptionPlanPerks" rows="4" placeholder="限定投稿 / WIP / イベント先行案内 / 支援カード発行 など" required></textarea>
+          </label>
+        </div>
+        <div class="request-sheet-actions">
+          <button id="subscriptionPlanSubmit" class="primary-button" type="submit" disabled>保存する</button>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="requestComposeDialog" class="compose-dialog request-compose-dialog" aria-labelledby="requestComposeTitle">
       <form id="requestComposeForm" class="compose-shell request-compose-shell">
         <button class="close-button" id="closeRequestCompose" type="button" aria-label="Close">
@@ -2121,8 +2175,9 @@
               <input id="requestPostPrice" type="text" placeholder="¥12,000〜" autocomplete="off" />
             </label>
             <label class="field">
-              <span>平均納期</span>
-              <input id="requestPostDelivery" type="text" placeholder="平均 10日" autocomplete="off" />
+              <span>希望納期</span>
+              <input id="requestPostDelivery" type="text" placeholder="例: 7日以内 / 6月20日まで" autocomplete="off" />
+              <small id="requestPostAverageDeliveryHint" class="field-help">現在の平均納期: 平均 7日</small>
             </label>
             <label class="field">
               <span>受付枠</span>
@@ -2169,7 +2224,7 @@
           </div>
 
           <div class="compose-actions">
-            <button class="primary-button" type="submit">依頼受付を投稿</button>
+            <button id="requestComposeSubmit" class="primary-button" type="submit">依頼受付を投稿</button>
           </div>
         </section>
       </form>
