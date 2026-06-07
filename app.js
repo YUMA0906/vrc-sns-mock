@@ -156,7 +156,7 @@ const circleGroups = [
     description: "ワールド巡り、ポートレート撮影、ロケハンメモを共有する写真好き向けサークル。参加者限定で撮影ルートや作例レビューを投稿できます。",
     tags: ["#写真", "#worldphoto", "#ロケハン"],
     members: 128,
-    visibility: "参加者限定投稿あり",
+    visibility: "自由参加OK",
     eventRule: "フォトリレー系イベントの参加条件に設定可能",
   },
   {
@@ -178,7 +178,7 @@ const circleGroups = [
     description: "ライティング、軽量化、ギミック検証を共有するワールド制作者向けサークル。制作途中の投稿をメンバー限定で残せます。",
     tags: ["#world", "#lighting", "#gimmick"],
     members: 63,
-    visibility: "参加者限定投稿あり",
+    visibility: "自由参加OK",
     eventRule: "ジャムや勉強会の参加条件に設定可能",
   },
   {
@@ -211,7 +211,7 @@ const circleGroups = [
     description: "Before / After、色味調整、SNS掲載前の軽い添削を持ち寄るレタッチ練習サークル。",
     tags: ["#retouch", "#colorgrade", "#beforeafter"],
     members: 91,
-    visibility: "参加者限定投稿あり",
+    visibility: "自由参加OK",
     eventRule: "添削会やレタッチ練習イベントの参加条件に設定可能",
   },
   {
@@ -277,7 +277,7 @@ const circleGroups = [
     description: "lilToon設定、発光表現、肌や髪の色味調整など、見た目づくりのメモを貯めるサークル。",
     tags: ["#shader", "#liltoon", "#avatar"],
     members: 77,
-    visibility: "参加者限定投稿あり",
+    visibility: "自由参加OK",
     eventRule: "シェーダー設定共有会の参加条件に設定可能",
   },
   {
@@ -299,7 +299,7 @@ const circleGroups = [
     description: "ダンスイベントの写真、リキャップ動画、ステージ演出の記録を共有するイベント好き向けサークル。",
     tags: ["#dance", "#event", "#recap"],
     members: 132,
-    visibility: "参加者限定投稿あり",
+    visibility: "自由参加OK",
     eventRule: "ダンスイベントの参加者限定投稿やアフタームービー共有に利用中",
   },
   {
@@ -354,7 +354,7 @@ const circleGroups = [
     description: "テーマ別ワールド巡り、撮影ルート、イベント導線を企画するワールド好き向けサークル。",
     tags: ["#world", "#tour", "#event"],
     members: 154,
-    visibility: "参加者限定投稿あり",
+    visibility: "自由参加OK",
     eventRule: "ワールドツアーイベントの参加条件に設定可能",
   },
   {
@@ -409,7 +409,7 @@ const circleGroups = [
     description: "個人展示、写真ギャラリー、ポートフォリオ展示ワールドの設計例を共有するサークル。",
     tags: ["#gallery", "#world", "#portfolio"],
     members: 64,
-    visibility: "参加者限定投稿あり",
+    visibility: "自由参加OK",
     eventRule: "展示会イベントやギャラリー巡回企画の参加条件に設定可能",
   },
   {
@@ -442,7 +442,7 @@ const circleGroups = [
     description: "ネオン、雨、暗所、発光衣装を使った夜景撮影の作例とワールド情報を共有するサークル。",
     tags: ["#nightphoto", "#neon", "#worldphoto"],
     members: 121,
-    visibility: "参加者限定投稿あり",
+    visibility: "自由参加OK",
     eventRule: "夜景フォトコンテストや限定撮影会の参加条件に設定可能",
   },
 ];
@@ -4389,6 +4389,17 @@ function parseCircleTags(value) {
     .slice(0, 5);
 }
 
+function readCircleCoverFile() {
+  const file = circleCreateCoverInput?.files?.[0];
+  if (!file) return Promise.resolve("");
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => resolve(typeof reader.result === "string" ? reader.result : ""));
+    reader.addEventListener("error", () => resolve(""));
+    reader.readAsDataURL(file);
+  });
+}
+
 function resetCircleCreateForm() {
   circleCreateForm?.reset();
   if (circleCreateNameError) {
@@ -4418,7 +4429,7 @@ function closeCircleCreateDialog() {
   closeModalElement(circleCreateDialog);
 }
 
-function createCircleFromForm(event) {
+async function createCircleFromForm(event) {
   event.preventDefault();
   if (!circleCreateNameInput || !circleCreateDescriptionInput || !circleCreateVisibilityInput) return;
   const name = circleCreateNameInput.value.trim().replace(/\s+/g, " ");
@@ -4431,11 +4442,12 @@ function createCircleFromForm(event) {
 
   const id = uniqueCircleId(name);
   const tags = parseCircleTags(circleCreateTagsInput?.value || "");
+  const cover = await readCircleCoverFile();
   const circle = {
     id,
     name,
     owner: "You",
-    cover: circleCreateCoverInput?.value.trim() || vrchatImages.community,
+    cover: cover || vrchatImages.community,
     description,
     tags: tags.length ? tags : ["#circle"],
     members: 1,
@@ -4454,9 +4466,11 @@ function createCircleFromForm(event) {
   joinedCircleIds.add(id);
   activeCirclePageId = id;
   activeManagedCircleId = id;
+  activeCircleTab = "manage";
   closeCircleCreateDialog();
-  showProfileCopyToast(`${name}を作成しました`);
-  renderCirclesPage(id, { scroll: false });
+  history.pushState("", document.title, `${location.pathname}${location.search}#circle-manager/${id}`);
+  renderCirclesPage(null, { scroll: false });
+  showRequestAcceptPopup("サークルを作成しました", `${name}の管理画面へ移動しました`);
 }
 
 function circleCard(circle) {

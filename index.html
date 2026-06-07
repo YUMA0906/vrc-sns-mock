@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="./styles.css?v=circle-create-unify" />
+    <link rel="stylesheet" href="./styles.css?v=circle-create-flow-refine" />
   </head>
   <body>
     <header class="topbar">
@@ -1169,7 +1169,6 @@
               <select id="circleCreateVisibilityInput" required>
                 <option value="自由参加OK">自由参加OK</option>
                 <option value="承認制">承認制</option>
-                <option value="参加者限定投稿あり">参加者限定投稿あり</option>
               </select>
             </label>
             <label class="field">
@@ -1178,8 +1177,9 @@
             </label>
           </div>
           <label class="field">
-            <span>カバー画像URL</span>
-            <input id="circleCreateCoverInput" type="url" placeholder="未入力の場合はサンプル画像を使用" autocomplete="off" />
+            <span>カバー画像</span>
+            <input id="circleCreateCoverInput" type="file" accept="image/*" />
+            <small class="field-help">未選択の場合はサンプル画像を使用します。</small>
           </label>
           <div class="request-sheet-actions">
             <button id="circleCreateSubmit" class="primary-button" type="submit">作成する</button>
@@ -2297,6 +2297,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=circle-create-unify"></script>
+    <script src="./app.js?v=circle-create-flow-refine"></script>
   </body>
 </html>
