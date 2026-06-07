@@ -175,7 +175,7 @@ const circleGroups = [
     name: "ワールド制作ラボ",
     owner: "Orbit Build",
     cover: vrchatImages.world,
-    description: "ライティング、軽量化、ギミック検証を共有するワールド制作者向けグループ。制作途中の投稿をメンバー限定で残せます。",
+    description: "ライティング、軽量化、ギミック検証を共有するワールド制作者向けサークル。制作途中の投稿をメンバー限定で残せます。",
     tags: ["#world", "#lighting", "#gimmick"],
     members: 63,
     visibility: "参加者限定投稿あり",
@@ -666,6 +666,7 @@ const profileNotifyButton = document.querySelector("#profileNotifyButton");
 const profileMuteButton = document.querySelector("#profileMuteButton");
 const profileBlockButton = document.querySelector("#profileBlockButton");
 const profileRequestButton = document.querySelector("#profileRequestButton");
+const profileFollowingButton = document.querySelector("#profileFollowingButton");
 const profileShareButton = document.querySelector("#profileShareButton");
 const trustSummaryText = document.querySelector("#trustSummaryText");
 const trustStatus = document.querySelector("#trustStatus");
@@ -884,6 +885,16 @@ const circleManagerMembers = document.querySelector("#circleManagerMembers");
 const circleManagerRequests = document.querySelector("#circleManagerRequests");
 const circleManagerRoles = document.querySelector("#circleManagerRoles");
 const circleManagerInviteButton = document.querySelector("#circleManagerInviteButton");
+const circleCreateTopButton = document.querySelector("#circleCreateTopButton");
+const circleCreateManagerButton = document.querySelector("#circleCreateManagerButton");
+const circleCreateDialog = document.querySelector("#circleCreateDialog");
+const circleCreateForm = document.querySelector("#circleCreateForm");
+const circleCreateNameInput = document.querySelector("#circleCreateNameInput");
+const circleCreateDescriptionInput = document.querySelector("#circleCreateDescriptionInput");
+const circleCreateVisibilityInput = document.querySelector("#circleCreateVisibilityInput");
+const circleCreateTagsInput = document.querySelector("#circleCreateTagsInput");
+const circleCreateCoverInput = document.querySelector("#circleCreateCoverInput");
+const circleCreateNameError = document.querySelector("#circleCreateNameError");
 const circlePromoteDialog = document.querySelector("#circlePromoteDialog");
 const circlePromoteCopy = document.querySelector("#circlePromoteCopy");
 const circlePromoteConfirm = document.querySelector("#circlePromoteConfirm");
@@ -903,6 +914,9 @@ const circleKickCopy = document.querySelector("#circleKickCopy");
 const circleKickCancel = document.querySelector("#circleKickCancel");
 const circleKickConfirm = document.querySelector("#circleKickConfirm");
 const bookmarkFolderDialog = document.querySelector("#bookmarkFolderDialog");
+const followingListDialog = document.querySelector("#followingListDialog");
+const followingListBody = document.querySelector("#followingListBody");
+const followingListCount = document.querySelector("#followingListCount");
 const bookmarkFolderCreateDialog = document.querySelector("#bookmarkFolderCreateDialog");
 const bookmarkFolderOptions = document.querySelector("#bookmarkFolderOptions");
 const bookmarkFolderName = document.querySelector("#bookmarkFolderName");
@@ -1533,7 +1547,7 @@ const translations = {
     postUrlCopy: "投稿URLをコピー",
     eventProposalTrigger: "イベント開催を申請",
     circles: "サークル",
-    circlesLead: "同好会や制作チームのような小さなグループ。参加者限定投稿や、イベント参加条件として使える想定です。",
+    circlesLead: "同好会や制作チームのような小さなサークル。参加者限定投稿や、イベント参加条件として使える想定です。",
     circlePostsTitle: "サークル限定投稿",
     circlePostsNote: "参加中のサークルでは、メンバーだけが見られる投稿が表示されます。",
     circleListTitle: "サークル一覧",
@@ -1955,7 +1969,7 @@ const translations = {
     postUrlCopy: "게시물 URL 복사",
     eventProposalTrigger: "이벤트 개최 신청",
     circles: "서클",
-    circlesLead: "동호회나 제작팀 같은 작은 그룹입니다. 참여자 전용 게시물과 이벤트 참여 조건으로 사용할 수 있습니다.",
+    circlesLead: "동호회나 제작팀 같은 작은 서클입니다. 참여자 전용 게시물과 이벤트 참여 조건으로 사용할 수 있습니다.",
     circlePostsTitle: "서클 한정 게시물",
     circlePostsNote: "참여 중인 서클에서는 멤버만 볼 수 있는 게시물이 표시됩니다.",
     circleListTitle: "서클 목록",
@@ -2215,6 +2229,13 @@ function startHeroTitleRotation() {
 function setAttr(target, attr, key) {
   const node = typeof target === "string" ? document.querySelector(target) : target;
   if (node) node.setAttribute(attr, t(key));
+}
+
+function setTooltip(target, keyOrText, { raw = false } = {}) {
+  const node = typeof target === "string" ? document.querySelector(target) : target;
+  if (!node) return;
+  node.setAttribute("data-tooltip", raw ? keyOrText : t(keyOrText));
+  node.removeAttribute("title");
 }
 
 function setSelectOptionTexts(select, keys) {
@@ -3580,11 +3601,11 @@ function applyLanguage({ rerender = false } = {}) {
   setAttr(searchInput, "placeholder", "searchPlaceholder");
   if (missionButton) missionButton.textContent = currentLanguage === "en" ? "Service" : currentLanguage === "ko" ? "서비스 설명" : "サービス説明";
   setAttr(themeToggle, "aria-label", "toggleTheme");
-  setAttr(themeToggle, "title", "toggleTheme");
+  setTooltip(themeToggle, "toggleTheme");
   setAttr(likedPostsButton, "aria-label", "likedPostsShortcut");
-  setAttr(likedPostsButton, "title", "likedPostsShortcut");
+  setTooltip(likedPostsButton, "likedPostsShortcut");
   setAttr(bookmarkFoldersButton, "aria-label", "bookmarkFoldersShortcut");
-  setAttr(bookmarkFoldersButton, "title", "bookmarkFoldersShortcut");
+  setTooltip(bookmarkFoldersButton, "bookmarkFoldersShortcut");
   setText("#bookmarkFolderTitle", currentLanguage === "en" ? "Choose a folder" : currentLanguage === "ko" ? "저장할 폴더 선택" : "保存先フォルダを選ぶ");
   setText("#bookmarkFolderSave", currentLanguage === "en" ? "Add to this folder" : currentLanguage === "ko" ? "이 폴더에 추가" : "このフォルダに追加");
   setText("#bookmarkFolderCreateTitle", currentLanguage === "en" ? "Create new folder" : currentLanguage === "ko" ? "새 폴더 만들기" : "新しいフォルダを作成");
@@ -3595,17 +3616,18 @@ function applyLanguage({ rerender = false } = {}) {
     bookmarkFolderName.placeholder = currentLanguage === "en" ? "Example: Photo refs / Avatar notes" : currentLanguage === "ko" ? "예: 촬영 참고 / 개변 메모" : "例: 撮影参考 / 改変メモ";
   }
   setAttr(circlePageButton, "aria-label", "circles");
-  setAttr(circlePageButton, "title", "circles");
+  setTooltip(circlePageButton, "circles");
   if (eventPageButton) {
     eventPageButton.setAttribute("aria-label", t("events"));
-    eventPageButton.setAttribute("title", t("events"));
+    setTooltip(eventPageButton, t("events"), { raw: true });
   }
   setAttr(requestManagerButton, "aria-label", "requestManager");
-  setAttr(requestManagerButton, "title", "requestManager");
+  setTooltip(requestManagerButton, "requestManager");
   setAttr(notificationButton, "aria-label", "notifications");
-  setAttr(notificationButton, "title", "notifications");
+  setTooltip(notificationButton, "notifications");
   setAttr(notificationBadge, "aria-label", "unreadNotifications");
   setAttr(avatarButton, "aria-label", "account");
+  setTooltip(avatarButton, "account");
   setText("#accountMenuProfile span", "myPage");
   if (accountMenuService) accountMenuService.querySelector("span").textContent = currentLanguage === "en" ? "Service guide" : currentLanguage === "ko" ? "서비스 설명" : "サービス説明";
   if (accountMenuAdmin) accountMenuAdmin.querySelector("span").textContent = currentLanguage === "en" ? "Operations" : currentLanguage === "ko" ? "운영 관리" : "運営管理";
@@ -3748,10 +3770,10 @@ function applyLanguage({ rerender = false } = {}) {
   setText("#circleListTitle", "circleListTitle");
   setText("[data-circle-tab='browse']", "circleBrowseTab");
   setText("[data-circle-tab='posts']", "circlePostsTab");
-  setText("[data-circle-tab='manage']", currentLanguage === "en" ? "Manage groups" : currentLanguage === "ko" ? "그룹 관리" : "グループを管理する");
+  setText("[data-circle-tab='manage']", currentLanguage === "en" ? "Manage circles" : currentLanguage === "ko" ? "서클 관리" : "サークルを管理する");
   setText("#circleManagerEyebrow", currentLanguage === "en" ? "Manager" : currentLanguage === "ko" ? "관리" : "Manager");
-  setText("#circleManagerTitle", currentLanguage === "en" ? "Group management" : currentLanguage === "ko" ? "그룹 관리" : "グループ管理");
-  setText("#circleManagerNote", currentLanguage === "en" ? "Check members, review join requests, and grant or transfer group management permissions." : currentLanguage === "ko" ? "멤버, 참가 신청, 관리 권한 부여와 이전을 확인합니다." : "作成したグループのメンバー確認、参加申請、管理権限の付与や移譲を行う想定です。");
+  setText("#circleManagerTitle", currentLanguage === "en" ? "Circle management" : currentLanguage === "ko" ? "서클 관리" : "サークル管理");
+  setText("#circleManagerNote", currentLanguage === "en" ? "Check members, review join requests, and grant or transfer circle management permissions." : currentLanguage === "ko" ? "멤버, 참가 신청, 서클 관리 권한 부여와 이전을 확인합니다." : "作成したサークルのメンバー確認、参加申請、管理権限の付与や移譲を行う想定です。");
   setText("#circleManagerMembersTitle", currentLanguage === "en" ? "Members" : currentLanguage === "ko" ? "멤버" : "メンバー");
   setText("#circleManagerRequestsTitle", currentLanguage === "en" ? "Join requests" : currentLanguage === "ko" ? "참가 신청" : "参加申請");
   setText("#circleManagerInviteButton", currentLanguage === "en" ? "Copy invite link" : currentLanguage === "ko" ? "초대 링크 복사" : "招待リンクをコピー");
@@ -4337,6 +4359,106 @@ function circleMatchesVisibilityFilters(circle) {
   return true;
 }
 
+function normalizeCircleName(name) {
+  return name.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function circleNameExists(name) {
+  const normalized = normalizeCircleName(name);
+  if (!normalized) return false;
+  return circleGroups.some((circle) => normalizeCircleName(circle.name) === normalized);
+}
+
+function uniqueCircleId(name) {
+  const base = slugify(name) || `circle-${Date.now()}`;
+  let candidate = base;
+  let index = 2;
+  while (circleById(candidate)) {
+    candidate = `${base}-${index}`;
+    index += 1;
+  }
+  return candidate;
+}
+
+function parseCircleTags(value) {
+  return value
+    .split(/[,\s]+/)
+    .map((tag) => tag.trim())
+    .filter(Boolean)
+    .map((tag) => tag.startsWith("#") ? tag : `#${tag}`)
+    .slice(0, 5);
+}
+
+function resetCircleCreateForm() {
+  circleCreateForm?.reset();
+  if (circleCreateNameError) {
+    circleCreateNameError.hidden = true;
+    circleCreateNameError.textContent = "";
+  }
+  circleCreateNameInput?.classList.remove("is-invalid");
+}
+
+function updateCircleCreateState() {
+  const name = circleCreateNameInput?.value || "";
+  const duplicate = circleNameExists(name);
+  if (circleCreateNameError) {
+    circleCreateNameError.hidden = !duplicate;
+    circleCreateNameError.textContent = duplicate ? "同じ名前のサークルは作成できません。" : "";
+  }
+  circleCreateNameInput?.classList.toggle("is-invalid", duplicate);
+}
+
+function openCircleCreateDialog() {
+  resetCircleCreateForm();
+  showModalElement(circleCreateDialog);
+  window.setTimeout(() => circleCreateNameInput?.focus(), 100);
+}
+
+function closeCircleCreateDialog() {
+  closeModalElement(circleCreateDialog);
+}
+
+function createCircleFromForm(event) {
+  event.preventDefault();
+  if (!circleCreateNameInput || !circleCreateDescriptionInput || !circleCreateVisibilityInput) return;
+  const name = circleCreateNameInput.value.trim().replace(/\s+/g, " ");
+  const description = circleCreateDescriptionInput.value.trim();
+  if (!name || !description) return;
+  if (circleNameExists(name)) {
+    updateCircleCreateState();
+    return;
+  }
+
+  const id = uniqueCircleId(name);
+  const tags = parseCircleTags(circleCreateTagsInput?.value || "");
+  const circle = {
+    id,
+    name,
+    owner: "You",
+    cover: circleCreateCoverInput?.value.trim() || vrchatImages.community,
+    description,
+    tags: tags.length ? tags : ["#circle"],
+    members: 1,
+    visibility: circleCreateVisibilityInput.value,
+    eventRule: "イベント参加条件として設定可能",
+  };
+  circleGroups.unshift(circle);
+  circleManagementData[id] = {
+    owner: "You",
+    managedByYou: true,
+    members: [
+      { id: "you", name: "You", role: "Owner", joined: "作成者", status: "管理者", avatar: "Y" }
+    ],
+    requests: []
+  };
+  joinedCircleIds.add(id);
+  activeCirclePageId = id;
+  activeManagedCircleId = id;
+  closeCircleCreateDialog();
+  showProfileCopyToast(`${name}を作成しました`);
+  renderCirclesPage(id, { scroll: false });
+}
+
 function circleCard(circle) {
   const joined = joinedCircleIds.has(circle.id);
   const postCount = circlePosts(circle.id).length;
@@ -4423,8 +4545,8 @@ function renderCircleManager() {
     circleManagerList.innerHTML = "";
     circleManagerSummary.innerHTML = `
       <article class="circle-manager-empty">
-        <strong>管理中のグループはありません</strong>
-        <p>自分で作成したグループや、管理権限を付与されたグループがここに表示されます。</p>
+        <strong>管理中のサークルはありません</strong>
+        <p>自分で作成したサークルや、管理権限を付与されたサークルがここに表示されます。</p>
       </article>
     `;
     circleManagerMembers.innerHTML = "";
@@ -4477,7 +4599,7 @@ function renderCircleManager() {
         ${member.role === "Member" ? `<button class="soft-button" type="button" data-circle-role-action="promote" data-member="${escapeHtml(member.id)}">管理者にする</button>` : ""}
         ${member.role === "Manager" ? `<button class="soft-button" type="button" data-circle-role-action="demote" data-member="${escapeHtml(member.id)}">権限を外す</button>` : ""}
         ${canTransferOwner && member.role !== "Owner" ? `<button class="soft-button" type="button" data-circle-role-action="transfer" data-member="${escapeHtml(member.id)}">オーナー移譲</button>` : ""}
-        ${member.role !== "Owner" && member.id !== "you" ? `<button class="soft-button request-report-button" type="button" data-circle-role-action="kick" data-member="${escapeHtml(member.id)}">グループから外す</button>` : ""}
+        ${member.role !== "Owner" && member.id !== "you" ? `<button class="soft-button request-report-button" type="button" data-circle-role-action="kick" data-member="${escapeHtml(member.id)}">サークルから外す</button>` : ""}
       </span>
     </article>
   `).join("");
@@ -4496,7 +4618,7 @@ function renderCircleManager() {
         </span>
       </article>
     `).join("")
-    : `<article class="circle-manager-empty"><strong>参加申請はありません</strong><p>承認制グループへの申請が届くとここで確認できます。</p></article>`;
+    : `<article class="circle-manager-empty"><strong>参加申請はありません</strong><p>承認制サークルへの申請が届くとここで確認できます。</p></article>`;
 
   const transferableMembers = data.members.filter((member) => member.role !== "Owner");
   circleManagerRoles.innerHTML = `
@@ -5075,6 +5197,65 @@ function updateProfileSocialButtons(creator, isMine = false) {
     profileBlockButton.setAttribute("aria-label", blocked ? `${creator}のブロックを解除` : `${creator}をブロック`);
     profileBlockButton.title = blocked ? "ブロック中" : "ブロック";
   }
+}
+
+function followedCreatorCards() {
+  return [...followedCreators]
+    .map((creator) => {
+      const posts = creatorPosts(creator);
+      const first = posts[0];
+      if (!first) return null;
+      const trust = getTrustProfile(creator, posts, false);
+      const score = trustScore(posts, trust, creator);
+      const level = trustedLevel(score, creator);
+      return {
+        creator,
+        role: first.role,
+        image: first.image,
+        slug: slugify(creator),
+        posts: posts.length,
+        level: level.label,
+        openRequest: posts.some((pin) => pin.request?.open),
+        saves: trust.saves,
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.creator.localeCompare(b.creator));
+}
+
+function renderFollowingList() {
+  if (!followingListBody) return;
+  const creators = followedCreatorCards();
+  if (followingListCount) followingListCount.textContent = `${creators.length} users`;
+  if (!creators.length) {
+    followingListBody.innerHTML = `
+      <div class="following-list-empty">
+        <strong>まだフォローしているユーザーはいません</strong>
+        <span>気になる投稿主のプロフィールからフォローすると、ここに一覧で表示されます。</span>
+      </div>
+    `;
+    return;
+  }
+  followingListBody.innerHTML = creators.map((item) => `
+    <button class="following-list-item" type="button" data-following-profile="${escapeHtml(item.slug)}">
+      <span class="following-list-avatar" style="background-image: url('${escapeHtml(item.image)}')"></span>
+      <span class="following-list-copy">
+        <strong>${escapeHtml(item.creator)}</strong>
+        <small>${escapeHtml(item.role)} / ${escapeHtml(item.level)} / ${item.posts} posts</small>
+        <em>${item.openRequest ? "依頼受付中" : "通常投稿中心"} / ${item.saves} saved</em>
+      </span>
+      <span class="following-list-open">プロフィール</span>
+    </button>
+  `).join("");
+}
+
+function openFollowingListDialog() {
+  renderFollowingList();
+  showModalElement(followingListDialog);
+}
+
+function closeFollowingListDialog() {
+  closeModalElement(followingListDialog);
 }
 
 function setDialogOrigin(sourceElement) {
@@ -6440,6 +6621,37 @@ function clearComposeDraft() {
   localStorage.removeItem(composeDraftStorageKey);
 }
 
+function resetComposeFormState() {
+  composePostTitle.value = "";
+  composeCategory.value = "Photo";
+  if (composeVisibility) composeVisibility.value = "Public";
+  if (composeCircleToggle) composeCircleToggle.checked = false;
+  if (composeCircle) composeCircle.value = joinedCircleIds.values().next().value || "";
+  composeAvatar.value = "";
+  composeWorld.value = "";
+  composeTags.value = "";
+  composeDescription.value = "";
+  composeImages = [];
+  composeImageIndex = 0;
+  renderComposeImage();
+  updateComposeCircleVisibility();
+  refreshPostComposeCustomSelects();
+}
+
+function composeHasDraftableInput() {
+  return Boolean(
+    composePostTitle.value.trim() ||
+    composeAvatar.value.trim() ||
+    composeWorld.value.trim() ||
+    composeTags.value.trim() ||
+    composeDescription.value.trim() ||
+    composeImages.length ||
+    composeCategory.value !== "Photo" ||
+    (composeVisibility?.value || "Public") !== "Public" ||
+    composeCircleToggle?.checked
+  );
+}
+
 function readComposeDraftSummary() {
   const raw = localStorage.getItem(composeDraftStorageKey);
   if (!raw) return null;
@@ -7725,13 +7937,13 @@ function handleFloatingPostClick(event) {
   openComposeHint();
 }
 
-function openComposeHint() {
+function openComposeHint({ restoreDraft = false } = {}) {
   if (modalIsOpen(dialog)) closePinDialog();
   document.body.classList.remove("is-dragging");
   dropHint.hidden = true;
   composeNotice.hidden = true;
-  if (composeCategory.value === "Commission") composeCategory.value = "Photo";
-  restoreComposeDraft();
+  resetComposeFormState();
+  if (restoreDraft) restoreComposeDraft();
   updateComposeCircleVisibility();
   updateComposePreview();
   showModalElement(composeDialog);
@@ -7749,6 +7961,11 @@ function closeComposeDialog() {
 
 function openComposeCloseConfirmDialog() {
   if (!modalIsOpen(composeDialog)) return;
+  if (!composeHasDraftableInput()) {
+    clearComposeDraft();
+    closeComposeDialog();
+    return;
+  }
   showModalElement(composeCloseConfirmDialog);
 }
 
@@ -8490,7 +8707,7 @@ composeDraftListBody?.addEventListener("click", (event) => {
   if (!action) return;
   if (action.dataset.composeDraftAction === "resume") {
     closeModalElement(composeDraftListDialog);
-    openComposeHint();
+    openComposeHint({ restoreDraft: true });
     return;
   }
   if (action.dataset.composeDraftAction === "delete") {
@@ -8643,7 +8860,18 @@ circleManagerList?.addEventListener("click", (event) => {
 });
 circleManagerInviteButton?.addEventListener("click", () => {
   const circle = ensureActiveManagedCircle();
-  showProfileCopyToast(`${circle?.name || "グループ"}の招待リンクをコピーしました`);
+  showProfileCopyToast(`${circle?.name || "サークル"}の招待リンクをコピーしました`);
+});
+circleCreateTopButton?.addEventListener("click", openCircleCreateDialog);
+circleCreateManagerButton?.addEventListener("click", openCircleCreateDialog);
+circleCreateNameInput?.addEventListener("input", updateCircleCreateState);
+circleCreateForm?.addEventListener("submit", createCircleFromForm);
+circleCreateDialog?.addEventListener("click", (event) => {
+  if (event.target === circleCreateDialog) closeCircleCreateDialog();
+});
+circleCreateDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeCircleCreateDialog();
 });
 circleManagerMembers?.addEventListener("click", (event) => {
   const action = event.target.closest("[data-circle-role-action]");
@@ -9295,6 +9523,23 @@ profileFollow.addEventListener("click", () => {
 });
 
 profileEditButton?.addEventListener("click", openEditProfile);
+profileFollowingButton?.addEventListener("click", openFollowingListDialog);
+
+followingListBody?.addEventListener("click", (event) => {
+  const profileButton = event.target.closest("[data-following-profile]");
+  if (!profileButton) return;
+  closeFollowingListDialog();
+  openProfile(profileButton.dataset.followingProfile);
+});
+
+followingListDialog?.addEventListener("click", (event) => {
+  if (event.target === followingListDialog) closeFollowingListDialog();
+});
+
+followingListDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeFollowingListDialog();
+});
 
 profileNotifyButton?.addEventListener("click", () => {
   if (!activeProfile || activeProfile === "You") return;
@@ -9734,12 +9979,12 @@ eventProposalDialog?.addEventListener("cancel", (event) => {
 closeCompose.addEventListener("click", openComposeCloseConfirmDialog);
 
 composeDialog.addEventListener("click", (event) => {
-  if (event.target === composeDialog) closeComposeDialog();
+  if (event.target === composeDialog) openComposeCloseConfirmDialog();
 });
 
 composeDialog.addEventListener("cancel", (event) => {
   event.preventDefault();
-  closeComposeDialog();
+  openComposeCloseConfirmDialog();
 });
 
 composeCloseCancel?.addEventListener("click", closeComposeCloseConfirmDialog);
@@ -9755,7 +10000,7 @@ composeCloseConfirmDialog?.addEventListener("cancel", (event) => {
 
 composeForm.addEventListener("submit", handleMockSubmit);
 
-saveDraftButton.addEventListener("click", () => {
+saveDraftButton?.addEventListener("click", () => {
   persistComposeDraft();
   composeNotice.hidden = false;
   composeNotice.textContent = "通常投稿の下書きを保存しました。";
@@ -9883,10 +10128,10 @@ window.addEventListener("drop", (event) => {
   document.body.classList.remove("is-dragging");
   dropHint.hidden = true;
   if (modalIsOpen(requestComposeDialog)) return;
+  if (!modalIsOpen(composeDialog)) openComposeHint();
   if (event.dataTransfer?.files?.length) {
     loadComposeImages(event.dataTransfer.files);
   }
-  if (!modalIsOpen(composeDialog)) openComposeHint();
 });
 
 loadSavedSettings();
@@ -10464,6 +10709,7 @@ function renderProfile(creator) {
     });
     profileFollow.hidden = true;
     if (profileEditButton) profileEditButton.hidden = false;
+    if (profileFollowingButton) profileFollowingButton.hidden = false;
     updateProfileSocialButtons(creator, true);
     profileRequestButton.hidden = true;
   } else {
@@ -10473,6 +10719,7 @@ function renderProfile(creator) {
     });
     profileFollow.hidden = false;
     if (profileEditButton) profileEditButton.hidden = true;
+    if (profileFollowingButton) profileFollowingButton.hidden = true;
     updateFollowButton(profileFollow, creator);
     updateProfileSocialButtons(creator, false);
     profileRequestButton.hidden = !directPosts.some((pin) => pin.request?.open);

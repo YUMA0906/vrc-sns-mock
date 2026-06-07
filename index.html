@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="./styles.css?v=scrollable-mobile-tabs" />
+    <link rel="stylesheet" href="./styles.css?v=circle-create-unify" />
   </head>
   <body>
     <header class="topbar">
@@ -32,22 +32,22 @@
       </div>
 
       <nav class="nav-actions" aria-label="Primary">
-        <button id="themeToggle" class="icon-button" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <button id="themeToggle" class="icon-button" type="button" aria-label="Toggle dark mode" data-tooltip="Toggle dark mode">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path class="theme-toggle-moon" d="M12 3a6.8 6.8 0 0 0 8.6 8.6 8 8 0 1 1-8.6-8.6Z" />
           </svg>
         </button>
-        <button id="likedPostsButton" class="icon-button" type="button" aria-label="いいねした投稿" title="いいねした投稿">
+        <button id="likedPostsButton" class="icon-button" type="button" aria-label="いいねした投稿" data-tooltip="いいねした投稿">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
           </svg>
         </button>
-        <button id="bookmarkFoldersButton" class="icon-button" type="button" aria-label="ブックマークフォルダ" title="ブックマークフォルダ">
+        <button id="bookmarkFoldersButton" class="icon-button" type="button" aria-label="ブックマークフォルダ" data-tooltip="ブックマークフォルダ">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M19 21 12 17 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z" />
           </svg>
         </button>
-        <button id="circlePageButton" class="icon-button" type="button" aria-label="サークル" title="サークル">
+        <button id="circlePageButton" class="icon-button" type="button" aria-label="サークル" data-tooltip="サークル">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <circle cx="9" cy="8" r="3.5" />
             <path d="M2.5 20a6.5 6.5 0 0 1 13 0" />
@@ -55,7 +55,7 @@
             <path d="M17.5 13.8A5.5 5.5 0 0 1 21.5 19" />
           </svg>
         </button>
-        <button id="eventPageButton" class="icon-button" type="button" aria-label="イベント" title="イベント">
+        <button id="eventPageButton" class="icon-button" type="button" aria-label="イベント" data-tooltip="イベント">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M8 2v4" />
             <path d="M16 2v4" />
@@ -64,13 +64,13 @@
             <path d="m9 16 2 2 4-5" />
           </svg>
         </button>
-        <button id="requestManagerButton" class="icon-button" type="button" aria-label="Request manager" title="Request manager">
+        <button id="requestManagerButton" class="icon-button" type="button" aria-label="Request manager" data-tooltip="Request manager">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M9 11l3 3L22 4" />
             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
           </svg>
         </button>
-        <button id="notificationButton" class="icon-button" type="button" aria-label="Notifications" title="Notifications">
+        <button id="notificationButton" class="icon-button" type="button" aria-label="Notifications" data-tooltip="Notifications">
           <span id="notificationBadge" class="badge" aria-label="Unread notifications"></span>
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 7h18s-3 0-3-7" />
@@ -316,6 +316,15 @@
                 <button id="profileMuteButton" class="icon-button profile-social-button" type="button" aria-label="ミュート" title="ミュート"></button>
                 <button id="profileBlockButton" class="icon-button profile-social-button profile-block-button" type="button" aria-label="ブロック" title="ブロック"></button>
                 <button id="profileRequestButton" class="soft-button" type="button">依頼受付を見る</button>
+                <button id="profileFollowingButton" class="icon-button profile-social-button profile-following-button" type="button" aria-label="フォロー中一覧" title="フォロー中一覧" hidden>
+                  <svg aria-hidden="true" viewBox="0 0 24 24">
+                    <path d="M16 20v-1.4a4.6 4.6 0 0 0-4.6-4.6H6.6A4.6 4.6 0 0 0 2 18.6V20" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M18 9v6" />
+                    <path d="M15 12h6" />
+                  </svg>
+                  <span class="visually-hidden">フォロー中一覧</span>
+                </button>
                 <button id="profileShareButton" class="icon-button profile-share-button" type="button" aria-label="プロフィールURLをコピー" title="プロフィールURLをコピー">
                   <svg aria-hidden="true" viewBox="0 0 24 24">
                     <path d="M10 13a5 5 0 0 0 7.1.2l2.4-2.4a5 5 0 0 0-7.1-7.1L11 5.1" />
@@ -1140,6 +1149,43 @@
           </div>
         </form>
       </dialog>
+      <dialog id="circleCreateDialog" class="request-sheet-dialog circle-create-dialog" aria-labelledby="circleCreateTitle">
+        <form id="circleCreateForm" method="dialog" class="request-sheet-card circle-create-card">
+          <p class="eyebrow">New circle</p>
+          <h2 id="circleCreateTitle">サークルを作る</h2>
+          <p id="circleCreateLead" class="circle-create-lead">サークル名と参加条件を設定すると、作成後すぐにサークル一覧と管理画面に追加されます。</p>
+          <label class="field">
+            <span>サークル名</span>
+            <input id="circleCreateNameInput" type="text" maxlength="32" placeholder="例: 夜景撮影サークル" autocomplete="off" required />
+            <small id="circleCreateNameError" class="bookmark-folder-name-error" hidden></small>
+          </label>
+          <label class="field">
+            <span>説明</span>
+            <textarea id="circleCreateDescriptionInput" rows="4" placeholder="活動内容、参加条件、投稿できる内容など" required></textarea>
+          </label>
+          <div class="circle-create-grid">
+            <label class="field">
+              <span>公開方式</span>
+              <select id="circleCreateVisibilityInput" required>
+                <option value="自由参加OK">自由参加OK</option>
+                <option value="承認制">承認制</option>
+                <option value="参加者限定投稿あり">参加者限定投稿あり</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>タグ</span>
+              <input id="circleCreateTagsInput" type="text" placeholder="#photo #avatar #world" autocomplete="off" />
+            </label>
+          </div>
+          <label class="field">
+            <span>カバー画像URL</span>
+            <input id="circleCreateCoverInput" type="url" placeholder="未入力の場合はサンプル画像を使用" autocomplete="off" />
+          </label>
+          <div class="request-sheet-actions">
+            <button id="circleCreateSubmit" class="primary-button" type="submit">作成する</button>
+          </div>
+        </form>
+      </dialog>
       <div id="requestAcceptPopup" class="request-accept-popup" role="status" aria-live="polite" hidden>
         <div class="request-accept-card">
           <span class="request-accept-icon" aria-hidden="true">
@@ -1183,6 +1229,17 @@
           <div class="request-sheet-actions">
             <button id="bookmarkFolderCreate" class="primary-button" type="button">作成する</button>
           </div>
+        </form>
+      </dialog>
+      <dialog id="followingListDialog" class="request-sheet-dialog following-list-dialog" aria-labelledby="followingListTitle">
+        <form method="dialog" class="request-sheet-card following-list-card">
+          <p class="eyebrow">Following</p>
+          <div class="following-list-head">
+            <h2 id="followingListTitle">フォロー中</h2>
+            <span id="followingListCount">0 users</span>
+          </div>
+          <p class="following-list-lead">今フォローしているクリエイターを一覧で確認できます。</p>
+          <div id="followingListBody" class="following-list-body"></div>
         </form>
       </dialog>
       <dialog id="savedSearchDialog" class="request-sheet-dialog" aria-labelledby="savedSearchDialogTitle">
@@ -1446,14 +1503,15 @@
             <div>
               <p id="circleEyebrow" class="eyebrow">Circles</p>
               <h1 id="circleTitle">サークル</h1>
-              <p id="circleLead">同好会や制作チームのような小さなグループ。参加者限定投稿や、イベント参加条件として使える想定です。</p>
+              <p id="circleLead">同好会や制作チームのような小さなサークル。参加者限定投稿や、イベント参加条件として使える想定です。</p>
             </div>
+            <button id="circleCreateTopButton" class="primary-button circle-create-button" type="button">サークルを作る</button>
           </header>
           <section class="circle-browser-panel" aria-label="サークル表示切替">
             <div id="circleViewTabs" class="circle-view-tabs" role="tablist" aria-label="Circle tabs">
               <button class="is-active" type="button" role="tab" aria-selected="true" data-circle-tab="browse">サークル一覧</button>
               <button type="button" role="tab" aria-selected="false" data-circle-tab="posts">限定投稿</button>
-              <button type="button" role="tab" aria-selected="false" data-circle-tab="manage">グループを管理する</button>
+              <button type="button" role="tab" aria-selected="false" data-circle-tab="manage">サークルを管理する</button>
             </div>
             <label class="circle-search">
               <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -1514,13 +1572,14 @@
             <div class="circle-section-head">
               <div>
                 <p id="circleManagerEyebrow" class="eyebrow">Manager</p>
-                <h2 id="circleManagerTitle">グループ管理</h2>
+                <h2 id="circleManagerTitle">サークル管理</h2>
               </div>
-              <p id="circleManagerNote">作成したグループのメンバー確認、参加申請、管理権限の付与や移譲を行う想定です。</p>
+              <p id="circleManagerNote">作成したサークルのメンバー確認、参加申請、管理権限の付与や移譲を行う想定です。</p>
+              <button id="circleCreateManagerButton" class="primary-button circle-create-button" type="button">サークルを作る</button>
             </div>
             <div class="circle-manager-layout">
               <aside class="circle-manager-sidebar">
-                <p class="eyebrow">Managed groups</p>
+                <p class="eyebrow">Managed circles</p>
                 <div id="circleManagerList" class="circle-manager-list"></div>
               </aside>
               <div class="circle-manager-main">
@@ -1854,7 +1913,6 @@
           </div>
 
           <div class="compose-actions">
-            <button class="soft-button" type="button" id="saveDraftButton">下書き</button>
             <button class="primary-button" type="submit">投稿する</button>
           </div>
         </section>
@@ -2074,7 +2132,6 @@
           </div>
 
           <div class="compose-actions">
-            <button class="soft-button" type="button" id="saveRequestDraftButton">下書き</button>
             <button class="primary-button" type="submit">依頼受付を投稿</button>
           </div>
         </section>
@@ -2240,6 +2297,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=clean-home-search-2"></script>
+    <script src="./app.js?v=circle-create-unify"></script>
   </body>
 </html>
