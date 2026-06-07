@@ -6687,14 +6687,19 @@ function hideFloatingPostActions() {
   if (!floatingPostActions) return;
   floatingPostActions.hidden = true;
   floatingPostActions.classList.remove("is-visible");
+  floatingPostActions.setAttribute("aria-hidden", "true");
+  floatingPostActions.inert = true;
   floatingPostDock?.classList.remove("is-menu-open");
 }
 
 function showFloatingPostActions() {
   if (!floatingPostActions) return;
   floatingPostActions.hidden = false;
+  floatingPostActions.removeAttribute("aria-hidden");
+  floatingPostActions.inert = false;
   floatingPostDock?.classList.add("is-menu-open");
   window.requestAnimationFrame(() => {
+    if (floatingPostActions.hidden) return;
     floatingPostActions.classList.add("is-visible");
   });
 }
@@ -10766,6 +10771,7 @@ function saveEditProfile(event) {
   window.setTimeout(closeEditProfileDialog, 260);
 }
 
+hideFloatingPostActions();
 ensureEditLinkList();
 
 
