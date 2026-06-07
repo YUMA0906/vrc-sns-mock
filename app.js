@@ -960,6 +960,8 @@ const composePostTitle = document.querySelector("#composePostTitle");
 const composeCategory = document.querySelector("#composeCategory");
 const composeVisibility = document.querySelector("#composeVisibility");
 const composeCircleToggle = document.querySelector("#composeCircleToggle");
+const composeR18Toggle = document.querySelector("#composeR18Toggle");
+const composeGoreToggle = document.querySelector("#composeGoreToggle");
 const composeCircleField = document.querySelector("#composeCircleField");
 const composeCircle = document.querySelector("#composeCircle");
 const composeAvatar = document.querySelector("#composeAvatar");
@@ -6597,6 +6599,8 @@ function persistComposeDraft() {
     category: composeCategory.value,
     visibility: composeVisibility?.value || "Public",
     circlePost: Boolean(composeCircleToggle?.checked),
+    r18: Boolean(composeR18Toggle?.checked),
+    gore: Boolean(composeGoreToggle?.checked),
     circleId: composeCircle?.value || "",
     avatar: composeAvatar.value,
     world: composeWorld.value,
@@ -6618,6 +6622,8 @@ function restoreComposeDraft() {
     const draftCirclePost = Boolean(draft.circlePost || draft.visibility === "Circle only");
     if (composeVisibility) composeVisibility.value = draft.visibility === "Circle only" ? "Public" : (draft.visibility || "Public");
     if (composeCircleToggle) composeCircleToggle.checked = draftCirclePost;
+    if (composeR18Toggle) composeR18Toggle.checked = Boolean(draft.r18);
+    if (composeGoreToggle) composeGoreToggle.checked = Boolean(draft.gore);
     if (composeCircle) composeCircle.value = draft.circleId || joinedCircleIds.values().next().value || "";
     composeAvatar.value = draft.avatar || "";
     composeWorld.value = draft.world || "";
@@ -6640,6 +6646,8 @@ function resetComposeFormState() {
   composeCategory.value = "Photo";
   if (composeVisibility) composeVisibility.value = "Public";
   if (composeCircleToggle) composeCircleToggle.checked = false;
+  if (composeR18Toggle) composeR18Toggle.checked = false;
+  if (composeGoreToggle) composeGoreToggle.checked = false;
   if (composeCircle) composeCircle.value = joinedCircleIds.values().next().value || "";
   composeAvatar.value = "";
   composeWorld.value = "";
@@ -6662,6 +6670,8 @@ function composeHasDraftableInput() {
     composeImages.length ||
     composeCategory.value !== "Photo" ||
     (composeVisibility?.value || "Public") !== "Public" ||
+    composeR18Toggle?.checked ||
+    composeGoreToggle?.checked ||
     composeCircleToggle?.checked
   );
 }
@@ -8078,11 +8088,15 @@ function updateComposePreview() {
   const tags = composeTags.value.trim() || "#vrchat #portfolio";
   const creator = "You";
   const circle = isComposeCirclePost() ? circleById(composeCircle?.value) : null;
+  const contentFlags = [
+    composeR18Toggle?.checked ? "R18" : "",
+    composeGoreToggle?.checked ? "Gore" : ""
+  ].filter(Boolean).join(" / ");
 
   composePreviewCard.innerHTML = `
     <span>${category} / ${circle ? circle.name : creator}</span>
     <strong>${title}</strong>
-    <small>${circle ? "Circle only / " : ""}${tags}</small>
+    <small>${circle ? "Circle only / " : ""}${contentFlags ? `${contentFlags} / ` : ""}${tags}</small>
   `;
 }
 
@@ -8286,6 +8300,10 @@ function handleMockSubmit(event) {
     description: composeDescription.value.trim() || (circle ? `${circle.name}の参加者向け限定投稿です。` : "通常投稿のモックです。"),
     image: composeImages[0]?.src || vrchatImages.portrait,
     circleId: circle?.id || null,
+    sensitive: {
+      r18: Boolean(composeR18Toggle?.checked),
+      gore: Boolean(composeGoreToggle?.checked)
+    },
   };
   pins.unshift(newPin);
   myPosts.unshift(newPin);
@@ -8299,6 +8317,8 @@ function handleMockSubmit(event) {
   composeWorld.value = "";
   composeTags.value = "";
   composeDescription.value = "";
+  if (composeR18Toggle) composeR18Toggle.checked = false;
+  if (composeGoreToggle) composeGoreToggle.checked = false;
   composeImages = [];
   composeImageIndex = 0;
   renderComposeImage();
@@ -10025,7 +10045,7 @@ saveDraftButton?.addEventListener("click", () => {
   composeNotice.textContent = "通常投稿の下書きを保存しました。";
 });
 
-[composePostTitle, composeCategory, composeVisibility, composeCircle, composeAvatar, composeWorld, composeTags, composeDescription].filter(Boolean).forEach((input) => {
+[composePostTitle, composeCategory, composeVisibility, composeCircle, composeAvatar, composeWorld, composeTags, composeDescription, composeR18Toggle, composeGoreToggle].filter(Boolean).forEach((input) => {
   input.addEventListener("input", () => {
     updateComposeCircleVisibility();
     updateComposePreview();

@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.unsplash.com" />
-    <link rel="stylesheet" href="./styles.css?v=floating-post-hit-sync" />
+    <link rel="stylesheet" href="./styles.css?v=unread-filter-contrast" />
   </head>
   <body>
     <header class="topbar">
@@ -1886,6 +1886,21 @@
                 <span class="circle-post-toggle-copy">サークル向けに投稿する</span>
               </span>
             </label>
+            <div class="field wide compose-sensitive-flags">
+              <span>コンテンツ属性</span>
+              <div class="compose-sensitive-flags-grid">
+                <label class="circle-post-toggle">
+                  <input id="composeR18Toggle" type="checkbox" />
+                  <span class="circle-post-toggle-box" aria-hidden="true"></span>
+                  <span class="circle-post-toggle-copy">R18コンテンツ</span>
+                </label>
+                <label class="circle-post-toggle">
+                  <input id="composeGoreToggle" type="checkbox" />
+                  <span class="circle-post-toggle-box" aria-hidden="true"></span>
+                  <span class="circle-post-toggle-copy">グロコンテンツ</span>
+                </label>
+              </div>
+            </div>
             <label id="composeCircleField" class="field is-reserved-hidden" aria-hidden="true">
               <span>投稿先サークル</span>
               <select id="composeCircle"></select>
@@ -2297,6 +2312,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=floating-post-hit-sync"></script>
+    <script src="./app.js?v=unread-filter-contrast"></script>
   </body>
 </html>
