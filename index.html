@@ -9,12 +9,12 @@
     <meta property="og:description" content="作品、実績、依頼受付状況、外部リンクをまとめて見せるVRChatクリエイター向けプロフィールモック。" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://yuma0906.github.io/vrc-sns-mock/" />
-    <meta property="og:image" content="https://images.unsplash.com/photo-1535223289827-42f1e9919769?auto=format&fit=crop&w=1200&q=85" />
+    <meta property="og:image" content="https://images.squarespace-cdn.com/content/5f0770791aaf57311515b23d/42a6aa4e-ca30-4d01-a8f1-01be8dcef940/Tribe.webp?format=1500w" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
-    <link rel="preconnect" href="https://images.unsplash.com" />
+    <link rel="preconnect" href="https://images.squarespace-cdn.com" />
     <link rel="stylesheet" href="./styles.css?v=bookmark-shortcut-scroll" />
   </head>
   <body>
@@ -32,11 +32,6 @@
       </div>
 
       <nav class="nav-actions" aria-label="Primary">
-        <button id="themeToggle" class="icon-button" type="button" aria-label="Toggle dark mode" data-tooltip="Toggle dark mode">
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <path class="theme-toggle-moon" d="M12 3a6.8 6.8 0 0 0 8.6 8.6 8 8 0 1 1-8.6-8.6Z" />
-          </svg>
-        </button>
         <button id="likedPostsButton" class="icon-button" type="button" aria-label="いいねした投稿" data-tooltip="いいねした投稿">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" />
@@ -117,6 +112,14 @@
                 </svg>
                 <span>ブックマーク</span>
               </button>
+              <button type="button" role="menuitem" data-mobile-menu-action="subscriptions">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M12 3 4 7.5v6.2c0 3.9 2.5 7.3 6 8.3 3.5-1 6-4.4 6-8.3V7.5L12 3Z" />
+                  <path d="M8.6 12.5h6.8" />
+                  <path d="M9.5 16h5" />
+                </svg>
+                <span>サブスク</span>
+              </button>
               <button type="button" role="menuitem" data-mobile-menu-action="circles">
                 <svg aria-hidden="true" viewBox="0 0 24 24">
                   <circle cx="9" cy="8" r="3.5" />
@@ -159,6 +162,14 @@
               </svg>
               <span>マイページ</span>
             </button>
+            <button id="accountMenuSubscriptions" type="button" role="menuitem">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M12 3 4 7.5v6.2c0 3.9 2.5 7.3 6 8.3 3.5-1 6-4.4 6-8.3V7.5L12 3Z" />
+                <path d="M8.6 12.5h6.8" />
+                <path d="M9.5 16h5" />
+              </svg>
+              <span>サブスク</span>
+            </button>
             <button id="accountMenuService" type="button" role="menuitem">
               <svg aria-hidden="true" viewBox="0 0 24 24">
                 <path d="M4 6h16" />
@@ -189,6 +200,12 @@
                 <path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.06.06a2.1 2.1 0 0 1-2.97 2.97l-.06-.06a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.1 1.66V21.4a2.1 2.1 0 0 1-4.2 0v-.09A1.8 1.8 0 0 0 8.4 19.6a1.8 1.8 0 0 0-1.98.36l-.06.06a2.1 2.1 0 0 1-2.97-2.97l.06-.06A1.8 1.8 0 0 0 3.8 15a1.8 1.8 0 0 0-1.66-1.1H2.1a2.1 2.1 0 0 1 0-4.2h.09A1.8 1.8 0 0 0 3.8 8.6a1.8 1.8 0 0 0-.36-1.98l-.06-.06a2.1 2.1 0 0 1 2.97-2.97l.06.06A1.8 1.8 0 0 0 8.4 4a1.8 1.8 0 0 0 1.1-1.66V2.1a2.1 2.1 0 0 1 4.2 0v.09A1.8 1.8 0 0 0 14.8 4a1.8 1.8 0 0 0 1.98-.36l.06-.06a2.1 2.1 0 0 1 2.97 2.97l-.06.06A1.8 1.8 0 0 0 19.4 8.6a1.8 1.8 0 0 0 1.66 1.1h.09a2.1 2.1 0 0 1 0 4.2h-.09A1.8 1.8 0 0 0 19.4 15Z" />
               </svg>
               <span>アプリ設定</span>
+            </button>
+            <button id="accountMenuTheme" type="button" role="menuitem">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path class="theme-toggle-moon" d="M12 3a6.8 6.8 0 0 0 8.6 8.6 8 8 0 1 1-8.6-8.6Z" />
+              </svg>
+              <span>ライト / ダーク切替</span>
             </button>
             <button id="accountMenuLogout" type="button" role="menuitem" class="is-danger">
               <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -561,6 +578,57 @@
             <button type="button" data-notification-filter="important">重要</button>
           </div>
           <div id="notificationsList" class="notifications-list"></div>
+        </div>
+      </section>
+      <section id="subscriptionsView" class="subscriptions-view app-view" hidden>
+        <button id="backFromSubscriptions" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <div class="subscriptions-shell">
+          <header class="subscriptions-hero">
+            <div>
+              <p class="eyebrow">Membership hub</p>
+              <h1>サブスク</h1>
+              <p>加入中のプラン、探せる支援プラン、自分が作成するクリエイタープランをまとめて管理します。</p>
+            </div>
+            <button id="subscriptionsCreatePlanButton" class="primary-button" type="button">プランを作成</button>
+          </header>
+          <section class="subscriptions-panel" aria-labelledby="subscriptionsJoinedTitle">
+            <div class="section-heading-row">
+              <div>
+                <p class="eyebrow">Joined plans</p>
+                <h2 id="subscriptionsJoinedTitle">加入中のプラン</h2>
+              </div>
+            </div>
+            <div id="subscriptionsJoinedList" class="subscriptions-card-grid"></div>
+          </section>
+          <section class="subscriptions-panel" aria-labelledby="subscriptionsSearchTitle">
+            <div class="section-heading-row subscriptions-search-heading">
+              <div>
+                <p class="eyebrow">Plan search</p>
+                <h2 id="subscriptionsSearchTitle">プラン検索</h2>
+              </div>
+              <label class="subscriptions-search">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="m21 21-4.3-4.3m1.3-5.2a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z" />
+                </svg>
+                <input id="subscriptionsSearchInput" type="search" placeholder="クリエイター、プラン、特典で検索" autocomplete="off" />
+              </label>
+            </div>
+            <div id="subscriptionsPlanResults" class="subscriptions-plan-results"></div>
+          </section>
+          <section class="subscriptions-panel" aria-labelledby="subscriptionsCreatorTitle">
+            <div class="section-heading-row">
+              <div>
+                <p class="eyebrow">Creator tools</p>
+                <h2 id="subscriptionsCreatorTitle">プラン作成 / 管理</h2>
+              </div>
+            </div>
+            <div id="subscriptionsCreatorPlans" class="subscriptions-card-grid"></div>
+          </section>
         </div>
       </section>
       <section id="settingsView" class="settings-view app-view" hidden>
@@ -2083,11 +2151,20 @@
           </label>
           <label class="field is-required">
             <span>月額</span>
-            <input id="subscriptionPlanPrice" type="number" min="300" step="100" placeholder="1000" required />
+            <input id="subscriptionPlanPrice" type="number" min="0" step="100" placeholder="0" required />
+            <small class="field-help">0円にすると無料プランとして表示されます。</small>
           </label>
           <label class="field wide">
             <span>概要</span>
             <input id="subscriptionPlanSummary" type="text" maxlength="80" placeholder="限定投稿、制作メモ、先行公開など" autocomplete="off" />
+          </label>
+          <label class="field wide subscription-plan-image-field">
+            <span>支援カード画像</span>
+            <input id="subscriptionPlanImage" type="file" accept="image/*" />
+            <span id="subscriptionPlanImagePreview" class="subscription-plan-image-preview" hidden>
+              <img id="subscriptionPlanImagePreviewImg" alt="Support card image preview" />
+              <small>支援カードとプランカードに表示されます</small>
+            </span>
           </label>
           <label class="field wide is-required">
             <span>特典</span>
@@ -2096,6 +2173,22 @@
         </div>
         <div class="request-sheet-actions">
           <button id="subscriptionPlanSubmit" class="primary-button" type="submit" disabled>保存する</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="subscriptionPlanDetailDialog" class="request-sheet-dialog subscription-plan-detail-dialog" aria-labelledby="subscriptionPlanDetailTitle">
+      <form method="dialog" class="request-sheet-card subscription-plan-detail-card">
+        <div id="subscriptionPlanDetailVisual" class="subscription-plan-detail-visual"></div>
+        <p id="subscriptionPlanDetailEyebrow" class="eyebrow">Membership plan</p>
+        <h2 id="subscriptionPlanDetailTitle">プラン詳細</h2>
+        <p id="subscriptionPlanDetailSummary" class="subscription-plan-lead"></p>
+        <div id="subscriptionPlanDetailPrice" class="subscription-plan-detail-price"></div>
+        <div id="subscriptionPlanDetailPerks" class="subscription-plan-detail-perks"></div>
+        <div id="subscriptionPlanDetailNote" class="subscription-plan-detail-note"></div>
+        <div class="request-sheet-actions">
+          <button id="subscriptionPlanDetailJoin" class="primary-button" type="button">このプランに加入する</button>
+          <button id="subscriptionPlanDetailLeave" class="soft-button subscription-plan-leave-button" type="button" hidden>プランを退会する</button>
         </div>
       </form>
     </dialog>

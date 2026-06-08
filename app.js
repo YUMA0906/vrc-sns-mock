@@ -1,16 +1,28 @@
 ﻿const vrchatImages = {
-  community: "https://images.unsplash.com/photo-1614728263952-84ea256f9679?auto=format&fit=crop&w=900&q=85",
-  creators: "https://images.unsplash.com/photo-1635016288720-c8e9d971c787?auto=format&fit=crop&w=900&q=85",
-  crossPlatform: "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&fit=crop&w=900&q=85",
-  plus: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?auto=format&fit=crop&w=900&q=85",
-  world: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=900&q=85",
-  portrait: "https://images.unsplash.com/photo-1524334228333-0f6db392f8a1?auto=format&fit=crop&w=900&q=85",
-  neon: "https://images.unsplash.com/photo-1535223289827-42f1e9919769?auto=format&fit=crop&w=900&q=85",
-  studio: "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&w=900&q=85",
-  event: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=900&q=85",
-  city: "https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=900&q=85",
-  desk: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=85",
-  fashion: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=85",
+  community: "https://images.squarespace-cdn.com/content/5f0770791aaf57311515b23d/42a6aa4e-ca30-4d01-a8f1-01be8dcef940/Tribe.webp?format=1000w",
+  creators: "https://images.squarespace-cdn.com/content/v1/5f0770791aaf57311515b23d/e9d2fe72-6d63-4d50-a328-308899b90d75/AVM_Hero.png?format=1000w",
+  crossPlatform: "https://images.squarespace-cdn.com/content/v1/5ec321c2af33de48734cc929/1fbaf342-92a5-434d-94af-69585b41c366/image-asset.jpeg?format=1000w",
+  plus: "https://images.squarespace-cdn.com/content/5f0770791aaf57311515b23d/1597215746590-Y4QCM6CI34YJQZ7AY4ZG/BG_VRC_P_MarketingPage%2BCharacters.png?format=1000w",
+  world: "https://images.squarespace-cdn.com/content/5f0770791aaf57311515b23d/679b57c5-3bc0-4b93-a702-47c04edd470d/Endless_Worlds.webp?format=1000w",
+  portrait: "https://images.squarespace-cdn.com/content/5f0770791aaf57311515b23d/84066272-5738-41de-a641-ba5b0bfaf6fe/BeWhoever.webp?format=1000w",
+  neon: "https://images.squarespace-cdn.com/content/v1/5f0770791aaf57311515b23d/1607020876876-X9ODF2ZXTJNQXINMGSEA/WebBackdrop_Asteroids_v3.jpg?format=1000w",
+  studio: "https://images.squarespace-cdn.com/content/v1/5f0770791aaf57311515b23d/0ebb9e46-88c9-4320-b3f9-bca28eeaa554/BG_2.png?format=1000w",
+  event: "https://images.squarespace-cdn.com/content/v1/5f0770791aaf57311515b23d/0c6aa94a-98f0-435d-ab6b-9ae7b5437758/Website_KeyArt_Cat.png?format=1000w",
+  city: "https://images.squarespace-cdn.com/content/v1/5f0770791aaf57311515b23d/1606790212103-L96WATJZQK8BQ0OWC60Z/LaunchVRChat?format=1000w",
+  desk: "https://images.squarespace-cdn.com/content/v1/5f0770791aaf57311515b23d/af528ff4-9fde-4983-8812-4b43ec828c2d/VRCPlus_Badge_Rendered_Shadow.png?format=1000w",
+  fashion: "https://images.squarespace-cdn.com/content/v1/5f0770791aaf57311515b23d/e9d2fe72-6d63-4d50-a328-308899b90d75/AVM_Hero.png?format=1500w",
+  pressPlus: "https://images.squarespace-cdn.com/content/v1/5f0770791aaf57311515b23d/1606794168599-Z14AUXB45S5W0CW1DDWD/PressPage_VRChatPlus.png?format=1500w",
+  pressCross: "https://vrchat.com/public/media/press-kit/PressPage_CrossPlatform.png",
+  pressCommunity: "https://images.squarespace-cdn.com/content/v1/5f0770791aaf57311515b23d/1594406863121-T5KPYOSL9UTZGYVJRN46/PressPage_Community%5B1%5D.png?format=1500w",
+  pressSdk: "https://images.squarespace-cdn.com/content/v1/5f0770791aaf57311515b23d/1594406905608-I5SP4GFV8F51LFD5H542/PressPage_SDK%5B1%5D.png?format=1500w",
+  steamWorldA: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/438100/ss_1577335ddadd96c338c16a747758290b4214eb85.1920x1080.jpg?t=1762366454",
+  steamWorldB: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/438100/ss_31f674ab2a2cdf3d72ff7e8155100f4539a65a72.1920x1080.jpg?t=1762366454",
+  steamAvatarA: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/438100/ss_869211a61f76ff08db693092b43678278c396249.1920x1080.jpg?t=1762366454",
+  steamAvatarB: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/438100/ss_9f66a537db246bbf8fa0aa9c6681a37f65307ac2.1920x1080.jpg?t=1762366454",
+  steamEventA: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/438100/ss_b0c252d8f3c07478ec4001c995f4f6c75afb16a1.1920x1080.jpg?t=1762366454",
+  steamEventB: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/438100/ss_38db30a76b354606cf8583565179e69c1054b23c.1920x1080.jpg?t=1762366454",
+  steamStudio: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/438100/ss_c52a57f7f15d49d0d3ccd1743858a94c0dcc1ef1.1920x1080.jpg?t=1762366454",
+  steamSocial: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/438100/ss_d4351d713e0dc6210d5c275060f611c6adb13df2.1920x1080.jpg?t=1762366454",
 };
 
 document.addEventListener("error", (event) => {
@@ -32,7 +44,7 @@ const pins = [
     tags: ["#avatar", "#改変", "#booth"],
     request: { open: true, title: "アバター改変依頼", price: "¥12,000〜", capacity: "受付 2 / 5", delivery: "平均 10日" },
     description: "衣装差し替え、表情調整、軽いギミック追加まで含めたVRChat向けアバター改変の作例。",
-    image: vrchatImages.portrait,
+    image: vrchatImages.steamAvatarA,
   },
   {
     id: 2,
@@ -45,7 +57,7 @@ const pins = [
     tags: ["#撮影", "#portrait", "#world"],
     request: { open: true, title: "VRChat撮影依頼", price: "¥4,000〜", capacity: "受付 1 / 3", delivery: "平均 3日" },
     description: "ワールド選定からポーズ提案まで行う、VRChat内ポートレート撮影プラン。",
-    image: vrchatImages.community,
+    image: vrchatImages.steamSocial,
   },
   {
     id: 3,
@@ -58,7 +70,7 @@ const pins = [
     tags: ["#retouch", "#beforeafter", "#credit"],
     request: { open: true, title: "レタッチ依頼", price: "¥2,500〜", capacity: "受付 4 / 8", delivery: "平均 2日" },
     description: "肌、髪、色味、被写界深度を整えてSNSやポートフォリオに使いやすく仕上げる作例。",
-    image: vrchatImages.crossPlatform,
+    image: vrchatImages.pressSdk,
   },
   {
     id: 4,
@@ -71,7 +83,7 @@ const pins = [
     tags: ["#動画編集", "#youtube", "#teaser"],
     request: { open: false, title: "動画編集依頼", price: "¥18,000〜", capacity: "満枠", delivery: "平均 14日" },
     description: "ワールド紹介やイベント告知向けの短尺映像編集サンプル。",
-    image: vrchatImages.plus,
+    image: vrchatImages.steamEventB,
   },
   {
     id: 5,
@@ -84,7 +96,7 @@ const pins = [
     tags: ["#world", "#lighting", "#vrchat"],
     request: { open: true, title: "ワールド制作依頼", price: "¥60,000〜", capacity: "受付 1 / 2", delivery: "平均 30日" },
     description: "イベント、撮影、展示向けに使える軽量で雰囲気のあるVRChatワールド制作サンプル。",
-    image: vrchatImages.world,
+    image: vrchatImages.steamWorldA,
   },
   {
     id: 6,
@@ -97,7 +109,7 @@ const pins = [
     tags: ["#衣装", "#改変代行", "#booth"],
     request: { open: true, title: "衣装導入依頼", price: "¥5,000〜", capacity: "受付 3 / 6", delivery: "平均 5日" },
     description: "BOOTH衣装の導入、干渉調整、色替えまでをまとめたカジュアル改変の作例。",
-    image: vrchatImages.community,
+    image: vrchatImages.steamAvatarB,
   },
   {
     id: 7,
@@ -110,7 +122,7 @@ const pins = [
     tags: ["#依頼受付", "#実績", "#納期"],
     request: { open: true, title: "サムネ制作依頼", price: "¥3,500〜", capacity: "受付 5 / 10", delivery: "平均 4日" },
     description: "価格、納期、残り枠、サンプル画像を一画面で確認できる依頼受付投稿のサンプル。",
-    image: vrchatImages.crossPlatform,
+    image: vrchatImages.pressCommunity,
   },
   {
     id: 8,
@@ -123,31 +135,31 @@ const pins = [
     tags: ["#イベント", "#ポスター", "#共有"],
     request: { open: false, title: "イベント画像制作", price: "¥8,000〜", capacity: "満枠", delivery: "平均 7日" },
     description: "Discord共有を想定した、VRChatイベント向けの告知ビジュアル制作。",
-    image: vrchatImages.plus,
+    image: vrchatImages.steamEventA,
   },
-  { id: 9, title: "World photo walk", category: "Photo", creator: "Lumi Photo", role: "Photographer", avatar: "Moe", world: "Amber Station", tags: ["#worldphoto", "#写真", "#portfolio"], request: { open: true, title: "ワールド同行撮影", price: "¥3,000〜", capacity: "受付 2 / 4", delivery: "平均 2日" }, description: "お気に入りのワールドでプロフィール用写真をまとめて撮影するプラン。", image: vrchatImages.community },
-  { id: 10, title: "Weekend avatar snapshot", category: "Photo", creator: "Yoru Snap", role: "Casual poster", avatar: "Rurune", world: "Blue Hour Street", tags: ["#日常投稿", "#写真", "#bluehour"], request: null, description: "依頼受付ではない通常の写真投稿。お気に入りワールドで撮った週末ログ。", image: vrchatImages.city },
-  { id: 11, title: "Asset credit board", category: "Avatar", creator: "Mika Alterworks", role: "Avatar editor", avatar: "Selestia", world: "Portfolio", tags: ["#credit", "#使用アセット", "#booth"], request: null, description: "使用アバター、衣装、アクセサリーのクレジットをまとめた通常投稿。", image: vrchatImages.desk },
-  { id: 12, title: "Night market memories", category: "Photo", creator: "Lumi Photo", role: "Photographer", avatar: "Manuka", world: "Night Market", tags: ["#worldphoto", "#friends", "#album"], request: null, description: "フレンドと回ったワールドの写真アルバム。閲覧、保存、プロフィール遷移を主目的にした投稿。", image: vrchatImages.neon },
-  { id: 13, title: "Retouch study 04", category: "Retouch", creator: "Aoi Retouch", role: "Retoucher", avatar: "Kikyo", world: "White Studio", tags: ["#study", "#colorgrade", "#比較"], request: null, description: "レタッチ練習の記録。改善前後や色味の研究をポートフォリオに残す想定。", image: vrchatImages.studio },
-  { id: 14, title: "Dance event recap", category: "Video", creator: "Frame Drift", role: "Video creator", avatar: "Various", world: "Club Prism", tags: ["#イベント", "#recap", "#動画"], request: null, description: "イベント後の通常投稿。YouTube埋め込みや短尺動画サムネイルが入る想定。", image: vrchatImages.event },
-  { id: 15, title: "Creator room WIP", category: "World", creator: "Orbit Build", role: "World creator", avatar: "World sample", world: "Creator Room", tags: ["#wip", "#world", "#lighting"], request: null, description: "制作途中のワールド進捗投稿。依頼ではなく、フォロワー向けの制作ログ。", image: vrchatImages.world },
-  { id: 16, title: "Spring outfit lookbook", category: "Avatar", creator: "Nagi Closet", role: "Outfit stylist", avatar: "Shinra", world: "Soft Garden", tags: ["#lookbook", "#衣装", "#春コーデ"], request: null, description: "衣装コーデの通常投稿。Boothリンクや使用アセット表示を載せる想定。", image: vrchatImages.fashion },
-  { id: 17, title: "Thumbnail commission sample", category: "Commission", creator: "Rin Works", role: "Commission designer", avatar: "Creator profile", world: "Portfolio", tags: ["#依頼受付", "#サムネ", "#sample"], request: { open: true, title: "サムネ制作依頼", price: "¥4,500〜", capacity: "受付 3 / 8", delivery: "平均 5日" }, description: "コミッション受付投稿のサムネイル例。依頼受付投稿でも画像サンプルをしっかり見せる想定。", image: vrchatImages.creators },
-  { id: 18, title: "World launch announcement", category: "World", creator: "Orbit Build", role: "World creator", avatar: "World sample", world: "Metro Bloom", tags: ["#公開告知", "#world", "#イベント"], request: null, description: "新ワールド公開の告知投稿。広告ではなくフィードに自然に混ざるイベント告知のイメージ。", image: vrchatImages.crossPlatform },
-  { id: 19, title: "Avatar PV editing", category: "Video", creator: "Frame Drift", role: "Video creator", avatar: "Lapwing", world: "Black Stage", tags: ["#PV", "#ギミック紹介", "#youtube"], request: { open: true, title: "短尺PV編集依頼", price: "¥20,000〜", capacity: "受付 1 / 4", delivery: "平均 12日" }, description: "アバターの魅力やギミックを短尺動画で伝えるPV編集サンプル。", image: vrchatImages.event },
-  { id: 20, title: "Shader test notes", category: "Avatar", creator: "Yoru Snap", role: "Casual poster", avatar: "Rurune", world: "Test Room", tags: ["#shader", "#memo", "#avatar"], request: null, description: "シェーダー設定や色味の比較メモ。自分用の記録としても使える通常投稿。", image: vrchatImages.desk },
-  { id: 21, title: "Photo walk route notes", category: "Photo", creator: "Lumi Photo", role: "Circle host", avatar: "Manuka", world: "Amber Station", tags: ["#circle", "#worldphoto", "#ロケハン"], request: null, description: "VRC写真散歩同好会の参加者向けに、次回フォトウォーク候補のワールド導線と撮影ポイントを共有する限定投稿。", image: vrchatImages.community, circleId: "photo-walkers" },
-  { id: 22, title: "Prototype lighting kit", category: "World", creator: "Orbit Build", role: "Circle host", avatar: "World sample", world: "Creator Room", tags: ["#circle", "#world", "#lighting"], request: null, description: "ワールド制作ラボの参加者だけに共有される、軽量ライト配置と検証用ギミックのメモ。", image: vrchatImages.world, circleId: "world-lab" },
-  { id: 23, title: "Selestia expression study", category: "Avatar", creator: "Mika Alterworks", role: "Avatar editor", avatar: "Selestia", world: "Private Studio", tags: ["#circle", "#avatar", "#表情差分"], request: null, description: "アバター改変研究会の参加者だけが見られる、表情差分と衣装合わせの途中検証ログ。", image: vrchatImages.fashion, circleId: "avatar-lab" },
-  { id: 24, title: "Subscriber memo: booth fitting notes", category: "Avatar", creator: "Mika Alterworks", role: "Avatar editor", avatar: "Selestia", world: "Atelier room", tags: ["#subscriber", "#booth", "#fitting"], request: null, description: "サブスク加入者だけが見られる衣装合わせメモ。購入前の比較や、どの衣装が相性良いかの途中記録をまとめています。", image: vrchatImages.fashion, visibility: "SubscriberOnly" },
-  { id: 25, title: "Members album: hidden cuts", category: "Photo", creator: "Lumi Photo", role: "Photographer", avatar: "Manuka", world: "Moonlit Harbor", tags: ["#subscriber", "#album", "#portrait"], request: null, description: "サブスク向けの未公開カット集。通常投稿には出していない構図やレタッチ前後の比較も載せる想定です。", image: vrchatImages.portrait, visibility: "SubscriberOnly" },
-  { id: 26, title: "Devlog: optimization breakdown", category: "World", creator: "Orbit Build", role: "World creator", avatar: "World sample", world: "Soft Club", tags: ["#subscriber", "#optimization", "#devlog"], request: null, description: "支援者限定の制作ログ。容量削減やライティング調整の判断理由を詳しく共有する想定です。", image: vrchatImages.world, visibility: "SubscriberOnly" },
-  { id: 101, title: "Draft avatar board", category: "Avatar", creator: "You", role: "VRChat creator", avatar: "Rurune", world: "Creator Room", tags: ["#draft", "#avatar", "#memo"], request: null, description: "自分用の下書きアバターボード。", image: vrchatImages.portrait },
-  { id: 102, title: "Saved outfit ideas", category: "Avatar", creator: "You", role: "VRChat creator", avatar: "Shinra", world: "Soft Garden", tags: ["#saved", "#outfit", "#booth"], request: null, description: "保存した衣装アイデアをまとめたマイページ用投稿。", image: vrchatImages.fashion },
-  { id: 103, title: "World walk archive", category: "World", creator: "You", role: "VRChat creator", avatar: "Rurune", world: "Silent Harbor", tags: ["#world", "#archive", "#photo"], request: null, description: "お気に入りワールドの散歩ログ。", image: vrchatImages.world },
-  { id: 104, title: "Subscriber-only setup memo", category: "Avatar", creator: "You", role: "VRChat creator", avatar: "Rurune", world: "Creator Room", tags: ["#subscriber", "#memo", "#setup"], request: null, description: "支援者だけに共有する導入手順や細かな設定メモの想定投稿。", image: vrchatImages.desk, visibility: "SubscriberOnly" },
-  { id: 105, title: "Backstage WIP notes", category: "Photo", creator: "You", role: "VRChat creator", avatar: "Shinra", world: "Soft Garden", tags: ["#subscriber", "#wip", "#photo"], request: null, description: "支援プラン向けの制作途中メモや未公開カットのまとめ。", image: vrchatImages.community, visibility: "SubscriberOnly" },
+  { id: 9, title: "World photo walk", category: "Photo", creator: "Lumi Photo", role: "Photographer", avatar: "Moe", world: "Amber Station", tags: ["#worldphoto", "#写真", "#portfolio"], request: { open: true, title: "ワールド同行撮影", price: "¥3,000〜", capacity: "受付 2 / 4", delivery: "平均 2日" }, description: "お気に入りのワールドでプロフィール用写真をまとめて撮影するプラン。", image: vrchatImages.steamWorldA },
+  { id: 10, title: "Weekend avatar snapshot", category: "Photo", creator: "Yoru Snap", role: "Casual poster", avatar: "Rurune", world: "Blue Hour Street", tags: ["#日常投稿", "#写真", "#bluehour"], request: null, description: "依頼受付ではない通常の写真投稿。お気に入りワールドで撮った週末ログ。", image: vrchatImages.steamSocial },
+  { id: 11, title: "Asset credit board", category: "Avatar", creator: "Mika Alterworks", role: "Avatar editor", avatar: "Selestia", world: "Portfolio", tags: ["#credit", "#使用アセット", "#booth"], request: null, description: "使用アバター、衣装、アクセサリーのクレジットをまとめた通常投稿。", image: vrchatImages.pressSdk },
+  { id: 12, title: "Night market memories", category: "Photo", creator: "Lumi Photo", role: "Photographer", avatar: "Manuka", world: "Night Market", tags: ["#worldphoto", "#friends", "#album"], request: null, description: "フレンドと回ったワールドの写真アルバム。閲覧、保存、プロフィール遷移を主目的にした投稿。", image: vrchatImages.steamEventA },
+  { id: 13, title: "Retouch study 04", category: "Retouch", creator: "Aoi Retouch", role: "Retoucher", avatar: "Kikyo", world: "White Studio", tags: ["#study", "#colorgrade", "#比較"], request: null, description: "レタッチ練習の記録。改善前後や色味の研究をポートフォリオに残す想定。", image: vrchatImages.steamStudio },
+  { id: 14, title: "Dance event recap", category: "Video", creator: "Frame Drift", role: "Video creator", avatar: "Various", world: "Club Prism", tags: ["#イベント", "#recap", "#動画"], request: null, description: "イベント後の通常投稿。YouTube埋め込みや短尺動画サムネイルが入る想定。", image: vrchatImages.steamEventB },
+  { id: 15, title: "Creator room WIP", category: "World", creator: "Orbit Build", role: "World creator", avatar: "World sample", world: "Creator Room", tags: ["#wip", "#world", "#lighting"], request: null, description: "制作途中のワールド進捗投稿。依頼ではなく、フォロワー向けの制作ログ。", image: vrchatImages.steamWorldB },
+  { id: 16, title: "Spring outfit lookbook", category: "Avatar", creator: "Nagi Closet", role: "Outfit stylist", avatar: "Shinra", world: "Soft Garden", tags: ["#lookbook", "#衣装", "#春コーデ"], request: null, description: "衣装コーデの通常投稿。Boothリンクや使用アセット表示を載せる想定。", image: vrchatImages.steamAvatarA },
+  { id: 17, title: "Thumbnail commission sample", category: "Commission", creator: "Rin Works", role: "Commission designer", avatar: "Creator profile", world: "Portfolio", tags: ["#依頼受付", "#サムネ", "#sample"], request: { open: true, title: "サムネ制作依頼", price: "¥4,500〜", capacity: "受付 3 / 8", delivery: "平均 5日" }, description: "コミッション受付投稿のサムネイル例。依頼受付投稿でも画像サンプルをしっかり見せる想定。", image: vrchatImages.pressCommunity },
+  { id: 18, title: "World launch announcement", category: "World", creator: "Orbit Build", role: "World creator", avatar: "World sample", world: "Metro Bloom", tags: ["#公開告知", "#world", "#イベント"], request: null, description: "新ワールド公開の告知投稿。広告ではなくフィードに自然に混ざるイベント告知のイメージ。", image: vrchatImages.world },
+  { id: 19, title: "Avatar PV editing", category: "Video", creator: "Frame Drift", role: "Video creator", avatar: "Lapwing", world: "Black Stage", tags: ["#PV", "#ギミック紹介", "#youtube"], request: { open: true, title: "短尺PV編集依頼", price: "¥20,000〜", capacity: "受付 1 / 4", delivery: "平均 12日" }, description: "アバターの魅力やギミックを短尺動画で伝えるPV編集サンプル。", image: vrchatImages.steamAvatarB },
+  { id: 20, title: "Shader test notes", category: "Avatar", creator: "Yoru Snap", role: "Casual poster", avatar: "Rurune", world: "Test Room", tags: ["#shader", "#memo", "#avatar"], request: null, description: "シェーダー設定や色味の比較メモ。自分用の記録としても使える通常投稿。", image: vrchatImages.pressSdk },
+  { id: 21, title: "Photo walk route notes", category: "Photo", creator: "Lumi Photo", role: "Circle host", avatar: "Manuka", world: "Amber Station", tags: ["#circle", "#worldphoto", "#ロケハン"], request: null, description: "VRC写真散歩同好会の参加者向けに、次回フォトウォーク候補のワールド導線と撮影ポイントを共有する限定投稿。", image: vrchatImages.steamWorldA, circleId: "photo-walkers" },
+  { id: 22, title: "Prototype lighting kit", category: "World", creator: "Orbit Build", role: "Circle host", avatar: "World sample", world: "Creator Room", tags: ["#circle", "#world", "#lighting"], request: null, description: "ワールド制作ラボの参加者だけに共有される、軽量ライト配置と検証用ギミックのメモ。", image: vrchatImages.steamWorldB, circleId: "world-lab" },
+  { id: 23, title: "Selestia expression study", category: "Avatar", creator: "Mika Alterworks", role: "Avatar editor", avatar: "Selestia", world: "Private Studio", tags: ["#circle", "#avatar", "#表情差分"], request: null, description: "アバター改変研究会の参加者だけが見られる、表情差分と衣装合わせの途中検証ログ。", image: vrchatImages.steamAvatarA, circleId: "avatar-lab" },
+  { id: 24, title: "Subscriber memo: booth fitting notes", category: "Avatar", creator: "Mika Alterworks", role: "Avatar editor", avatar: "Selestia", world: "Atelier room", tags: ["#subscriber", "#booth", "#fitting"], request: null, description: "サブスク加入者だけが見られる衣装合わせメモ。購入前の比較や、どの衣装が相性良いかの途中記録をまとめています。", image: vrchatImages.steamAvatarB, visibility: "SubscriberOnly" },
+  { id: 25, title: "Members album: hidden cuts", category: "Photo", creator: "Lumi Photo", role: "Photographer", avatar: "Manuka", world: "Moonlit Harbor", tags: ["#subscriber", "#album", "#portrait"], request: null, description: "サブスク向けの未公開カット集。通常投稿には出していない構図やレタッチ前後の比較も載せる想定です。", image: vrchatImages.steamSocial, visibility: "SubscriberOnly" },
+  { id: 26, title: "Devlog: optimization breakdown", category: "World", creator: "Orbit Build", role: "World creator", avatar: "World sample", world: "Soft Club", tags: ["#subscriber", "#optimization", "#devlog"], request: null, description: "支援者限定の制作ログ。容量削減やライティング調整の判断理由を詳しく共有する想定です。", image: vrchatImages.steamWorldB, visibility: "SubscriberOnly" },
+  { id: 101, title: "Draft avatar board", category: "Avatar", creator: "You", role: "VRChat creator", avatar: "Rurune", world: "Creator Room", tags: ["#draft", "#avatar", "#memo"], request: null, description: "自分用の下書きアバターボード。", image: vrchatImages.steamAvatarA },
+  { id: 102, title: "Saved outfit ideas", category: "Avatar", creator: "You", role: "VRChat creator", avatar: "Shinra", world: "Soft Garden", tags: ["#saved", "#outfit", "#booth"], request: null, description: "保存した衣装アイデアをまとめたマイページ用投稿。", image: vrchatImages.steamAvatarB },
+  { id: 103, title: "World walk archive", category: "World", creator: "You", role: "VRChat creator", avatar: "Rurune", world: "Silent Harbor", tags: ["#world", "#archive", "#photo"], request: null, description: "お気に入りワールドの散歩ログ。", image: vrchatImages.steamWorldA },
+  { id: 104, title: "Subscriber-only setup memo", category: "Avatar", creator: "You", role: "VRChat creator", avatar: "Rurune", world: "Creator Room", tags: ["#subscriber", "#memo", "#setup"], request: null, description: "支援者だけに共有する導入手順や細かな設定メモの想定投稿。", image: vrchatImages.pressSdk, visibility: "SubscriberOnly" },
+  { id: 105, title: "Backstage WIP notes", category: "Photo", creator: "You", role: "VRChat creator", avatar: "Shinra", world: "Soft Garden", tags: ["#subscriber", "#wip", "#photo"], request: null, description: "支援プラン向けの制作途中メモや未公開カットのまとめ。", image: vrchatImages.steamStudio, visibility: "SubscriberOnly" },
 ];
 
 const myPosts = pins.filter((pin) => pin.creator === "You");
@@ -572,15 +584,15 @@ const backendSpecCards = [
 ];
 
 const requestManagerItems = [
-  { id: 1, title: "Selestia spring look 改変", client: "Aoi Kisaragi", summary: "衣装差し替え、表情3種、ポーズ撮影用の軽微な調整。", status: "pending", deadline: "2026-06-06", budget: "¥12,000", thumbnail: "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=900&q=80", requestedAt: "2026-06-03 22:15", scope: ["衣装導入", "表情3種", "PhysBone確認", "納品ZIP"], messages: [{ from: "client", time: "6/3 22:15", text: "春っぽい衣装に差し替えて、表情も少し追加したいです。" }, { from: "you", time: "6/3 22:40", text: "内容確認しました。使用アセットのリンクも送ってください。" }] },
-  { id: 2, title: "Club Prism 告知サムネ", client: "DJ Nemu", summary: "イベント告知用の横長サムネイルとSNS投稿用画像の制作依頼。", status: "pending", deadline: "2026-06-08", budget: "¥7,500", thumbnail: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80", requestedAt: "2026-06-04 09:30", scope: ["横長サムネ", "SNS正方形", "テキスト調整", "2案提出"], messages: [{ from: "client", time: "6/4 09:30", text: "今週末のイベント告知画像をお願いしたいです。" }] },
-  { id: 3, title: "BOOTH商品ページ用PV編集", client: "Lumi Photo", summary: "30秒尺、字幕入れ、色味調整まで承諾済み。", status: "accepted", deadline: "2026-06-10", budget: "¥28,000", thumbnail: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=900&q=80", requestedAt: "2026-06-01 13:20", scope: ["30秒PV", "字幕入れ", "色味調整", "BOOTH掲載向け"], messages: [{ from: "client", time: "6/1 13:21", text: "テンポ少し速めで、商品カットを多めにしたいです。" }, { from: "you", time: "6/1 13:40", text: "承諾しました。絵コンテを明日までに送ります。" }] },
-  { id: 4, title: "Yayoi Rain ポートレート補正", client: "Rin Works", summary: "肌補正、ライティング調整、SNS掲載用のトリミング。", status: "accepted", deadline: "2026-06-12", budget: "¥9,000", thumbnail: "https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=900&q=80", requestedAt: "2026-06-02 20:10", scope: ["肌補正", "ライティング調整", "SNS比率3種", "文字なし版"], messages: [{ from: "client", time: "6/2 20:14", text: "ポスターにも使いたいので少しだけシャープ寄りでお願いします。" }] },
-  { id: 5, title: "ライブ用ギミック導入", client: "Mika Alterworks", summary: "作業開始済み。メニュー導線とアイコン差し替えの最終調整。", status: "in_progress", deadline: "2026-06-07", budget: "¥22,000", thumbnail: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80", requestedAt: "2026-05-31 19:45", scope: ["メニュー導線", "アイコン差し替え", "動作確認", "prefab納品"], messages: [{ from: "you", time: "6/3 10:03", text: "作業を開始しました。メニュー導線の感触を確認してほしいです。" }, { from: "client", time: "6/3 10:22", text: "かなり良いです。この方向でお願いします。" }] },
-  { id: 6, title: "展示会ブース用メインビジュアル", client: "Kite Atelier", summary: "進行中。構図FIX済みで仕上げ段階。", status: "in_progress", deadline: "2026-06-09", budget: "¥35,000", thumbnail: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80", requestedAt: "2026-05-30 16:05", scope: ["メインビジュアル", "展示用2種", "サムネ最適化", "PSD同梱"], messages: [{ from: "client", time: "6/2 14:50", text: "構図FIXでお願いします。キャッチコピーは後から送ります。" }] },
-  { id: 7, title: "3周年記念アバター撮影セット", client: "Haru Works", summary: "納品完了。相手からの確認と評価を待っている状態。", status: "awaiting_review", deadline: "2026-05-31", budget: "¥16,000", thumbnail: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80", requestedAt: "2026-05-24 22:18", scope: ["撮影セット12枚", "告知画像", "サムネ3種", "納品データ整理"], messages: [{ from: "you", time: "5/31 18:05", text: "納品完了しました。Google Driveのフォルダも共有済みです。" }] },
-  { id: 8, title: "ポスター用レタッチ一式", client: "Noa Frame", summary: "相手から評価済み。こちらから相手を評価するターン。", status: "awaiting_your_review", deadline: "2026-05-28", budget: "¥14,000", thumbnail: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=80", requestedAt: "2026-05-22 11:02", scope: ["印刷用レタッチ", "SNS比率版", "色校正", "書き出し2種"], messages: [{ from: "client", time: "5/28 15:01", text: "受け取りました。完成度高かったので評価も入れておきました。" }] },
-  { id: 9, title: "衣装導入ミニ依頼", client: "Sora Closet", summary: "相互評価まで完了してクローズした依頼。", status: "completed", deadline: "2026-05-20", budget: "¥5,000", thumbnail: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=80", requestedAt: "2026-05-18 12:40", scope: ["衣装導入", "軽微な干渉修正", "Unitypackage確認", "完了済み"], messages: [{ from: "you", time: "5/20 19:12", text: "こちらも評価しました。ご依頼ありがとうございました。" }] },
+  { id: 1, title: "Selestia spring look 改変", client: "Aoi Kisaragi", summary: "衣装差し替え、表情3種、ポーズ撮影用の軽微な調整。", status: "pending", deadline: "2026-06-06", budget: "¥12,000", thumbnail: vrchatImages.fashion, requestedAt: "2026-06-03 22:15", scope: ["衣装導入", "表情3種", "PhysBone確認", "納品ZIP"], messages: [{ from: "client", time: "6/3 22:15", text: "春っぽい衣装に差し替えて、表情も少し追加したいです。" }, { from: "you", time: "6/3 22:40", text: "内容確認しました。使用アセットのリンクも送ってください。" }] },
+  { id: 2, title: "Club Prism 告知サムネ", client: "DJ Nemu", summary: "イベント告知用の横長サムネイルとSNS投稿用画像の制作依頼。", status: "pending", deadline: "2026-06-08", budget: "¥7,500", thumbnail: vrchatImages.event, requestedAt: "2026-06-04 09:30", scope: ["横長サムネ", "SNS正方形", "テキスト調整", "2案提出"], messages: [{ from: "client", time: "6/4 09:30", text: "今週末のイベント告知画像をお願いしたいです。" }] },
+  { id: 3, title: "BOOTH商品ページ用PV編集", client: "Lumi Photo", summary: "30秒尺、字幕入れ、色味調整まで承諾済み。", status: "accepted", deadline: "2026-06-10", budget: "¥28,000", thumbnail: vrchatImages.creators, requestedAt: "2026-06-01 13:20", scope: ["30秒PV", "字幕入れ", "色味調整", "BOOTH掲載向け"], messages: [{ from: "client", time: "6/1 13:21", text: "テンポ少し速めで、商品カットを多めにしたいです。" }, { from: "you", time: "6/1 13:40", text: "承諾しました。絵コンテを明日までに送ります。" }] },
+  { id: 4, title: "Yayoi Rain ポートレート補正", client: "Rin Works", summary: "肌補正、ライティング調整、SNS掲載用のトリミング。", status: "accepted", deadline: "2026-06-12", budget: "¥9,000", thumbnail: vrchatImages.portrait, requestedAt: "2026-06-02 20:10", scope: ["肌補正", "ライティング調整", "SNS比率3種", "文字なし版"], messages: [{ from: "client", time: "6/2 20:14", text: "ポスターにも使いたいので少しだけシャープ寄りでお願いします。" }] },
+  { id: 5, title: "ライブ用ギミック導入", client: "Mika Alterworks", summary: "作業開始済み。メニュー導線とアイコン差し替えの最終調整。", status: "in_progress", deadline: "2026-06-07", budget: "¥22,000", thumbnail: vrchatImages.neon, requestedAt: "2026-05-31 19:45", scope: ["メニュー導線", "アイコン差し替え", "動作確認", "prefab納品"], messages: [{ from: "you", time: "6/3 10:03", text: "作業を開始しました。メニュー導線の感触を確認してほしいです。" }, { from: "client", time: "6/3 10:22", text: "かなり良いです。この方向でお願いします。" }] },
+  { id: 6, title: "展示会ブース用メインビジュアル", client: "Kite Atelier", summary: "進行中。構図FIX済みで仕上げ段階。", status: "in_progress", deadline: "2026-06-09", budget: "¥35,000", thumbnail: vrchatImages.community, requestedAt: "2026-05-30 16:05", scope: ["メインビジュアル", "展示用2種", "サムネ最適化", "PSD同梱"], messages: [{ from: "client", time: "6/2 14:50", text: "構図FIXでお願いします。キャッチコピーは後から送ります。" }] },
+  { id: 7, title: "3周年記念アバター撮影セット", client: "Haru Works", summary: "納品完了。相手からの確認と評価を待っている状態。", status: "awaiting_review", deadline: "2026-05-31", budget: "¥16,000", thumbnail: vrchatImages.crossPlatform, requestedAt: "2026-05-24 22:18", scope: ["撮影セット12枚", "告知画像", "サムネ3種", "納品データ整理"], messages: [{ from: "you", time: "5/31 18:05", text: "納品完了しました。Google Driveのフォルダも共有済みです。" }] },
+  { id: 8, title: "ポスター用レタッチ一式", client: "Noa Frame", summary: "相手から評価済み。こちらから相手を評価するターン。", status: "awaiting_your_review", deadline: "2026-05-28", budget: "¥14,000", thumbnail: vrchatImages.studio, requestedAt: "2026-05-22 11:02", scope: ["印刷用レタッチ", "SNS比率版", "色校正", "書き出し2種"], messages: [{ from: "client", time: "5/28 15:01", text: "受け取りました。完成度高かったので評価も入れておきました。" }] },
+  { id: 9, title: "衣装導入ミニ依頼", client: "Sora Closet", summary: "相互評価まで完了してクローズした依頼。", status: "completed", deadline: "2026-05-20", budget: "¥5,000", thumbnail: vrchatImages.plus, requestedAt: "2026-05-18 12:40", scope: ["衣装導入", "軽微な干渉修正", "Unitypackage確認", "完了済み"], messages: [{ from: "you", time: "5/20 19:12", text: "こちらも評価しました。ご依頼ありがとうございました。" }] },
 ];
 
 requestManagerItems.forEach((item) => {
@@ -617,6 +629,7 @@ const settingsView = document.querySelector("#settingsView");
 const serviceView = document.querySelector("#serviceView");
 const adminView = document.querySelector("#adminView");
 const backendSpecView = document.querySelector("#backendSpecView");
+const subscriptionsView = document.querySelector("#subscriptionsView");
 const eventDetailView = document.querySelector("#eventDetailView");
 const eventsView = document.querySelector("#eventsView");
 const circleView = document.querySelector("#circleView");
@@ -672,10 +685,12 @@ const accountSwitcherCurrent = document.querySelector("#accountSwitcherCurrent")
 const accountSwitcherList = document.querySelector("#accountSwitcherList");
 const accountAddButton = document.querySelector("#accountAddButton");
 const accountMenuProfile = document.querySelector("#accountMenuProfile");
+const accountMenuSubscriptions = document.querySelector("#accountMenuSubscriptions");
 const accountMenuService = document.querySelector("#accountMenuService");
 const accountMenuAdmin = document.querySelector("#accountMenuAdmin");
 const accountMenuSpecs = document.querySelector("#accountMenuSpecs");
 const accountMenuSettings = document.querySelector("#accountMenuSettings");
+const accountMenuTheme = document.querySelector("#accountMenuTheme");
 const accountMenuLogout = document.querySelector("#accountMenuLogout");
 const backToFeed = document.querySelector("#backToFeed");
 const backFromRequest = document.querySelector("#backFromRequest");
@@ -690,6 +705,12 @@ const backFromEventDetail = document.querySelector("#backFromEventDetail");
 const backFromEvents = document.querySelector("#backFromEvents");
 const backFromCircles = document.querySelector("#backFromCircles");
 const backFromMission = document.querySelector("#backFromMission");
+const backFromSubscriptions = document.querySelector("#backFromSubscriptions");
+const subscriptionsCreatePlanButton = document.querySelector("#subscriptionsCreatePlanButton");
+const subscriptionsJoinedList = document.querySelector("#subscriptionsJoinedList");
+const subscriptionsSearchInput = document.querySelector("#subscriptionsSearchInput");
+const subscriptionsPlanResults = document.querySelector("#subscriptionsPlanResults");
+const subscriptionsCreatorPlans = document.querySelector("#subscriptionsCreatorPlans");
 const profileBanner = document.querySelector("#profileBanner");
 const profileAvatar = document.querySelector("#profileAvatar");
 const profileName = document.querySelector("#profileName");
@@ -1094,8 +1115,21 @@ const subscriptionPlanLead = document.querySelector("#subscriptionPlanLead");
 const subscriptionPlanName = document.querySelector("#subscriptionPlanName");
 const subscriptionPlanPrice = document.querySelector("#subscriptionPlanPrice");
 const subscriptionPlanSummary = document.querySelector("#subscriptionPlanSummary");
+const subscriptionPlanImage = document.querySelector("#subscriptionPlanImage");
+const subscriptionPlanImagePreview = document.querySelector("#subscriptionPlanImagePreview");
+const subscriptionPlanImagePreviewImg = document.querySelector("#subscriptionPlanImagePreviewImg");
 const subscriptionPlanPerks = document.querySelector("#subscriptionPlanPerks");
 const subscriptionPlanSubmit = document.querySelector("#subscriptionPlanSubmit");
+const subscriptionPlanDetailDialog = document.querySelector("#subscriptionPlanDetailDialog");
+const subscriptionPlanDetailVisual = document.querySelector("#subscriptionPlanDetailVisual");
+const subscriptionPlanDetailEyebrow = document.querySelector("#subscriptionPlanDetailEyebrow");
+const subscriptionPlanDetailTitle = document.querySelector("#subscriptionPlanDetailTitle");
+const subscriptionPlanDetailSummary = document.querySelector("#subscriptionPlanDetailSummary");
+const subscriptionPlanDetailPrice = document.querySelector("#subscriptionPlanDetailPrice");
+const subscriptionPlanDetailPerks = document.querySelector("#subscriptionPlanDetailPerks");
+const subscriptionPlanDetailNote = document.querySelector("#subscriptionPlanDetailNote");
+const subscriptionPlanDetailJoin = document.querySelector("#subscriptionPlanDetailJoin");
+const subscriptionPlanDetailLeave = document.querySelector("#subscriptionPlanDetailLeave");
 
 let activeCategory = "All";
 let activeView = "discover";
@@ -1120,6 +1154,8 @@ let pendingCircleKickMember = { circleId: "", memberId: "" };
 let pendingCircleLeave = { circleId: "" };
 let editingCircleId = "";
 let editingSubscriptionPlanId = "";
+let pendingSubscriptionPlanImage = "";
+let pendingSubscriptionPlanDetail = { creator: "", planId: "" };
 let notificationEnabledCreators = new Set(["Lumi Photo"]);
 let mutedCreators = new Set();
 let blockedCreators = new Set();
@@ -1140,6 +1176,8 @@ let adminReturnHash = "";
 let specsReturnHash = "";
 let profileReturnHash = "";
 let requestPageReturnHash = "";
+let subscriptionsReturnHash = "";
+let subscriptionsQuery = "";
 let activeRequestManagerItemId = null;
 let missionReturnHash = "";
 let eventDetailReturnHash = "";
@@ -1288,19 +1326,21 @@ const creatorProfileMeta = {
 };
 const creatorSubscriptionPrograms = {
   "You": [
-    { id: "you-supporter", name: "Supporter", price: 700, summary: "限定投稿と支援カードの基本プラン", perks: ["限定投稿", "支援カード", "イベント先行案内"] },
-    { id: "you-backstage", name: "Backstage", price: 1500, summary: "制作ログやWIPも見られる上位プラン", perks: ["Supporterの全特典", "制作ログ", "WIP先行公開"] }
+    { id: "you-free", name: "Free follow", price: 0, summary: "無料で更新通知と一部の限定投稿を受け取れる入口プラン", perks: ["無料限定投稿", "更新通知", "支援カード"], cardImage: vrchatImages.pressPlus },
+    { id: "you-supporter", name: "Supporter", price: 700, summary: "限定投稿と支援カードの基本プラン", perks: ["限定投稿", "支援カード", "イベント先行案内"], cardImage: vrchatImages.steamSocial },
+    { id: "you-backstage", name: "Backstage", price: 1500, summary: "制作ログやWIPも見られる上位プラン", perks: ["Supporterの全特典", "制作ログ", "WIP先行公開"], cardImage: vrchatImages.steamStudio }
   ],
   "Mika Alterworks": [
-    { id: "mika-supporter", name: "Atelier", price: 900, summary: "改変メモと限定進捗", perks: ["限定投稿", "改変メモ", "月1の進捗まとめ"] },
-    { id: "mika-vip", name: "Backstage", price: 1800, summary: "制作途中の比較画像やイベント先行案内", perks: ["Atelierの全特典", "WIP比較", "先行案内"] }
+    { id: "mika-free", name: "Free note", price: 0, summary: "無料で告知と一部の制作メモを見られるお試しプラン", perks: ["無料限定投稿", "受付告知", "支援カード"], cardImage: vrchatImages.steamAvatarA },
+    { id: "mika-supporter", name: "Atelier", price: 900, summary: "改変メモと限定進捗", perks: ["限定投稿", "改変メモ", "月1の進捗まとめ"], cardImage: vrchatImages.steamAvatarB },
+    { id: "mika-vip", name: "Backstage", price: 1800, summary: "制作途中の比較画像やイベント先行案内", perks: ["Atelierの全特典", "WIP比較", "先行案内"], cardImage: vrchatImages.creators }
   ],
   "Lumi Photo": [
-    { id: "lumi-photo-club", name: "Photo Club", price: 800, summary: "限定アルバムと撮影ルート共有", perks: ["限定投稿", "撮影ルート", "未公開カット"] },
-    { id: "lumi-location-note", name: "Location Notes", price: 1400, summary: "ロケハンメモ込みの上位プラン", perks: ["Photo Clubの全特典", "ロケハンメモ", "イベント先行募集"] }
+    { id: "lumi-photo-club", name: "Photo Club", price: 800, summary: "限定アルバムと撮影ルート共有", perks: ["限定投稿", "撮影ルート", "未公開カット"], cardImage: vrchatImages.steamSocial },
+    { id: "lumi-location-note", name: "Location Notes", price: 1400, summary: "ロケハンメモ込みの上位プラン", perks: ["Photo Clubの全特典", "ロケハンメモ", "イベント先行募集"], cardImage: vrchatImages.steamWorldA }
   ],
   "Orbit Build": [
-    { id: "orbit-devlog", name: "Devlog", price: 1000, summary: "ワールド制作の進捗共有", perks: ["限定投稿", "制作ログ", "最適化メモ"] }
+    { id: "orbit-devlog", name: "Devlog", price: 1000, summary: "ワールド制作の進捗共有", perks: ["限定投稿", "制作ログ", "最適化メモ"], cardImage: vrchatImages.steamWorldB }
   ]
 };
 let creatorSubscriptions = [
@@ -3846,16 +3886,19 @@ function applyLanguage({ rerender = false } = {}) {
   setAttr(avatarButton, "aria-label", "account");
   setTooltip(avatarButton, "account");
   setText("#accountMenuProfile span", "myPage");
+  if (accountMenuSubscriptions) accountMenuSubscriptions.querySelector("span").textContent = currentLanguage === "en" ? "Subscriptions" : currentLanguage === "ko" ? "구독" : "サブスク";
   if (accountMenuService) accountMenuService.querySelector("span").textContent = currentLanguage === "en" ? "Service guide" : currentLanguage === "ko" ? "서비스 설명" : "サービス説明";
   if (accountMenuAdmin) accountMenuAdmin.querySelector("span").textContent = currentLanguage === "en" ? "Operations" : currentLanguage === "ko" ? "운영 관리" : "運営管理";
   if (accountMenuSpecs) accountMenuSpecs.querySelector("span").textContent = currentLanguage === "en" ? "Screen specs" : currentLanguage === "ko" ? "화면 사양" : "画面仕様";
   setText("#accountMenuSettings span", "appSettings");
+  if (accountMenuTheme) accountMenuTheme.querySelector("span").textContent = currentLanguage === "en" ? "Toggle light / dark" : currentLanguage === "ko" ? "라이트 / 다크 전환" : "ライト / ダーク切替";
   setText("#accountMenuLogout span", "logout");
   const mobileMenuLabels = {
     home: currentLanguage === "en" ? "Home" : currentLanguage === "ko" ? "홈" : "ホーム",
     theme: currentLanguage === "en" ? "Night mode" : currentLanguage === "ko" ? "나이트 모드" : "ナイトモード",
     likes: currentLanguage === "en" ? "Liked posts" : currentLanguage === "ko" ? "좋아요" : "いいね",
     bookmarks: currentLanguage === "en" ? "Bookmarks" : currentLanguage === "ko" ? "북마크" : "ブックマーク",
+    subscriptions: currentLanguage === "en" ? "Subscriptions" : currentLanguage === "ko" ? "구독" : "サブスク",
     circles: t("circles"),
     requests: currentLanguage === "en" ? "Requests" : currentLanguage === "ko" ? "의뢰 확인" : "依頼確認",
     events: t("events"),
@@ -4796,11 +4839,23 @@ async function createCircleFromForm(event) {
 
 function resetSubscriptionPlanForm() {
   editingSubscriptionPlanId = "";
+  pendingSubscriptionPlanImage = "";
   subscriptionPlanForm?.reset();
+  renderSubscriptionPlanImagePreview("");
   if (subscriptionPlanTitle) subscriptionPlanTitle.textContent = "サブスクプランを作成";
   if (subscriptionPlanLead) subscriptionPlanLead.textContent = "公式承認なしで、自分のプロフィール上に複数の支援プランを作成できます。";
   syncTrimRequiredFields(subscriptionPlanForm);
   updateSubscriptionPlanState();
+}
+
+function renderSubscriptionPlanImagePreview(src = pendingSubscriptionPlanImage) {
+  if (!subscriptionPlanImagePreview || !subscriptionPlanImagePreviewImg) return;
+  subscriptionPlanImagePreview.hidden = !src;
+  if (src) {
+    subscriptionPlanImagePreviewImg.src = src;
+  } else {
+    subscriptionPlanImagePreviewImg.removeAttribute("src");
+  }
 }
 
 function updateSubscriptionPlanState() {
@@ -4815,12 +4870,14 @@ function openSubscriptionPlanDialog(planId = "") {
   const plan = planId ? plans.find((item) => item.id === planId) : null;
   if (plan) {
     editingSubscriptionPlanId = plan.id;
+    pendingSubscriptionPlanImage = plan.cardImage || "";
     if (subscriptionPlanTitle) subscriptionPlanTitle.textContent = "サブスクプランを編集";
     if (subscriptionPlanLead) subscriptionPlanLead.textContent = "価格、概要、特典内容を更新するとプロフィールの支援導線に即時反映されます。";
     if (subscriptionPlanName) subscriptionPlanName.value = plan.name || "";
     if (subscriptionPlanPrice) subscriptionPlanPrice.value = String(plan.price || "");
     if (subscriptionPlanSummary) subscriptionPlanSummary.value = plan.summary || "";
     if (subscriptionPlanPerks) subscriptionPlanPerks.value = (plan.perks || []).join("\n");
+    renderSubscriptionPlanImagePreview();
   }
   updateSubscriptionPlanState();
   showModalElement(subscriptionPlanDialog);
@@ -4840,6 +4897,7 @@ function saveSubscriptionPlan(event) {
     name: subscriptionPlanName?.value.trim() || "Supporter",
     price: Number(subscriptionPlanPrice?.value || 0),
     summary: subscriptionPlanSummary?.value.trim() || "",
+    cardImage: pendingSubscriptionPlanImage || "",
     perks: String(subscriptionPlanPerks?.value || "")
       .split(/\n+/)
       .map((item) => item.trim())
@@ -4855,6 +4913,7 @@ function saveSubscriptionPlan(event) {
   creatorSubscriptionPrograms.You = plans;
   closeSubscriptionPlanDialog();
   if (activeProfile === "You") renderProfile("You");
+  if (subscriptionsView && !subscriptionsView.hidden) renderSubscriptionsPage();
   showProfileCopyToast("サブスクプランを更新しました");
 }
 
@@ -4872,8 +4931,209 @@ function subscribeToCreatorPlan(creator, planId) {
   if (existingIndex >= 0) creatorSubscriptions.splice(existingIndex, 1, entry);
   else creatorSubscriptions.push(entry);
   if (activeProfile) renderProfile(activeProfile);
+  if (subscriptionsView && !subscriptionsView.hidden) renderSubscriptionsPage();
   renderPins();
   showProfileCopyToast(`${creator}を支援中にしました`);
+}
+
+function unsubscribeFromCreatorPlan(creator, planId) {
+  const existingIndex = creatorSubscriptions.findIndex((entry) =>
+    entry.accountId === activeAccountId && entry.creator === creator && entry.planId === planId
+  );
+  if (existingIndex < 0) return;
+  creatorSubscriptions.splice(existingIndex, 1);
+  if (activeProfile) renderProfile(activeProfile);
+  if (subscriptionsView && !subscriptionsView.hidden) renderSubscriptionsPage({ scroll: false });
+  renderPins();
+  showProfileCopyToast(`${creator}のプランを退会しました`);
+}
+
+function openSubscriptionPlanDetailDialog(creator, planId) {
+  const plan = subscriptionPlanById(creator, planId);
+  if (!plan || !subscriptionPlanDetailDialog) return;
+  const joined = currentSubscriptionFor(creator)?.planId === plan.id;
+  pendingSubscriptionPlanDetail = { creator, planId };
+  const priceText = formatSubscriptionPrice(plan.price);
+  const image = subscriptionPlanCardImage(plan, creator);
+
+  if (subscriptionPlanDetailVisual) {
+    subscriptionPlanDetailVisual.innerHTML = `
+      <img src="${escapeHtml(image)}" alt="${escapeHtml(plan.name)} plan image" />
+      <span>${Number(plan.price || 0) <= 0 ? "Free plan" : "Membership"}</span>
+    `;
+  }
+  if (subscriptionPlanDetailEyebrow) subscriptionPlanDetailEyebrow.textContent = `${creator} / Membership`;
+  if (subscriptionPlanDetailTitle) subscriptionPlanDetailTitle.textContent = plan.name;
+  if (subscriptionPlanDetailSummary) subscriptionPlanDetailSummary.textContent = plan.summary || "限定投稿や制作ログを閲覧できる支援プランです。";
+  if (subscriptionPlanDetailPrice) {
+    subscriptionPlanDetailPrice.innerHTML = `
+      <strong>${priceText}</strong>
+      <small>${Number(plan.price || 0) <= 0 ? "無料プラン。支払いなしで加入できます。" : "月額課金としてStripe等へ接続する想定です。"}</small>
+    `;
+  }
+  if (subscriptionPlanDetailPerks) {
+    subscriptionPlanDetailPerks.innerHTML = (plan.perks || []).map((perk) => `<span>${escapeHtml(perk)}</span>`).join("");
+  }
+  if (subscriptionPlanDetailNote) {
+    subscriptionPlanDetailNote.textContent = "加入後はサブスク限定投稿を閲覧でき、支援履歴カードを自分のプロフィールに掲載できます。";
+  }
+  if (subscriptionPlanDetailJoin) {
+    subscriptionPlanDetailJoin.hidden = joined;
+    subscriptionPlanDetailJoin.disabled = joined;
+    subscriptionPlanDetailJoin.textContent = `${priceText}で加入する`;
+  }
+  if (subscriptionPlanDetailLeave) {
+    subscriptionPlanDetailLeave.hidden = !joined;
+  }
+  showModalElement(subscriptionPlanDetailDialog);
+}
+
+function closeSubscriptionPlanDetailDialog() {
+  pendingSubscriptionPlanDetail = { creator: "", planId: "" };
+  if (subscriptionPlanDetailJoin) subscriptionPlanDetailJoin.hidden = false;
+  if (subscriptionPlanDetailLeave) subscriptionPlanDetailLeave.hidden = true;
+  closeModalElement(subscriptionPlanDetailDialog);
+}
+
+function allSubscriptionPlans() {
+  return Object.entries(creatorSubscriptionPrograms).flatMap(([creator, plans]) =>
+    (plans || []).map((plan) => ({ creator, plan }))
+  );
+}
+
+function currentJoinedSubscriptionCards() {
+  return currentCreatorSubscriptions()
+    .map((entry) => ({
+      ...entry,
+      plan: subscriptionPlanById(entry.creator, entry.planId)
+    }))
+    .filter((entry) => entry.plan);
+}
+
+function subscriptionPlanSearchMatches(item, query) {
+  if (!query) return true;
+  const text = [
+    item.creator,
+    item.plan.name,
+    item.plan.summary,
+    ...(item.plan.perks || [])
+  ].join(" ").toLowerCase();
+  return query.split(/\s+/).filter(Boolean).every((word) => text.includes(word.toLowerCase()));
+}
+
+function renderSubscriptionsPage({ scroll = true } = {}) {
+  activeProfile = null;
+  feedView.hidden = true;
+  profileView.hidden = true;
+  requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
+  eventsView.hidden = true;
+  circleView.hidden = true;
+  missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
+  if (subscriptionsView) subscriptionsView.hidden = false;
+  updateTopbarSearchVisibility();
+  if (subscriptionsSearchInput && subscriptionsSearchInput.value !== subscriptionsQuery) {
+    subscriptionsSearchInput.value = subscriptionsQuery;
+  }
+
+  const joined = currentJoinedSubscriptionCards();
+  if (subscriptionsJoinedList) {
+    subscriptionsJoinedList.innerHTML = joined.length
+      ? joined.map((entry) => `
+        <article class="subscriptions-summary-card support-history-card">
+          ${subscriptionPlanVisualMarkup(entry.plan, entry.creator, entry.earlySupporter ? "Early supporter" : "Joined")}
+          <span class="support-history-badge">${entry.earlySupporter ? "Early supporter" : "Joined plan"}</span>
+          <strong>${escapeHtml(entry.creator)}</strong>
+          <p>${escapeHtml(entry.plan.name)} / ${formatSubscriptionPrice(entry.plan.price)}</p>
+          <small>${subscriptionDurationLabel(entry.startedAt)} / ${entry.startedAt}</small>
+          <button class="soft-button" type="button" data-plan-detail="${escapeHtml(entry.plan.id)}" data-plan-creator="${escapeHtml(entry.creator)}">プラン詳細を見る</button>
+        </article>
+      `).join("")
+      : `<article class="subscriptions-empty-card"><strong>加入中のプランはありません</strong><p>気になるクリエイターのプランを探して、限定投稿や支援カードを試せます。</p></article>`;
+  }
+
+  const query = subscriptionsQuery.trim();
+  const plans = allSubscriptionPlans().filter((item) => subscriptionPlanSearchMatches(item, query));
+  if (subscriptionsPlanResults) {
+    subscriptionsPlanResults.innerHTML = plans.length
+      ? plans.map(({ creator, plan }) => {
+        const joinedPlan = currentSubscriptionFor(creator)?.planId === plan.id;
+        return `
+          <article class="subscription-plan-card-item ${joinedPlan ? "is-active" : ""} ${Number(plan.price || 0) <= 0 ? "is-free" : ""}">
+            ${subscriptionPlanVisualMarkup(plan, creator, joinedPlan ? "Joined" : "Membership")}
+            <div>
+              <strong>${escapeHtml(plan.name)}</strong>
+              <span>${formatSubscriptionPrice(plan.price)}</span>
+            </div>
+            <p>${escapeHtml(plan.summary || "限定投稿や制作ログを閲覧できる支援プランです。")}</p>
+            <small>${escapeHtml((plan.perks || []).join(" / "))}</small>
+            <div class="subscriptions-plan-actions">
+              <button class="${joinedPlan ? "soft-button" : "primary-button"}" type="button" data-plan-detail="${escapeHtml(plan.id)}" data-plan-creator="${escapeHtml(creator)}">${joinedPlan ? "加入中 / 詳細を見る" : "プラン詳細を見る"}</button>
+              <button class="soft-button" type="button" data-profile-open="${escapeHtml(slugify(creator))}">プロフィール</button>
+            </div>
+          </article>
+        `;
+      }).join("")
+      : `<article class="subscriptions-empty-card"><strong>一致するプランはありません</strong><p>クリエイター名、プラン名、特典内容で検索できます。</p></article>`;
+  }
+
+  const myPlans = creatorSubscriptionPrograms.You || [];
+  if (subscriptionsCreatorPlans) {
+    subscriptionsCreatorPlans.innerHTML = myPlans.length
+      ? myPlans.map((plan) => `
+        <article class="subscription-plan-card-item ${Number(plan.price || 0) <= 0 ? "is-free" : ""}">
+          ${subscriptionPlanVisualMarkup(plan, "You", "Creator plan")}
+          <div>
+            <strong>${escapeHtml(plan.name)}</strong>
+            <span>${formatSubscriptionPrice(plan.price)}</span>
+          </div>
+          <p>${escapeHtml(plan.summary || "限定投稿や支援カード用のプランです。")}</p>
+          <small>${escapeHtml((plan.perks || []).join(" / "))}</small>
+          <button class="soft-button" type="button" data-plan-edit="${escapeHtml(plan.id)}">編集</button>
+        </article>
+      `).join("")
+      : `<article class="subscriptions-empty-card"><strong>まだプランがありません</strong><p>無料プランや月額プランを作って、プロフィールに支援導線を追加できます。</p></article>`;
+  }
+  if (scroll) scrollPageTop();
+}
+
+function openSubscriptionsPage() {
+  closeAccountMenu();
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
+  if (modalIsOpen(composeDialog)) closeComposeDialog();
+  if (modalIsOpen(requestComposeDialog)) closeRequestComposeDialog();
+  if (location.hash && location.hash !== "#subscriptions") {
+    subscriptionsReturnHash = location.hash;
+  } else if (!location.hash) {
+    subscriptionsReturnHash = "";
+  }
+  location.hash = "subscriptions";
+  renderSubscriptionsPage();
+}
+
+function returnFromSubscriptionsPage() {
+  const targetHash = subscriptionsReturnHash;
+  subscriptionsReturnHash = "";
+  if (!targetHash) {
+    showFeed();
+    return;
+  }
+  history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
+  routeFromHash();
+}
+
+async function loadSubscriptionPlanImage(file) {
+  const image = await readImageFile(file);
+  if (!image) return;
+  pendingSubscriptionPlanImage = image.src;
+  renderSubscriptionPlanImagePreview();
 }
 
 function circleCard(circle) {
@@ -5856,11 +6116,12 @@ function showFeed() {
   missionView.hidden = true;
   adminView.hidden = true;
   backendSpecView.hidden = true;
+  if (subscriptionsView) subscriptionsView.hidden = true;
   profileView.hidden = true;
   profileView.classList.remove("is-mine");
   feedView.hidden = false;
   updateTopbarSearchVisibility();
-  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#event/") || location.hash.startsWith("#circle/") || location.hash.startsWith("#circle-manager") || location.hash === "#circles" || location.hash === "#events" || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#admin" || location.hash === "#backend-spec" || location.hash === "#me") {
+  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#event/") || location.hash.startsWith("#circle/") || location.hash.startsWith("#circle-manager") || location.hash === "#circles" || location.hash === "#events" || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#subscriptions" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#admin" || location.hash === "#backend-spec" || location.hash === "#me") {
     history.pushState("", document.title, location.pathname + location.search);
   }
   renderPins();
@@ -5871,6 +6132,7 @@ function routeFromHash() {
   closeAccountMenu();
   closeSavedSearchContextMenu();
   hideFloatingPostActions();
+  if (subscriptionsView) subscriptionsView.hidden = true;
   const postMatch = location.hash.match(/^#post\/(\d+)$/);
   if (postMatch) {
     showFeed();
@@ -5937,6 +6199,10 @@ function routeFromHash() {
     renderSettingsPage();
     return;
   }
+  if (location.hash === "#subscriptions") {
+    renderSubscriptionsPage();
+    return;
+  }
   if (location.hash === "#me") {
     renderProfile("You");
     return;
@@ -5982,6 +6248,7 @@ function openProfile(slug) {
   missionView.hidden = true;
   adminView.hidden = true;
   backendSpecView.hidden = true;
+  if (subscriptionsView) subscriptionsView.hidden = true;
   location.hash = `profile/${slug}`;
   renderProfile(profileName);
 }
@@ -6014,6 +6281,7 @@ function openMyProfile() {
   missionView.hidden = true;
   adminView.hidden = true;
   backendSpecView.hidden = true;
+  if (subscriptionsView) subscriptionsView.hidden = true;
   location.hash = "me";
   renderProfile("You");
 }
@@ -6360,6 +6628,7 @@ function renderNotificationsPage() {
   missionView.hidden = true;
   adminView.hidden = true;
   backendSpecView.hidden = true;
+  if (subscriptionsView) subscriptionsView.hidden = true;
   notificationsView.hidden = false;
   notificationFilterTabs?.querySelectorAll("[data-notification-filter]").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.notificationFilter === activeNotificationFilter);
@@ -6397,6 +6666,7 @@ function renderSettingsPage() {
   missionView.hidden = true;
   adminView.hidden = true;
   backendSpecView.hidden = true;
+  if (subscriptionsView) subscriptionsView.hidden = true;
   settingsView.hidden = false;
   serviceView.hidden = true;
   scrollPageTop();
@@ -6436,6 +6706,7 @@ function renderAdminPage() {
   circleView.hidden = true;
   missionView.hidden = true;
   backendSpecView.hidden = true;
+  if (subscriptionsView) subscriptionsView.hidden = true;
   adminView.hidden = false;
 
   if (!adminQueues[activeAdminTab]) activeAdminTab = "events";
@@ -6896,6 +7167,7 @@ function renderProfileSupportBadges(creator) {
 }
 
 function formatSubscriptionPrice(value) {
+  if (Number(value || 0) <= 0) return "無料";
   return `¥${Number(value || 0).toLocaleString("ja-JP")} / 月`;
 }
 
@@ -6918,6 +7190,23 @@ function currentSupportCards() {
     .filter((entry) => entry.plan);
 }
 
+function subscriptionPlanCardImage(plan, creator = "") {
+  if (plan?.cardImage) return plan.cardImage;
+  const firstPost = creatorPosts(creator)[0] || pins.find((pin) => pin.creator === creator);
+  return firstPost?.image || vrchatImages.community;
+}
+
+function subscriptionPlanVisualMarkup(plan, creator, label = "Membership") {
+  const image = subscriptionPlanCardImage(plan, creator);
+  return `
+    <span class="subscription-plan-visual">
+      <img src="${escapeHtml(image)}" alt="${escapeHtml(plan.name)} card image" loading="lazy" />
+      <span class="subscription-plan-shine" aria-hidden="true"></span>
+      <span class="subscription-plan-visual-label">${escapeHtml(label)}</span>
+    </span>
+  `;
+}
+
 function renderProfileSubscriptionSection(creator, posts, isMine) {
   if (!profileSubscriptionSection || !profileSubscriptionPlans || !profileSupportCards || !profileSubscriptionLead) return;
   const plans = subscriptionProgramFor(creator);
@@ -6932,7 +7221,8 @@ function renderProfileSubscriptionSection(creator, posts, isMine) {
     subscriptionPlanManageButton.hidden = false;
     profileSubscriptionPlans.innerHTML = plans.length
       ? plans.map((plan) => `
-        <article class="subscription-plan-card-item">
+        <article class="subscription-plan-card-item ${Number(plan.price || 0) <= 0 ? "is-free" : ""}">
+          ${subscriptionPlanVisualMarkup(plan, "You", "Creator plan")}
           <div>
             <strong>${escapeHtml(plan.name)}</strong>
             <span>${formatSubscriptionPrice(plan.price)}</span>
@@ -6946,6 +7236,7 @@ function renderProfileSubscriptionSection(creator, posts, isMine) {
     profileSupportCards.innerHTML = supportCards.length
       ? supportCards.map((entry) => `
         <article class="support-history-card">
+          ${subscriptionPlanVisualMarkup(entry.plan, entry.creator, entry.earlySupporter ? "Early supporter" : "Supporter card")}
           <span class="support-history-badge">${entry.earlySupporter ? "Early supporter" : "Supporter card"}</span>
           <strong>${escapeHtml(entry.creator)}</strong>
           <p>${escapeHtml(entry.plan.name)} / ${formatSubscriptionPrice(entry.plan.price)}</p>
@@ -6968,14 +7259,15 @@ function renderProfileSubscriptionSection(creator, posts, isMine) {
     ? plans.map((plan) => {
       const joined = currentSubscription?.planId === plan.id;
       return `
-        <article class="subscription-plan-card-item ${joined ? "is-active" : ""}">
+        <article class="subscription-plan-card-item ${joined ? "is-active" : ""} ${Number(plan.price || 0) <= 0 ? "is-free" : ""}">
+          ${subscriptionPlanVisualMarkup(plan, creator, joined ? "Joined" : "Membership")}
           <div>
             <strong>${escapeHtml(plan.name)}</strong>
             <span>${formatSubscriptionPrice(plan.price)}</span>
           </div>
           <p>${escapeHtml(plan.summary || "限定投稿や更新を提供する月額プランです。")}</p>
           <small>${escapeHtml((plan.perks || []).join(" / "))}</small>
-          <button class="${joined ? "soft-button" : "primary-button"}" type="button" data-plan-subscribe="${escapeHtml(plan.id)}" data-plan-creator="${escapeHtml(creator)}">${joined ? "加入中" : "加入する"}</button>
+          <button class="${joined ? "soft-button" : "primary-button"}" type="button" data-plan-detail="${escapeHtml(plan.id)}" data-plan-creator="${escapeHtml(creator)}">${joined ? "加入中 / 詳細を見る" : "プラン詳細を見る"}</button>
         </article>
       `;
     }).join("")
@@ -9561,7 +9853,7 @@ composeDraftListBody?.addEventListener("click", (event) => {
     openComposeDraftListDialog();
   }
 });
-themeToggle.addEventListener("click", toggleTheme);
+themeToggle?.addEventListener("click", toggleTheme);
 likedPostsButton?.addEventListener("click", () => openMyProfileArchive("likes"));
 bookmarkFoldersButton?.addEventListener("click", () => openMyProfileArchive("folders"));
 circlePageButton?.addEventListener("click", () => openCirclesPage());
@@ -9579,6 +9871,10 @@ accountMenuProfile?.addEventListener("click", () => {
   closeAccountMenu();
   openMyProfile();
 });
+accountMenuSubscriptions?.addEventListener("click", () => {
+  closeAccountMenu();
+  openSubscriptionsPage();
+});
 accountMenuService?.addEventListener("click", () => {
   closeAccountMenu();
   openServicePage();
@@ -9593,6 +9889,10 @@ accountMenuSpecs?.addEventListener("click", () => {
 });
 accountMenuSettings?.addEventListener("click", () => {
   openSettingsPage();
+});
+accountMenuTheme?.addEventListener("click", () => {
+  toggleTheme();
+  closeAccountMenu();
 });
 accountMenuLogout?.addEventListener("click", () => {
   closeAccountMenu();
@@ -9622,6 +9922,8 @@ accountMenu?.addEventListener("click", (event) => {
     openMyProfileArchive("likes");
   } else if (action === "bookmarks") {
     openMyProfileArchive("folders");
+  } else if (action === "subscriptions") {
+    openSubscriptionsPage();
   } else if (action === "circles") {
     openCirclesPage();
   } else if (action === "requests") {
@@ -9975,14 +10277,59 @@ subscriptionPlanDialog?.addEventListener("cancel", (event) => {
   input.addEventListener("input", updateSubscriptionPlanState);
   input.addEventListener("change", updateSubscriptionPlanState);
 });
+subscriptionPlanImage?.addEventListener("change", () => {
+  loadSubscriptionPlanImage(subscriptionPlanImage.files?.[0]);
+  subscriptionPlanImage.value = "";
+});
 profileSubscriptionSection?.addEventListener("click", (event) => {
-  const subscribeButton = event.target.closest("[data-plan-subscribe]");
-  if (subscribeButton) {
-    subscribeToCreatorPlan(subscribeButton.dataset.planCreator, subscribeButton.dataset.planSubscribe);
+  const detailButton = event.target.closest("[data-plan-detail]");
+  if (detailButton) {
+    openSubscriptionPlanDetailDialog(detailButton.dataset.planCreator, detailButton.dataset.planDetail);
     return;
   }
   const editButton = event.target.closest("[data-plan-edit]");
   if (editButton) openSubscriptionPlanDialog(editButton.dataset.planEdit);
+});
+subscriptionPlanDetailDialog?.addEventListener("click", (event) => {
+  if (event.target === subscriptionPlanDetailDialog) closeSubscriptionPlanDetailDialog();
+});
+subscriptionPlanDetailDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeSubscriptionPlanDetailDialog();
+});
+subscriptionPlanDetailJoin?.addEventListener("click", () => {
+  const { creator, planId } = pendingSubscriptionPlanDetail;
+  if (!creator || !planId || subscriptionPlanDetailJoin.disabled) return;
+  subscribeToCreatorPlan(creator, planId);
+  closeSubscriptionPlanDetailDialog();
+});
+subscriptionPlanDetailLeave?.addEventListener("click", () => {
+  const { creator, planId } = pendingSubscriptionPlanDetail;
+  if (!creator || !planId) return;
+  unsubscribeFromCreatorPlan(creator, planId);
+  closeSubscriptionPlanDetailDialog();
+});
+backFromSubscriptions?.addEventListener("click", returnFromSubscriptionsPage);
+subscriptionsCreatePlanButton?.addEventListener("click", () => openSubscriptionPlanDialog());
+subscriptionsSearchInput?.addEventListener("input", () => {
+  subscriptionsQuery = subscriptionsSearchInput.value.trim();
+  renderSubscriptionsPage({ scroll: false });
+});
+[subscriptionsJoinedList, subscriptionsPlanResults, subscriptionsCreatorPlans].filter(Boolean).forEach((container) => {
+  container.addEventListener("click", (event) => {
+    const detailButton = event.target.closest("[data-plan-detail]");
+    if (detailButton) {
+      openSubscriptionPlanDetailDialog(detailButton.dataset.planCreator, detailButton.dataset.planDetail);
+      return;
+    }
+    const editButton = event.target.closest("[data-plan-edit]");
+    if (editButton) {
+      openSubscriptionPlanDialog(editButton.dataset.planEdit);
+      return;
+    }
+    const profileButton = event.target.closest("[data-profile-open]");
+    if (profileButton) openProfile(profileButton.dataset.profileOpen);
+  });
 });
 trustFeaturedWorks?.addEventListener("click", (event) => {
   const featured = event.target.closest("[data-featured-id]");
