@@ -2407,6 +2407,11 @@
               <input id="editDisplayName" type="text" value="You" maxlength="28" required />
             </label>
             <label class="field">
+              <span>ユーザーID</span>
+              <input id="editUserHandle" type="text" value="@you" maxlength="32" autocomplete="off" required />
+              <small id="editUserHandleError" class="field-error" hidden></small>
+            </label>
+            <label class="field">
               <span>肩書き</span>
               <input id="editRole" type="text" value="VRChat creator" maxlength="40" />
             </label>
@@ -2431,7 +2436,7 @@
           <div id="editProfileNotice" class="compose-notice" hidden>保存しました。</div>
           <div class="compose-actions">
             <button class="soft-button" id="cancelEditProfile" type="button">キャンセル</button>
-            <button class="primary-button" type="submit">保存する</button>
+            <button id="editProfileSubmit" class="primary-button" type="submit">保存する</button>
           </div>
         </section>
       </form>

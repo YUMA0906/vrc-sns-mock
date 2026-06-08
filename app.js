@@ -1130,6 +1130,9 @@ const editBio = document.querySelector("#editBio");
 const editLink = document.querySelector("#editLink");
 const editVisibility = document.querySelector("#editVisibility");
 const editProfileNotice = document.querySelector("#editProfileNotice");
+const editUserHandle = document.querySelector("#editUserHandle");
+const editUserHandleError = document.querySelector("#editUserHandleError");
+const editProfileSubmit = document.querySelector("#editProfileSubmit");
 const circleCreateSubmit = document.querySelector("#circleCreateSubmit");
 const profileSupportBadges = document.querySelector("#profileSupportBadges");
 const profileSubscriptionSection = document.querySelector("#profileSubscriptionSection");
@@ -3763,6 +3766,48 @@ function currentUserEmail() {
   return myProfile?.email?.trim() || "you@example.com";
 }
 
+function normalizeUserHandle(value = "") {
+  const body = String(value).trim().replace(/^@+/, "").toLowerCase().replace(/[^a-z0-9._-]/g, "");
+  return body ? `@${body.slice(0, 31)}` : "";
+}
+
+function enforceUserHandlePrefix() {
+  if (!editUserHandle) return "";
+  const normalized = normalizeUserHandle(editUserHandle.value);
+  editUserHandle.value = normalized || "@";
+  if (editUserHandle.selectionStart === 0) {
+    editUserHandle.setSelectionRange(1, 1);
+  }
+  return editUserHandle.value;
+}
+
+function currentUserHandle() {
+  return currentAccountRecord()?.handle || "@you";
+}
+
+function userHandleExists(handle, ignoreAccountId = activeAccountId) {
+  const normalized = normalizeUserHandle(handle);
+  if (!normalized) return false;
+  return userAccounts.some((account) => account.id !== ignoreAccountId && normalizeUserHandle(account.handle) === normalized);
+}
+
+function updateProfileHandleState() {
+  if (!editUserHandle || !editProfileSubmit) return;
+  const normalized = enforceUserHandlePrefix();
+  const invalid = !normalized || normalized.length < 3;
+  const duplicate = !invalid && userHandleExists(normalized);
+  editUserHandle.classList.toggle("is-invalid", invalid || duplicate);
+  if (editUserHandleError) {
+    editUserHandleError.hidden = !(invalid || duplicate);
+    editUserHandleError.textContent = invalid
+      ? "@の後ろにユーザーIDを入力してください。"
+      : duplicate
+        ? "このユーザーIDは既に使われています。"
+        : "";
+  }
+  editProfileSubmit.disabled = invalid || duplicate;
+}
+
 function syncEventProposalOrganizer() {
   if (!eventProposalOrganizerInput) return;
   eventProposalOrganizerInput.value = currentUserDisplayName();
@@ -5420,7 +5465,12 @@ function renderCircleManager() {
         <span><strong>${data.requests.length}</strong><small>requests</small></span>
       </span>
       <span class="circle-manager-hero-actions">
-        <button class="soft-button" type="button" data-circle-role-action="edit-settings">サークル設定を編集</button>
+        <button class="icon-button circle-manager-edit-button" type="button" data-circle-role-action="edit-settings" aria-label="サークル設定を編集" title="サークル設定を編集">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+          </svg>
+        </button>
       </span>
     </article>
   `;
@@ -11046,9 +11096,34 @@ editProfileDialog.addEventListener("cancel", (event) => {
 
 editProfileForm.addEventListener("submit", saveEditProfile);
 
-[editDisplayName, editRole, editBio, editLink, editVisibility].forEach((input) => {
+[editDisplayName, editUserHandle, editRole, editBio, editLink, editVisibility].filter(Boolean).forEach((input) => {
   input.addEventListener("input", updateEditProfilePreview);
   input.addEventListener("change", updateEditProfilePreview);
+});
+editUserHandle?.addEventListener("keydown", (event) => {
+  const start = editUserHandle.selectionStart ?? 0;
+  const end = editUserHandle.selectionEnd ?? start;
+  const deletingPrefix = (event.key === "Backspace" && start <= 1 && end <= 1) || (event.key === "Delete" && start === 0);
+  if (deletingPrefix) {
+    event.preventDefault();
+    editUserHandle.setSelectionRange(1, 1);
+  }
+});
+editUserHandle?.addEventListener("beforeinput", (event) => {
+  const start = editUserHandle.selectionStart ?? 0;
+  const end = editUserHandle.selectionEnd ?? start;
+  if ((event.inputType || "").startsWith("delete") && start === 0 && end <= 1) {
+    event.preventDefault();
+    editUserHandle.setSelectionRange(1, 1);
+  }
+});
+editUserHandle?.addEventListener("input", () => {
+  enforceUserHandlePrefix();
+  updateProfileHandleState();
+});
+editUserHandle?.addEventListener("change", () => {
+  enforceUserHandlePrefix();
+  updateProfileHandleState();
 });
 
 editAvatarPreview.addEventListener("click", () => {
@@ -11297,7 +11372,8 @@ async function cropAvatarToDataUrl() {
 }
 
 function updateEditProfilePreview() {
-  editPreviewName.textContent = editDisplayName.value.trim() || "You";
+  const handle = normalizeUserHandle(editUserHandle?.value || currentUserHandle());
+  editPreviewName.textContent = `${editDisplayName.value.trim() || "You"}${handle ? ` ${handle}` : ""}`;
   editPreviewBio.textContent = editBio.value.trim() || "投稿した作品、下書き、保存したアイデアをまとめて確認するマイページ。";
 
   if (editBannerPreview) {
@@ -12054,6 +12130,7 @@ function normalizeProfileEditorText() {
 
   const labels = [
     [editDisplayName, currentLanguage === "en" ? "Display name" : currentLanguage === "ko" ? "표시 이름" : "表示名"],
+    [editUserHandle, currentLanguage === "en" ? "User ID" : currentLanguage === "ko" ? "사용자 ID" : "ユーザーID"],
     [editRole, currentLanguage === "en" ? "Role" : currentLanguage === "ko" ? "직함" : "肩書き"],
     [editBio, currentLanguage === "en" ? "Bio" : currentLanguage === "ko" ? "소개" : "自己紹介"],
     [editVisibility, currentLanguage === "en" ? "Visibility" : currentLanguage === "ko" ? "공개 설정" : "公開設定"],
@@ -12078,6 +12155,7 @@ function openEditProfile() {
   pendingAvatarSource = myProfile.avatar;
   pendingBannerSource = myProfile.banner;
   editDisplayName.value = myProfile.displayName;
+  if (editUserHandle) editUserHandle.value = currentUserHandle();
   editRole.value = myProfile.role;
   editBio.value = myProfile.bio;
   editLink.value = "";
@@ -12089,6 +12167,7 @@ function openEditProfile() {
   avatarOffsetX.value = "0";
   avatarOffsetY.value = "0";
   updateEditProfilePreview();
+  updateProfileHandleState();
   showModalElement(editProfileDialog);
   window.setTimeout(() => editDisplayName.focus(), 140);
 }
@@ -12134,7 +12213,7 @@ function renderProfile(creator) {
 
   if (isMine) {
     profileName.textContent = myProfile.displayName;
-    profileRole.textContent = `My page / ${myProfile.role} / ${myProfile.visibility}`;
+    profileRole.textContent = `My page / ${currentUserHandle()} / ${myProfile.role} / ${myProfile.visibility}`;
   }
 
   if (isMine && myProfile.avatar) {
@@ -12194,7 +12273,10 @@ function renderProfile(creator) {
 
 function saveEditProfile(event) {
   event.preventDefault();
+  updateProfileHandleState();
+  if (editProfileSubmit?.disabled) return;
   const links = collectProfileLinksFromInputs();
+  const nextHandle = normalizeUserHandle(editUserHandle?.value || currentUserHandle());
   myProfile = {
     ...myProfile,
     displayName: editDisplayName.value.trim() || "You",
@@ -12207,6 +12289,8 @@ function saveEditProfile(event) {
     banner: pendingBannerSource,
   };
   editProfileNotice.hidden = false;
+  const activeAccount = currentAccountRecord();
+  if (activeAccount) activeAccount.handle = nextHandle;
   persistActiveAccountProfile();
   renderAccountSwitcher();
   applyMyAvatarToChrome();
