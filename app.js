@@ -152,8 +152,8 @@ const pins = [
   { id: 21, title: "Photo walk route notes", category: "Photo", creator: "Lumi Photo", role: "Circle host", avatar: "Manuka", world: "Amber Station", tags: ["#circle", "#worldphoto", "#ロケハン"], request: null, description: "VRC写真散歩同好会の参加者向けに、次回フォトウォーク候補のワールド導線と撮影ポイントを共有する限定投稿。", image: vrchatImages.steamWorldA, circleId: "photo-walkers" },
   { id: 22, title: "Prototype lighting kit", category: "World", creator: "Orbit Build", role: "Circle host", avatar: "World sample", world: "Creator Room", tags: ["#circle", "#world", "#lighting"], request: null, description: "ワールド制作ラボの参加者だけに共有される、軽量ライト配置と検証用ギミックのメモ。", image: vrchatImages.steamWorldB, circleId: "world-lab" },
   { id: 23, title: "Selestia expression study", category: "Avatar", creator: "Mika Alterworks", role: "Avatar editor", avatar: "Selestia", world: "Private Studio", tags: ["#circle", "#avatar", "#表情差分"], request: null, description: "アバター改変研究会の参加者だけが見られる、表情差分と衣装合わせの途中検証ログ。", image: vrchatImages.steamAvatarA, circleId: "avatar-lab" },
-  { id: 24, title: "Subscriber memo: booth fitting notes", category: "Avatar", creator: "Mika Alterworks", role: "Avatar editor", avatar: "Selestia", world: "Atelier room", tags: ["#subscriber", "#booth", "#fitting"], request: null, description: "サブスク加入者だけが見られる衣装合わせメモ。購入前の比較や、どの衣装が相性良いかの途中記録をまとめています。", image: vrchatImages.steamAvatarB, visibility: "SubscriberOnly" },
-  { id: 25, title: "Members album: hidden cuts", category: "Photo", creator: "Lumi Photo", role: "Photographer", avatar: "Manuka", world: "Moonlit Harbor", tags: ["#subscriber", "#album", "#portrait"], request: null, description: "サブスク向けの未公開カット集。通常投稿には出していない構図やレタッチ前後の比較も載せる想定です。", image: vrchatImages.steamSocial, visibility: "SubscriberOnly" },
+  { id: 24, title: "Subscriber memo: booth fitting notes", category: "Avatar", creator: "Mika Alterworks", role: "Avatar editor", avatar: "Selestia", world: "Atelier room", tags: ["#subscriber", "#booth", "#fitting"], request: null, description: "メンバーシップ加入者だけが見られる衣装合わせメモ。購入前の比較や、どの衣装が相性良いかの途中記録をまとめています。", image: vrchatImages.steamAvatarB, visibility: "SubscriberOnly" },
+  { id: 25, title: "Members album: hidden cuts", category: "Photo", creator: "Lumi Photo", role: "Photographer", avatar: "Manuka", world: "Moonlit Harbor", tags: ["#subscriber", "#album", "#portrait"], request: null, description: "メンバーシップ向けの未公開カット集。通常投稿には出していない構図やレタッチ前後の比較も載せる想定です。", image: vrchatImages.steamSocial, visibility: "SubscriberOnly" },
   { id: 26, title: "Devlog: optimization breakdown", category: "World", creator: "Orbit Build", role: "World creator", avatar: "World sample", world: "Soft Club", tags: ["#subscriber", "#optimization", "#devlog"], request: null, description: "支援者限定の制作ログ。容量削減やライティング調整の判断理由を詳しく共有する想定です。", image: vrchatImages.steamWorldB, visibility: "SubscriberOnly" },
   { id: 101, title: "Draft avatar board", category: "Avatar", creator: "You", role: "VRChat creator", avatar: "Rurune", world: "Creator Room", tags: ["#draft", "#avatar", "#memo"], request: null, description: "自分用の下書きアバターボード。", image: vrchatImages.steamAvatarA },
   { id: 102, title: "Saved outfit ideas", category: "Avatar", creator: "You", role: "VRChat creator", avatar: "Shinra", world: "Soft Garden", tags: ["#saved", "#outfit", "#booth"], request: null, description: "保存した衣装アイデアをまとめたマイページ用投稿。", image: vrchatImages.steamAvatarB },
@@ -472,6 +472,9 @@ circleGroups.forEach((circle, index) => {
       circle.postAudience = [0, 3, 5, 8, 11, 14, 17, 21, 24].includes(index) ? "Public" : "CircleOnly";
     }
   }
+  if (!circle.supportPayout) {
+    circle.supportPayout = [0, 2, 5, 8, 13, 21].includes(index) ? "split" : "owner";
+  }
 });
 
 const circleManagementData = {
@@ -534,6 +537,23 @@ const notifications = [
   { id: 5, type: "important", unread: true, title: "イベント申請が承認待ちです", body: "夏のフォトリレー特集の開催許可申請を運営が確認中です。", time: "今日", target: { kind: "events" } },
   { id: 6, type: "request", unread: false, title: "納品確認の期限が近づいています", body: "受け取り評価待ちの依頼があります。内容確認をお願いします。", time: "2日前", target: { kind: "manager", itemId: 7 } },
 ];
+
+const postComments = {
+  1: [
+    { id: "c-1-1", author: "Lumi Photo", time: "12分前", body: "衣装の色味とワールドの光がかなり合ってます。" },
+    { id: "c-1-2", author: "Rin Works", time: "5分前", body: "依頼前に確認したい作例として見やすいです。" },
+  ],
+  5: [
+    { id: "c-5-1", author: "Mika Alterworks", time: "1時間前", body: "Quest対応の負荷感も見たいです。" },
+  ],
+  13: [
+    { id: "c-13-1", author: "Yoru Snap", time: "28分前", body: "肌の明るさが自然で使いやすそう。" },
+    { id: "c-13-2", author: "Aoi Retouch", time: "18分前", body: "次は夜景寄りの比較も載せます。" },
+  ],
+  24: [
+    { id: "c-24-1", author: "You Creator", time: "昨日", body: "加入者向けのメモなので、細かい導入差分も残しておきます。" },
+  ],
+};
 
 const adminQueues = {
   events: [
@@ -933,6 +953,7 @@ const circleDetailDescription = document.querySelector("#circleDetailDescription
 const circleDetailMeta = document.querySelector("#circleDetailMeta");
 const circleDetailTags = document.querySelector("#circleDetailTags");
 const circleJoinButton = document.querySelector("#circleJoinButton");
+const circleSupportButton = document.querySelector("#circleSupportButton");
 const circlePostsBoard = document.querySelector("#circlePostsBoard");
 const circlePostsNote = document.querySelector("#circlePostsNote");
 const circleGrid = document.querySelector("#circleGrid");
@@ -958,6 +979,7 @@ const circleCreateNameInput = document.querySelector("#circleCreateNameInput");
 const circleCreateDescriptionInput = document.querySelector("#circleCreateDescriptionInput");
 const circleCreateVisibilityInput = document.querySelector("#circleCreateVisibilityInput");
 const circleCreatePostAudienceInput = document.querySelector("#circleCreatePostAudienceInput");
+const circleCreateSupportPayoutInput = document.querySelector("#circleCreateSupportPayoutInput");
 const circleCreateTagsInput = document.querySelector("#circleCreateTagsInput");
 const circleCreateCoverInput = document.querySelector("#circleCreateCoverInput");
 const circleCreateNameError = document.querySelector("#circleCreateNameError");
@@ -1012,6 +1034,13 @@ const dialogSave = document.querySelector("#dialogSave");
 const dialogFollow = document.querySelector("#dialogFollow");
 const dialogCopyLink = document.querySelector("#dialogCopyLink");
 const dialogShareX = document.querySelector("#dialogShareX");
+const dialogComments = document.querySelector("#dialogComments");
+const dialogCommentsTitle = document.querySelector("#dialogCommentsTitle");
+const dialogCommentsState = document.querySelector("#dialogCommentsState");
+const dialogCommentsList = document.querySelector("#dialogCommentsList");
+const dialogCommentForm = document.querySelector("#dialogCommentForm");
+const dialogCommentInput = document.querySelector("#dialogCommentInput");
+const dialogCommentSubmit = document.querySelector("#dialogCommentSubmit");
 const trustInfoDialog = document.querySelector("#trustInfoDialog");
 const closeTrustInfo = document.querySelector("#closeTrustInfo");
 const composeDialog = document.querySelector("#composeDialog");
@@ -1035,6 +1064,7 @@ const composeVisibility = document.querySelector("#composeVisibility");
 const composeCircleToggle = document.querySelector("#composeCircleToggle");
 const composeR18Toggle = document.querySelector("#composeR18Toggle");
 const composeGoreToggle = document.querySelector("#composeGoreToggle");
+const composeRepliesToggle = document.querySelector("#composeRepliesToggle");
 const composeCircleField = document.querySelector("#composeCircleField");
 const composeCircle = document.querySelector("#composeCircle");
 const composeAvatar = document.querySelector("#composeAvatar");
@@ -1232,6 +1262,7 @@ let bookmarkFolders = [
 savedPins = new Set(bookmarkFolders.flatMap((folder) => folder.pinIds || []));
 let profileArchivePinnedHeight = 0;
 const composeDraftStorageKey = "vrc-sns-compose-draft";
+const composeRepliesDefaultStorageKey = "vrc-sns-compose-replies-default";
 const requestComposeDraftStorageKey = "vrc-sns-request-compose-draft";
 const onboardingStorageKey = "vrc-sns-onboarding-seen";
 const savedSearchTabsStorageKey = "vrc-sns-saved-search-tabs";
@@ -1346,6 +1377,7 @@ const creatorSubscriptionPrograms = {
 let creatorSubscriptions = [
   { accountId: "main", creator: "Mika Alterworks", planId: "mika-supporter", startedAt: "2025-10-02", visibleOnProfile: true, earlySupporter: true },
   { accountId: "main", creator: "Lumi Photo", planId: "lumi-photo-club", startedAt: "2026-01-18", visibleOnProfile: true, earlySupporter: false },
+  { accountId: "main", creator: "circle:photo-walkers", planId: "photo-walkers-supporter", startedAt: "2026-05-12", visibleOnProfile: true, earlySupporter: false },
   { accountId: "creator", creator: "Orbit Build", planId: "orbit-devlog", startedAt: "2026-02-14", visibleOnProfile: true, earlySupporter: false }
 ];
 let pendingAvatarSource = "";
@@ -3886,7 +3918,7 @@ function applyLanguage({ rerender = false } = {}) {
   setAttr(avatarButton, "aria-label", "account");
   setTooltip(avatarButton, "account");
   setText("#accountMenuProfile span", "myPage");
-  if (accountMenuSubscriptions) accountMenuSubscriptions.querySelector("span").textContent = currentLanguage === "en" ? "Subscriptions" : currentLanguage === "ko" ? "구독" : "サブスク";
+  if (accountMenuSubscriptions) accountMenuSubscriptions.querySelector("span").textContent = currentLanguage === "en" ? "Memberships" : currentLanguage === "ko" ? "멤버십" : "メンバーシップ";
   if (accountMenuService) accountMenuService.querySelector("span").textContent = currentLanguage === "en" ? "Service guide" : currentLanguage === "ko" ? "서비스 설명" : "サービス説明";
   if (accountMenuAdmin) accountMenuAdmin.querySelector("span").textContent = currentLanguage === "en" ? "Operations" : currentLanguage === "ko" ? "운영 관리" : "運営管理";
   if (accountMenuSpecs) accountMenuSpecs.querySelector("span").textContent = currentLanguage === "en" ? "Screen specs" : currentLanguage === "ko" ? "화면 사양" : "画面仕様";
@@ -3898,7 +3930,7 @@ function applyLanguage({ rerender = false } = {}) {
     theme: currentLanguage === "en" ? "Night mode" : currentLanguage === "ko" ? "나이트 모드" : "ナイトモード",
     likes: currentLanguage === "en" ? "Liked posts" : currentLanguage === "ko" ? "좋아요" : "いいね",
     bookmarks: currentLanguage === "en" ? "Bookmarks" : currentLanguage === "ko" ? "북마크" : "ブックマーク",
-    subscriptions: currentLanguage === "en" ? "Subscriptions" : currentLanguage === "ko" ? "구독" : "サブスク",
+    subscriptions: currentLanguage === "en" ? "Memberships" : currentLanguage === "ko" ? "멤버십" : "メンバーシップ",
     circles: t("circles"),
     requests: currentLanguage === "en" ? "Requests" : currentLanguage === "ko" ? "의뢰 확인" : "依頼確認",
     events: t("events"),
@@ -4517,7 +4549,54 @@ function currentCreatorSubscriptions() {
   return creatorSubscriptions.filter((entry) => entry.accountId === activeAccountId);
 }
 
+function circleSubscriptionKey(circleId) {
+  return `circle:${circleId}`;
+}
+
+function circleIdFromSubscriptionKey(key = "") {
+  return key.startsWith("circle:") ? key.slice(7) : "";
+}
+
+function isCircleSubscriptionKey(key = "") {
+  return Boolean(circleIdFromSubscriptionKey(key));
+}
+
+function subscriptionTargetLabel(target = "") {
+  const circle = circleById(circleIdFromSubscriptionKey(target));
+  return circle ? circle.name : target;
+}
+
+function circleSupportPayoutLabel(circle) {
+  return circle?.supportPayout === "split" ? "メンバーで分配" : "オーナーが受け取る";
+}
+
+function circleSubscriptionPlans(circle) {
+  if (!circle) return [];
+  return [
+    {
+      id: `${circle.id}-free`,
+      name: "Circle follow",
+      price: 0,
+      summary: `${circle.name}の更新通知と一部の支援者向け投稿を受け取れる無料プラン。`,
+      perks: ["更新通知", "一部の支援者向け投稿", circleSupportPayoutLabel(circle)],
+      cardImage: circle.cover,
+      circleId: circle.id
+    },
+    {
+      id: `${circle.id}-supporter`,
+      name: "Circle supporter",
+      price: 500,
+      summary: `${circle.name}の活動、イベント準備、限定投稿を支援する月額プラン。`,
+      perks: ["支援者限定投稿", "イベント準備ログ", circleSupportPayoutLabel(circle)],
+      cardImage: circle.cover,
+      circleId: circle.id
+    }
+  ];
+}
+
 function subscriptionProgramFor(creator) {
+  const circleId = circleIdFromSubscriptionKey(creator);
+  if (circleId) return circleSubscriptionPlans(circleById(circleId));
   return creatorSubscriptionPrograms[creator] || [];
 }
 
@@ -4600,6 +4679,60 @@ function primaryOpenRequestPostForCreator(creator) {
   return creatorPosts(creator).find((pin) => pin.request?.open) || null;
 }
 
+function postAllowsComments(pin) {
+  return pin?.allowReplies !== false;
+}
+
+function commentsForPost(pinId) {
+  if (!postComments[pinId]) postComments[pinId] = [];
+  return postComments[pinId];
+}
+
+function renderDialogComments() {
+  if (!currentPin || !dialogComments || !dialogCommentsList) return;
+  const allowed = postAllowsComments(currentPin);
+  const comments = commentsForPost(currentPin.id);
+  if (dialogCommentsTitle) dialogCommentsTitle.textContent = `コメント ${comments.length}`;
+  if (dialogCommentsState) {
+    dialogCommentsState.textContent = allowed ? "許可中" : "オフ";
+    dialogCommentsState.classList.toggle("is-closed", !allowed);
+  }
+  dialogCommentsList.innerHTML = comments.length
+    ? comments.map((comment) => `
+      <article class="post-comment">
+        <span class="post-comment-avatar">${escapeHtml(comment.author.slice(0, 1).toUpperCase())}</span>
+        <div>
+          <header>
+            <strong>${escapeHtml(comment.author)}</strong>
+            <small>${escapeHtml(comment.time)}</small>
+          </header>
+          <p>${escapeHtml(comment.body)}</p>
+        </div>
+      </article>
+    `).join("")
+    : `<div class="post-comments-empty">${allowed ? "まだコメントはありません。" : "この投稿ではコメントがオフになっています。"}</div>`;
+  if (dialogCommentForm) dialogCommentForm.hidden = !allowed;
+  if (dialogCommentInput) {
+    dialogCommentInput.disabled = !allowed;
+    dialogCommentInput.value = "";
+  }
+  if (dialogCommentSubmit) dialogCommentSubmit.disabled = true;
+}
+
+function submitDialogComment() {
+  if (!currentPin || !postAllowsComments(currentPin) || !dialogCommentInput) return;
+  const body = dialogCommentInput.value.trim();
+  if (!body) return;
+  commentsForPost(currentPin.id).push({
+    id: `c-${currentPin.id}-${Date.now()}`,
+    author: currentUserDisplayName(),
+    time: "いま",
+    body
+  });
+  renderDialogComments();
+  dialogCommentInput.focus();
+}
+
 function openRequestPostsForCreator(creator) {
   return creatorPosts(creator).filter((pin) => pin.request?.open);
 }
@@ -4628,7 +4761,7 @@ function circleMeta(circle) {
   const joinedText = joinedCircleIds.has(circle.id)
     ? (currentLanguage === "en" ? "Joined" : currentLanguage === "ko" ? "참여 중" : "参加中")
     : (currentLanguage === "en" ? "Not joined" : currentLanguage === "ko" ? "미참여" : "未参加");
-  return [memberText, circle.visibility, joinedText];
+  return [memberText, circle.visibility, joinedText, circleSupportPayoutLabel(circle)];
 }
 
 function circleSearchQuery() {
@@ -4758,6 +4891,7 @@ function openCircleEditDialog(circleId = activeManagedCircleId) {
   if (circleCreateDescriptionInput) circleCreateDescriptionInput.value = circle.description || "";
   if (circleCreateVisibilityInput) circleCreateVisibilityInput.value = circle.visibility || "自由参加OK";
   if (circleCreatePostAudienceInput) circleCreatePostAudienceInput.value = ["Public", "CircleOnly", "Both"].includes(circle.postAudience) ? circle.postAudience : "CircleOnly";
+  if (circleCreateSupportPayoutInput) circleCreateSupportPayoutInput.value = circle.supportPayout === "split" ? "split" : "owner";
   if (circleCreateTagsInput) circleCreateTagsInput.value = (circle.tags || []).join(" ");
   if (circleCreateCoverInput) circleCreateCoverInput.value = "";
   syncTrimRequiredFields(circleCreateForm);
@@ -4788,6 +4922,7 @@ async function createCircleFromForm(event) {
   const postAudience = ["Public", "CircleOnly", "Both"].includes(circleCreatePostAudienceInput?.value)
     ? circleCreatePostAudienceInput.value
     : "CircleOnly";
+  const supportPayout = circleCreateSupportPayoutInput?.value === "split" ? "split" : "owner";
   if (editingCircleId) {
     const circle = circleById(editingCircleId);
     if (!circle) return;
@@ -4796,6 +4931,7 @@ async function createCircleFromForm(event) {
     circle.tags = tags.length ? tags : ["#circle"];
     circle.visibility = circleCreateVisibilityInput.value;
     circle.postAudience = postAudience;
+    circle.supportPayout = supportPayout;
     if (cover) circle.cover = cover;
     const data = circleManagementFor(circle.id);
     if (data) data.owner = data.owner || circle.owner;
@@ -4816,6 +4952,7 @@ async function createCircleFromForm(event) {
     members: 1,
     visibility: circleCreateVisibilityInput.value,
     postAudience,
+    supportPayout,
     eventRule: "イベント参加条件として設定可能",
   };
   circleGroups.unshift(circle);
@@ -4842,7 +4979,7 @@ function resetSubscriptionPlanForm() {
   pendingSubscriptionPlanImage = "";
   subscriptionPlanForm?.reset();
   renderSubscriptionPlanImagePreview("");
-  if (subscriptionPlanTitle) subscriptionPlanTitle.textContent = "サブスクプランを作成";
+  if (subscriptionPlanTitle) subscriptionPlanTitle.textContent = "メンバーシッププランを作成";
   if (subscriptionPlanLead) subscriptionPlanLead.textContent = "公式承認なしで、自分のプロフィール上に複数の支援プランを作成できます。";
   syncTrimRequiredFields(subscriptionPlanForm);
   updateSubscriptionPlanState();
@@ -4871,7 +5008,7 @@ function openSubscriptionPlanDialog(planId = "") {
   if (plan) {
     editingSubscriptionPlanId = plan.id;
     pendingSubscriptionPlanImage = plan.cardImage || "";
-    if (subscriptionPlanTitle) subscriptionPlanTitle.textContent = "サブスクプランを編集";
+    if (subscriptionPlanTitle) subscriptionPlanTitle.textContent = "メンバーシッププランを編集";
     if (subscriptionPlanLead) subscriptionPlanLead.textContent = "価格、概要、特典内容を更新するとプロフィールの支援導線に即時反映されます。";
     if (subscriptionPlanName) subscriptionPlanName.value = plan.name || "";
     if (subscriptionPlanPrice) subscriptionPlanPrice.value = String(plan.price || "");
@@ -4914,12 +5051,13 @@ function saveSubscriptionPlan(event) {
   closeSubscriptionPlanDialog();
   if (activeProfile === "You") renderProfile("You");
   if (subscriptionsView && !subscriptionsView.hidden) renderSubscriptionsPage();
-  showProfileCopyToast("サブスクプランを更新しました");
+  showProfileCopyToast("メンバーシッププランを更新しました");
 }
 
 function subscribeToCreatorPlan(creator, planId) {
   const existingIndex = creatorSubscriptions.findIndex((entry) => entry.accountId === activeAccountId && entry.creator === creator);
   const earlySupporter = !creatorSubscriptions.some((entry) => entry.creator === creator);
+  const label = subscriptionTargetLabel(creator);
   const entry = {
     accountId: activeAccountId,
     creator,
@@ -4933,7 +5071,7 @@ function subscribeToCreatorPlan(creator, planId) {
   if (activeProfile) renderProfile(activeProfile);
   if (subscriptionsView && !subscriptionsView.hidden) renderSubscriptionsPage();
   renderPins();
-  showProfileCopyToast(`${creator}を支援中にしました`);
+  showProfileCopyToast(`${label}を支援中にしました`);
 }
 
 function unsubscribeFromCreatorPlan(creator, planId) {
@@ -4945,13 +5083,15 @@ function unsubscribeFromCreatorPlan(creator, planId) {
   if (activeProfile) renderProfile(activeProfile);
   if (subscriptionsView && !subscriptionsView.hidden) renderSubscriptionsPage({ scroll: false });
   renderPins();
-  showProfileCopyToast(`${creator}のプランを退会しました`);
+  showProfileCopyToast(`${subscriptionTargetLabel(creator)}のプランを退会しました`);
 }
 
 function openSubscriptionPlanDetailDialog(creator, planId) {
   const plan = subscriptionPlanById(creator, planId);
   if (!plan || !subscriptionPlanDetailDialog) return;
   const joined = currentSubscriptionFor(creator)?.planId === plan.id;
+  const label = subscriptionTargetLabel(creator);
+  const circle = circleById(circleIdFromSubscriptionKey(creator));
   pendingSubscriptionPlanDetail = { creator, planId };
   const priceText = formatSubscriptionPrice(plan.price);
   const image = subscriptionPlanCardImage(plan, creator);
@@ -4962,9 +5102,9 @@ function openSubscriptionPlanDetailDialog(creator, planId) {
       <span>${Number(plan.price || 0) <= 0 ? "Free plan" : "Membership"}</span>
     `;
   }
-  if (subscriptionPlanDetailEyebrow) subscriptionPlanDetailEyebrow.textContent = `${creator} / Membership`;
+  if (subscriptionPlanDetailEyebrow) subscriptionPlanDetailEyebrow.textContent = `${label} / ${circle ? "Circle support" : "Membership"}`;
   if (subscriptionPlanDetailTitle) subscriptionPlanDetailTitle.textContent = plan.name;
-  if (subscriptionPlanDetailSummary) subscriptionPlanDetailSummary.textContent = plan.summary || "限定投稿や制作ログを閲覧できる支援プランです。";
+  if (subscriptionPlanDetailSummary) subscriptionPlanDetailSummary.textContent = plan.summary || (circle ? "サークルの活動や限定投稿を支援するプランです。" : "限定投稿や制作ログを閲覧できる支援プランです。");
   if (subscriptionPlanDetailPrice) {
     subscriptionPlanDetailPrice.innerHTML = `
       <strong>${priceText}</strong>
@@ -4975,7 +5115,9 @@ function openSubscriptionPlanDetailDialog(creator, planId) {
     subscriptionPlanDetailPerks.innerHTML = (plan.perks || []).map((perk) => `<span>${escapeHtml(perk)}</span>`).join("");
   }
   if (subscriptionPlanDetailNote) {
-    subscriptionPlanDetailNote.textContent = "加入後はサブスク限定投稿を閲覧でき、支援履歴カードを自分のプロフィールに掲載できます。";
+    subscriptionPlanDetailNote.textContent = circle
+      ? `加入後はサークル支援カードをプロフィールに掲載できます。支援金は「${circleSupportPayoutLabel(circle)}」設定です。`
+      : "加入後はメンバーシップ限定投稿を閲覧でき、支援履歴カードを自分のプロフィールに掲載できます。";
   }
   if (subscriptionPlanDetailJoin) {
     subscriptionPlanDetailJoin.hidden = joined;
@@ -4996,9 +5138,13 @@ function closeSubscriptionPlanDetailDialog() {
 }
 
 function allSubscriptionPlans() {
-  return Object.entries(creatorSubscriptionPrograms).flatMap(([creator, plans]) =>
+  const creatorPlans = Object.entries(creatorSubscriptionPrograms).flatMap(([creator, plans]) =>
     (plans || []).map((plan) => ({ creator, plan }))
   );
+  const circlePlans = circleGroups.flatMap((circle) =>
+    circleSubscriptionPlans(circle).map((plan) => ({ creator: circleSubscriptionKey(circle.id), plan }))
+  );
+  return [...creatorPlans, ...circlePlans];
 }
 
 function currentJoinedSubscriptionCards() {
@@ -5012,8 +5158,11 @@ function currentJoinedSubscriptionCards() {
 
 function subscriptionPlanSearchMatches(item, query) {
   if (!query) return true;
+  const circle = circleById(circleIdFromSubscriptionKey(item.creator));
   const text = [
-    item.creator,
+    subscriptionTargetLabel(item.creator),
+    circle?.owner || "",
+    circle?.visibility || "",
     item.plan.name,
     item.plan.summary,
     ...(item.plan.perks || [])
@@ -5050,7 +5199,7 @@ function renderSubscriptionsPage({ scroll = true } = {}) {
         <article class="subscriptions-summary-card support-history-card">
           ${subscriptionPlanVisualMarkup(entry.plan, entry.creator, entry.earlySupporter ? "Early supporter" : "Joined")}
           <span class="support-history-badge">${entry.earlySupporter ? "Early supporter" : "Joined plan"}</span>
-          <strong>${escapeHtml(entry.creator)}</strong>
+          <strong>${escapeHtml(subscriptionTargetLabel(entry.creator))}</strong>
           <p>${escapeHtml(entry.plan.name)} / ${formatSubscriptionPrice(entry.plan.price)}</p>
           <small>${subscriptionDurationLabel(entry.startedAt)} / ${entry.startedAt}</small>
           <button class="soft-button" type="button" data-plan-detail="${escapeHtml(entry.plan.id)}" data-plan-creator="${escapeHtml(entry.creator)}">プラン詳細を見る</button>
@@ -5065,18 +5214,23 @@ function renderSubscriptionsPage({ scroll = true } = {}) {
     subscriptionsPlanResults.innerHTML = plans.length
       ? plans.map(({ creator, plan }) => {
         const joinedPlan = currentSubscriptionFor(creator)?.planId === plan.id;
+        const circle = circleById(circleIdFromSubscriptionKey(creator));
+        const targetLabel = subscriptionTargetLabel(creator);
         return `
           <article class="subscription-plan-card-item ${joinedPlan ? "is-active" : ""} ${Number(plan.price || 0) <= 0 ? "is-free" : ""}">
-            ${subscriptionPlanVisualMarkup(plan, creator, joinedPlan ? "Joined" : "Membership")}
+            ${subscriptionPlanVisualMarkup(plan, creator, joinedPlan ? "Joined" : circle ? "Circle support" : "Membership")}
             <div>
               <strong>${escapeHtml(plan.name)}</strong>
               <span>${formatSubscriptionPrice(plan.price)}</span>
             </div>
+            <small>${escapeHtml(targetLabel)}${circle ? ` / ${escapeHtml(circleSupportPayoutLabel(circle))}` : ""}</small>
             <p>${escapeHtml(plan.summary || "限定投稿や制作ログを閲覧できる支援プランです。")}</p>
             <small>${escapeHtml((plan.perks || []).join(" / "))}</small>
             <div class="subscriptions-plan-actions">
               <button class="${joinedPlan ? "soft-button" : "primary-button"}" type="button" data-plan-detail="${escapeHtml(plan.id)}" data-plan-creator="${escapeHtml(creator)}">${joinedPlan ? "加入中 / 詳細を見る" : "プラン詳細を見る"}</button>
-              <button class="soft-button" type="button" data-profile-open="${escapeHtml(slugify(creator))}">プロフィール</button>
+              ${circle
+                ? `<button class="soft-button" type="button" data-circle-open="${escapeHtml(circle.id)}">サークル</button>`
+                : `<button class="soft-button" type="button" data-profile-open="${escapeHtml(slugify(creator))}">プロフィール</button>`}
             </div>
           </article>
         `;
@@ -5257,6 +5411,7 @@ function renderCircleManager() {
         <small>${escapeHtml(activeCircle.visibility)} / ${escapeHtml(circlePostAudienceValue(activeCircle))}</small>
         <strong>${escapeHtml(activeCircle.name)}</strong>
         <em>${escapeHtml(activeCircle.description)}</em>
+        <small>支援金: ${escapeHtml(circleSupportPayoutLabel(activeCircle))}</small>
         ${!canTransferOwner ? `<small>現在の権限: ${escapeHtml(roleLabel(currentRole))}</small>` : ""}
       </span>
       <span class="circle-manager-stats">
@@ -5347,6 +5502,13 @@ function renderCircleDetail(circle) {
     circleJoinButton.textContent = circleJoinLabel(circle.id);
     circleJoinButton.dataset.circleJoin = circle.id;
     circleJoinButton.classList.toggle("is-joined", joinedCircleIds.has(circle.id));
+  }
+  if (circleSupportButton) {
+    const circleKey = circleSubscriptionKey(circle.id);
+    const joined = Boolean(currentSubscriptionFor(circleKey));
+    circleSupportButton.textContent = joined ? "支援中 / 詳細" : "サークルを支援";
+    circleSupportButton.dataset.circleSupport = circle.id;
+    circleSupportButton.classList.toggle("is-active", joined);
   }
 }
 
@@ -5779,7 +5941,7 @@ window.handleInlinePinOpen = handleInlinePinOpen;
 function pinCard(pin) {
   const saved = savedPins.has(pin.id);
   const circle = pin.circleId ? circleById(pin.circleId) : null;
-  const status = requestLabel(pin) || (pin.visibility === "SubscriberOnly" ? "サブスク限定" : (circle ? "サークル限定" : ""));
+  const status = requestLabel(pin) || (pin.visibility === "SubscriberOnly" ? "メンバーシップ限定" : (circle ? "サークル限定" : ""));
   return `
     <article class="pin-card" role="button" tabindex="0" data-id="${pin.id}" aria-label="${pin.title}" onclick="handleInlinePinOpen(event, ${pin.id}, this)">
       <div class="pin-media">
@@ -6012,7 +6174,7 @@ function openPin(pinId, sourceElement = null) {
   dialogImage.src = currentPin.image;
   dialogImage.alt = currentPin.title;
   const currentCircle = currentPin.circleId ? circleById(currentPin.circleId) : null;
-  const visibilityLabel = currentPin.circleId ? "サークル限定" : currentPin.visibility === "SubscriberOnly" ? "サブスク限定" : t("normalPost");
+  const visibilityLabel = currentPin.circleId ? "サークル限定" : currentPin.visibility === "SubscriberOnly" ? "メンバーシップ限定" : t("normalPost");
   const circleTrail = currentCircle
     ? ` / <button class="category-link" type="button" data-circle-open="${currentCircle.id}">${currentCircle.name}</button>`
     : "";
@@ -6036,7 +6198,7 @@ function openPin(pinId, sourceElement = null) {
     `
     : creatorPlans.length
       ? `
-        <strong>サブスク受付中</strong>
+        <strong>メンバーシップ受付中</strong>
         <span>${creatorPlans.length} プラン / 最安 ${formatSubscriptionPrice(Math.min(...creatorPlans.map((plan) => plan.price || 0)))}</span>
         <span>${currentPin.visibility === "SubscriberOnly" ? "この投稿は支援者限定です。" : "限定投稿や支援カードを公開できるクリエイター支援プランがあります。"}</span>
         <span>プロフィールからプラン詳細を確認できます。</span>
@@ -6051,6 +6213,7 @@ function openPin(pinId, sourceElement = null) {
   dialogRequest.classList.toggle("is-action", Boolean(creatorOpenRequest || creatorPlans.length));
   updateDialogSave();
   updateFollowButton(dialogFollow, currentPin.creator);
+  renderDialogComments();
   showModalElement(dialog);
 }
 
@@ -7192,6 +7355,8 @@ function currentSupportCards() {
 
 function subscriptionPlanCardImage(plan, creator = "") {
   if (plan?.cardImage) return plan.cardImage;
+  const circle = circleById(circleIdFromSubscriptionKey(creator));
+  if (circle?.cover) return circle.cover;
   const firstPost = creatorPosts(creator)[0] || pins.find((pin) => pin.creator === creator);
   return firstPost?.image || vrchatImages.community;
 }
@@ -7238,7 +7403,7 @@ function renderProfileSubscriptionSection(creator, posts, isMine) {
         <article class="support-history-card">
           ${subscriptionPlanVisualMarkup(entry.plan, entry.creator, entry.earlySupporter ? "Early supporter" : "Supporter card")}
           <span class="support-history-badge">${entry.earlySupporter ? "Early supporter" : "Supporter card"}</span>
-          <strong>${escapeHtml(entry.creator)}</strong>
+          <strong>${escapeHtml(subscriptionTargetLabel(entry.creator))}</strong>
           <p>${escapeHtml(entry.plan.name)} / ${formatSubscriptionPrice(entry.plan.price)}</p>
           <small>${subscriptionDurationLabel(entry.startedAt)} / ${entry.startedAt}</small>
         </article>
@@ -7530,6 +7695,7 @@ function persistComposeDraft() {
     circlePost: Boolean(composeCircleToggle?.checked),
     r18: Boolean(composeR18Toggle?.checked),
     gore: Boolean(composeGoreToggle?.checked),
+    allowReplies: Boolean(composeRepliesToggle?.checked),
     circleId: composeCircle?.value || "",
     avatar: composeAvatar.value,
     world: composeWorld.value,
@@ -7648,6 +7814,7 @@ function restoreComposeDraft() {
     if (composeCircleToggle) composeCircleToggle.checked = draftCirclePost;
     if (composeR18Toggle) composeR18Toggle.checked = Boolean(draft.r18);
     if (composeGoreToggle) composeGoreToggle.checked = Boolean(draft.gore);
+    if (composeRepliesToggle) composeRepliesToggle.checked = draft.allowReplies !== false;
     if (composeCircle) composeCircle.value = draft.circleId || joinedCircleIds.values().next().value || "";
     composeAvatar.value = draft.avatar || "";
     composeWorld.value = draft.world || "";
@@ -7666,6 +7833,14 @@ function clearComposeDraft() {
   localStorage.removeItem(composeDraftStorageKey);
 }
 
+function composeRepliesDefaultEnabled() {
+  return localStorage.getItem(composeRepliesDefaultStorageKey) !== "off";
+}
+
+function saveComposeRepliesDefault(enabled) {
+  localStorage.setItem(composeRepliesDefaultStorageKey, enabled ? "on" : "off");
+}
+
 function resetComposeFormState() {
   composePostTitle.value = "";
   composeCategory.value = "Photo";
@@ -7674,6 +7849,7 @@ function resetComposeFormState() {
   if (composeCircleToggle) composeCircleToggle.checked = false;
   if (composeR18Toggle) composeR18Toggle.checked = false;
   if (composeGoreToggle) composeGoreToggle.checked = false;
+  if (composeRepliesToggle) composeRepliesToggle.checked = composeRepliesDefaultEnabled();
   if (composeCircle) composeCircle.value = joinedCircleIds.values().next().value || "";
   composeAvatar.value = "";
   composeWorld.value = "";
@@ -7700,6 +7876,7 @@ function composeHasDraftableInput() {
     (composeVisibility?.value || "Public") !== "Public" ||
     composeR18Toggle?.checked ||
     composeGoreToggle?.checked ||
+    composeRepliesToggle?.checked === false ||
     composeCircleToggle?.checked
   );
 }
@@ -9129,7 +9306,8 @@ function updateComposePreview() {
   const circle = isComposeCirclePost() ? circleById(composeCircle?.value) : null;
   const contentFlags = [
     composeR18Toggle?.checked ? "R18" : "",
-    composeGoreToggle?.checked ? "Gore" : ""
+    composeGoreToggle?.checked ? "Gore" : "",
+    composeRepliesToggle?.checked === false ? "Comments off" : ""
   ].filter(Boolean).join(" / ");
 
   composePreviewCard.innerHTML = `
@@ -9389,11 +9567,13 @@ function handleMockSubmit(event) {
     description: composeDescription.value.trim() || (circle ? `${circle.name}の参加者向け限定投稿です。` : "通常投稿のモックです。"),
     image: composeImages[0]?.src || vrchatImages.portrait,
     circleId: circle?.id || null,
+    allowReplies: Boolean(composeRepliesToggle?.checked),
     sensitive: {
       r18: Boolean(composeR18Toggle?.checked),
       gore: Boolean(composeGoreToggle?.checked)
     },
   };
+  saveComposeRepliesDefault(newPin.allowReplies);
   pins.unshift(newPin);
   myPosts.unshift(newPin);
   composeNotice.hidden = false;
@@ -9408,6 +9588,7 @@ function handleMockSubmit(event) {
   composeDescription.value = "";
   if (composeR18Toggle) composeR18Toggle.checked = false;
   if (composeGoreToggle) composeGoreToggle.checked = false;
+  if (composeRepliesToggle) composeRepliesToggle.checked = composeRepliesDefaultEnabled();
   composeImages = [];
   composeImageIndex = 0;
   renderComposeImage();
@@ -9999,6 +10180,11 @@ circleJoinButton?.addEventListener("click", (event) => {
   const circleId = event.currentTarget.dataset.circleJoin;
   if (circleId) toggleCircleJoin(circleId);
 });
+circleSupportButton?.addEventListener("click", (event) => {
+  const circleId = event.currentTarget.dataset.circleSupport;
+  const plans = circleSubscriptionPlans(circleById(circleId));
+  if (circleId && plans[0]) openSubscriptionPlanDetailDialog(circleSubscriptionKey(circleId), plans[0].id);
+});
 circleManagerList?.addEventListener("click", (event) => {
   const button = event.target.closest("[data-managed-circle]");
   if (!button) return;
@@ -10016,6 +10202,7 @@ circleCreateNameInput?.addEventListener("input", updateCircleCreateState);
 circleCreateDescriptionInput?.addEventListener("input", updateCircleCreateState);
 circleCreateVisibilityInput?.addEventListener("change", updateCircleCreateState);
 circleCreatePostAudienceInput?.addEventListener("change", updateCircleCreateState);
+circleCreateSupportPayoutInput?.addEventListener("change", updateCircleCreateState);
 circleCreateForm?.addEventListener("submit", createCircleFromForm);
 circleCreateDialog?.addEventListener("click", (event) => {
   if (event.target === circleCreateDialog) closeCircleCreateDialog();
@@ -10329,6 +10516,12 @@ subscriptionsSearchInput?.addEventListener("input", () => {
     }
     const profileButton = event.target.closest("[data-profile-open]");
     if (profileButton) openProfile(profileButton.dataset.profileOpen);
+    const circleButton = event.target.closest("[data-circle-open]");
+    if (circleButton) {
+      activeCircleTab = "posts";
+      location.hash = `circle/${circleButton.dataset.circleOpen}`;
+      renderCirclesPage(circleButton.dataset.circleOpen);
+    }
   });
 });
 trustFeaturedWorks?.addEventListener("click", (event) => {
@@ -10765,6 +10958,14 @@ dialogFollow.addEventListener("click", () => {
 
 dialogCopyLink?.addEventListener("click", copyCurrentPinLink);
 dialogShareX?.addEventListener("click", shareCurrentPinToX);
+dialogCommentInput?.addEventListener("input", () => {
+  if (!dialogCommentSubmit) return;
+  dialogCommentSubmit.disabled = !dialogCommentInput.value.trim() || !currentPin || !postAllowsComments(currentPin);
+});
+dialogCommentForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  submitDialogComment();
+});
 
 profileFollow.addEventListener("click", () => {
   if (!activeProfile) return;
@@ -11260,7 +11461,7 @@ saveDraftButton?.addEventListener("click", () => {
   composeNotice.textContent = "通常投稿の下書きを保存しました。";
 });
 
-[composePostTitle, composeCategory, composeVisibility, composeCircle, composeAvatar, composeWorld, composeTags, composeDescription, composeR18Toggle, composeGoreToggle].filter(Boolean).forEach((input) => {
+[composePostTitle, composeCategory, composeVisibility, composeCircle, composeAvatar, composeWorld, composeTags, composeDescription, composeR18Toggle, composeGoreToggle, composeRepliesToggle].filter(Boolean).forEach((input) => {
   input.addEventListener("input", () => {
     updateComposeCircleVisibility();
     updateComposePreview();

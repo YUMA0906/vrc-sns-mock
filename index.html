@@ -118,7 +118,7 @@
                   <path d="M8.6 12.5h6.8" />
                   <path d="M9.5 16h5" />
                 </svg>
-                <span>サブスク</span>
+                <span>メンバーシップ</span>
               </button>
               <button type="button" role="menuitem" data-mobile-menu-action="circles">
                 <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -168,7 +168,7 @@
                 <path d="M8.6 12.5h6.8" />
                 <path d="M9.5 16h5" />
               </svg>
-              <span>サブスク</span>
+              <span>メンバーシップ</span>
             </button>
             <button id="accountMenuService" type="button" role="menuitem">
               <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -392,7 +392,7 @@
           <div class="section-heading-row">
             <div>
               <p class="eyebrow" id="profileSubscriptionEyebrow">Membership</p>
-              <h2 id="profileSubscriptionTitle">サブスク / 支援</h2>
+              <h2 id="profileSubscriptionTitle">メンバーシップ / 支援</h2>
             </div>
             <button id="subscriptionPlanManageButton" class="soft-button" type="button" hidden>プランを作成</button>
           </div>
@@ -591,7 +591,7 @@
           <header class="subscriptions-hero">
             <div>
               <p class="eyebrow">Membership hub</p>
-              <h1>サブスク</h1>
+              <h1>メンバーシップ</h1>
               <p>加入中のプラン、探せる支援プラン、自分が作成するクリエイタープランをまとめて管理します。</p>
             </div>
             <button id="subscriptionsCreatePlanButton" class="primary-button" type="button">プランを作成</button>
@@ -1287,6 +1287,14 @@
               </select>
               <small class="field-help">サークル投稿を限定にするか、全体公開にするか、投稿時に選べるようにするかを決めます。</small>
             </label>
+            <label class="field">
+              <span>支援金の扱い</span>
+              <select id="circleCreateSupportPayoutInput" required>
+                <option value="owner">オーナーが受け取る</option>
+                <option value="split">メンバーで分配</option>
+              </select>
+              <small class="field-help">サークル支援プランの売上をオーナー管理にするか、共同運営メンバーに分配するかを設定します。</small>
+            </label>
           </div>
           <div class="circle-create-grid">
             <label class="field">
@@ -1664,6 +1672,7 @@
               <div id="circleDetailTags" class="mission-inline-tags"></div>
               <div class="circle-detail-actions">
                 <button id="circleJoinButton" class="primary-button" type="button">参加する</button>
+                <button id="circleSupportButton" class="soft-button" type="button">サークルを支援</button>
               </div>
             </div>
           </section>
@@ -1872,6 +1881,20 @@
             </button>
             <button id="dialogShareX" class="soft-button x-share-button" type="button">X</button>
           </div>
+          <section id="dialogComments" class="post-comments" aria-label="Comments">
+            <div class="post-comments-heading">
+              <div>
+                <p class="eyebrow">Comments</p>
+                <h3 id="dialogCommentsTitle">コメント</h3>
+              </div>
+              <span id="dialogCommentsState" class="post-comments-state"></span>
+            </div>
+            <div id="dialogCommentsList" class="post-comments-list"></div>
+            <form id="dialogCommentForm" class="post-comment-form" action="javascript:void(0)">
+              <input id="dialogCommentInput" type="text" maxlength="160" placeholder="コメントを書く" autocomplete="off" />
+              <button id="dialogCommentSubmit" class="primary-button" type="submit">送信</button>
+            </form>
+          </section>
         </div>
       </div>
     </dialog>
@@ -2024,6 +2047,14 @@
                 </label>
               </div>
             </div>
+            <div class="field wide compose-reply-setting">
+              <span>コメント設定</span>
+              <label class="circle-post-toggle">
+                <input id="composeRepliesToggle" type="checkbox" checked />
+                <span class="circle-post-toggle-box" aria-hidden="true"></span>
+                <span class="circle-post-toggle-copy">この投稿へのコメントを許可する</span>
+              </label>
+            </div>
             <label class="field">
               <span>Avatar</span>
               <input id="composeAvatar" type="text" placeholder="Selestia" autocomplete="off" />
@@ -2142,7 +2173,7 @@
     <dialog id="subscriptionPlanDialog" class="request-sheet-dialog subscription-plan-dialog" aria-labelledby="subscriptionPlanTitle">
       <form id="subscriptionPlanForm" class="request-sheet-card subscription-plan-card">
         <p class="eyebrow">Creator membership</p>
-        <h2 id="subscriptionPlanTitle">サブスクプランを作成</h2>
+        <h2 id="subscriptionPlanTitle">メンバーシッププランを作成</h2>
         <p id="subscriptionPlanLead" class="subscription-plan-lead">公式承認なしで、自分のプロフィール上に複数の支援プランを作成できます。</p>
         <div class="compose-grid">
           <label class="field is-required">
