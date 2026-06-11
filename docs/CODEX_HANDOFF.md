@@ -1,16 +1,16 @@
-# VRC SNS Mock Codex Handoff
+# Veacon Mock Codex Handoff
 
-Last updated: 2026-06-08
+Last updated: 2026-06-11
 
 This document is intended for another Codex instance that needs to understand and continue the current frontend prototype without relying on chat history.
 
 ## Project Summary
 
-VRC SNS is a static frontend mock for a VRChat creator platform. It combines:
+Veacon is a static frontend mock for a VRChat creator platform. It combines:
 
 - Pinterest-like visual discovery for VRChat posts.
 - Creator profile pages that act as trust pages, not just name cards.
-- Commission request pages and creator-side request management.
+- Commission request pages, creator-side request management, and requester-side My Requests.
 - Event discovery and user-submitted event applications.
 - Circle/community features with circle-only posting and circle management.
 - Membership support for creators and circles.
@@ -106,6 +106,8 @@ Routing is hash-based in `routeFromHash()` in `app.js`.
 | `#request/{creatorSlug}/{postId}` | Commission request page for a creator/request post. |
 | `#request-manager` | Creator-side request management overview. |
 | `#request-manager/{id}` | Request detail and chat/workflow screen. |
+| `#my-requests` | Requester-side sent request overview. |
+| `#my-requests/{id}` | Requester-side sent request detail, next action, chat, delivery, review, and report screen. |
 | `#notifications` | Notification list with unread/read states and filtering actions. |
 | `#settings` | App/account settings. |
 | `#service` | Service guide and FAQ-style explanation. |
@@ -206,7 +208,7 @@ Creator trust page data:
 
 Trust level calculation is in `trustScore()` and `trustedLevel()`.
 
-`VRC SNS運営` is an official account. Its trust level is `Official`, with a special visual style.
+`Veacon運営` is an official account. Its trust level is `Official`, with a special visual style.
 
 ### `notifications`
 
@@ -245,6 +247,31 @@ Statuses:
 - `completed`: both sides done.
 
 Request cards sort by deadline by default. Pending requests can sort by amount descending.
+
+### `myRequestItems`
+
+Requester-side sent request records for `#my-requests`.
+
+This is intentionally separate from `requestManagerItems`:
+
+- Creator-side request manager answers: "What requests did I receive, and what must I do as the creator?"
+- My Requests answers: "What did I send, where is it now, and what do I need to do next as the requester?"
+
+Requester-side statuses:
+
+- `draft`: request draft before sending.
+- `sent`: sent and waiting for creator response.
+- `consulting`: pre-acceptance consultation, with turn badges.
+- `estimate`: estimate/payment-before-confirmation check needed.
+- `in_progress`: creator is working.
+- `review`: delivery confirmation and requester review turn. Retake returns it to `in_progress`.
+- `creator_review`: requester has reviewed; waiting for creator review.
+- `completed`: completed request history.
+- `closed`: canceled, rejected, or reported request.
+
+The `todo` tab is derived, not stored. It groups requests where the requester needs to act, currently `estimate`, `consulting`, and `review`.
+
+My Requests and creator-side request manager currently use text-first list/detail layouts with no request thumbnails.
 
 ### Membership Data
 
@@ -956,3 +983,7 @@ If the user explicitly asks for full QA:
 - Check notifications navigation.
 
 Update this document before pushing if any of those features changed.
+
+## Current Naming
+
+The service display name is `Veacon`. Keep the icon artwork as-is unless the user asks for a visual rebrand.

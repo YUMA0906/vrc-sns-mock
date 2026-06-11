@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VRC SNS</title>
+    <title>Veacon</title>
     <meta name="description" content="VRChat creators can collect posts, works, commission status, proof of work, and public profile links in one shareable page." />
-    <meta property="og:title" content="VRC SNS - VRChat Creator Profiles" />
+    <meta property="og:title" content="Veacon - VRChat Creator Profiles" />
     <meta property="og:description" content="作品、実績、依頼受付状況、外部リンクをまとめて見せるVRChatクリエイター向けプロフィールモック。" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://yuma0906.github.io/vrc-sns-mock/" />
@@ -15,13 +15,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.squarespace-cdn.com" />
-    <link rel="stylesheet" href="./styles.css?v=bookmark-shortcut-scroll" />
+    <link rel="stylesheet" href="./styles.css?v=desktop-hide-chat-check" />
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="#" aria-label="VRC SNS home">
+      <a class="brand" href="#" aria-label="Veacon home">
         <span class="brand-mark"></span>
-        <span>VRC SNS</span>
+        <span>Veacon</span>
       </a>
 
       <div class="search-shell">
@@ -63,6 +63,14 @@
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="M9 11l3 3L22 4" />
             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+          </svg>
+        </button>
+        <button id="myRequestsButton" class="icon-button" type="button" aria-label="マイリクエスト" data-tooltip="マイリクエスト">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M5 4.5A2.5 2.5 0 0 1 7.5 2h9A2.5 2.5 0 0 1 19 4.5v15A2.5 2.5 0 0 1 16.5 22h-9A2.5 2.5 0 0 1 5 19.5Z" />
+            <path d="M8.5 7h7" />
+            <path d="M8.5 11h5" />
+            <path d="m8.5 16 2 2 5-6" />
           </svg>
         </button>
         <button id="notificationButton" class="icon-button" type="button" aria-label="Notifications" data-tooltip="Notifications">
@@ -136,6 +144,15 @@
                 </svg>
                 <span>依頼確認</span>
               </button>
+              <button type="button" role="menuitem" data-mobile-menu-action="my-requests">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M5 4.5A2.5 2.5 0 0 1 7.5 2h9A2.5 2.5 0 0 1 19 4.5v15A2.5 2.5 0 0 1 16.5 22h-9A2.5 2.5 0 0 1 5 19.5Z" />
+                  <path d="M8.5 7h7" />
+                  <path d="M8.5 11h5" />
+                  <path d="m8.5 16 2 2 5-6" />
+                </svg>
+                <span>マイリクエスト</span>
+              </button>
               <button type="button" role="menuitem" data-mobile-menu-action="events">
                 <svg aria-hidden="true" viewBox="0 0 24 24">
                   <path d="M8 2v4" />
@@ -169,6 +186,15 @@
                 <path d="M9.5 16h5" />
               </svg>
               <span>メンバーシップ</span>
+            </button>
+            <button id="accountMenuMyRequests" type="button" role="menuitem">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M5 4.5A2.5 2.5 0 0 1 7.5 2h9A2.5 2.5 0 0 1 19 4.5v15A2.5 2.5 0 0 1 16.5 22h-9A2.5 2.5 0 0 1 5 19.5Z" />
+                <path d="M8.5 7h7" />
+                <path d="M8.5 11h5" />
+                <path d="m8.5 16 2 2 5-6" />
+              </svg>
+              <span>マイリクエスト</span>
             </button>
             <button id="accountMenuService" type="button" role="menuitem">
               <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -910,9 +936,6 @@
         </button>
         <div class="request-detail-shell">
           <article class="request-detail-main-panel">
-            <div class="request-detail-main-image">
-              <img id="requestDetailImage" alt="" />
-            </div>
             <div class="request-detail-main-copy">
               <div class="request-detail-main-topline">
                 <span id="requestDetailState" class="request-manager-state"></span>
@@ -971,6 +994,106 @@
                 <button class="primary-button" type="submit">送信</button>
               </div>
               <input id="requestAttachInput" type="file" accept="image/*,.zip" multiple hidden />
+            </form>
+          </aside>
+        </div>
+      </section>
+      <section id="myRequestsView" class="my-requests-view app-view" hidden>
+        <button id="backFromMyRequests" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <div class="my-requests-shell">
+          <header class="my-requests-hero">
+            <div>
+              <p class="eyebrow">My requests</p>
+              <h1>マイリクエスト</h1>
+              <p>送った依頼の状態、次にやること、支払い・作業・納品・評価の進み具合、過去の依頼をまとめて確認できます。</p>
+            </div>
+            <div class="my-requests-guide" aria-label="マイリクエストの概要">
+              <span><strong>次にやること</strong>確認、返信、支払い前確認、納品評価など、自分のターンだけをまとめて表示します。</span>
+              <span><strong>進行状況</strong>送信済み、相談中、制作中、評価待ち、完了済みまで依頼ごとに追えます。</span>
+            </div>
+          </header>
+          <div class="my-requests-tabs" aria-label="マイリクエストのステータス">
+            <div class="my-requests-tabs-track">
+              <button class="is-active" type="button" data-my-request-state="todo">やることリスト <small>0</small></button>
+              <button type="button" data-my-request-state="draft">依頼下書き <small>0</small></button>
+              <button type="button" data-my-request-state="sent">送信済み <small>0</small></button>
+              <button type="button" data-my-request-state="consulting">承認前相談中 <small>0</small></button>
+              <button type="button" data-my-request-state="in_progress">制作中 <small>0</small></button>
+              <button type="button" data-my-request-state="review">納品確認&評価ターン <small>0</small></button>
+              <button type="button" data-my-request-state="creator_review">制作者からの評価待ち <small>0</small></button>
+              <button type="button" data-my-request-state="completed">完了済依頼 <small>0</small></button>
+              <button type="button" data-my-request-state="closed">キャンセル / 拒否 / 通報済 <small>0</small></button>
+            </div>
+          </div>
+          <div id="myRequestsEmpty" class="empty-state" hidden>
+            <p>該当する依頼はありません</p>
+            <span>他のタブを見るか、クリエイターの依頼受付ページから新しく依頼できます。</span>
+          </div>
+          <div id="myRequestsList" class="my-requests-list"></div>
+        </div>
+      </section>
+      <section id="myRequestDetailView" class="my-request-detail-view app-view" hidden>
+        <button id="backFromMyRequestDetail" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <div class="my-request-detail-shell">
+          <article class="my-request-detail-main">
+            <div class="request-detail-main-copy">
+              <div class="request-detail-main-topline">
+                <span id="myRequestDetailState" class="request-manager-state"></span>
+                <span id="myRequestDetailTurn" class="request-turn-pill"></span>
+                <button id="myRequestReportButton" class="soft-button request-report-button" type="button">通報</button>
+              </div>
+              <h1 id="myRequestDetailTitle"></h1>
+              <p id="myRequestDetailCreator" class="eyebrow"></p>
+              <p id="myRequestDetailSummary"></p>
+              <div id="myRequestDetailMeta" class="dialog-meta"></div>
+              <nav id="myRequestProgressSteps" class="request-progress-steps" aria-label="依頼者側の進行状況"></nav>
+              <section class="my-request-next-card" aria-labelledby="myRequestNextTitle">
+                <p class="eyebrow">Next action</p>
+                <h2 id="myRequestNextTitle">次にやること</h2>
+                <p id="myRequestNextBody"></p>
+                <div id="myRequestNextActions" class="my-request-next-actions"></div>
+              </section>
+              <section class="request-brief-card" aria-labelledby="myRequestBriefTitle">
+                <p class="eyebrow">Request brief</p>
+                <h2 id="myRequestBriefTitle">送信した依頼内容</h2>
+                <div id="myRequestBriefList" class="request-brief-list"></div>
+              </section>
+              <section class="request-delivery-card" aria-labelledby="myRequestDeliveryTitle">
+                <div class="section-heading-row">
+                  <div>
+                    <p class="eyebrow">Delivery</p>
+                    <h2 id="myRequestDeliveryTitle">納品物</h2>
+                  </div>
+                </div>
+                <div id="myRequestDeliveryList" class="request-delivery-list"></div>
+              </section>
+            </div>
+          </article>
+          <aside class="request-chat-panel my-request-chat-panel" aria-labelledby="myRequestChatTitle">
+            <div class="request-chat-header">
+              <div>
+                <p class="eyebrow">Creator chat</p>
+                <h2 id="myRequestChatTitle">チャット</h2>
+              </div>
+              <span id="myRequestChatStatus" class="request-chat-status">確認中</span>
+            </div>
+            <div id="myRequestChatTimeline" class="request-chat-timeline"></div>
+            <form id="myRequestChatForm" class="request-chat-compose" action="javascript:void(0)">
+              <textarea id="myRequestChatInput" rows="3" placeholder="メッセージを入力"></textarea>
+              <div class="request-chat-actions">
+                <button id="myRequestAttachButton" class="soft-button" type="button">添付</button>
+                <button class="primary-button" type="submit">送信</button>
+              </div>
             </form>
           </aside>
         </div>
@@ -1535,7 +1658,7 @@
               <span id="eventDetailStatusLabel">Status</span>
               <strong id="eventDetailStatus">Now live</strong>
               <span id="eventDetailOrganizerLabel">Organizer</span>
-              <strong id="eventDetailOrganizer">VRC SNS運営</strong>
+              <strong id="eventDetailOrganizer">Veacon運営</strong>
               <span id="eventDetailGuideLabel">Guide</span>
               <strong id="eventDetailGuide">Details below</strong>
             </div>
@@ -2518,6 +2641,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=bookmark-shortcut-scroll"></script>
+    <script src="./app.js?v=desktop-hide-chat-check"></script>
   </body>
 </html>

@@ -1,4 +1,4 @@
-# VRC SNS Mock
+# Veacon Mock
 
 VRChat creator network / commission / circle / event / membership UI mock.
 

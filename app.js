@@ -267,7 +267,7 @@ const circleGroups = [
   {
     id: "event-host-lounge",
     name: "イベント主催ラウンジ",
-    owner: "VRC SNS運営",
+    owner: "Veacon運営",
     cover: vrchatImages.event,
     description: "イベント告知、参加条件、進行メモ、協力クリエイター募集を整理する主催者向けサークル。",
     tags: ["#event", "#告知", "#運営"],
@@ -344,7 +344,7 @@ const circleGroups = [
   {
     id: "creator-trade-room",
     name: "クリエイター相談室",
-    owner: "VRC SNS運営",
+    owner: "Veacon運営",
     cover: vrchatImages.creators,
     description: "依頼文、見積もり、納期調整、公開プロフィールの作り方を相談するクリエイター向けサークル。",
     tags: ["#creator", "#相談", "#commission"],
@@ -355,7 +355,7 @@ const circleGroups = [
   {
     id: "newcomer-creator-circle",
     name: "はじめての創作サークル",
-    owner: "VRC SNS運営",
+    owner: "Veacon運営",
     cover: vrchatImages.plus,
     description: "投稿、プロフィール、初めての依頼受付、作品の見せ方をゆっくり試す初心者向けサークル。",
     tags: ["#初心者", "#creator", "#はじめて"],
@@ -443,7 +443,7 @@ const circleGroups = [
   {
     id: "booth-credit-keepers",
     name: "クレジット表記を守る会",
-    owner: "VRC SNS運営",
+    owner: "Veacon運営",
     cover: vrchatImages.desk,
     description: "BOOTHアセット、利用規約、クレジット表記、依頼時の確認事項を整理する安心運用サークル。",
     tags: ["#credit", "#booth", "#規約確認"],
@@ -505,11 +505,11 @@ const circleManagementData = {
     ]
   },
   "event-host-lounge": {
-    owner: "VRC SNS運営",
+    owner: "Veacon運営",
     managedByYou: true,
     members: [
       { id: "you", name: "You", role: "Manager", joined: "2026-05-12", status: "イベント運営補助", avatar: "Y" },
-      { id: "vrcsns", name: "VRC SNS運営", role: "Owner", joined: "作成者", status: "管理者", avatar: "V" },
+      { id: "vrcsns", name: "Veacon運営", role: "Owner", joined: "作成者", status: "管理者", avatar: "V" },
       { id: "rin", name: "Rin Works", role: "Member", joined: "2026-06-04", status: "投稿可", avatar: "R" }
     ],
     requests: [
@@ -536,6 +536,7 @@ const notifications = [
   { id: 4, type: "message", unread: false, title: "依頼前相談に返信があります", body: "料金、納期、必要素材について返信が届いています。", time: "昨日", target: { kind: "request", creator: "Rin Works", postId: 7 } },
   { id: 5, type: "important", unread: true, title: "イベント申請が承認待ちです", body: "夏のフォトリレー特集の開催許可申請を運営が確認中です。", time: "今日", target: { kind: "events" } },
   { id: 6, type: "request", unread: false, title: "納品確認の期限が近づいています", body: "受け取り評価待ちの依頼があります。内容確認をお願いします。", time: "2日前", target: { kind: "manager", itemId: 7 } },
+  { id: 7, type: "request", unread: true, title: "見積もり確認が必要です", body: "Mika Alterworksから見積もりが届いています。支払い前に内容を確認してください。", time: "10分前", target: { kind: "my-request", itemId: 101 } },
 ];
 
 const postComments = {
@@ -628,6 +629,178 @@ requestManagerItems.forEach((item) => {
   }
   if (!item.rating) item.rating = `${(4.4 + (item.id % 5) * 0.1).toFixed(1)} / 5.0`;
 });
+
+const myRequestItems = [
+  {
+    id: 101,
+    title: "Selestia衣装導入と表情調整",
+    creator: "Mika Alterworks",
+    service: "アバター改変依頼",
+    status: "estimate",
+    requestedAt: "2026-06-07 21:10",
+    desiredDue: "2026-06-20",
+    plannedDue: "2026-06-18",
+    amount: "¥14,000",
+    thumbnail: vrchatImages.steamAvatarA,
+    summary: "衣装導入、干渉調整、表情2種追加の見積もりが届いています。支払い前に内容確認が必要です。",
+    scope: ["衣装導入", "PhysBone確認", "表情2種", "納品ZIP", "リテイク1回まで"],
+    next: "見積もり内容、納期、リテイク可否を確認して、問題なければ支払い前確認へ進みます。",
+    messages: [
+      { from: "you", time: "6/7 21:10", text: "Selestiaに新しい衣装を導入して、表情を2つ追加したいです。" },
+      { from: "creator", time: "6/8 09:32", text: "内容確認しました。衣装導入と表情追加で ¥14,000、納期は10日前後で対応できます。" },
+    ],
+  },
+  {
+    id: 102,
+    title: "イベント告知サムネイル制作",
+    creator: "Rin Works",
+    service: "サムネ制作依頼",
+    status: "sent",
+    requestedAt: "2026-06-08 12:40",
+    desiredDue: "2026-06-13",
+    plannedDue: "相手返信待ち",
+    amount: "未確定",
+    thumbnail: vrchatImages.pressCommunity,
+    summary: "イベントタイトル、開催日時、ロゴ素材を送信済み。クリエイターからの初回返信待ちです。",
+    scope: ["横長サムネ", "SNS正方形", "テキスト調整", "ロゴ配置"],
+    next: "クリエイターの返信を待っています。追加素材があればチャットに送れます。",
+    messages: [
+      { from: "you", time: "6/8 12:40", text: "今週末のVRChatイベント告知画像をお願いしたいです。素材はDriveにまとめています。" },
+    ],
+  },
+  {
+    id: 103,
+    title: "ワールド軽量化の承認前相談",
+    creator: "Orbit Build",
+    service: "ワールド制作相談",
+    status: "consulting",
+    requestedAt: "2026-06-06 17:25",
+    desiredDue: "2026-06-24",
+    plannedDue: "相談中",
+    amount: "¥18,000目安",
+    thumbnail: vrchatImages.steamWorldB,
+    summary: "正式依頼前に、Quest対応の作業範囲と素材共有方法を相談しています。",
+    scope: ["負荷確認", "Quest対応相談", "作業範囲整理", "見積もり前相談"],
+    next: "相手からの確認事項に返信して、正式な見積もりへ進めます。",
+    messages: [
+      { from: "creator", time: "6/7 10:20", text: "現在の容量と重い箇所が分かるスクリーンショットを共有できますか？" },
+    ],
+  },
+  {
+    id: 104,
+    title: "Moonlit Harborポートレート撮影",
+    creator: "Lumi Photo",
+    service: "VRChat撮影依頼",
+    status: "in_progress",
+    requestedAt: "2026-06-04 20:20",
+    desiredDue: "2026-06-12",
+    plannedDue: "2026-06-11",
+    amount: "¥4,000",
+    thumbnail: vrchatImages.steamSocial,
+    summary: "撮影日程は確定済み。クリエイターが撮影準備とワールド確認を進めています。",
+    scope: ["ポートレート8枚", "ワールド選定", "軽い色補正", "SNS比率書き出し"],
+    next: "撮影当日までに使用アバター、衣装、希望カットをチャットで補足できます。",
+    messages: [
+      { from: "you", time: "6/4 20:20", text: "プロフィール用の写真をお願いしたいです。" },
+      { from: "creator", time: "6/5 08:12", text: "承諾しました。Moonlit Harborで撮る方向で準備します。" },
+      { from: "you", time: "6/5 09:01", text: "衣装は白系で行きます。少し落ち着いた雰囲気が希望です。" },
+    ],
+  },
+  {
+    id: 105,
+    title: "ポスター用レタッチ",
+    creator: "Aoi Retouch",
+    service: "レタッチ依頼",
+    status: "review",
+    requestedAt: "2026-06-02 18:05",
+    desiredDue: "2026-06-10",
+    plannedDue: "2026-06-09",
+    amount: "¥8,000",
+    thumbnail: vrchatImages.steamStudio,
+    summary: "納品データが届いています。内容確認後、受け取り評価を行う必要があります。",
+    scope: ["肌補正", "色味調整", "SNS比率2種", "ポスター用書き出し"],
+    next: "納品物を確認して、問題なければ評価します。リテイクが必要なら制作中へ戻します。",
+    deliveries: [{ name: "初回納品", files: "PNG 6枚 / ZIP 1件", note: "ポスター用とSNS用を書き出しました。", time: "6/9 17:30" }],
+    messages: [
+      { from: "you", time: "6/2 18:05", text: "イベントポスター用にレタッチをお願いします。" },
+      { from: "creator", time: "6/9 17:30", text: "納品しました。色味とトリミング違いも同梱しています。" },
+    ],
+  },
+  {
+    id: 106,
+    title: "衣装導入ミニ依頼",
+    creator: "Nagi Closet",
+    service: "衣装導入依頼",
+    status: "creator_review",
+    requestedAt: "2026-05-30 14:00",
+    desiredDue: "2026-06-05",
+    plannedDue: "2026-06-04",
+    amount: "¥5,000",
+    thumbnail: vrchatImages.steamAvatarB,
+    summary: "こちらの受け取り評価は完了済み。制作者からの評価を待っています。",
+    scope: ["衣装導入", "軽微な干渉修正", "Unitypackage確認"],
+    next: "制作者からの評価を待っています。追加操作は不要です。",
+    deliveries: [{ name: "最終納品", files: "Unitypackage / Readme", note: "衣装導入済みデータを共有済み。", time: "6/4 19:10" }],
+    messages: [
+      { from: "you", time: "6/4 20:00", text: "確認しました。評価も入れておきました。" },
+    ],
+  },
+  {
+    id: 107,
+    title: "ワールド紹介PV編集",
+    creator: "Frame Drift",
+    service: "短尺PV編集依頼",
+    status: "completed",
+    requestedAt: "2026-05-20 11:25",
+    desiredDue: "2026-05-31",
+    plannedDue: "2026-05-31",
+    amount: "¥22,000",
+    thumbnail: vrchatImages.steamEventB,
+    summary: "納品確認と相互評価まで完了した依頼です。過去の依頼実績として確認できます。",
+    scope: ["30秒PV", "字幕入れ", "BGM尺調整", "BOOTH掲載用書き出し"],
+    next: "完了済みです。必要があれば同じクリエイターの依頼受付ページから再依頼できます。",
+    deliveries: [{ name: "最終納品", files: "MP4 2本 / サムネPNG", note: "BOOTH掲載用とSNS投稿用を納品済み。", time: "5/31 19:00" }],
+    messages: [
+      { from: "creator", time: "5/31 19:00", text: "最終版を納品しました。" },
+      { from: "you", time: "5/31 20:15", text: "確認しました。ありがとうございました。" },
+    ],
+  },
+  {
+    id: 108,
+    title: "Quest対応ワールド軽量化相談",
+    creator: "Orbit Build",
+    service: "ワールド制作相談",
+    status: "draft",
+    requestedAt: "下書き",
+    desiredDue: "未設定",
+    plannedDue: "未設定",
+    amount: "未確定",
+    thumbnail: vrchatImages.world,
+    summary: "依頼内容を書きかけの下書きです。送信前に目的、現状の負荷、希望納期を整理します。",
+    scope: ["現状ヒアリング", "軽量化相談", "Quest対応確認"],
+    next: "依頼内容を完成させて送信します。まだクリエイターには届いていません。",
+    messages: [],
+  },
+  {
+    id: 109,
+    title: "ライブ用ギミック導入",
+    creator: "Mika Alterworks",
+    service: "ギミック導入相談",
+    status: "closed",
+    requestedAt: "2026-05-18 10:10",
+    desiredDue: "2026-05-25",
+    plannedDue: "キャンセル済み",
+    amount: "¥12,000",
+    thumbnail: vrchatImages.neon,
+    summary: "素材条件が合わず、正式依頼前にキャンセルした依頼です。",
+    scope: ["ギミック導入相談", "素材条件確認", "キャンセル済み"],
+    next: "クローズ済みです。必要なら新しい依頼として再送信します。",
+    messages: [
+      { from: "creator", time: "5/18 15:44", text: "今回の素材条件だと対応が難しそうです。" },
+      { from: "you", time: "5/18 16:02", text: "了解です。今回はキャンセルでお願いします。" },
+    ],
+  },
+];
 const board = document.querySelector("#board");
 const profileBoard = document.querySelector("#profileBoard");
 const profilePostSearch = document.querySelector("#profilePostSearch");
@@ -645,6 +818,8 @@ const requestView = document.querySelector("#requestView");
 const notificationsView = document.querySelector("#notificationsView");
 const requestManagerView = document.querySelector("#requestManagerView");
 const requestManagerDetailView = document.querySelector("#requestManagerDetailView");
+const myRequestsView = document.querySelector("#myRequestsView");
+const myRequestDetailView = document.querySelector("#myRequestDetailView");
 const settingsView = document.querySelector("#settingsView");
 const serviceView = document.querySelector("#serviceView");
 const adminView = document.querySelector("#adminView");
@@ -695,6 +870,7 @@ const eventPageButton = document.querySelector("#eventPageButton");
 const missionButton = document.querySelector("#missionButton");
 const missionCardButton = document.querySelector("#missionCardButton");
 const requestManagerButton = document.querySelector("#requestManagerButton");
+const myRequestsButton = document.querySelector("#myRequestsButton");
 const requestManagerCreatePost = document.querySelector("#requestManagerCreatePost");
 const notificationButton = document.querySelector("#notificationButton");
 const notificationBadge = document.querySelector("#notificationBadge");
@@ -706,6 +882,7 @@ const accountSwitcherList = document.querySelector("#accountSwitcherList");
 const accountAddButton = document.querySelector("#accountAddButton");
 const accountMenuProfile = document.querySelector("#accountMenuProfile");
 const accountMenuSubscriptions = document.querySelector("#accountMenuSubscriptions");
+const accountMenuMyRequests = document.querySelector("#accountMenuMyRequests");
 const accountMenuService = document.querySelector("#accountMenuService");
 const accountMenuAdmin = document.querySelector("#accountMenuAdmin");
 const accountMenuSpecs = document.querySelector("#accountMenuSpecs");
@@ -720,6 +897,8 @@ const backFromAdmin = document.querySelector("#backFromAdmin");
 const backFromSpecs = document.querySelector("#backFromSpecs");
 const backFromRequestManager = document.querySelector("#backFromRequestManager");
 const backFromRequestDetail = document.querySelector("#backFromRequestDetail");
+const backFromMyRequests = document.querySelector("#backFromMyRequests");
+const backFromMyRequestDetail = document.querySelector("#backFromMyRequestDetail");
 const backFromService = document.querySelector("#backFromService");
 const backFromEventDetail = document.querySelector("#backFromEventDetail");
 const backFromEvents = document.querySelector("#backFromEvents");
@@ -817,8 +996,28 @@ const requestManagerEmpty = document.querySelector("#requestManagerEmpty");
 const requestStateTabs = [...document.querySelectorAll(".request-state-tab")];
 const pendingSortControls = document.querySelector("#pendingSortControls");
 const pendingSortButtons = [...document.querySelectorAll(".pending-sort-button")];
+const myRequestsList = document.querySelector("#myRequestsList");
+const myRequestsEmpty = document.querySelector("#myRequestsEmpty");
+const myRequestsTabsScroller = document.querySelector(".my-requests-tabs");
+const myRequestsTabsTrack = document.querySelector(".my-requests-tabs-track");
+const myRequestStateTabs = [...document.querySelectorAll("[data-my-request-state]")];
+const myRequestDetailState = document.querySelector("#myRequestDetailState");
+const myRequestDetailTurn = document.querySelector("#myRequestDetailTurn");
+const myRequestDetailTitle = document.querySelector("#myRequestDetailTitle");
+const myRequestDetailCreator = document.querySelector("#myRequestDetailCreator");
+const myRequestDetailSummary = document.querySelector("#myRequestDetailSummary");
+const myRequestDetailMeta = document.querySelector("#myRequestDetailMeta");
+const myRequestProgressSteps = document.querySelector("#myRequestProgressSteps");
+const myRequestNextBody = document.querySelector("#myRequestNextBody");
+const myRequestNextActions = document.querySelector("#myRequestNextActions");
+const myRequestBriefList = document.querySelector("#myRequestBriefList");
+const myRequestDeliveryList = document.querySelector("#myRequestDeliveryList");
+const myRequestChatTimeline = document.querySelector("#myRequestChatTimeline");
+const myRequestChatStatus = document.querySelector("#myRequestChatStatus");
+const myRequestChatForm = document.querySelector("#myRequestChatForm");
+const myRequestChatInput = document.querySelector("#myRequestChatInput");
+const myRequestReportButton = document.querySelector("#myRequestReportButton");
 const requestDetailShell = document.querySelector(".request-detail-shell");
-const requestDetailImage = document.querySelector("#requestDetailImage");
 const requestDetailState = document.querySelector("#requestDetailState");
 const requestDetailDeadline = document.querySelector("#requestDetailDeadline");
 const requestDetailTitle = document.querySelector("#requestDetailTitle");
@@ -1204,6 +1403,7 @@ let pendingBookmarkFolderSelectionId = "";
 let notificationReturnHash = "";
 let settingsReturnHash = "";
 let requestManagerReturnHash = "";
+let myRequestsReturnHash = "";
 let serviceReturnHash = "";
 let adminReturnHash = "";
 let specsReturnHash = "";
@@ -1212,10 +1412,12 @@ let requestPageReturnHash = "";
 let subscriptionsReturnHash = "";
 let subscriptionsQuery = "";
 let activeRequestManagerItemId = null;
+let activeMyRequestItemId = null;
 let missionReturnHash = "";
 let eventDetailReturnHash = "";
 let eventsReturnHash = "";
 let activeRequestManagerState = "pending";
+let activeMyRequestState = "todo";
 let pendingRequestSort = "deadline";
 let activeEventsFilter = "all";
 let activeNotificationFilter = "all";
@@ -1356,7 +1558,7 @@ const creatorProfileMeta = {
   "Rin Works": { joinedAt: "2024-02-16", premiumSince: "", earlyPremiumSupporter: false },
   "Yoru Snap": { joinedAt: "2025-01-28", premiumSince: "", earlyPremiumSupporter: false },
   "Nagi Closet": { joinedAt: "2024-05-05", premiumSince: "2025-01-09", earlyPremiumSupporter: false },
-  "VRC SNS運営": { joinedAt: "2026-06-01", premiumSince: "2026-06-01", earlyPremiumSupporter: false }
+  "Veacon運営": { joinedAt: "2026-06-01", premiumSince: "2026-06-01", earlyPremiumSupporter: false }
 };
 const creatorSubscriptionPrograms = {
   "You": [
@@ -1767,7 +1969,7 @@ const translations = {
     eventProposalSubmit: "申請を送信",
     eventProposalSuccess: "運営へイベント申請を送信しました",
     eventOrganizer: "主催者",
-    officialOrganizer: "VRC SNS運営",
+    officialOrganizer: "Veacon運営",
     eventTimingNegotiable: "承認後に主催者が設定",
     eventsLead: "開催中のイベントを探したり、ユーザー発案イベントの開催許可を運営へ申請できます。",
     eventsSearchPlaceholder: "イベント名、主催者、#タグで検索",
@@ -1978,7 +2180,7 @@ const translations = {
     eventProposalSubmit: "Send application",
     eventProposalSuccess: "Your event application was sent to operations",
     eventOrganizer: "Organizer",
-    officialOrganizer: "VRC SNS Ops",
+    officialOrganizer: "Veacon Ops",
     eventTimingNegotiable: "Set by organizer after approval",
     eventsLead: "Search active events or apply for permission to host a community-led event.",
     eventsSearchPlaceholder: "Search by event, organizer, or #tag",
@@ -2189,7 +2391,7 @@ const translations = {
     eventProposalSubmit: "신청 보내기",
     eventProposalSuccess: "운영에 이벤트 신청을 보냈습니다",
     eventOrganizer: "주최자",
-    officialOrganizer: "VRC SNS 운영",
+    officialOrganizer: "Veacon 운영",
     eventTimingNegotiable: "승인 후 주최자가 설정",
     eventsLead: "진행 중인 이벤트를 검색하거나 사용자 발안 이벤트 개최 권한을 운영에 신청할 수 있습니다.",
     eventsSearchPlaceholder: "이벤트명, 주최자, #태그로 검색",
@@ -3211,6 +3413,7 @@ function renderEventsList() {
 
 function renderEventsPage() {
   activeProfile = null;
+  hideMyRequestViews();
   feedView.hidden = true;
   profileView.hidden = true;
   requestView.hidden = true;
@@ -3585,6 +3788,7 @@ function renderEventDetailPage(index) {
     showFeed();
     return;
   }
+  hideMyRequestViews();
   feedView.hidden = true;
   profileView.hidden = true;
   requestView.hidden = true;
@@ -3957,6 +4161,11 @@ function applyLanguage({ rerender = false } = {}) {
   }
   setAttr(requestManagerButton, "aria-label", "requestManager");
   setTooltip(requestManagerButton, "requestManager");
+  if (myRequestsButton) {
+    const label = currentLanguage === "en" ? "My requests" : currentLanguage === "ko" ? "내 의뢰" : "マイリクエスト";
+    myRequestsButton.setAttribute("aria-label", label);
+    setTooltip(myRequestsButton, label, { raw: true });
+  }
   setAttr(notificationButton, "aria-label", "notifications");
   setTooltip(notificationButton, "notifications");
   setAttr(notificationBadge, "aria-label", "unreadNotifications");
@@ -3964,6 +4173,7 @@ function applyLanguage({ rerender = false } = {}) {
   setTooltip(avatarButton, "account");
   setText("#accountMenuProfile span", "myPage");
   if (accountMenuSubscriptions) accountMenuSubscriptions.querySelector("span").textContent = currentLanguage === "en" ? "Memberships" : currentLanguage === "ko" ? "멤버십" : "メンバーシップ";
+  if (accountMenuMyRequests) accountMenuMyRequests.querySelector("span").textContent = currentLanguage === "en" ? "My requests" : currentLanguage === "ko" ? "내 의뢰" : "マイリクエスト";
   if (accountMenuService) accountMenuService.querySelector("span").textContent = currentLanguage === "en" ? "Service guide" : currentLanguage === "ko" ? "서비스 설명" : "サービス説明";
   if (accountMenuAdmin) accountMenuAdmin.querySelector("span").textContent = currentLanguage === "en" ? "Operations" : currentLanguage === "ko" ? "운영 관리" : "運営管理";
   if (accountMenuSpecs) accountMenuSpecs.querySelector("span").textContent = currentLanguage === "en" ? "Screen specs" : currentLanguage === "ko" ? "화면 사양" : "画面仕様";
@@ -3978,6 +4188,7 @@ function applyLanguage({ rerender = false } = {}) {
     subscriptions: currentLanguage === "en" ? "Memberships" : currentLanguage === "ko" ? "멤버십" : "メンバーシップ",
     circles: t("circles"),
     requests: currentLanguage === "en" ? "Requests" : currentLanguage === "ko" ? "의뢰 확인" : "依頼確認",
+    "my-requests": currentLanguage === "en" ? "My requests" : currentLanguage === "ko" ? "내 의뢰" : "マイリクエスト",
     events: t("events"),
     notifications: currentLanguage === "en" ? "Notifications" : currentLanguage === "ko" ? "알림" : "通知",
   };
@@ -4553,9 +4764,9 @@ function profileNameBySlug(slug) {
 
 function officialProfileNames() {
   return [
-    "VRC SNS運営",
-    "VRC SNS Ops",
-    "VRC SNS 운영",
+    "Veacon運営",
+    "Veacon Ops",
+    "Veacon 운영",
     ...Object.values(translations).map((language) => language.officialOrganizer),
   ].filter(Boolean);
 }
@@ -5217,6 +5428,7 @@ function subscriptionPlanSearchMatches(item, query) {
 
 function renderSubscriptionsPage({ scroll = true } = {}) {
   activeProfile = null;
+  hideMyRequestViews();
   feedView.hidden = true;
   profileView.hidden = true;
   requestView.hidden = true;
@@ -5591,6 +5803,7 @@ function renderCirclesPage(circleId = null, options = {}) {
   activeCirclePageId = circle?.id || null;
   if (!circle && !["browse", "posts", "manage"].includes(activeCircleTab)) activeCircleTab = "browse";
   activeProfile = null;
+  hideMyRequestViews();
   feedView.hidden = true;
   profileView.hidden = true;
   requestView.hidden = true;
@@ -6314,9 +6527,14 @@ function updateTopbarSearchVisibility() {
   if (searchShell) searchShell.setAttribute("aria-hidden", String(!isHome));
 }
 
+function hideMyRequestViews() {
+  if (myRequestsView) myRequestsView.hidden = true;
+  if (myRequestDetailView) myRequestDetailView.hidden = true;
+}
 
 function showFeed() {
   activeProfile = null;
+  hideMyRequestViews();
   requestView.hidden = true;
   notificationsView.hidden = true;
   requestManagerView.hidden = true;
@@ -6334,7 +6552,7 @@ function showFeed() {
   profileView.classList.remove("is-mine");
   feedView.hidden = false;
   updateTopbarSearchVisibility();
-  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#event/") || location.hash.startsWith("#circle/") || location.hash.startsWith("#circle-manager") || location.hash === "#circles" || location.hash === "#events" || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#subscriptions" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#admin" || location.hash === "#backend-spec" || location.hash === "#me") {
+  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#my-requests") || location.hash.startsWith("#event/") || location.hash.startsWith("#circle/") || location.hash.startsWith("#circle-manager") || location.hash === "#circles" || location.hash === "#events" || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#subscriptions" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#admin" || location.hash === "#backend-spec" || location.hash === "#me") {
     history.pushState("", document.title, location.pathname + location.search);
   }
   renderPins();
@@ -6382,6 +6600,15 @@ function routeFromHash() {
   }
   if (location.hash === "#request-manager") {
     renderRequestManagerPage();
+    return;
+  }
+  const myRequestDetailMatch = location.hash.match(/^#my-requests\/(\d+)$/);
+  if (myRequestDetailMatch) {
+    renderMyRequestDetailPage(Number(myRequestDetailMatch[1]));
+    return;
+  }
+  if (location.hash === "#my-requests") {
+    renderMyRequestsPage();
     return;
   }
   if (location.hash === "#service") {
@@ -6637,6 +6864,7 @@ function renderRequestPage(creator, postId = null) {
   }
 
   activeProfile = creator;
+  hideMyRequestViews();
   feedView.hidden = true;
   profileView.hidden = true;
   notificationsView.hidden = true;
@@ -6828,6 +7056,7 @@ function notificationMatchesFilter(item) {
 
 function renderNotificationsPage() {
   activeProfile = null;
+  hideMyRequestViews();
   feedView.hidden = true;
   profileView.hidden = true;
   requestView.hidden = true;
@@ -6867,6 +7096,7 @@ function renderNotificationsPage() {
 
 function renderSettingsPage() {
   activeProfile = null;
+  hideMyRequestViews();
   feedView.hidden = true;
   profileView.hidden = true;
   requestView.hidden = true;
@@ -6906,6 +7136,7 @@ function adminActionTone(tabName) {
 
 function renderAdminPage() {
   activeProfile = null;
+  hideMyRequestViews();
   feedView.hidden = true;
   profileView.hidden = true;
   requestView.hidden = true;
@@ -7036,6 +7267,7 @@ function returnFromAdmin() {
 
 function renderBackendSpecPage() {
   activeProfile = null;
+  hideMyRequestViews();
   feedView.hidden = true;
   profileView.hidden = true;
   requestView.hidden = true;
@@ -7299,6 +7531,283 @@ function requestDecisionNote(item) {
     return "相手の評価が返ってきたので、こちらからもレビューを返して完了へ進みます。";
   }
   return "依頼の履歴とやり取りをあとから見返せる状態です。";
+}
+
+function myRequestStateLabel(state) {
+  const labels = {
+    draft: "依頼下書き",
+    sent: "送信済み",
+    consulting: "承認前相談中",
+    estimate: "見積もり確認",
+    in_progress: "制作中",
+    review: "納品確認&評価ターン",
+    creator_review: "制作者からの評価待ち",
+    completed: "完了済依頼",
+    closed: "キャンセル / 拒否 / 通報済",
+  };
+  return labels[state] || state;
+}
+
+function myRequestTabItems(state = activeMyRequestState) {
+  if (state === "todo") {
+    return myRequestItems.filter((item) => ["estimate", "consulting", "review"].includes(item.status));
+  }
+  return myRequestItems.filter((item) => item.status === state);
+}
+
+function myRequestTurnInfo(item) {
+  if (item.status === "draft") return { label: "未送信", key: "client", detail: "依頼者側で作成中" };
+  if (["estimate", "consulting", "review"].includes(item.status)) return { label: "自分のターン", key: "mine", detail: "確認または返信が必要" };
+  if (["sent", "creator_review"].includes(item.status)) return { label: "相手待ち", key: "client", detail: "クリエイターの対応待ち" };
+  const messages = item.messages || [];
+  const last = messages[messages.length - 1];
+  if (!last) return { label: "自分のターン", key: "mine", detail: "初回内容を確認" };
+  return last.from === "creator"
+    ? { label: "自分のターン", key: "mine", detail: "返信が必要" }
+    : { label: "相手待ち", key: "client", detail: "返信待ち" };
+}
+
+function myRequestTurnPill(item, compact = false) {
+  const turn = myRequestTurnInfo(item);
+  return `<span class="request-turn-pill is-${turn.key}">${turn.label}${compact ? "" : `<small>${turn.detail}</small>`}</span>`;
+}
+
+function myRequestProgressItems(item) {
+  const steps = [
+    { key: "draft", label: "下書き", detail: "送信前" },
+    { key: "sent", label: "送信", detail: "相手確認" },
+    { key: "consulting", label: "相談", detail: "承認前" },
+    { key: "in_progress", label: "制作", detail: "作業中" },
+    { key: "review", label: "納品確認", detail: "評価へ" },
+    { key: "creator_review", label: "制作者評価", detail: "相手待ち" },
+    { key: "completed", label: "完了", detail: "履歴化" },
+  ];
+  const statusToIndex = {
+    draft: 0,
+    sent: 1,
+    consulting: 2,
+    estimate: 2,
+    in_progress: 3,
+    review: 4,
+    creator_review: 5,
+    completed: 6,
+    closed: 6,
+  };
+  const activeIndex = statusToIndex[item?.status] ?? 0;
+  return steps.map((step, index) => ({
+    ...step,
+    state: item?.status === "closed" && index === activeIndex ? "current" : index < activeIndex ? "complete" : index === activeIndex ? "current" : "upcoming",
+  }));
+}
+
+function renderMyRequestProgress(item) {
+  if (!myRequestProgressSteps) return;
+  myRequestProgressSteps.innerHTML = myRequestProgressItems(item).map((step, index) => `
+    <span class="request-progress-step is-${step.state}" aria-current="${step.state === "current" ? "step" : "false"}">
+      <i>${index + 1}</i>
+      <strong>${escapeHtml(step.label)}</strong>
+      <small>${escapeHtml(step.detail)}</small>
+    </span>
+  `).join("");
+}
+
+function myRequestActionButtons(item) {
+  if (!item) return "";
+  if (item.status === "draft") return `<button class="primary-button" type="button" data-my-request-action="edit-draft">下書きを編集</button><button class="soft-button" type="button" data-my-request-action="delete-draft">下書きを破棄</button>`;
+  if (item.status === "estimate") return `<button class="primary-button" type="button" data-my-request-action="confirm-estimate">見積もりを確認</button><button class="soft-button" type="button" data-my-request-action="ask">質問する</button>`;
+  if (item.status === "consulting") return `<button class="primary-button" type="button" data-my-request-action="reply">相談に返信</button><button class="soft-button" type="button" data-my-request-action="cancel">相談を閉じる</button>`;
+  if (item.status === "review") return `<button class="primary-button" type="button" data-my-request-action="review-delivery">納品を確認して評価</button><button class="soft-button" type="button" data-my-request-action="retake">リテイクを相談</button>`;
+  if (item.status === "completed") return `<button class="soft-button" type="button" data-my-request-action="request-again">同じクリエイターに再依頼</button>`;
+  if (item.status === "closed") return `<button class="soft-button" type="button" data-my-request-action="request-again">新しい依頼として再送信</button>`;
+  return `<button class="soft-button" type="button" data-my-request-action="open-chat">チャットを確認</button>`;
+}
+
+function renderMyRequestsList() {
+  const items = myRequestTabItems();
+  myRequestStateTabs.forEach((button) => {
+    const state = button.dataset.myRequestState;
+    const count = state === "todo" ? myRequestTabItems("todo").length : myRequestItems.filter((item) => item.status === state).length;
+    const countLabel = button.querySelector("small");
+    if (countLabel) countLabel.textContent = String(count);
+    button.classList.toggle("is-active", state === activeMyRequestState);
+    if (state === activeMyRequestState) ensureMyRequestTabVisible(button);
+  });
+  if (myRequestsEmpty) myRequestsEmpty.hidden = items.length !== 0;
+  if (!myRequestsList) return;
+  myRequestsList.innerHTML = items.map((item) => `
+    <article class="my-request-card" data-my-request-item="${item.id}">
+      <div class="my-request-card-copy">
+        <div class="request-manager-card-topline">
+          <span class="request-manager-state">${escapeHtml(myRequestStateLabel(item.status))}</span>
+          ${myRequestTurnPill(item, true)}
+          <time>${escapeHtml(item.plannedDue)}</time>
+        </div>
+        <h2>${escapeHtml(item.title)}</h2>
+        <p>${escapeHtml(item.summary)}</p>
+        <div class="request-manager-card-meta">
+          <span>${escapeHtml(item.next)}</span>
+          <span>${escapeHtml(item.creator)}</span>
+          <span>${escapeHtml(item.amount)}</span>
+        </div>
+      </div>
+    </article>
+  `).join("");
+}
+
+function renderMyRequestsPage() {
+  activeProfile = null;
+  feedView.hidden = true;
+  profileView.hidden = true;
+  requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
+  eventsView.hidden = true;
+  circleView.hidden = true;
+  missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
+  if (subscriptionsView) subscriptionsView.hidden = true;
+  if (myRequestDetailView) myRequestDetailView.hidden = true;
+  if (myRequestsView) myRequestsView.hidden = false;
+  renderMyRequestsList();
+  updateTopbarSearchVisibility();
+  scrollPageTop();
+}
+
+function myRequestItemById(id) {
+  return myRequestItems.find((item) => item.id === id) || null;
+}
+
+function renderMyRequestDeliveryList(item) {
+  if (!myRequestDeliveryList) return;
+  const deliveries = item.deliveries || [];
+  myRequestDeliveryList.innerHTML = deliveries.length ? deliveries.map((delivery) => `
+    <article class="request-delivery-entry">
+      <strong>${escapeHtml(delivery.name)}</strong>
+      <span>${escapeHtml(delivery.files)}</span>
+      <p>${escapeHtml(delivery.note)}</p>
+      <small>${escapeHtml(delivery.time)}</small>
+    </article>
+  `).join("") : `
+    <article class="request-delivery-entry is-empty">
+      <strong>まだ納品物はありません</strong>
+      <span>納品されるとここにファイル、補足、確認状況が表示されます。</span>
+    </article>
+  `;
+}
+
+function renderMyRequestChatTimeline(item) {
+  if (!myRequestChatTimeline) return;
+  myRequestChatTimeline.innerHTML = (item.messages || []).length ? item.messages.map((message) => `
+    <article class="request-chat-bubble ${message.from === "you" ? "is-self" : ""}">
+      <span>${message.from === "you" ? "You" : escapeHtml(item.creator)} · ${escapeHtml(message.time)}</span>
+      <p>${escapeHtml(message.text)}</p>
+    </article>
+  `).join("") : `
+    <article class="request-chat-bubble">
+      <span>System</span>
+      <p>まだメッセージはありません。正式送信後、初回申請と納品完了時の連絡は必須です。</p>
+    </article>
+  `;
+  myRequestChatTimeline.scrollTop = myRequestChatTimeline.scrollHeight;
+}
+
+function renderMyRequestDetailPage(itemId) {
+  const item = myRequestItemById(itemId);
+  if (!item) {
+    renderMyRequestsPage();
+    return;
+  }
+  activeMyRequestItemId = item.id;
+  activeProfile = null;
+  feedView.hidden = true;
+  profileView.hidden = true;
+  requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
+  eventsView.hidden = true;
+  circleView.hidden = true;
+  missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
+  if (subscriptionsView) subscriptionsView.hidden = true;
+  if (myRequestsView) myRequestsView.hidden = true;
+  if (myRequestDetailView) myRequestDetailView.hidden = false;
+
+  if (myRequestDetailState) myRequestDetailState.textContent = myRequestStateLabel(item.status);
+  const turn = myRequestTurnInfo(item);
+  if (myRequestDetailTurn) {
+    myRequestDetailTurn.className = `request-turn-pill is-${turn.key}`;
+    myRequestDetailTurn.innerHTML = `${turn.label}<small>${turn.detail}</small>`;
+  }
+  if (myRequestDetailTitle) myRequestDetailTitle.textContent = item.title;
+  if (myRequestDetailCreator) myRequestDetailCreator.textContent = `${item.creator} / ${item.service}`;
+  if (myRequestDetailSummary) myRequestDetailSummary.textContent = item.summary;
+  if (myRequestDetailMeta) {
+    myRequestDetailMeta.innerHTML = [
+      `<span>${escapeHtml(item.amount)}</span>`,
+      `<span>希望納期: ${escapeHtml(item.desiredDue)}</span>`,
+      `<span>予定納期: ${escapeHtml(item.plannedDue)}</span>`,
+      `<span>${escapeHtml(item.requestedAt)}</span>`,
+    ].join("");
+  }
+  renderMyRequestProgress(item);
+  if (myRequestNextBody) myRequestNextBody.textContent = item.next;
+  if (myRequestNextActions) myRequestNextActions.innerHTML = myRequestActionButtons(item);
+  if (myRequestBriefList) myRequestBriefList.innerHTML = item.scope.map((entry) => `<span>${escapeHtml(entry)}</span>`).join("");
+  renderMyRequestDeliveryList(item);
+  if (myRequestChatStatus) {
+    myRequestChatStatus.textContent = turn.label;
+    myRequestChatStatus.classList.toggle("is-mine", turn.key === "mine");
+    myRequestChatStatus.classList.toggle("is-client", turn.key === "client");
+  }
+  renderMyRequestChatTimeline(item);
+  updateTopbarSearchVisibility();
+  scrollPageTop();
+}
+
+function openMyRequestsPage() {
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
+  if (modalIsOpen(composeDialog)) closeComposeDialog();
+  if (modalIsOpen(requestComposeDialog)) closeRequestComposeDialog();
+  if (location.hash && location.hash !== "#my-requests") {
+    myRequestsReturnHash = location.hash;
+  } else if (!location.hash) {
+    myRequestsReturnHash = "";
+  }
+  location.hash = "my-requests";
+  renderMyRequestsPage();
+}
+
+function openMyRequestDetail(itemId) {
+  const item = myRequestItemById(itemId);
+  if (!item) return;
+  location.hash = `my-requests/${item.id}`;
+  renderMyRequestDetailPage(item.id);
+}
+
+function returnFromMyRequests() {
+  const targetHash = myRequestsReturnHash;
+  myRequestsReturnHash = "";
+  if (!targetHash) {
+    showFeed();
+    return;
+  }
+  history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
+  routeFromHash();
+}
+
+function returnFromMyRequestDetail() {
+  history.pushState("", document.title, `${location.pathname}${location.search}#my-requests`);
+  renderMyRequestsPage();
 }
 
 function renderRequestDeliveryList(item) {
@@ -8358,7 +8867,6 @@ function renderRequestManagerList() {
   requestManagerEmpty.hidden = items.length !== 0;
   requestManagerList.innerHTML = items.map((item) => `
     <article class="request-manager-card" data-request-item="${item.id}">
-      <img src="${item.thumbnail}" alt="${item.title}" loading="lazy" />
       <div class="request-manager-card-copy">
         <div class="request-manager-card-topline">
           <span class="request-manager-state">${requestStateLabel(item.status)}</span>
@@ -8379,6 +8887,7 @@ function renderRequestManagerList() {
 
 function renderRequestManagerPage() {
   activeProfile = null;
+  hideMyRequestViews();
   feedView.hidden = true;
   profileView.hidden = true;
   requestView.hidden = true;
@@ -8533,12 +9042,15 @@ function renderRequestReportReasons(mode) {
 
 function openRequestReportDialog(mode = "manager") {
   const isClient = mode === "client";
-  const target = isClient ? currentOpenRequestPost() : requestManagerItemById(activeRequestManagerItemId);
+  const isSent = mode === "sent";
+  const target = isSent ? myRequestItemById(activeMyRequestItemId) : isClient ? currentOpenRequestPost() : requestManagerItemById(activeRequestManagerItemId);
   if (!target) return;
   activeRequestReportContext = { mode, target };
-  renderRequestReportReasons(mode);
+  renderRequestReportReasons(isSent ? "client" : mode);
   if (requestReportTarget) {
-    requestReportTarget.textContent = isClient
+    requestReportTarget.textContent = isSent
+      ? `${target.title} / ${target.creator}`
+      : isClient
       ? `${target.request?.title || target.title} / ${target.creator}`
       : `${target.title} / ${target.client}`;
   }
@@ -8557,7 +9069,7 @@ function submitRequestReport() {
   const baseReason = selected?.value === "other" ? "その他" : selected?.value;
   const comment = requestReportMessage?.value.trim() || "";
   const message = `通報を送信しました: ${baseReason || "理由未設定"}${comment ? ` / ${comment}` : ""}。実装時は運営確認キューへ送信する想定です。`;
-  if (mode === "client") {
+  if (mode === "client" || mode === "sent") {
     if (requestPaymentNote) requestPaymentNote.textContent = "通報を送信しました。運営確認キューへ送る想定です。";
     showProfileCopyToast("通報を送信しました");
   } else if (requestDetailDecisionNote) {
@@ -8610,6 +9122,7 @@ function openRequestReviewDialog(mode, item) {
   if (!item || !requestReviewDialog) return;
   activeRequestReviewContext = { mode, itemId: item.id };
   const reviewingCreator = mode === "client";
+  const isSentRequest = Boolean(myRequestItemById(item.id));
   const targetName = reviewingCreator ? "クリエイターを評価" : "依頼者を評価";
   if (requestReviewEyebrow) requestReviewEyebrow.textContent = reviewingCreator ? "Delivery review" : "Client review";
   if (requestReviewTitle) requestReviewTitle.textContent = reviewingCreator ? "納品を確認して評価" : "依頼者を評価";
@@ -8623,7 +9136,7 @@ function openRequestReviewDialog(mode, item) {
     requestReviewImage.alt = item.title;
   }
   if (requestReviewItemTitle) requestReviewItemTitle.textContent = item.title;
-  if (requestReviewTargetName) requestReviewTargetName.textContent = `${targetName}: ${reviewingCreator ? "You" : item.client}`;
+  if (requestReviewTargetName) requestReviewTargetName.textContent = `${targetName}: ${reviewingCreator ? (isSentRequest ? item.creator : "You") : item.client}`;
   if (requestReviewTags) {
     requestReviewTags.innerHTML = reviewTagOptionsForMode(mode).map((label, index) => `
       <label><input type="checkbox" value="${escapeHtml(label)}" ${index === 0 ? "checked" : ""} /> <span>${escapeHtml(label)}</span></label>
@@ -8640,13 +9153,14 @@ function openRequestReviewDialog(mode, item) {
 }
 
 function submitRequestReview() {
-  const item = requestManagerItemById(activeRequestReviewContext.itemId);
+  const item = requestManagerItemById(activeRequestReviewContext.itemId) || myRequestItemById(activeRequestReviewContext.itemId);
   if (!item) return;
   const score = requestReviewDialog?.querySelector('input[name="requestReviewScore"]:checked')?.value || "good";
   const labels = { good: "良かった", normal: "普通", bad: "残念だった" };
   const tags = [...(requestReviewTags?.querySelectorAll("input:checked") || [])].map((input) => input.value);
   const comment = requestReviewComment?.value.trim() || "";
-  const targetCreator = activeRequestReviewContext.mode === "client" ? "You" : item.client;
+  const isSentRequest = Boolean(myRequestItemById(item.id));
+  const targetCreator = activeRequestReviewContext.mode === "client" ? (isSentRequest ? item.creator : "You") : item.client;
   if (!publicReviewsByCreator[targetCreator]) publicReviewsByCreator[targetCreator] = [];
   publicReviewsByCreator[targetCreator].unshift({
     score,
@@ -8655,14 +9169,18 @@ function submitRequestReview() {
     tags
   });
   if (activeRequestReviewContext.mode === "client") {
-    item.status = "awaiting_your_review";
-    item.messages.push({ from: "client", time: "いま", text: `受け取り確認と評価が完了しました。評価: ${labels[score]}${tags.length ? ` / ${tags.join("・")}` : ""}` });
+    item.status = myRequestItemById(item.id) ? "creator_review" : "awaiting_your_review";
+    item.messages.push({ from: myRequestItemById(item.id) ? "you" : "client", time: "いま", text: `受け取り確認と評価が完了しました。評価: ${labels[score]}${tags.length ? ` / ${tags.join("・")}` : ""}` });
   } else {
     item.status = "completed";
     item.messages.push({ from: "you", time: "いま", text: `こちらからの評価も完了しました。評価: ${labels[score]}${comment ? ` / ${comment}` : ""}` });
   }
   closeRequestReviewDialog();
-  renderRequestManagerDetailPage(item.id);
+  if (myRequestItemById(item.id)) {
+    renderMyRequestDetailPage(item.id);
+  } else {
+    renderRequestManagerDetailPage(item.id);
+  }
   if (activeProfile) renderProfile(activeProfile);
   showProfileCopyToast("評価を投稿しました");
 }
@@ -8675,6 +9193,7 @@ function renderRequestManagerDetailPage(itemId) {
   }
   activeRequestManagerItemId = item.id;
   activeProfile = null;
+  hideMyRequestViews();
   feedView.hidden = true;
   profileView.hidden = true;
   requestView.hidden = true;
@@ -8690,8 +9209,6 @@ function renderRequestManagerDetailPage(itemId) {
   backendSpecView.hidden = true;
   requestManagerDetailView.hidden = false;
 
-  requestDetailImage.src = item.thumbnail;
-  requestDetailImage.alt = item.title;
   requestDetailState.textContent = requestStateLabel(item.status);
   requestDetailDeadline.textContent = formatDeadlineLabel(item.deadline);
   requestDetailDeadline.dateTime = item.deadline;
@@ -8781,6 +9298,7 @@ function openNotificationsPage() {
 
 function renderServicePage() {
   activeProfile = null;
+  hideMyRequestViews();
   feedView.hidden = true;
   profileView.hidden = true;
   requestView.hidden = true;
@@ -8825,6 +9343,7 @@ function returnFromService() {
 
 function renderMissionPage() {
   activeProfile = null;
+  hideMyRequestViews();
   feedView.hidden = true;
   profileView.hidden = true;
   requestView.hidden = true;
@@ -8907,6 +9426,10 @@ function openNotificationTarget(item) {
   }
   if (item.target.kind === "manager") {
     openRequestManagerDetail(Number(item.target.itemId));
+    return;
+  }
+  if (item.target.kind === "my-request") {
+    openMyRequestDetail(Number(item.target.itemId));
   }
 }
 
@@ -9800,6 +10323,113 @@ function handleBoardTouchEnd(event) {
   openPinFromCard(card, event);
 }
 
+let myRequestsTabOffset = 0;
+
+function clampMyRequestsTabOffset() {
+  if (!myRequestsTabsScroller || !myRequestsTabsTrack) return 0;
+  const maxOffset = Math.max(0, myRequestsTabsTrack.scrollWidth - myRequestsTabsScroller.clientWidth + 8);
+  myRequestsTabOffset = Math.max(0, Math.min(myRequestsTabOffset, maxOffset));
+  myRequestsTabsTrack.style.transform = `translate3d(${-myRequestsTabOffset}px, 0, 0)`;
+  return maxOffset;
+}
+
+function ensureMyRequestTabVisible(button) {
+  if (!button || !myRequestsTabsScroller || !myRequestsTabsTrack) return;
+  const viewportWidth = myRequestsTabsScroller.clientWidth;
+  const left = button.offsetLeft;
+  const right = left + button.offsetWidth;
+  if (left < myRequestsTabOffset) {
+    myRequestsTabOffset = left;
+  } else if (right > myRequestsTabOffset + viewportWidth) {
+    myRequestsTabOffset = right - viewportWidth + 8;
+  }
+  clampMyRequestsTabOffset();
+}
+
+function enableHorizontalDragScroll(scroller, track) {
+  if (!scroller || !track) return;
+  let dragState = null;
+  let suppressClick = false;
+
+  const begin = (event, clientX, clientY) => {
+    const maxOffset = clampMyRequestsTabOffset();
+    if (!maxOffset) return;
+    dragState = {
+      x: clientX,
+      y: clientY,
+      left: myRequestsTabOffset,
+      moved: false,
+    };
+    scroller.classList.add("is-drag-scroll-ready");
+  };
+
+  const move = (event, clientX, clientY) => {
+    if (!dragState) return;
+    const deltaX = clientX - dragState.x;
+    const deltaY = clientY - dragState.y;
+    if (!dragState.moved) {
+      if (Math.abs(deltaX) < 6 && Math.abs(deltaY) < 6) return;
+      if (Math.abs(deltaX) <= Math.abs(deltaY)) return;
+    }
+    dragState.moved = true;
+    suppressClick = true;
+    scroller.classList.add("is-drag-scrolling");
+    myRequestsTabOffset = dragState.left - deltaX;
+    clampMyRequestsTabOffset();
+    event.preventDefault();
+  };
+
+  const end = () => {
+    if (!dragState) return;
+    dragState = null;
+    scroller.classList.remove("is-drag-scroll-ready", "is-drag-scrolling");
+    if (suppressClick) {
+      window.setTimeout(() => {
+        suppressClick = false;
+      }, 0);
+    }
+  };
+
+  scroller.addEventListener("mousedown", (event) => {
+    if (event.button !== 0) return;
+    begin(event, event.clientX, event.clientY);
+  });
+  document.addEventListener("mousemove", (event) => {
+    move(event, event.clientX, event.clientY);
+  });
+  document.addEventListener("mouseup", end);
+  scroller.addEventListener("mouseleave", () => {
+    if (!dragState?.moved) end();
+  });
+  scroller.addEventListener("touchstart", (event) => {
+    if (event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    begin(event, touch.clientX, touch.clientY);
+  }, { passive: true });
+  scroller.addEventListener("touchmove", (event) => {
+    if (event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    move(event, touch.clientX, touch.clientY);
+  }, { passive: false });
+  scroller.addEventListener("touchend", end);
+  scroller.addEventListener("touchcancel", end);
+  scroller.addEventListener("click", (event) => {
+    if (!suppressClick) return;
+    event.preventDefault();
+    event.stopPropagation();
+    suppressClick = false;
+  }, true);
+
+  scroller.addEventListener("wheel", (event) => {
+    if (!clampMyRequestsTabOffset()) return;
+    const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+    if (!delta) return;
+    myRequestsTabOffset += delta;
+    clampMyRequestsTabOffset();
+    event.preventDefault();
+  }, { passive: false });
+}
+
 document.addEventListener("pointerdown", (event) => {
   if (shouldIgnorePinOpenTarget(event.target)) {
     pinPointerStart = null;
@@ -10092,6 +10722,7 @@ eventPageButton?.addEventListener("click", openEventsPage);
 missionButton?.addEventListener("click", openServicePage);
 missionCardButton?.addEventListener("click", openServicePage);
 requestManagerButton?.addEventListener("click", openRequestManagerPage);
+myRequestsButton?.addEventListener("click", openMyRequestsPage);
 requestManagerCreatePost?.addEventListener("click", openRequestComposeDialog);
 notificationButton.addEventListener("click", openNotificationsPage);
 avatarButton.addEventListener("click", (event) => {
@@ -10105,6 +10736,10 @@ accountMenuProfile?.addEventListener("click", () => {
 accountMenuSubscriptions?.addEventListener("click", () => {
   closeAccountMenu();
   openSubscriptionsPage();
+});
+accountMenuMyRequests?.addEventListener("click", () => {
+  closeAccountMenu();
+  openMyRequestsPage();
 });
 accountMenuService?.addEventListener("click", () => {
   closeAccountMenu();
@@ -10159,6 +10794,8 @@ accountMenu?.addEventListener("click", (event) => {
     openCirclesPage();
   } else if (action === "requests") {
     openRequestManagerPage();
+  } else if (action === "my-requests") {
+    openMyRequestsPage();
   } else if (action === "events") {
     openEventsPage();
   } else if (action === "notifications") {
@@ -10186,6 +10823,8 @@ backFromNotifications.addEventListener("click", returnFromNotifications);
 backFromSettings?.addEventListener("click", returnFromSettings);
 backFromRequestManager?.addEventListener("click", returnFromRequestManager);
 backFromRequestDetail?.addEventListener("click", returnFromRequestManagerDetail);
+backFromMyRequests?.addEventListener("click", returnFromMyRequests);
+backFromMyRequestDetail?.addEventListener("click", returnFromMyRequestDetail);
 backFromService?.addEventListener("click", returnFromService);
 backFromEventDetail?.addEventListener("click", returnFromEventDetail);
 backFromEvents?.addEventListener("click", returnFromEvents);
@@ -10455,6 +11094,55 @@ requestManagerList?.addEventListener("click", (event) => {
   if (!card) return;
   openRequestManagerDetail(Number(card.dataset.requestItem));
 });
+
+myRequestStateTabs.forEach((button) => {
+  button.addEventListener("click", () => {
+    activeMyRequestState = button.dataset.myRequestState || "todo";
+    renderMyRequestsList();
+  });
+});
+
+myRequestsList?.addEventListener("click", (event) => {
+  const card = event.target.closest("[data-my-request-item]");
+  if (!card) return;
+  openMyRequestDetail(Number(card.dataset.myRequestItem));
+});
+
+myRequestNextActions?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-my-request-action]");
+  if (!button) return;
+  const item = myRequestItemById(activeMyRequestItemId);
+  if (!item) return;
+  const action = button.dataset.myRequestAction;
+  if (action === "review-delivery") {
+    openRequestReviewDialog("client", item);
+    return;
+  }
+  if (action === "retake") {
+    item.status = "in_progress";
+    item.messages.push({ from: "you", time: "いま", text: "納品物を確認しました。リテイク相談をお願いします。" });
+    renderMyRequestDetailPage(item.id);
+    showProfileCopyToast("リテイク相談に戻しました");
+    return;
+  }
+  if (action === "request-again") {
+    openRequestPage(item.creator);
+    return;
+  }
+  showProfileCopyToast(button.textContent.trim() || "操作しました");
+});
+
+myRequestChatForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const item = myRequestItemById(activeMyRequestItemId);
+  const text = myRequestChatInput?.value.trim();
+  if (!item || !text) return;
+  item.messages.push({ from: "you", time: "いま", text });
+  if (myRequestChatInput) myRequestChatInput.value = "";
+  renderMyRequestDetailPage(item.id);
+});
+
+myRequestReportButton?.addEventListener("click", () => openRequestReportDialog("sent"));
 requestAttachButton?.addEventListener("click", () => requestAttachInput?.click());
 requestAttachInput?.addEventListener("change", () => {
   addRequestAttachments(requestAttachInput.files || []);
@@ -10583,6 +11271,8 @@ savedPostsBoard?.addEventListener("click", handleBoardClick);
 savedPostsBoard?.addEventListener("touchstart", handleBoardTouchStart, { capture: true, passive: true });
 savedPostsBoard?.addEventListener("touchmove", handleBoardTouchMove, { capture: true, passive: true });
 savedPostsBoard?.addEventListener("touchend", handleBoardTouchEnd, { capture: true, passive: false });
+enableHorizontalDragScroll(myRequestsTabsScroller, myRequestsTabsTrack);
+window.addEventListener("resize", clampMyRequestsTabOffset);
 
 board.addEventListener("click", handleBoardClick);
 profileBoard.addEventListener("click", handleBoardClick);
@@ -11918,9 +12608,9 @@ function trustScore(posts, trust, creator = "") {
 }
 
 function officialTrustNote() {
-  if (currentLanguage === "en") return "A service operations account verified by VRC SNS.";
-  if (currentLanguage === "ko") return "VRC SNS에서 확인한 서비스 운영 계정입니다.";
-  return "VRC SNSが確認したサービス運営アカウント。";
+  if (currentLanguage === "en") return "A service operations account verified by Veacon.";
+  if (currentLanguage === "ko") return "Veacon에서 확인한 서비스 운영 계정입니다.";
+  return "Veaconが確認したサービス運営アカウント。";
 }
 
 function trustedLevel(score, creator = "") {
@@ -12182,6 +12872,7 @@ function renderProfile(creator) {
   if (!first) return;
 
   activeProfile = creator;
+  hideMyRequestViews();
   feedView.hidden = true;
   requestView.hidden = true;
   notificationsView.hidden = true;
