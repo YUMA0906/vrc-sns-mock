@@ -86,6 +86,21 @@ body.modal-scroll-locked {
   overflow: hidden;
 }
 
+body.account-menu-scroll-locked {
+  position: fixed;
+  top: var(--account-menu-locked-scroll-y);
+  left: 0;
+  right: 0;
+  width: 100%;
+  overflow: hidden;
+  touch-action: none;
+}
+
+body.account-menu-scroll-locked .account-menu,
+body.account-menu-scroll-locked .account-menu * {
+  touch-action: pan-y;
+}
+
 [data-theme="dark"] body,
 body[data-theme="dark"] {
   background:
@@ -12475,6 +12490,10 @@ body.is-dragging .drop-hint {
     left: 0;
     right: auto;
     width: min(86vw, 320px);
+    max-height: calc(100dvh - var(--topbar-height) - 18px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
     padding: 10px;
     border-radius: 20px;
     transform-origin: top left;
@@ -13161,24 +13180,68 @@ body.is-dragging .drop-hint {
   .my-request-card {
     grid-template-columns: minmax(0, 1fr);
     gap: 0;
-    min-width: 560px;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
     background: rgba(255,255,255,0.92);
   }
 
   .my-request-card-copy {
     padding: 12px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .my-request-card h2 {
-    font-size: 1.02rem;
+    font-size: clamp(1rem, 4.5vw, 1.12rem);
+    line-height: 1.28;
+    overflow-wrap: anywhere;
+    word-break: normal;
   }
 
   .my-request-card p {
     display: -webkit-box;
     overflow: hidden;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-height: 1.5;
+    -webkit-line-clamp: 3;
+    max-width: 100%;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .my-request-card .request-manager-card-topline {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+  }
+
+  .my-request-card .request-turn-pill {
+    justify-self: end;
+  }
+
+  .my-request-card .request-manager-card-topline time {
+    grid-column: 1 / -1;
+    width: fit-content;
+  }
+
+  .my-request-card .request-manager-card-meta {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .my-request-card .request-manager-card-meta span {
+    max-width: 100%;
+    min-width: 0;
+    width: fit-content;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
   }
 
   .my-request-detail-shell,

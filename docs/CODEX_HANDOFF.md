@@ -1,6 +1,6 @@
 # Veacon Mock Codex Handoff
 
-Last updated: 2026-06-11
+Last updated: 2026-06-12
 
 This document is intended for another Codex instance that needs to understand and continue the current frontend prototype without relying on chat history.
 
@@ -77,6 +77,12 @@ Update this document in the same commit whenever a change affects:
 - Responsive behavior.
 - Button/menu behavior.
 - Any feature another Codex would need to preserve.
+
+## Recent Changes
+
+- 2026-06-12: Adjusted requester-side My Requests cards for smartphone layouts. The mobile CSS now removes the previous fixed `560px` minimum card width, constrains card content to the viewport, wraps metadata safely, and keeps status/turn pills readable without horizontal overflow.
+- 2026-06-12: Updated the stylesheet cache key in `index.html` so local/browser previews load the corrected mobile card styles.
+- 2026-06-12: Added mobile account-menu scroll locking. When the smartphone account menu is open, the underlying home/feed page is fixed at its current scroll position and restored when the menu closes, while the menu itself has a capped height and remains internally scrollable.
 
 Do not update this document for tiny color-only tweaks unless the tweak reflects a durable design rule.
 

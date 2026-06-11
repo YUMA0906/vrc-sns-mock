@@ -1455,6 +1455,7 @@ let profileCopyToastTimer = 0;
 let pendingZipAttachments = [];
 let requestChatAttachments = new Map();
 let lockedScrollY = 0;
+let accountMenuLockedScrollY = 0;
 let composeImages = [];
 let composeImageIndex = 0;
 let composePreviousVisibility = "Public";
@@ -6780,6 +6781,7 @@ function closeAccountMenu() {
   accountMenu.hidden = true;
   accountMenu.classList.remove("is-open");
   avatarButton?.setAttribute("aria-expanded", "false");
+  unlockAccountMenuScroll();
 }
 
 function toggleAccountMenu() {
@@ -6789,6 +6791,31 @@ function toggleAccountMenu() {
   accountMenu.hidden = !willOpen;
   accountMenu.classList.toggle("is-open", willOpen);
   avatarButton?.setAttribute("aria-expanded", willOpen ? "true" : "false");
+  if (willOpen) {
+    lockAccountMenuScroll();
+  } else {
+    unlockAccountMenuScroll();
+  }
+}
+
+function shouldLockAccountMenuScroll() {
+  return window.matchMedia("(max-width: 760px)").matches;
+}
+
+function lockAccountMenuScroll() {
+  if (!shouldLockAccountMenuScroll()) return;
+  if (document.body.classList.contains("modal-scroll-locked")) return;
+  if (document.body.classList.contains("account-menu-scroll-locked")) return;
+  accountMenuLockedScrollY = window.scrollY;
+  document.body.style.setProperty("--account-menu-locked-scroll-y", `-${accountMenuLockedScrollY}px`);
+  document.body.classList.add("account-menu-scroll-locked");
+}
+
+function unlockAccountMenuScroll() {
+  if (!document.body.classList.contains("account-menu-scroll-locked")) return;
+  document.body.classList.remove("account-menu-scroll-locked");
+  document.body.style.removeProperty("--account-menu-locked-scroll-y");
+  window.scrollTo(0, accountMenuLockedScrollY);
 }
 
 function openRequestPage(creator, postId = null) {
