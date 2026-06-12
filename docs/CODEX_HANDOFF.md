@@ -98,6 +98,7 @@ Update this document in the same commit whenever a change affects:
 - 2026-06-12: Removed the duplicate desktop account-menu entry for My Requests because the desktop top action bar already has a dedicated My Requests button. The smartphone quick-action menu still keeps its My Requests entry.
 - 2026-06-12: Hardened the featured event carousel's infinite loop. Before each slide move, the track silently realigns to the real slide that matches the current event, then uses the cloned edge slides only for wraparound transitions so users do not see a jump from one end of the list to the other.
 - 2026-06-12: Added a transition guard to the featured event carousel. The previous implementation could receive a second next/prev action while a transform transition was still running, causing `transitioncancel` and a visible stutter. The carousel now ignores new slide moves while animating, blocks drag starts during animation, eagerly decodes carousel images, and resets cloned edge slides with an immediate no-transition reposition after `transitionend`.
+- 2026-06-12: Enabled drag-to-scroll on the account switcher row in the account menu. The row still uses native horizontal scrolling on touch devices, and desktop pointer drags now move the account avatars while suppressing accidental account switches after a drag.
 
 Do not update this document for tiny color-only tweaks unless the tweak reflects a durable design rule.
 

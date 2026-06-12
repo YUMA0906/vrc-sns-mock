@@ -10647,6 +10647,63 @@ function enableHorizontalDragScroll(scroller, track) {
   }, { passive: false });
 }
 
+function enableNativeHorizontalDragScroll(scroller) {
+  if (!scroller) return;
+  let dragState = null;
+  let suppressClick = false;
+
+  const begin = (event) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    if (scroller.scrollWidth <= scroller.clientWidth + 2) return;
+    dragState = {
+      pointerId: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      left: scroller.scrollLeft,
+      moved: false,
+    };
+    scroller.setPointerCapture?.(event.pointerId);
+  };
+
+  const move = (event) => {
+    if (!dragState || event.pointerId !== dragState.pointerId) return;
+    const deltaX = event.clientX - dragState.x;
+    const deltaY = event.clientY - dragState.y;
+    if (!dragState.moved) {
+      if (Math.abs(deltaX) < 6 && Math.abs(deltaY) < 6) return;
+      if (Math.abs(deltaX) <= Math.abs(deltaY)) return;
+    }
+    dragState.moved = true;
+    suppressClick = true;
+    scroller.classList.add("is-drag-scrolling");
+    scroller.scrollLeft = dragState.left - deltaX;
+    event.preventDefault();
+  };
+
+  const end = (event) => {
+    if (!dragState || event.pointerId !== dragState.pointerId) return;
+    scroller.releasePointerCapture?.(event.pointerId);
+    dragState = null;
+    scroller.classList.remove("is-drag-scrolling");
+    if (suppressClick) {
+      window.setTimeout(() => {
+        suppressClick = false;
+      }, 0);
+    }
+  };
+
+  scroller.addEventListener("pointerdown", begin);
+  scroller.addEventListener("pointermove", move);
+  scroller.addEventListener("pointerup", end);
+  scroller.addEventListener("pointercancel", end);
+  scroller.addEventListener("click", (event) => {
+    if (!suppressClick) return;
+    event.preventDefault();
+    event.stopPropagation();
+    suppressClick = false;
+  }, true);
+}
+
 document.addEventListener("pointerdown", (event) => {
   if (shouldIgnorePinOpenTarget(event.target)) {
     pinPointerStart = null;
@@ -11491,6 +11548,7 @@ savedPostsBoard?.addEventListener("touchstart", handleBoardTouchStart, { capture
 savedPostsBoard?.addEventListener("touchmove", handleBoardTouchMove, { capture: true, passive: true });
 savedPostsBoard?.addEventListener("touchend", handleBoardTouchEnd, { capture: true, passive: false });
 enableHorizontalDragScroll(myRequestsTabsScroller, myRequestsTabsTrack);
+enableNativeHorizontalDragScroll(accountSwitcherList);
 window.addEventListener("resize", clampMyRequestsTabOffset);
 
 board.addEventListener("click", handleBoardClick);

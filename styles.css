@@ -610,7 +610,20 @@ body[data-theme="dark"] .topbar .avatar-button:not(.has-image):hover {
   padding: 2px 4px 3px 2px;
   scrollbar-width: thin;
   scroll-snap-type: x proximity;
+  cursor: grab;
+  user-select: none;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
   -webkit-overflow-scrolling: touch;
+}
+
+.account-switcher-list.is-drag-scrolling {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+
+.account-switcher-list.is-drag-scrolling > * {
+  pointer-events: none;
 }
 
 .account-switcher-avatar {
