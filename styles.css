@@ -13270,11 +13270,14 @@ body.is-dragging .drop-hint {
     grid-template-columns: 1fr;
     padding: 18px;
     border-radius: 20px;
+    max-width: 100%;
+    overflow: hidden;
   }
 
   .my-requests-guide {
     grid-template-columns: 1fr 1fr;
     gap: 7px;
+    min-width: 0;
   }
 
   .my-requests-guide span {
@@ -13286,12 +13289,31 @@ body.is-dragging .drop-hint {
   .my-requests-tabs {
     border-radius: 18px;
     padding: 5px;
+    max-width: 100%;
+  }
+
+  .my-requests-tabs-shell {
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
   }
 
   .my-requests-tabs button {
     min-height: 34px;
     padding: 0 10px;
     font-size: 0.82rem;
+  }
+
+  .my-requests-list {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+    scrollbar-width: none;
+  }
+
+  .my-requests-list::-webkit-scrollbar {
+    display: none;
   }
 
   .my-request-card {
@@ -13309,6 +13331,7 @@ body.is-dragging .drop-hint {
     width: 100%;
     max-width: 100%;
     min-width: 0;
+    overflow: hidden;
   }
 
   .my-request-card h2 {
@@ -13332,8 +13355,9 @@ body.is-dragging .drop-hint {
 
   .my-request-card .request-manager-card-topline {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: start;
+    min-width: 0;
   }
 
   .my-request-card .request-turn-pill {
@@ -13350,6 +13374,8 @@ body.is-dragging .drop-hint {
     grid-template-columns: 1fr;
     gap: 5px;
     min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
   }
 
   .my-request-card .request-manager-card-meta span {
