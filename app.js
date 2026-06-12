@@ -989,6 +989,7 @@ const onboardingServiceButton = document.querySelector("#onboardingServiceButton
 const settingsLanguage = document.querySelector("#settingsLanguage");
 const settingsThemeMode = document.querySelector("#settingsThemeMode");
 const settingsReducedMotion = document.querySelector("#settingsReducedMotion");
+const settingsLikedVisibility = document.querySelector("#settingsLikedVisibility");
 const settingsSaveStatus = document.querySelector("#settingsSaveStatus");
 settingsSaveStatus?.remove();
 const requestManagerList = document.querySelector("#requestManagerList");
@@ -2037,6 +2038,10 @@ const translations = {
     highContrastHelp: "文字とボタンの視認性を優先します",
     settingsPrivacyTitle: "プライバシー",
     profileVisibility: "プロフィール公開範囲",
+    likedVisibility: "いいねした投稿",
+    likedVisibilityHelp: "公開にするとプロフィールでいいねした投稿を見せられます",
+    likedVisibilityPublic: "公開",
+    likedVisibilityPrivate: "非公開",
     externalLinkWarning: "外部リンク警告",
     externalLinkWarningHelp: "VRChat / BOOTH / X 以外のリンクを開く前に確認",
     onlineStatus: "オンライン状態を表示",
@@ -2248,6 +2253,10 @@ const translations = {
     highContrastHelp: "Prioritize readable text and buttons",
     settingsPrivacyTitle: "Privacy",
     profileVisibility: "Profile visibility",
+    likedVisibility: "Liked posts",
+    likedVisibilityHelp: "When public, liked posts can be shown on your profile",
+    likedVisibilityPublic: "Public",
+    likedVisibilityPrivate: "Private",
     externalLinkWarning: "External link warning",
     externalLinkWarningHelp: "Confirm before opening links other than VRChat / BOOTH / X",
     onlineStatus: "Show online status",
@@ -2459,6 +2468,10 @@ const translations = {
     highContrastHelp: "문자와 버튼 가독성을 우선합니다",
     settingsPrivacyTitle: "개인정보",
     profileVisibility: "프로필 공개 범위",
+    likedVisibility: "좋아요한 게시물",
+    likedVisibilityHelp: "공개로 설정하면 프로필에 좋아요한 게시물이 표시됩니다",
+    likedVisibilityPublic: "공개",
+    likedVisibilityPrivate: "비공개",
     externalLinkWarning: "외부 링크 경고",
     externalLinkWarningHelp: "VRChat / BOOTH / X 외 링크를 열기 전에 확인",
     onlineStatus: "온라인 상태 표시",
@@ -4113,7 +4126,11 @@ function updateSettingsPanelLanguage() {
   const privacyPanel = settingsView.querySelector("[aria-labelledby='settingsPrivacyTitle']");
   if (privacyPanel) {
     setText(privacyPanel.querySelector("h2"), "settingsPrivacyTitle");
-    setText(privacyPanel.querySelector(".settings-field span"), "profileVisibility");
+    const fields = [...privacyPanel.querySelectorAll(".settings-field")];
+    setText(fields[0]?.querySelector("span"), "profileVisibility");
+    setText(fields[1]?.querySelector("span"), "likedVisibility");
+    setText(fields[1]?.querySelector("small"), "likedVisibilityHelp");
+    setSelectOptionTexts(fields[1]?.querySelector("select"), ["likedVisibilityPublic", "likedVisibilityPrivate"]);
     const rows = [...privacyPanel.querySelectorAll(".settings-row")];
     [[rows[0], "externalLinkWarning", "externalLinkWarningHelp"], [rows[1], "onlineStatus", "onlineStatusHelp"]].forEach(([row, title, help]) => {
       setText(row?.querySelector("strong"), title);
@@ -4615,6 +4632,7 @@ function handleSettingsAutoSave(event) {
   saveSetting(control);
   if (control === settingsThemeMode) applyThemeMode(control.value);
   if (control === settingsReducedMotion) applyReducedMotionSetting();
+  if (control === settingsLikedVisibility) renderProfilePostArchive();
   if (control?.id === "settingsR18Content" || control?.id === "settingsGoreContent" || control?.id === "settingsSensitiveReveal") {
     applyContentDisplaySettings();
   }
@@ -12656,7 +12674,15 @@ function sortedProfilePosts(posts) {
   return filtered.sort((a, b) => b.id - a.id);
 }
 
+function profileLikesArePublic() {
+  return activeProfile === "You" || settingsLikedVisibility?.value !== "private";
+}
+
 function renderProfilePostArchive() {
+  const likesArePublic = profileLikesArePublic();
+  if (activeProfileArchiveTab === "likes" && !likesArePublic) {
+    activeProfileArchiveTab = "posts";
+  }
   let sourcePosts = [...activeProfilePosts];
   if (activeProfileArchiveTab === "likes") {
     sourcePosts = pins.filter((post) => likedPins.has(post.id) && canViewPin(post));
@@ -12665,6 +12691,9 @@ function renderProfilePostArchive() {
   }
   const posts = sortedProfilePosts(sourcePosts);
   profileArchiveTabs.forEach((button) => {
+    if (button.dataset.profileArchiveTab === "likes") {
+      button.hidden = !likesArePublic;
+    }
     button.classList.toggle("is-active", button.dataset.profileArchiveTab === activeProfileArchiveTab);
   });
   profilePostSortButtons.forEach((button) => {

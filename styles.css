@@ -789,6 +789,14 @@ body[data-theme="dark"] .account-menu button:focus-visible {
   border-top: 1px solid var(--line);
 }
 
+#circlePageButton,
+[data-mobile-menu-action="circles"],
+#accountMenuService,
+#accountMenuAdmin,
+#accountMenuSpecs {
+  display: none !important;
+}
+
 @keyframes accountMenuIn {
   from {
     opacity: 0;
@@ -12599,6 +12607,12 @@ body.is-dragging .drop-hint {
     min-height: 46px;
     border-radius: 14px;
     font-size: 0.95rem;
+  }
+
+  #accountMenuSubscriptions,
+  #accountMenuMyRequests,
+  #accountMenuTheme {
+    display: none;
   }
 
   .account-menu .account-switcher-option,

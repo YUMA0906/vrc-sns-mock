@@ -87,6 +87,9 @@ Update this document in the same commit whenever a change affects:
 - 2026-06-12: Added a creator-set retake limit to commission post creation. Request compose drafts, templates, previews, generated request posts, request pages, and service-line summaries now carry `retakeLimit` so creators can specify how many retakes are included.
 - 2026-06-12: Adjusted smartphone home tabs so the add-tab plus button is visible without horizontal scrolling. The three default feed tabs share the first row, the plus button is fixed at the right edge, and custom saved-search tabs move to a second horizontally scrollable row when present.
 - 2026-06-12: Added a visible horizontal-scroll cue for My Requests status tabs. When the tab track overflows, the right edge shows a stronger fade plus an animated `横にスワイプ` chip so users can tell the tabs continue horizontally.
+- 2026-06-12: Removed duplicate smartphone account-menu entries by hiding the desktop menu copies of Memberships, My Requests, and light/dark toggle on mobile; the mobile quick-action versions remain visible.
+- 2026-06-12: Temporarily hid circle entry points plus Service Guide, Operations, and Screen Specs from the visible navigation/menu surface. The underlying routes and views remain in the app for future reactivation.
+- 2026-06-12: Added a Settings privacy control for liked-post visibility. Users can choose whether liked posts are public or private; the mock keeps the owner's own My Page likes visible while hiding the liked-post archive tab from other profile views when set to private.
 
 Do not update this document for tiny color-only tweaks unless the tweak reflects a durable design rule.
 
