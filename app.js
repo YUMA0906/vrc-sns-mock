@@ -6802,6 +6802,10 @@ function shouldLockAccountMenuScroll() {
   return window.matchMedia("(max-width: 760px)").matches;
 }
 
+function accountMenuIsOpen() {
+  return Boolean(accountMenu && !accountMenu.hidden);
+}
+
 function lockAccountMenuScroll() {
   if (!shouldLockAccountMenuScroll()) return;
   if (document.body.classList.contains("modal-scroll-locked")) return;
@@ -6809,13 +6813,22 @@ function lockAccountMenuScroll() {
   accountMenuLockedScrollY = window.scrollY;
   document.body.style.setProperty("--account-menu-locked-scroll-y", `-${accountMenuLockedScrollY}px`);
   document.body.classList.add("account-menu-scroll-locked");
+  document.documentElement.classList.add("account-menu-scroll-locked");
 }
 
 function unlockAccountMenuScroll() {
   if (!document.body.classList.contains("account-menu-scroll-locked")) return;
   document.body.classList.remove("account-menu-scroll-locked");
+  document.documentElement.classList.remove("account-menu-scroll-locked");
   document.body.style.removeProperty("--account-menu-locked-scroll-y");
   window.scrollTo(0, accountMenuLockedScrollY);
+}
+
+function preventBackgroundTouchWhileAccountMenuOpen(event) {
+  if (!accountMenuIsOpen()) return;
+  if (!document.body.classList.contains("account-menu-scroll-locked")) return;
+  if (event.target.closest(".account-menu")) return;
+  event.preventDefault();
 }
 
 function openRequestPage(creator, postId = null) {
@@ -10841,6 +10854,7 @@ document.addEventListener("click", (event) => {
   if (event.target.closest(".account-menu-wrap")) return;
   closeAccountMenu();
 });
+document.addEventListener("touchmove", preventBackgroundTouchWhileAccountMenuOpen, { passive: false });
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") closeAccountMenu();
 });

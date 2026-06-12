@@ -96,6 +96,11 @@ body.account-menu-scroll-locked {
   touch-action: none;
 }
 
+html.account-menu-scroll-locked {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 body.account-menu-scroll-locked .account-menu,
 body.account-menu-scroll-locked .account-menu * {
   touch-action: pan-y;
