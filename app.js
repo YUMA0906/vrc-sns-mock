@@ -1290,6 +1290,7 @@ const requestPostDelivery = document.querySelector("#requestPostDelivery");
 const requestPostAverageDeliveryHint = document.querySelector("#requestPostAverageDeliveryHint");
 const requestPostCapacity = document.querySelector("#requestPostCapacity");
 const requestPostRetake = document.querySelector("#requestPostRetake");
+const requestPostRetakeLimit = document.querySelector("#requestPostRetakeLimit");
 const requestPostChat = document.querySelector("#requestPostChat");
 const requestPostAvatar = document.querySelector("#requestPostAvatar");
 const requestPostWorld = document.querySelector("#requestPostWorld");
@@ -1401,6 +1402,7 @@ let activeBookmarkFolderId = null;
 let pendingBookmarkPinId = null;
 let pendingBookmarkFolderSelectionId = "";
 let notificationReturnHash = "";
+let notificationTargetReturnActive = false;
 let settingsReturnHash = "";
 let requestManagerReturnHash = "";
 let myRequestsReturnHash = "";
@@ -1600,6 +1602,7 @@ const requestTemplatePresets = {
     delivery: "10日以内",
     capacity: "受付 2 / 5",
     retake: "yes",
+    retakeLimit: "1",
     chat: "enabled",
     tags: "#依頼受付 #avatar #booth",
     description: "衣装導入、表情調整、軽いギミック追加、撮影向けの見た目調整まで対応する依頼受付です。",
@@ -1612,6 +1615,7 @@ const requestTemplatePresets = {
     delivery: "3日以内",
     capacity: "受付 3 / 6",
     retake: "yes",
+    retakeLimit: "1",
     chat: "enabled",
     tags: "#依頼受付 #photo #world",
     description: "ワールド提案、ポーズ相談、SNS用トリミングまで含めた撮影依頼を受け付けます。",
@@ -1624,6 +1628,7 @@ const requestTemplatePresets = {
     delivery: "30日以内",
     capacity: "受付 1 / 2",
     retake: "yes",
+    retakeLimit: "2",
     chat: "limited",
     tags: "#依頼受付 #world #event",
     description: "撮影、展示、イベント用途の軽量ワールド制作を受け付けます。用途に応じて導線と最適化も調整します。",
@@ -3840,6 +3845,7 @@ function openEventDetailPage(index) {
 }
 
 function returnFromEventDetail() {
+  if (returnToNotificationsFromTarget()) return;
   const targetHash = eventDetailReturnHash;
   eventDetailReturnHash = "";
   if (!targetHash) {
@@ -3865,6 +3871,7 @@ function openEventsPage() {
 }
 
 function returnFromEvents() {
+  if (returnToNotificationsFromTarget()) return;
   const targetHash = eventsReturnHash;
   eventsReturnHash = "";
   if (!targetHash) {
@@ -3873,6 +3880,15 @@ function returnFromEvents() {
   }
   history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
   routeFromHash();
+}
+
+function returnToNotificationsFromTarget() {
+  if (!notificationTargetReturnActive) return false;
+  notificationTargetReturnActive = false;
+  notificationReturnHash = "";
+  history.pushState("", document.title, `${location.pathname}${location.search}#notifications`);
+  renderNotificationsPage();
+  return true;
 }
 
 function openEventProposalDialog() {
@@ -6487,6 +6503,7 @@ function closePinDialog() {
   window.setTimeout(() => {
     dialog.classList.remove("is-closing");
     closeModalElement(dialog);
+    if (returnToNotificationsFromTarget()) return;
     if (location.hash.startsWith("#post/")) {
       history.pushState("", document.title, `${location.pathname}${location.search}#`);
     }
@@ -6695,6 +6712,7 @@ function openProfile(slug) {
 }
 
 function returnFromProfile() {
+  if (returnToNotificationsFromTarget()) return;
   const targetHash = profileReturnHash;
   profileReturnHash = "";
   if (!targetHash) {
@@ -6847,6 +6865,7 @@ function openRequestPage(creator, postId = null) {
 }
 
 function returnFromRequestPage() {
+  if (returnToNotificationsFromTarget()) return;
   const targetHash = requestPageReturnHash;
   requestPageReturnHash = "";
   if (!targetHash) {
@@ -7464,10 +7483,23 @@ function requestAllowsRetake(postOrRequest) {
   return request?.retake !== false;
 }
 
+function requestRetakeLimit(postOrRequest) {
+  const request = postOrRequest?.request || postOrRequest;
+  const value = Number(request?.retakeLimit ?? request?.retakeCount ?? 0);
+  return Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
+}
+
 function requestRetakeLabel(postOrRequest) {
-  return requestAllowsRetake(postOrRequest)
-    ? (currentLanguage === "en" ? "Retake supported" : currentLanguage === "ko" ? "리테이크 대응" : "リテイク対応あり")
-    : (currentLanguage === "en" ? "No retakes" : currentLanguage === "ko" ? "리테이크 미대응" : "リテイク対応なし");
+  if (!requestAllowsRetake(postOrRequest)) {
+    return currentLanguage === "en" ? "No retakes" : currentLanguage === "ko" ? "리테이크 미대응" : "リテイク対応なし";
+  }
+  const limit = requestRetakeLimit(postOrRequest);
+  if (!limit) {
+    return currentLanguage === "en" ? "Retake supported" : currentLanguage === "ko" ? "리테이크 대응" : "リテイク対応あり";
+  }
+  if (currentLanguage === "en") return `Up to ${limit} retake${limit === 1 ? "" : "s"}`;
+  if (currentLanguage === "ko") return `리테이크 ${limit}회까지`;
+  return `リテイク${limit}回まで`;
 }
 
 function requestChatMode(postOrRequest) {
@@ -7493,9 +7525,7 @@ function requestServiceLines(post) {
     `希望納期: ${requestDesiredDeliveryLabel(post)}`,
     `平均納期: ${post.request?.delivery || averageRequestDeliveryLabel()}`,
     `受付枠: ${post.request?.capacity || "受付中"}`,
-    requestAllowsRetake(post)
-      ? "リテイク: 事前合意した範囲で対応"
-      : "リテイク: 対応なし",
+    `リテイク: ${requestRetakeLabel(post)}`,
     requestChatMode(post) === "limited"
       ? "通常チャット: 必要最低限のみ"
       : "通常チャット: 必要に応じて対応",
@@ -7714,6 +7744,7 @@ function renderMyRequestsPage() {
   if (myRequestDetailView) myRequestDetailView.hidden = true;
   if (myRequestsView) myRequestsView.hidden = false;
   renderMyRequestsList();
+  window.requestAnimationFrame(clampMyRequestsTabOffset);
   updateTopbarSearchVisibility();
   scrollPageTop();
 }
@@ -7846,6 +7877,7 @@ function returnFromMyRequests() {
 }
 
 function returnFromMyRequestDetail() {
+  if (returnToNotificationsFromTarget()) return;
   history.pushState("", document.title, `${location.pathname}${location.search}#my-requests`);
   renderMyRequestsPage();
 }
@@ -8560,6 +8592,7 @@ function persistRequestComposeDraft() {
     delivery: requestPostDelivery.value,
     capacity: requestPostCapacity.value,
     retake: requestPostRetake?.value || "yes",
+    retakeLimit: requestPostRetakeLimit?.value || "1",
     chat: requestPostChat?.value || "enabled",
     avatar: requestPostAvatar.value,
     world: requestPostWorld.value,
@@ -8583,6 +8616,7 @@ function restoreRequestComposeDraft() {
     requestPostDelivery.value = draft.delivery || "";
     requestPostCapacity.value = draft.capacity || "";
     if (requestPostRetake) requestPostRetake.value = draft.retake || "yes";
+    if (requestPostRetakeLimit) requestPostRetakeLimit.value = draft.retakeLimit || "1";
     if (requestPostChat) requestPostChat.value = draft.chat || "enabled";
     requestPostAvatar.value = draft.avatar || "";
     requestPostWorld.value = draft.world || "";
@@ -8596,6 +8630,7 @@ function restoreRequestComposeDraft() {
       requestComposePreviewImage.closest(".upload-drop")?.classList.add("has-image");
     }
     refreshPostComposeCustomSelects();
+    syncRequestRetakeLimitState();
     updateRequestComposeSubmitState();
   } catch {}
 }
@@ -8613,11 +8648,13 @@ function applyRequestTemplate(kind) {
   requestPostDelivery.value = preset.delivery;
   requestPostCapacity.value = preset.capacity;
   if (requestPostRetake) requestPostRetake.value = preset.retake || "yes";
+  if (requestPostRetakeLimit) requestPostRetakeLimit.value = preset.retakeLimit || "1";
   if (requestPostChat) requestPostChat.value = preset.chat || "enabled";
   requestPostTags.value = preset.tags;
   requestPostDescription.value = preset.description;
   requestPostRequirements.value = preset.requirements;
   refreshPostComposeCustomSelects();
+  syncRequestRetakeLimitState();
   updateRequestComposePreview();
   updateRequestComposeSubmitState();
   persistRequestComposeDraft();
@@ -9319,11 +9356,13 @@ function returnFromRequestManager() {
 }
 
 function returnFromRequestManagerDetail() {
+  if (returnToNotificationsFromTarget()) return;
   history.pushState("", document.title, `${location.pathname}${location.search}#request-manager`);
   renderRequestManagerPage();
 }
 
 function openNotificationsPage() {
+  notificationTargetReturnActive = false;
   if (modalIsOpen(dialog)) closeModalElement(dialog);
   if (modalIsOpen(composeDialog)) closeComposeDialog();
   if (modalIsOpen(requestComposeDialog)) closeRequestComposeDialog();
@@ -9447,6 +9486,7 @@ function returnFromSettings() {
 
 function openNotificationTarget(item) {
   if (!item?.target) return;
+  notificationTargetReturnActive = true;
   if (item.target.kind === "request") {
     openRequestPage(item.target.creator, item.target.postId);
     return;
@@ -9470,7 +9510,9 @@ function openNotificationTarget(item) {
   }
   if (item.target.kind === "my-request") {
     openMyRequestDetail(Number(item.target.itemId));
+    return;
   }
+  notificationTargetReturnActive = false;
 }
 
 function markOnboardingSeen() {
@@ -9968,14 +10010,25 @@ function requestComposeValues() {
   const averageDelivery = averageRequestDeliveryLabel();
   const capacity = requestPostCapacity.value.trim() || "受付 2 / 5";
   const retake = requestPostRetake?.value !== "no";
+  const retakeLimit = retake ? Math.max(0, Math.min(10, Math.floor(Number(requestPostRetakeLimit?.value || 0) || 0))) : 0;
   const chat = requestPostChat?.value || "enabled";
   const tags = requestPostTags.value.trim() || "#依頼受付 #vrchat #portfolio";
   const description = requestPostDescription.value.trim() || "説明を入力すると、依頼受付ページの導入文として表示されます。";
   const requirements = requestPostRequirements.value.trim() || "参考画像、使用アセット、希望納期を依頼時に確認する想定です。";
-  return { title, category, price, desiredDelivery, averageDelivery, capacity, retake, chat, tags, description, requirements };
+  return { title, category, price, desiredDelivery, averageDelivery, capacity, retake, retakeLimit, chat, tags, description, requirements };
+}
+
+function syncRequestRetakeLimitState() {
+  if (!requestPostRetake || !requestPostRetakeLimit) return;
+  const enabled = requestPostRetake.value !== "no";
+  requestPostRetakeLimit.disabled = !enabled;
+  requestPostRetakeLimit.closest(".field")?.classList.toggle("is-disabled", !enabled);
+  if (!enabled) requestPostRetakeLimit.value = "0";
+  if (enabled && requestPostRetakeLimit.value === "0") requestPostRetakeLimit.value = "1";
 }
 
 function updateRequestComposePreview() {
+  syncRequestRetakeLimitState();
   const values = requestComposeValues();
   if (requestPostAverageDeliveryHint) {
     requestPostAverageDeliveryHint.textContent = `現在の平均納期: ${values.averageDelivery}`;
@@ -10240,6 +10293,7 @@ function handleRequestComposeSubmit(event) {
       delivery: values.averageDelivery,
       desiredDelivery: values.desiredDelivery,
       retake: values.retake,
+      retakeLimit: values.retakeLimit,
       chat: values.chat,
     },
     description: `${values.description} ${values.requirements}`,
@@ -10370,6 +10424,10 @@ function clampMyRequestsTabOffset() {
   const maxOffset = Math.max(0, myRequestsTabsTrack.scrollWidth - myRequestsTabsScroller.clientWidth + 8);
   myRequestsTabOffset = Math.max(0, Math.min(myRequestsTabOffset, maxOffset));
   myRequestsTabsTrack.style.transform = `translate3d(${-myRequestsTabOffset}px, 0, 0)`;
+  const hasOverflow = maxOffset > 2;
+  myRequestsTabsScroller.classList.toggle("has-overflow", hasOverflow);
+  myRequestsTabsScroller.classList.toggle("is-at-start", !hasOverflow || myRequestsTabOffset <= 2);
+  myRequestsTabsScroller.classList.toggle("is-at-end", !hasOverflow || myRequestsTabOffset >= maxOffset - 2);
   return maxOffset;
 }
 
@@ -12336,7 +12394,7 @@ saveRequestDraftButton?.addEventListener("click", () => {
   requestComposeNotice.textContent = "依頼受付の下書きを保存しました。";
 });
 
-[requestPostTitle, requestPostCategory, requestPostVisibility, requestPostPrice, requestPostDelivery, requestPostCapacity, requestPostRetake, requestPostChat, requestPostAvatar, requestPostWorld, requestPostTags, requestPostDescription, requestPostRequirements].filter(Boolean).forEach((input) => {
+[requestPostTitle, requestPostCategory, requestPostVisibility, requestPostPrice, requestPostDelivery, requestPostCapacity, requestPostRetake, requestPostRetakeLimit, requestPostChat, requestPostAvatar, requestPostWorld, requestPostTags, requestPostDescription, requestPostRequirements].filter(Boolean).forEach((input) => {
   input?.addEventListener("input", () => {
     updateRequestComposePreview();
     updateRequestComposeSubmitState();

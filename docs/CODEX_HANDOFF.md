@@ -83,6 +83,10 @@ Update this document in the same commit whenever a change affects:
 - 2026-06-12: Adjusted requester-side My Requests cards for smartphone layouts. The mobile CSS now removes the previous fixed `560px` minimum card width, constrains card content to the viewport, wraps metadata safely, and keeps status/turn pills readable without horizontal overflow.
 - 2026-06-12: Updated the stylesheet cache key in `index.html` so local/browser previews load the corrected mobile card styles.
 - 2026-06-12: Added mobile account-menu scroll locking. When the smartphone account menu is open, the underlying home/feed page is fixed at its current scroll position and restored when the menu closes, while the menu itself has a capped height and remains internally scrollable. The document root is also locked and background `touchmove` is prevented outside the menu to avoid mobile browser scroll leakage.
+- 2026-06-12: Added notification-origin return behavior. When a notification opens a post modal or any target page, the Back button or close button now returns to `#notifications` before falling back to that target page's normal parent route.
+- 2026-06-12: Added a creator-set retake limit to commission post creation. Request compose drafts, templates, previews, generated request posts, request pages, and service-line summaries now carry `retakeLimit` so creators can specify how many retakes are included.
+- 2026-06-12: Adjusted smartphone home tabs so the add-tab plus button is visible without horizontal scrolling. The three default feed tabs share the first row, the plus button is fixed at the right edge, and custom saved-search tabs move to a second horizontally scrollable row when present.
+- 2026-06-12: Added a horizontal-scroll cue for My Requests status tabs. When the tab track overflows, the right edge shows a fade and animated chevron cue; it updates as the user drags or wheels the tab strip and respects reduced-motion mode.
 
 Do not update this document for tiny color-only tweaks unless the tweak reflects a durable design rule.
 

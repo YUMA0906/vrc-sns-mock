@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.squarespace-cdn.com" />
-    <link rel="stylesheet" href="./styles.css?v=mobile-menu-touch-lock" />
+    <link rel="stylesheet" href="./styles.css?v=my-requests-scroll-cue" />
   </head>
   <body>
     <header class="topbar">
@@ -2438,6 +2438,11 @@
               </select>
             </label>
             <label class="field">
+              <span>リテイク上限</span>
+              <input id="requestPostRetakeLimit" type="number" min="0" max="10" step="1" value="1" inputmode="numeric" autocomplete="off" />
+              <small class="field-help">0回なら納品後の修正なし</small>
+            </label>
+            <label class="field">
               <span>通常チャット</span>
               <select id="requestPostChat">
                 <option value="enabled" selected>対応する</option>
@@ -2641,6 +2646,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=desktop-hide-chat-check"></script>
+    <script src="./app.js?v=request-retake-limit"></script>
   </body>
 </html>

@@ -3266,6 +3266,16 @@ body[data-theme="dark"] .compose-mode label:has(input:checked) {
   display: none !important;
 }
 
+.field.is-disabled {
+  opacity: 0.58;
+}
+
+.field.is-disabled input,
+.field input:disabled {
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .field.wide {
   grid-column: 1 / -1;
 }
@@ -5759,6 +5769,51 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   touch-action: pan-y;
 }
 
+.my-requests-tabs.has-overflow:not(.is-at-end)::before {
+  content: "";
+  position: absolute;
+  inset: 4px 4px 4px auto;
+  z-index: 2;
+  width: 56px;
+  border-radius: 999px;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.82) 62%, rgba(255,255,255,0.94));
+}
+
+.my-requests-tabs.has-overflow:not(.is-at-end)::after {
+  content: "›";
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(20,20,20,0.12);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.94);
+  color: var(--ink);
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1;
+  pointer-events: none;
+  transform: translateY(-50%);
+  animation: myRequestsScrollCue 1800ms ease-in-out infinite;
+  box-shadow: 0 10px 24px rgba(20,20,20,0.12);
+}
+
+@keyframes myRequestsScrollCue {
+  0%, 100% {
+    opacity: 0.72;
+    transform: translate(-3px, -50%);
+  }
+  45% {
+    opacity: 1;
+    transform: translate(4px, -50%);
+  }
+}
+
 .my-requests-tabs-track {
   display: inline-flex;
   gap: 8px;
@@ -5964,6 +6019,19 @@ body[data-theme="dark"] .my-requests-tabs button.is-active {
   background: #f4f1eb;
   border-color: #f4f1eb;
   color: #111;
+}
+
+[data-theme="dark"] .my-requests-tabs.has-overflow:not(.is-at-end)::before,
+body[data-theme="dark"] .my-requests-tabs.has-overflow:not(.is-at-end)::before {
+  background: linear-gradient(90deg, rgba(24,24,23,0), rgba(24,24,23,0.82) 62%, rgba(24,24,23,0.96));
+}
+
+[data-theme="dark"] .my-requests-tabs.has-overflow:not(.is-at-end)::after,
+body[data-theme="dark"] .my-requests-tabs.has-overflow:not(.is-at-end)::after {
+  border-color: rgba(255,255,255,0.14);
+  background: rgba(255,247,232,0.96);
+  color: #141414;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35);
 }
 
 .request-detail-shell {
@@ -12576,21 +12644,24 @@ body.is-dragging .drop-hint {
   }
 
   .view-tabs {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 36px;
     align-items: center;
     width: 100%;
     gap: 8px;
     padding: 5px;
     border-radius: 22px;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .view-tab-group {
-    flex: 1 0 100%;
+    grid-column: 1;
+    grid-row: 1;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 6px;
     width: 100%;
+    min-width: 0;
     overflow: visible;
   }
 
@@ -12606,15 +12677,19 @@ body.is-dragging .drop-hint {
   }
 
   .saved-search-tabs {
-    flex: 0 1 auto;
-    order: initial;
-    max-width: calc(100% - 48px);
-    min-height: 40px;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+    padding-top: 1px;
     overflow-x: auto;
   }
 
   .nav-pill-add {
-    order: initial;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
     margin-left: 0;
   }
 
@@ -14122,13 +14197,13 @@ body[data-theme="dark"] .profile-block-button.is-active:not([disabled]):focus-vi
   }
 
   .view-tabs {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 36px;
     gap: 7px;
     padding: 6px;
     border-radius: 22px;
-    flex-wrap: nowrap;
     align-items: center;
-    overflow-x: auto;
+    overflow: visible;
     scrollbar-width: none;
   }
 
@@ -14137,29 +14212,35 @@ body[data-theme="dark"] .profile-block-button.is-active:not([disabled]):focus-vi
   }
 
   .view-tab-group {
-    grid-column: auto;
-    grid-row: auto;
-    flex: 0 0 auto;
+    grid-column: 1;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 6px;
+    width: 100%;
     min-width: 0;
     overflow: visible;
     padding-bottom: 0;
   }
 
   .view-tab-group .nav-pill {
-    flex: 0 0 auto;
+    flex: initial;
     min-width: auto;
+    width: 100%;
     height: 36px;
     min-height: 36px;
-    padding: 0 14px;
-    font-size: 0.72rem;
+    padding: 0 5px;
+    font-size: 0.7rem;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .nav-pill-add {
-    grid-column: auto;
-    grid-row: auto;
-    flex: 0 0 36px;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    flex: initial;
     width: 36px;
     min-width: 36px;
     height: 36px;
@@ -14167,12 +14248,12 @@ body[data-theme="dark"] .profile-block-button.is-active:not([disabled]):focus-vi
   }
 
   .saved-search-tabs {
-    grid-column: auto;
-    flex: 0 0 auto;
-    max-width: none;
-    width: auto;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    max-width: 100%;
+    width: 100%;
     gap: 6px;
-    overflow: visible;
+    overflow-x: auto;
     padding-top: 0;
   }
 
