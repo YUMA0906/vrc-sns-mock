@@ -94,6 +94,7 @@ Update this document in the same commit whenever a change affects:
 - 2026-06-12: Moved the My Requests swipe cue outside the scrolling tab strip so it stays fixed at the right edge instead of moving with the tabs. The cue now fades out while the tab strip is being scrolled or dragged, then returns after scrolling settles.
 - 2026-06-12: Tightened the smartphone My Requests layout so the page itself no longer overflows horizontally. The request list hides horizontal overflow on mobile, cards are clipped within the viewport, and the tab strip remains the only horizontally scrollable surface.
 - 2026-06-12: Removed the right-edge gradient overlay from the My Requests status tab strip while keeping horizontal scrolling and the small swipe cue.
+- 2026-06-12: Added action-count badges for creator-side Request Manager and requester-side My Requests. Counts appear on the top action buttons and smartphone account menu items when there are items that require the user's next action.
 
 Do not update this document for tiny color-only tweaks unless the tweak reflects a durable design rule.
 

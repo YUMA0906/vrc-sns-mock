@@ -875,6 +875,10 @@ const requestManagerCreatePost = document.querySelector("#requestManagerCreatePo
 const notificationButton = document.querySelector("#notificationButton");
 const notificationBadge = document.querySelector("#notificationBadge");
 const mobileNotificationBadge = document.querySelector("#mobileNotificationBadge");
+const requestManagerBadge = document.querySelector("#requestManagerBadge");
+const myRequestsBadge = document.querySelector("#myRequestsBadge");
+const mobileRequestManagerBadge = document.querySelector("#mobileRequestManagerBadge");
+const mobileMyRequestsBadge = document.querySelector("#mobileMyRequestsBadge");
 const avatarButton = document.querySelector("#avatarButton");
 const accountMenu = document.querySelector("#accountMenu");
 const accountSwitcherCurrent = document.querySelector("#accountSwitcherCurrent");
@@ -7076,16 +7080,41 @@ function readNotificationCount() {
   return notifications.filter((item) => !item.unread).length;
 }
 
+function formatBadgeCount(count) {
+  return count > 99 ? "99+" : String(count);
+}
+
+function setCountBadge(badge, count) {
+  if (!badge) return;
+  badge.hidden = count === 0;
+  badge.textContent = count === 0 ? "" : formatBadgeCount(count);
+}
+
+function creatorRequestActionCount() {
+  return requestManagerItems.filter((item) => item.status !== "completed" && requestTurnInfo(item).key === "mine").length;
+}
+
+function myRequestActionCount() {
+  return myRequestTabItems("todo").length;
+}
+
+function updateRequestActionBadges() {
+  const creatorCount = creatorRequestActionCount();
+  const myCount = myRequestActionCount();
+  setCountBadge(requestManagerBadge, creatorCount);
+  setCountBadge(mobileRequestManagerBadge, creatorCount);
+  setCountBadge(myRequestsBadge, myCount);
+  setCountBadge(mobileMyRequestsBadge, myCount);
+  requestManagerButton?.setAttribute("aria-label", creatorCount ? `依頼確認, ${creatorCount}件の対応が必要` : "依頼確認");
+  myRequestsButton?.setAttribute("aria-label", myCount ? `マイリクエスト, ${myCount}件の対応が必要` : "マイリクエスト");
+}
+
 function updateNotificationBadge() {
   const count = unreadNotificationCount();
-  if (!notificationBadge) return;
-  notificationBadge.hidden = count === 0;
-  notificationBadge.textContent = count > 99 ? "99+" : String(count);
-  if (mobileNotificationBadge) {
-    mobileNotificationBadge.hidden = count === 0;
-    mobileNotificationBadge.textContent = count > 99 ? "99+" : String(count);
-  }
+  setCountBadge(notificationBadge, count);
+  setCountBadge(mobileNotificationBadge, count);
   notificationButton?.setAttribute("aria-label", count ? `${t("notifications")}, ${count} ${t("unreadNotifications")}` : t("notifications"));
+  updateRequestActionBadges();
 }
 
 function updateNotificationActions() {
@@ -7712,6 +7741,7 @@ function myRequestActionButtons(item) {
 
 function renderMyRequestsList() {
   const items = myRequestTabItems();
+  updateRequestActionBadges();
   myRequestStateTabs.forEach((button) => {
     const state = button.dataset.myRequestState;
     const count = state === "todo" ? myRequestTabItems("todo").length : myRequestItems.filter((item) => item.status === state).length;
@@ -8949,6 +8979,7 @@ function sortedRequestManagerItems(state = activeRequestManagerState) {
 
 function renderRequestManagerList() {
   const items = sortedRequestManagerItems();
+  updateRequestActionBadges();
   if (pendingSortControls) pendingSortControls.hidden = activeRequestManagerState !== "pending";
   pendingSortButtons.forEach((button) => {
     button.classList.toggle("is-active", button.dataset.pendingSort === pendingRequestSort);
