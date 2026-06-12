@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.squarespace-cdn.com" />
-    <link rel="stylesheet" href="./styles.css?v=account-switcher-drag-scroll" />
+    <link rel="stylesheet" href="./styles.css?v=tip-message-limit" />
   </head>
   <body>
     <header class="topbar">
@@ -364,6 +364,7 @@
                 <button id="profileMuteButton" class="icon-button profile-social-button" type="button" aria-label="ミュート" title="ミュート"></button>
                 <button id="profileBlockButton" class="icon-button profile-social-button profile-block-button" type="button" aria-label="ブロック" title="ブロック"></button>
                 <button id="profileRequestButton" class="soft-button" type="button">依頼受付を見る</button>
+                <button id="profileTipButton" class="soft-button profile-tip-button" type="button">投げ銭</button>
                 <button id="profileFollowingButton" class="icon-button profile-social-button profile-following-button" type="button" aria-label="フォロー中一覧" title="フォロー中一覧" hidden>
                   <svg aria-hidden="true" viewBox="0 0 24 24">
                     <path d="M16 20v-1.4a4.6 4.6 0 0 0-4.6-4.6H6.6A4.6 4.6 0 0 0 2 18.6V20" />
@@ -661,6 +662,94 @@
           </section>
         </div>
       </section>
+      <section id="tipView" class="tip-view app-view" hidden>
+        <button id="backFromTip" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <div class="tip-shell">
+          <header class="tip-hero">
+            <div>
+              <p class="eyebrow">One-time support</p>
+              <h1><span id="tipCreatorName">Creator</span>に投げ銭</h1>
+              <p>ログインしていなくても、好きな金額で単発支援できます。継続加入ではなく、その場だけの応援として送る想定です。</p>
+            </div>
+            <div id="tipCreatorAvatar" class="tip-creator-avatar" aria-hidden="true">V</div>
+          </header>
+          <div class="tip-layout">
+            <section class="tip-panel" aria-labelledby="tipAmountTitle">
+              <div class="section-heading-row">
+                <div>
+                  <p class="eyebrow">Amount</p>
+                  <h2 id="tipAmountTitle">金額を自由に入力</h2>
+                </div>
+              </div>
+              <div class="tip-presets" aria-label="投げ銭プリセット">
+                <button type="button" data-tip-preset="500">¥500</button>
+                <button type="button" data-tip-preset="1000">¥1,000</button>
+                <button type="button" data-tip-preset="3000">¥3,000</button>
+                <button type="button" data-tip-preset="10000">¥10,000</button>
+              </div>
+              <label class="field tip-amount-field">
+                <span>投げ銭額</span>
+                <input id="tipAmountInput" type="number" min="1" step="1" placeholder="好きな金額を入力" inputmode="numeric" />
+              </label>
+              <label class="field">
+                <span>メッセージ任意</span>
+                <textarea id="tipMessageInput" rows="4" maxlength="80" placeholder="作品への感想や応援コメントなど"></textarea>
+                <small id="tipMessageLimit" class="tip-message-limit">現在の上限: 80文字 / 0文字</small>
+              </label>
+              <label class="settings-row tip-anonymous-row">
+                <span><strong>匿名で送る</strong><small>相手にはゲスト支援として表示される想定です</small></span>
+                <input id="tipAnonymousInput" type="checkbox" />
+              </label>
+            </section>
+            <aside class="tip-checkout-card" aria-labelledby="tipCheckoutTitle">
+              <p class="eyebrow">Checkout</p>
+              <h2 id="tipCheckoutTitle">支払い確認</h2>
+              <div class="tip-summary">
+                <span>支援先</span>
+                <strong id="tipSummaryCreator">Creator</strong>
+                <span>金額</span>
+                <strong id="tipSummaryAmount">¥0</strong>
+                <span>種別</span>
+                <strong>単発投げ銭</strong>
+              </div>
+              <p class="tip-note">実装時はStripeなどの決済画面へ接続する想定です。モックでは送信完了の見た目だけ確認できます。</p>
+              <button id="tipSubmitButton" class="primary-button" type="button" disabled>投げ銭する</button>
+            </aside>
+          </div>
+        </div>
+      </section>
+      <dialog id="tipThanksDialog" class="request-sheet-dialog tip-thanks-dialog" aria-labelledby="tipThanksTitle">
+        <form method="dialog" class="request-sheet-card tip-thanks-card">
+          <div class="tip-thanks-burst" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div id="tipThanksAvatar" class="tip-thanks-avatar" aria-hidden="true">V</div>
+          <p class="eyebrow">Tip sent</p>
+          <h2 id="tipThanksTitle">投げ銭を送りました</h2>
+          <p id="tipThanksMessage" class="tip-thanks-message"></p>
+          <div id="tipThanksUserMessageWrap" class="tip-thanks-user-message" hidden>
+            <span>送ったメッセージ</span>
+            <p id="tipThanksUserMessage"></p>
+          </div>
+          <div class="tip-thanks-meta">
+            <span>支援先</span>
+            <strong id="tipThanksCreator">Creator</strong>
+            <span>金額</span>
+            <strong id="tipThanksAmount">¥0</strong>
+          </div>
+          <button id="tipThanksClose" class="primary-button" type="button">閉じる</button>
+        </form>
+      </dialog>
       <section id="settingsView" class="settings-view app-view" hidden>
         <button id="backFromSettings" class="soft-button" type="button">
           <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -2666,6 +2755,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=account-switcher-drag-scroll"></script>
+    <script src="./app.js?v=tip-message-limit"></script>
   </body>
 </html>

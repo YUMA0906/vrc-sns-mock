@@ -14,6 +14,7 @@ Veacon is a static frontend mock for a VRChat creator platform. It combines:
 - Event discovery and user-submitted event applications.
 - Circle/community features with circle-only posting and circle management.
 - Membership support for creators and circles.
+- One-time tip support pages opened from creator profiles, with free-form amount entry and guest-friendly mock checkout.
 - Notifications, settings, admin review, and backend-spec reference screens.
 
 The prototype is currently implemented as a single static app:
@@ -80,6 +81,7 @@ Update this document in the same commit whenever a change affects:
 
 ## Recent Changes
 
+- 2026-06-12: Added one-time tipping as a separate support flow from Memberships. Public creator profiles now show a `投げ銭` action that routes to `#tip/{creator-slug}`; the tip page accepts any positive free-form amount, optional message, anonymous sending, and displays a mock checkout card without requiring login. The optional message limit scales by amount: under ¥500 = 80 chars, ¥500+ = 120, ¥1,000+ = 180, ¥3,000+ = 320, ¥10,000+ = 600. After sending, a more celebratory creator-thank-you popup opens with the creator avatar, configured thank-you text, sender message when present, recipient, and amount.
 - 2026-06-12: Adjusted requester-side My Requests cards for smartphone layouts. The mobile CSS now removes the previous fixed `560px` minimum card width, constrains card content to the viewport, wraps metadata safely, and keeps status/turn pills readable without horizontal overflow.
 - 2026-06-12: Updated the stylesheet cache key in `index.html` so local/browser previews load the corrected mobile card styles.
 - 2026-06-12: Added mobile account-menu scroll locking. When the smartphone account menu is open, the underlying home/feed page is fixed at its current scroll position and restored when the menu closes, while the menu itself has a capped height and remains internally scrollable. The document root is also locked and background `touchmove` is prevented outside the menu to avoid mobile browser scroll leakage.
@@ -125,6 +127,7 @@ Routing is hash-based in `routeFromHash()` in `app.js`.
 | `#post/{id}` | Opens home feed and then opens the post modal for the matching post. |
 | `#profile/{slug}` | Public creator profile page. |
 | `#me` | Current user's profile page. |
+| `#tip/{creatorSlug}` | One-time tipping page for a creator. Supports guest-friendly free-form amount tips. |
 | `#request/{creatorSlug}/{postId}` | Commission request page for a creator/request post. |
 | `#request-manager` | Creator-side request management overview. |
 | `#request-manager/{id}` | Request detail and chat/workflow screen. |

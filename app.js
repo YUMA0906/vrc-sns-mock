@@ -825,6 +825,7 @@ const serviceView = document.querySelector("#serviceView");
 const adminView = document.querySelector("#adminView");
 const backendSpecView = document.querySelector("#backendSpecView");
 const subscriptionsView = document.querySelector("#subscriptionsView");
+const tipView = document.querySelector("#tipView");
 const eventDetailView = document.querySelector("#eventDetailView");
 const eventsView = document.querySelector("#eventsView");
 const circleView = document.querySelector("#circleView");
@@ -929,6 +930,7 @@ const profileNotifyButton = document.querySelector("#profileNotifyButton");
 const profileMuteButton = document.querySelector("#profileMuteButton");
 const profileBlockButton = document.querySelector("#profileBlockButton");
 const profileRequestButton = document.querySelector("#profileRequestButton");
+const profileTipButton = document.querySelector("#profileTipButton");
 const profileFollowingButton = document.querySelector("#profileFollowingButton");
 const profileShareButton = document.querySelector("#profileShareButton");
 const trustSummaryText = document.querySelector("#trustSummaryText");
@@ -1368,6 +1370,26 @@ const subscriptionPlanDetailPerks = document.querySelector("#subscriptionPlanDet
 const subscriptionPlanDetailNote = document.querySelector("#subscriptionPlanDetailNote");
 const subscriptionPlanDetailJoin = document.querySelector("#subscriptionPlanDetailJoin");
 const subscriptionPlanDetailLeave = document.querySelector("#subscriptionPlanDetailLeave");
+const backFromTip = document.querySelector("#backFromTip");
+const tipCreatorName = document.querySelector("#tipCreatorName");
+const tipCreatorAvatar = document.querySelector("#tipCreatorAvatar");
+const tipAmountInput = document.querySelector("#tipAmountInput");
+const tipMessageInput = document.querySelector("#tipMessageInput");
+const tipMessageLimit = document.querySelector("#tipMessageLimit");
+const tipAnonymousInput = document.querySelector("#tipAnonymousInput");
+const tipSummaryCreator = document.querySelector("#tipSummaryCreator");
+const tipSummaryAmount = document.querySelector("#tipSummaryAmount");
+const tipSubmitButton = document.querySelector("#tipSubmitButton");
+const tipPresetButtons = [...document.querySelectorAll("[data-tip-preset]")];
+const tipThanksDialog = document.querySelector("#tipThanksDialog");
+const tipThanksAvatar = document.querySelector("#tipThanksAvatar");
+const tipThanksTitle = document.querySelector("#tipThanksTitle");
+const tipThanksMessage = document.querySelector("#tipThanksMessage");
+const tipThanksUserMessageWrap = document.querySelector("#tipThanksUserMessageWrap");
+const tipThanksUserMessage = document.querySelector("#tipThanksUserMessage");
+const tipThanksCreator = document.querySelector("#tipThanksCreator");
+const tipThanksAmount = document.querySelector("#tipThanksAmount");
+const tipThanksClose = document.querySelector("#tipThanksClose");
 
 let activeCategory = "All";
 let activeView = "discover";
@@ -1417,6 +1439,7 @@ let specsReturnHash = "";
 let profileReturnHash = "";
 let requestPageReturnHash = "";
 let subscriptionsReturnHash = "";
+let tipReturnHash = "";
 let subscriptionsQuery = "";
 let activeRequestManagerItemId = null;
 let activeMyRequestItemId = null;
@@ -1559,15 +1582,15 @@ let userAccounts = [
   }
 ];
 const creatorProfileMeta = {
-  "Mika Alterworks": { joinedAt: "2022-05-09", premiumSince: "2024-06-01", earlyPremiumSupporter: true },
+  "Mika Alterworks": { joinedAt: "2022-05-09", premiumSince: "2024-06-01", earlyPremiumSupporter: true, tipThanks: "投げ銭ありがとう！いただいた応援は次の衣装検証とサンプル制作に大事に使わせてもらいます。" },
   "Lumi Photo": { joinedAt: "2023-01-20", premiumSince: "2024-07-03", earlyPremiumSupporter: true },
   "Aoi Retouch": { joinedAt: "2023-09-14", premiumSince: "", earlyPremiumSupporter: false },
   "Frame Drift": { joinedAt: "2022-11-03", premiumSince: "2024-10-07", earlyPremiumSupporter: false },
-  "Orbit Build": { joinedAt: "2021-12-26", premiumSince: "2024-06-12", earlyPremiumSupporter: true },
+  "Orbit Build": { joinedAt: "2021-12-26", premiumSince: "2024-06-12", earlyPremiumSupporter: true, tipThanks: "応援ありがとうございます。軽くて撮りたくなるワールド作りの実験費に回します。" },
   "Rin Works": { joinedAt: "2024-02-16", premiumSince: "", earlyPremiumSupporter: false },
   "Yoru Snap": { joinedAt: "2025-01-28", premiumSince: "", earlyPremiumSupporter: false },
   "Nagi Closet": { joinedAt: "2024-05-05", premiumSince: "2025-01-09", earlyPremiumSupporter: false },
-  "Veacon運営": { joinedAt: "2026-06-01", premiumSince: "2026-06-01", earlyPremiumSupporter: false }
+  "Veacon運営": { joinedAt: "2026-06-01", premiumSince: "2026-06-01", earlyPremiumSupporter: false, tipThanks: "Veaconへの応援ありがとうございます。VRChatの創作文化が続く場所づくりに使わせていただきます。" }
 };
 const creatorSubscriptionPrograms = {
   "You": [
@@ -4828,6 +4851,7 @@ function eventOrganizerBySlug(slug) {
 }
 
 function profileNameBySlug(slug) {
+  if (slug === "you") return "You";
   return profileNameFromEntry(creatorBySlug(slug)) || eventOrganizerBySlug(slug);
 }
 
@@ -5513,6 +5537,7 @@ function renderSubscriptionsPage({ scroll = true } = {}) {
   adminView.hidden = true;
   backendSpecView.hidden = true;
   if (subscriptionsView) subscriptionsView.hidden = false;
+  if (tipView) tipView.hidden = true;
   updateTopbarSearchVisibility();
   if (subscriptionsSearchInput && subscriptionsSearchInput.value !== subscriptionsQuery) {
     subscriptionsSearchInput.value = subscriptionsQuery;
@@ -5607,6 +5632,166 @@ function returnFromSubscriptionsPage() {
   }
   history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
   routeFromHash();
+}
+
+function tipDisplayName(creator) {
+  if (creator === "You") return myProfile.displayName || "You";
+  return creator || "Creator";
+}
+
+function tipAmountValue() {
+  return Math.max(0, Math.floor(Number(tipAmountInput?.value || 0)));
+}
+
+function tipMessageLimitForAmount(amount) {
+  if (amount >= 10000) return 600;
+  if (amount >= 3000) return 320;
+  if (amount >= 1000) return 180;
+  if (amount >= 500) return 120;
+  return 80;
+}
+
+function updateTipMessageLimit({ trim = true } = {}) {
+  if (!tipMessageInput) return;
+  const limit = tipMessageLimitForAmount(tipAmountValue());
+  tipMessageInput.maxLength = limit;
+  if (trim && tipMessageInput.value.length > limit) {
+    tipMessageInput.value = tipMessageInput.value.slice(0, limit);
+  }
+  if (tipMessageLimit) {
+    tipMessageLimit.textContent = `現在の上限: ${limit}文字 / ${tipMessageInput.value.length}文字`;
+    tipMessageLimit.classList.toggle("is-near-limit", tipMessageInput.value.length >= Math.max(1, limit - 20));
+  }
+}
+
+function updateTipSummary() {
+  const amount = tipAmountValue();
+  updateTipMessageLimit();
+  if (tipSummaryAmount) tipSummaryAmount.textContent = amount > 0 ? formatYen(amount) : "¥0";
+  if (tipSubmitButton) {
+    tipSubmitButton.disabled = amount <= 0;
+    tipSubmitButton.classList.toggle("is-disabled", amount <= 0);
+  }
+  tipPresetButtons.forEach((button) => {
+    button.classList.toggle("is-active", Number(button.dataset.tipPreset || 0) === amount);
+  });
+}
+
+function tipCreatorAvatarImage(creator, fallbackPost = null) {
+  if (creator === "You") return myProfile.avatar || "";
+  return fallbackPost?.image || creatorPosts(creator)[0]?.image || creatorBySlug(slugify(creator))?.image || "";
+}
+
+function tipThanksMessageFor(creator) {
+  const meta = profileMetaFor(creator);
+  if (meta?.tipThanks) return meta.tipThanks;
+  return "投げ銭ありがとうございます。いただいた応援を次の作品づくりに大切に使わせてもらいます。";
+}
+
+function openTipThanksDialog(creator, amount, userMessage = "") {
+  if (!tipThanksDialog) {
+    showProfileCopyToast(`${tipDisplayName(creator)}に${formatYen(amount)}の投げ銭を送信しました`);
+    return;
+  }
+  const displayName = tipDisplayName(creator);
+  const avatarImage = tipCreatorAvatarImage(creator);
+  if (tipThanksTitle) tipThanksTitle.textContent = `${displayName}からメッセージが届きました`;
+  if (tipThanksMessage) tipThanksMessage.textContent = tipThanksMessageFor(creator);
+  if (tipThanksUserMessageWrap) tipThanksUserMessageWrap.hidden = !userMessage;
+  if (tipThanksUserMessage) tipThanksUserMessage.textContent = userMessage;
+  if (tipThanksCreator) tipThanksCreator.textContent = displayName;
+  if (tipThanksAmount) tipThanksAmount.textContent = formatYen(amount);
+  if (tipThanksAvatar) {
+    tipThanksAvatar.textContent = avatarImage ? "" : displayName.slice(0, 1).toUpperCase();
+    tipThanksAvatar.style.backgroundImage = avatarImage ? `url("${avatarImage}")` : "";
+    tipThanksAvatar.classList.toggle("has-image", Boolean(avatarImage));
+  }
+  showModalElement(tipThanksDialog);
+}
+
+function closeTipThanksDialog() {
+  if (!tipThanksDialog || !modalIsOpen(tipThanksDialog)) return;
+  closeModalElement(tipThanksDialog);
+}
+
+function renderTipPage(slug) {
+  const creator = profileNameBySlug(slug);
+  if (!creator) {
+    showFeed();
+    return;
+  }
+
+  const posts = creator === "You" ? myPosts : creatorPosts(creator);
+  const fallbackPost = posts[0] || creatorBySlug(slug);
+  activeProfile = creator;
+  hideMyRequestViews();
+  feedView.hidden = true;
+  profileView.hidden = true;
+  requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
+  eventsView.hidden = true;
+  circleView.hidden = true;
+  missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
+  if (subscriptionsView) subscriptionsView.hidden = true;
+  if (tipView) tipView.hidden = false;
+  updateTopbarSearchVisibility();
+
+  const displayName = tipDisplayName(creator);
+  if (tipCreatorName) tipCreatorName.textContent = displayName;
+  if (tipSummaryCreator) tipSummaryCreator.textContent = displayName;
+  if (tipCreatorAvatar) {
+    const avatarImage = tipCreatorAvatarImage(creator, fallbackPost);
+    tipCreatorAvatar.textContent = avatarImage ? "" : displayName.slice(0, 1).toUpperCase();
+    tipCreatorAvatar.style.backgroundImage = avatarImage ? `url("${avatarImage}")` : "";
+    tipCreatorAvatar.classList.toggle("has-image", Boolean(avatarImage));
+  }
+  if (tipAmountInput) tipAmountInput.value = "";
+  if (tipMessageInput) tipMessageInput.value = "";
+  if (tipAnonymousInput) tipAnonymousInput.checked = false;
+  updateTipMessageLimit();
+  updateTipSummary();
+  scrollPageTop();
+}
+
+function openTipPage(creator) {
+  if (!creator) return;
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
+  if (modalIsOpen(composeDialog)) closeComposeDialog();
+  if (modalIsOpen(requestComposeDialog)) closeRequestComposeDialog();
+  if (location.hash && !location.hash.startsWith("#tip/")) {
+    tipReturnHash = location.hash;
+  } else if (!location.hash) {
+    tipReturnHash = "";
+  }
+  location.hash = `tip/${slugify(creator)}`;
+  renderTipPage(slugify(creator));
+}
+
+function returnFromTipPage() {
+  const targetHash = tipReturnHash;
+  tipReturnHash = "";
+  if (!targetHash) {
+    showFeed();
+    return;
+  }
+  history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
+  routeFromHash();
+}
+
+function submitTip() {
+  const amount = tipAmountValue();
+  if (!activeProfile || amount <= 0) return;
+  const userMessage = tipMessageInput?.value.trim() || "";
+  openTipThanksDialog(activeProfile, amount, userMessage);
+  if (tipMessageInput) tipMessageInput.value = "";
+  updateTipMessageLimit();
 }
 
 async function loadSubscriptionPlanImage(file) {
@@ -6600,6 +6785,7 @@ function updateTopbarSearchVisibility() {
 function hideMyRequestViews() {
   if (myRequestsView) myRequestsView.hidden = true;
   if (myRequestDetailView) myRequestDetailView.hidden = true;
+  if (tipView) tipView.hidden = true;
 }
 
 function showFeed() {
@@ -6618,11 +6804,12 @@ function showFeed() {
   adminView.hidden = true;
   backendSpecView.hidden = true;
   if (subscriptionsView) subscriptionsView.hidden = true;
+  if (tipView) tipView.hidden = true;
   profileView.hidden = true;
   profileView.classList.remove("is-mine");
   feedView.hidden = false;
   updateTopbarSearchVisibility();
-  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#my-requests") || location.hash.startsWith("#event/") || location.hash.startsWith("#circle/") || location.hash.startsWith("#circle-manager") || location.hash === "#circles" || location.hash === "#events" || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#subscriptions" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#admin" || location.hash === "#backend-spec" || location.hash === "#me") {
+  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#tip/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#my-requests") || location.hash.startsWith("#event/") || location.hash.startsWith("#circle/") || location.hash.startsWith("#circle-manager") || location.hash === "#circles" || location.hash === "#events" || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#subscriptions" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#admin" || location.hash === "#backend-spec" || location.hash === "#me") {
     history.pushState("", document.title, location.pathname + location.search);
   }
   renderPins();
@@ -6634,6 +6821,7 @@ function routeFromHash() {
   closeSavedSearchContextMenu();
   hideFloatingPostActions();
   if (subscriptionsView) subscriptionsView.hidden = true;
+  if (tipView) tipView.hidden = true;
   const postMatch = location.hash.match(/^#post\/(\d+)$/);
   if (postMatch) {
     showFeed();
@@ -6711,6 +6899,11 @@ function routeFromHash() {
   }
   if (location.hash === "#subscriptions") {
     renderSubscriptionsPage();
+    return;
+  }
+  const tipMatch = location.hash.match(/^#tip\/(.+)$/);
+  if (tipMatch) {
+    renderTipPage(tipMatch[1]);
     return;
   }
   if (location.hash === "#me") {
@@ -11464,6 +11657,10 @@ profileRequestButton.addEventListener("click", () => {
   }
   openRequestPage(activeProfile);
 });
+profileTipButton?.addEventListener("click", () => {
+  if (profileTipButton.hidden || !activeProfile) return;
+  openTipPage(activeProfile);
+});
 profileShareButton?.addEventListener("click", shareCurrentProfile);
 subscriptionPlanManageButton?.addEventListener("click", () => openSubscriptionPlanDialog());
 subscriptionPlanForm?.addEventListener("submit", saveSubscriptionPlan);
@@ -11511,6 +11708,25 @@ subscriptionPlanDetailLeave?.addEventListener("click", () => {
   closeSubscriptionPlanDetailDialog();
 });
 backFromSubscriptions?.addEventListener("click", returnFromSubscriptionsPage);
+backFromTip?.addEventListener("click", returnFromTipPage);
+tipAmountInput?.addEventListener("input", updateTipSummary);
+tipMessageInput?.addEventListener("input", () => updateTipMessageLimit({ trim: false }));
+tipPresetButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    if (!tipAmountInput) return;
+    tipAmountInput.value = button.dataset.tipPreset || "";
+    updateTipSummary();
+  });
+});
+tipSubmitButton?.addEventListener("click", submitTip);
+tipThanksClose?.addEventListener("click", closeTipThanksDialog);
+tipThanksDialog?.addEventListener("click", (event) => {
+  if (event.target === tipThanksDialog) closeTipThanksDialog();
+});
+tipThanksDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeTipThanksDialog();
+});
 subscriptionsCreatePlanButton?.addEventListener("click", () => openSubscriptionPlanDialog());
 subscriptionsSearchInput?.addEventListener("input", () => {
   subscriptionsQuery = subscriptionsSearchInput.value.trim();
@@ -13174,6 +13390,8 @@ function renderProfile(creator) {
   missionView.hidden = true;
   adminView.hidden = true;
   backendSpecView.hidden = true;
+  if (subscriptionsView) subscriptionsView.hidden = true;
+  if (tipView) tipView.hidden = true;
   profileView.hidden = false;
   profileView.classList.toggle("is-mine", isMine);
   const bannerImage = isMine ? myProfile.banner : first.image;
@@ -13232,6 +13450,7 @@ function renderProfile(creator) {
     if (profileFollowingButton) profileFollowingButton.hidden = false;
     updateProfileSocialButtons(creator, true);
     profileRequestButton.hidden = true;
+    if (profileTipButton) profileTipButton.hidden = true;
   } else {
     activeProfileArchiveTab = "posts";
     profileArchiveTabs.forEach((button) => {
@@ -13244,6 +13463,10 @@ function renderProfile(creator) {
     updateProfileSocialButtons(creator, false);
     profileRequestButton.hidden = !directPosts.some((pin) => pin.request?.open);
     profileRequestButton.textContent = t("requestOpen");
+    if (profileTipButton) {
+      profileTipButton.hidden = false;
+      profileTipButton.textContent = "投げ銭";
+    }
     if (savedPostsSection) savedPostsSection.hidden = true;
   }
 
