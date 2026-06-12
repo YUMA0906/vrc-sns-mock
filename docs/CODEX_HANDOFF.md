@@ -86,7 +86,7 @@ Update this document in the same commit whenever a change affects:
 - 2026-06-12: Added notification-origin return behavior. When a notification opens a post modal or any target page, the Back button or close button now returns to `#notifications` before falling back to that target page's normal parent route.
 - 2026-06-12: Added a creator-set retake limit to commission post creation. Request compose drafts, templates, previews, generated request posts, request pages, and service-line summaries now carry `retakeLimit` so creators can specify how many retakes are included.
 - 2026-06-12: Adjusted smartphone home tabs so the add-tab plus button is visible without horizontal scrolling. The three default feed tabs share the first row, the plus button is fixed at the right edge, and custom saved-search tabs move to a second horizontally scrollable row when present.
-- 2026-06-12: Added a horizontal-scroll cue for My Requests status tabs. When the tab track overflows, the right edge shows a fade and animated chevron cue; it updates as the user drags or wheels the tab strip and respects reduced-motion mode.
+- 2026-06-12: Added a visible horizontal-scroll cue for My Requests status tabs. When the tab track overflows, the right edge shows a stronger fade plus an animated `横にスワイプ` chip so users can tell the tabs continue horizontally.
 
 Do not update this document for tiny color-only tweaks unless the tweak reflects a durable design rule.
 
