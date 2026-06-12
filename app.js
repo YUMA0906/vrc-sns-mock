@@ -10442,9 +10442,12 @@ function clampMyRequestsTabOffset() {
   const maxOffset = Math.max(0, myRequestsTabsScroller.scrollWidth - myRequestsTabsScroller.clientWidth);
   myRequestsTabOffset = Math.max(0, Math.min(myRequestsTabsScroller.scrollLeft, maxOffset));
   const hasOverflow = maxOffset > 2;
-  myRequestsTabsScroller.classList.toggle("has-overflow", hasOverflow);
-  myRequestsTabsScroller.classList.toggle("is-at-start", !hasOverflow || myRequestsTabOffset <= 2);
-  myRequestsTabsScroller.classList.toggle("is-at-end", !hasOverflow || myRequestsTabOffset >= maxOffset - 2);
+  const shell = myRequestsTabsScroller.closest(".my-requests-tabs-shell");
+  [myRequestsTabsScroller, shell].filter(Boolean).forEach((element) => {
+    element.classList.toggle("has-overflow", hasOverflow);
+    element.classList.toggle("is-at-start", !hasOverflow || myRequestsTabOffset <= 2);
+    element.classList.toggle("is-at-end", !hasOverflow || myRequestsTabOffset >= maxOffset - 2);
+  });
   return maxOffset;
 }
 
@@ -10465,9 +10468,11 @@ function ensureMyRequestTabVisible(button) {
 
 function enableHorizontalDragScroll(scroller, track) {
   if (!scroller || !track) return;
+  const shell = scroller.closest(".my-requests-tabs-shell") || scroller;
   let dragState = null;
   let suppressClick = false;
   let inertiaFrame = 0;
+  let scrollIdleTimer = 0;
 
   const stopInertia = () => {
     if (!inertiaFrame) return;
@@ -10476,6 +10481,12 @@ function enableHorizontalDragScroll(scroller, track) {
   };
 
   const syncState = () => {
+    shell.classList.add("is-scrolling");
+    if (scrollIdleTimer) window.clearTimeout(scrollIdleTimer);
+    scrollIdleTimer = window.setTimeout(() => {
+      shell.classList.remove("is-scrolling");
+      scrollIdleTimer = 0;
+    }, 420);
     clampMyRequestsTabOffset();
   };
 
@@ -10493,6 +10504,7 @@ function enableHorizontalDragScroll(scroller, track) {
       moved: false,
     };
     scroller.classList.add("is-drag-scroll-ready");
+    shell.classList.add("is-drag-scroll-ready");
   };
 
   const move = (event, clientX, clientY) => {
@@ -10506,6 +10518,7 @@ function enableHorizontalDragScroll(scroller, track) {
     dragState.moved = true;
     suppressClick = true;
     scroller.classList.add("is-drag-scrolling");
+    shell.classList.add("is-drag-scrolling");
     scroller.scrollLeft = dragState.left - deltaX;
     const now = performance.now();
     const elapsed = Math.max(1, now - dragState.lastTime);
@@ -10521,6 +10534,7 @@ function enableHorizontalDragScroll(scroller, track) {
     const velocity = dragState.moved ? dragState.velocity : 0;
     dragState = null;
     scroller.classList.remove("is-drag-scroll-ready", "is-drag-scrolling");
+    shell.classList.remove("is-drag-scroll-ready", "is-drag-scrolling");
     if (Math.abs(velocity) > 0.08) {
       let currentVelocity = velocity * 16;
       const step = () => {

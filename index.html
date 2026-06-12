@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.squarespace-cdn.com" />
-    <link rel="stylesheet" href="./styles.css?v=my-requests-native-scroll" />
+    <link rel="stylesheet" href="./styles.css?v=my-requests-fixed-cue" />
   </head>
   <body>
     <header class="topbar">
@@ -1025,17 +1025,19 @@
               <span><strong>進行状況</strong>送信済み、相談中、制作中、評価待ち、完了済みまで依頼ごとに追えます。</span>
             </div>
           </header>
-          <div class="my-requests-tabs" aria-label="マイリクエストのステータス">
-            <div class="my-requests-tabs-track">
-              <button class="is-active" type="button" data-my-request-state="todo">やることリスト <small>0</small></button>
-              <button type="button" data-my-request-state="draft">依頼下書き <small>0</small></button>
-              <button type="button" data-my-request-state="sent">送信済み <small>0</small></button>
-              <button type="button" data-my-request-state="consulting">承認前相談中 <small>0</small></button>
-              <button type="button" data-my-request-state="in_progress">制作中 <small>0</small></button>
-              <button type="button" data-my-request-state="review">納品確認&評価ターン <small>0</small></button>
-              <button type="button" data-my-request-state="creator_review">制作者からの評価待ち <small>0</small></button>
-              <button type="button" data-my-request-state="completed">完了済依頼 <small>0</small></button>
-              <button type="button" data-my-request-state="closed">キャンセル / 拒否 / 通報済 <small>0</small></button>
+          <div class="my-requests-tabs-shell">
+            <div class="my-requests-tabs" aria-label="マイリクエストのステータス">
+              <div class="my-requests-tabs-track">
+                <button class="is-active" type="button" data-my-request-state="todo">やることリスト <small>0</small></button>
+                <button type="button" data-my-request-state="draft">依頼下書き <small>0</small></button>
+                <button type="button" data-my-request-state="sent">送信済み <small>0</small></button>
+                <button type="button" data-my-request-state="consulting">承認前相談中 <small>0</small></button>
+                <button type="button" data-my-request-state="in_progress">制作中 <small>0</small></button>
+                <button type="button" data-my-request-state="review">納品確認&評価ターン <small>0</small></button>
+                <button type="button" data-my-request-state="creator_review">制作者からの評価待ち <small>0</small></button>
+                <button type="button" data-my-request-state="completed">完了済依頼 <small>0</small></button>
+                <button type="button" data-my-request-state="closed">キャンセル / 拒否 / 通報済 <small>0</small></button>
+              </div>
             </div>
             <span class="my-requests-scroll-cue" aria-hidden="true">
               <span>横にスワイプ</span>
@@ -2660,6 +2662,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=my-requests-native-scroll"></script>
+    <script src="./app.js?v=my-requests-fixed-cue"></script>
   </body>
 </html>

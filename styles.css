@@ -5761,8 +5761,13 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   letter-spacing: 0;
 }
 
-.my-requests-tabs {
+.my-requests-tabs-shell {
   position: relative;
+  width: 100%;
+  max-width: 100%;
+}
+
+.my-requests-tabs {
   width: 100%;
   max-width: 100%;
   padding: 4px;
@@ -5784,7 +5789,7 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   display: none;
 }
 
-.my-requests-tabs.has-overflow:not(.is-at-end)::before {
+.my-requests-tabs-shell.has-overflow:not(.is-at-end)::before {
   content: "";
   position: absolute;
   inset: 4px 4px 4px auto;
@@ -5813,6 +5818,8 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   opacity: 0.52;
   pointer-events: none;
   transform: translateY(-50%);
+  transition: opacity 180ms ease, visibility 180ms ease;
+  visibility: visible;
   box-shadow: 0 8px 18px rgba(20,20,20,0.08);
 }
 
@@ -5820,8 +5827,14 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   display: none;
 }
 
-.my-requests-tabs.has-overflow:not(.is-at-end) .my-requests-scroll-cue {
+.my-requests-tabs-shell.has-overflow:not(.is-at-end) .my-requests-scroll-cue {
   display: inline-flex;
+}
+
+.my-requests-tabs-shell.is-scrolling .my-requests-scroll-cue,
+.my-requests-tabs-shell.is-drag-scrolling .my-requests-scroll-cue {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .my-requests-scroll-cue svg {
@@ -6039,8 +6052,8 @@ body[data-theme="dark"] .my-requests-tabs button.is-active {
   color: #111;
 }
 
-[data-theme="dark"] .my-requests-tabs.has-overflow:not(.is-at-end)::before,
-body[data-theme="dark"] .my-requests-tabs.has-overflow:not(.is-at-end)::before {
+[data-theme="dark"] .my-requests-tabs-shell.has-overflow:not(.is-at-end)::before,
+body[data-theme="dark"] .my-requests-tabs-shell.has-overflow:not(.is-at-end)::before {
   background: linear-gradient(90deg, rgba(24,24,23,0), rgba(24,24,23,0.9) 48%, rgba(24,24,23,0.98));
 }
 

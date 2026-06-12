@@ -91,6 +91,7 @@ Update this document in the same commit whenever a change affects:
 - 2026-06-12: Temporarily hid circle entry points plus Service Guide, Operations, and Screen Specs from the visible navigation/menu surface. The underlying routes and views remain in the app for future reactivation.
 - 2026-06-12: Added a Settings privacy control for liked-post visibility. Users can choose whether liked posts are public or private; the mock keeps the owner's own My Page likes visible while hiding the liked-post archive tab from other profile views when set to private.
 - 2026-06-12: Reworked My Requests status tabs to use native horizontal scrolling instead of transform-based movement. The mobile tab strip now keeps momentum scrolling, updates overflow fades from `scrollLeft`, and uses a much quieter icon-only swipe cue.
+- 2026-06-12: Moved the My Requests swipe cue outside the scrolling tab strip so it stays fixed at the right edge instead of moving with the tabs. The cue now fades out while the tab strip is being scrolled or dragged, then returns after scrolling settles.
 
 Do not update this document for tiny color-only tweaks unless the tweak reflects a durable design rule.
 
