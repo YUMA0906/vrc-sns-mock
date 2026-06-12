@@ -95,6 +95,7 @@ Update this document in the same commit whenever a change affects:
 - 2026-06-12: Tightened the smartphone My Requests layout so the page itself no longer overflows horizontally. The request list hides horizontal overflow on mobile, cards are clipped within the viewport, and the tab strip remains the only horizontally scrollable surface.
 - 2026-06-12: Removed the right-edge gradient overlay from the My Requests status tab strip while keeping horizontal scrolling and the small swipe cue.
 - 2026-06-12: Added action-count badges for creator-side Request Manager and requester-side My Requests. Counts appear on the top action buttons and smartphone account menu items when there are items that require the user's next action.
+- 2026-06-12: Removed the duplicate desktop account-menu entry for My Requests because the desktop top action bar already has a dedicated My Requests button. The smartphone quick-action menu still keeps its My Requests entry.
 
 Do not update this document for tiny color-only tweaks unless the tweak reflects a durable design rule.
 

@@ -789,6 +789,10 @@ body[data-theme="dark"] .account-menu button:focus-visible {
   border-top: 1px solid var(--line);
 }
 
+#accountMenuMyRequests {
+  display: none !important;
+}
+
 #circlePageButton,
 [data-mobile-menu-action="circles"],
 #accountMenuService,
