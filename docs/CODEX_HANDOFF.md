@@ -96,6 +96,7 @@ Update this document in the same commit whenever a change affects:
 - 2026-06-12: Removed the right-edge gradient overlay from the My Requests status tab strip while keeping horizontal scrolling and the small swipe cue.
 - 2026-06-12: Added action-count badges for creator-side Request Manager and requester-side My Requests. Counts appear on the top action buttons and smartphone account menu items when there are items that require the user's next action.
 - 2026-06-12: Removed the duplicate desktop account-menu entry for My Requests because the desktop top action bar already has a dedicated My Requests button. The smartphone quick-action menu still keeps its My Requests entry.
+- 2026-06-12: Hardened the featured event carousel's infinite loop. Before each slide move, the track silently realigns to the real slide that matches the current event, then uses the cloned edge slides only for wraparound transitions so users do not see a jump from one end of the list to the other.
 
 Do not update this document for tiny color-only tweaks unless the tweak reflects a durable design rule.
 

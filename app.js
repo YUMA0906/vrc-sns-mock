@@ -3542,6 +3542,14 @@ function updateEventCarouselPosition(offsetPx = 0, visualIndex = eventVisualInde
   });
 }
 
+function alignEventCarouselToRealSlide(index = activeEventIndex) {
+  const campaigns = getEventCampaignList();
+  if (campaigns.length <= 1) return;
+  const expectedVisualIndex = index + 1;
+  if (eventVisualIndex === expectedVisualIndex) return;
+  updateEventCarouselPosition(0, expectedVisualIndex, { immediate: true, skipDots: true });
+}
+
 function setEventCarouselMotion(duration = eventCarouselMotion.duration, easing = eventCarouselMotion.easing) {
   if (!eventCarouselTrack) return;
   eventCarouselTrack.style.setProperty("--event-carousel-duration", `${duration}ms`);
@@ -3601,6 +3609,7 @@ function goToEventSlide(index, options = {}) {
   if (!campaigns.length) return;
   const reason = options.reason || "button";
   const previousIndex = activeEventIndex;
+  alignEventCarouselToRealSlide(previousIndex);
   const normalizedIndex = (index + campaigns.length) % campaigns.length;
   activeEventIndex = normalizedIndex;
   eventLoopResetIndex = null;
@@ -3615,10 +3624,13 @@ function goToEventSlide(index, options = {}) {
           : 980;
   setEventCarouselMotion(motionDuration);
 
-  if (campaigns.length > 1 && previousIndex === 0 && index < 0) {
+  const isWrappingBackward = campaigns.length > 1 && previousIndex === 0 && normalizedIndex === campaigns.length - 1;
+  const isWrappingForward = campaigns.length > 1 && previousIndex === campaigns.length - 1 && normalizedIndex === 0;
+
+  if (isWrappingBackward) {
     eventLoopResetIndex = normalizedIndex;
     updateEventCarouselPosition(0, 0);
-  } else if (campaigns.length > 1 && previousIndex === campaigns.length - 1 && index >= campaigns.length) {
+  } else if (isWrappingForward) {
     eventLoopResetIndex = normalizedIndex;
     updateEventCarouselPosition(0, campaigns.length + 1);
   } else {
