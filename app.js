@@ -10439,9 +10439,8 @@ let myRequestsTabOffset = 0;
 
 function clampMyRequestsTabOffset() {
   if (!myRequestsTabsScroller || !myRequestsTabsTrack) return 0;
-  const maxOffset = Math.max(0, myRequestsTabsTrack.scrollWidth - myRequestsTabsScroller.clientWidth + 8);
-  myRequestsTabOffset = Math.max(0, Math.min(myRequestsTabOffset, maxOffset));
-  myRequestsTabsTrack.style.transform = `translate3d(${-myRequestsTabOffset}px, 0, 0)`;
+  const maxOffset = Math.max(0, myRequestsTabsScroller.scrollWidth - myRequestsTabsScroller.clientWidth);
+  myRequestsTabOffset = Math.max(0, Math.min(myRequestsTabsScroller.scrollLeft, maxOffset));
   const hasOverflow = maxOffset > 2;
   myRequestsTabsScroller.classList.toggle("has-overflow", hasOverflow);
   myRequestsTabsScroller.classList.toggle("is-at-start", !hasOverflow || myRequestsTabOffset <= 2);
@@ -10454,11 +10453,13 @@ function ensureMyRequestTabVisible(button) {
   const viewportWidth = myRequestsTabsScroller.clientWidth;
   const left = button.offsetLeft;
   const right = left + button.offsetWidth;
-  if (left < myRequestsTabOffset) {
-    myRequestsTabOffset = left;
-  } else if (right > myRequestsTabOffset + viewportWidth) {
-    myRequestsTabOffset = right - viewportWidth + 8;
+  let nextLeft = myRequestsTabsScroller.scrollLeft;
+  if (left < nextLeft) {
+    nextLeft = left;
+  } else if (right > nextLeft + viewportWidth) {
+    nextLeft = right - viewportWidth + 8;
   }
+  myRequestsTabsScroller.scrollTo({ left: Math.max(0, nextLeft), behavior: "smooth" });
   clampMyRequestsTabOffset();
 }
 
@@ -10466,14 +10467,29 @@ function enableHorizontalDragScroll(scroller, track) {
   if (!scroller || !track) return;
   let dragState = null;
   let suppressClick = false;
+  let inertiaFrame = 0;
+
+  const stopInertia = () => {
+    if (!inertiaFrame) return;
+    window.cancelAnimationFrame(inertiaFrame);
+    inertiaFrame = 0;
+  };
+
+  const syncState = () => {
+    clampMyRequestsTabOffset();
+  };
 
   const begin = (event, clientX, clientY) => {
     const maxOffset = clampMyRequestsTabOffset();
     if (!maxOffset) return;
+    stopInertia();
     dragState = {
       x: clientX,
       y: clientY,
-      left: myRequestsTabOffset,
+      left: scroller.scrollLeft,
+      lastX: clientX,
+      lastTime: performance.now(),
+      velocity: 0,
       moved: false,
     };
     scroller.classList.add("is-drag-scroll-ready");
@@ -10490,15 +10506,35 @@ function enableHorizontalDragScroll(scroller, track) {
     dragState.moved = true;
     suppressClick = true;
     scroller.classList.add("is-drag-scrolling");
-    myRequestsTabOffset = dragState.left - deltaX;
+    scroller.scrollLeft = dragState.left - deltaX;
+    const now = performance.now();
+    const elapsed = Math.max(1, now - dragState.lastTime);
+    dragState.velocity = (dragState.lastX - clientX) / elapsed;
+    dragState.lastX = clientX;
+    dragState.lastTime = now;
     clampMyRequestsTabOffset();
     event.preventDefault();
   };
 
   const end = () => {
     if (!dragState) return;
+    const velocity = dragState.moved ? dragState.velocity : 0;
     dragState = null;
     scroller.classList.remove("is-drag-scroll-ready", "is-drag-scrolling");
+    if (Math.abs(velocity) > 0.08) {
+      let currentVelocity = velocity * 16;
+      const step = () => {
+        scroller.scrollLeft += currentVelocity;
+        currentVelocity *= 0.92;
+        clampMyRequestsTabOffset();
+        if (Math.abs(currentVelocity) > 0.35) {
+          inertiaFrame = window.requestAnimationFrame(step);
+        } else {
+          inertiaFrame = 0;
+        }
+      };
+      inertiaFrame = window.requestAnimationFrame(step);
+    }
     if (suppressClick) {
       window.setTimeout(() => {
         suppressClick = false;
@@ -10517,18 +10553,7 @@ function enableHorizontalDragScroll(scroller, track) {
   scroller.addEventListener("mouseleave", () => {
     if (!dragState?.moved) end();
   });
-  scroller.addEventListener("touchstart", (event) => {
-    if (event.touches.length !== 1) return;
-    const touch = event.touches[0];
-    begin(event, touch.clientX, touch.clientY);
-  }, { passive: true });
-  scroller.addEventListener("touchmove", (event) => {
-    if (event.touches.length !== 1) return;
-    const touch = event.touches[0];
-    move(event, touch.clientX, touch.clientY);
-  }, { passive: false });
-  scroller.addEventListener("touchend", end);
-  scroller.addEventListener("touchcancel", end);
+  scroller.addEventListener("scroll", syncState, { passive: true });
   scroller.addEventListener("click", (event) => {
     if (!suppressClick) return;
     event.preventDefault();
@@ -10540,7 +10565,8 @@ function enableHorizontalDragScroll(scroller, track) {
     if (!clampMyRequestsTabOffset()) return;
     const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
     if (!delta) return;
-    myRequestsTabOffset += delta;
+    stopInertia();
+    scroller.scrollLeft += delta;
     clampMyRequestsTabOffset();
     event.preventDefault();
   }, { passive: false });

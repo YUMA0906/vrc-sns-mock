@@ -5766,7 +5766,7 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   width: 100%;
   max-width: 100%;
   padding: 4px;
-  overflow-x: hidden;
+  overflow-x: auto;
   overflow-y: hidden;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -5774,7 +5774,14 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   box-shadow: 0 14px 34px rgba(20,20,20,0.06);
   cursor: grab;
   user-select: none;
-  touch-action: pan-y;
+  touch-action: pan-x;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.my-requests-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .my-requests-tabs.has-overflow:not(.is-at-end)::before {
@@ -5795,20 +5802,22 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   z-index: 4;
   display: none;
   align-items: center;
-  gap: 4px;
-  min-height: 28px;
-  padding: 0 8px 0 10px;
+  width: 28px;
+  height: 28px;
   border: 1px solid rgba(20,20,20,0.12);
   border-radius: 999px;
   background: rgba(255,255,255,0.94);
   color: var(--ink);
-  font-size: 0.68rem;
-  font-weight: 880;
   line-height: 1;
+  justify-content: center;
+  opacity: 0.52;
   pointer-events: none;
   transform: translateY(-50%);
-  animation: myRequestsScrollCue 1800ms ease-in-out infinite;
-  box-shadow: 0 10px 24px rgba(20,20,20,0.12);
+  box-shadow: 0 8px 18px rgba(20,20,20,0.08);
+}
+
+.my-requests-scroll-cue span {
+  display: none;
 }
 
 .my-requests-tabs.has-overflow:not(.is-at-end) .my-requests-scroll-cue {
@@ -5816,24 +5825,13 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
 }
 
 .my-requests-scroll-cue svg {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   fill: none;
   stroke: currentColor;
   stroke-width: 2.6;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-@keyframes myRequestsScrollCue {
-  0%, 100% {
-    opacity: 0.8;
-    transform: translate(-3px, -50%);
-  }
-  45% {
-    opacity: 1;
-    transform: translate(4px, -50%);
-  }
 }
 
 .my-requests-tabs-track {
@@ -5845,8 +5843,6 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   min-width: max-content;
   max-width: none;
   white-space: nowrap;
-  will-change: transform;
-  transition: transform 180ms ease;
 }
 
 .my-requests-tabs.is-drag-scrolling {
@@ -5854,7 +5850,7 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
 }
 
 .my-requests-tabs.is-drag-scrolling .my-requests-tabs-track {
-  transition: none;
+  pointer-events: none;
 }
 
 .my-requests-tabs button {

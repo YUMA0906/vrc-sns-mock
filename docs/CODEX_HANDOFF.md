@@ -90,6 +90,7 @@ Update this document in the same commit whenever a change affects:
 - 2026-06-12: Removed duplicate smartphone account-menu entries by hiding the desktop menu copies of Memberships, My Requests, and light/dark toggle on mobile; the mobile quick-action versions remain visible.
 - 2026-06-12: Temporarily hid circle entry points plus Service Guide, Operations, and Screen Specs from the visible navigation/menu surface. The underlying routes and views remain in the app for future reactivation.
 - 2026-06-12: Added a Settings privacy control for liked-post visibility. Users can choose whether liked posts are public or private; the mock keeps the owner's own My Page likes visible while hiding the liked-post archive tab from other profile views when set to private.
+- 2026-06-12: Reworked My Requests status tabs to use native horizontal scrolling instead of transform-based movement. The mobile tab strip now keeps momentum scrolling, updates overflow fades from `scrollLeft`, and uses a much quieter icon-only swipe cue.
 
 Do not update this document for tiny color-only tweaks unless the tweak reflects a durable design rule.
 
