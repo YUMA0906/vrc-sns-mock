@@ -5789,17 +5789,6 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   display: none;
 }
 
-.my-requests-tabs-shell.has-overflow:not(.is-at-end)::before {
-  content: "";
-  position: absolute;
-  inset: 4px 4px 4px auto;
-  z-index: 2;
-  width: 118px;
-  border-radius: 999px;
-  pointer-events: none;
-  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.9) 48%, rgba(255,255,255,0.98));
-}
-
 .my-requests-scroll-cue {
   position: absolute;
   top: 50%;
@@ -6050,11 +6039,6 @@ body[data-theme="dark"] .my-requests-tabs button.is-active {
   background: #f4f1eb;
   border-color: #f4f1eb;
   color: #111;
-}
-
-[data-theme="dark"] .my-requests-tabs-shell.has-overflow:not(.is-at-end)::before,
-body[data-theme="dark"] .my-requests-tabs-shell.has-overflow:not(.is-at-end)::before {
-  background: linear-gradient(90deg, rgba(24,24,23,0), rgba(24,24,23,0.9) 48%, rgba(24,24,23,0.98));
 }
 
 [data-theme="dark"] .my-requests-scroll-cue,
