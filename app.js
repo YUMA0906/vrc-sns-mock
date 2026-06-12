@@ -1443,6 +1443,7 @@ let eventVisualIndex = 0;
 let eventLoopResetIndex = null;
 let eventDragFrame = 0;
 let ignoreEventSlideClick = false;
+let eventCarouselAnimating = false;
 let eventCarouselLastInteractionAt = Date.now();
 const eventAutoplayIdleDelay = 9000;
 const eventCarouselMotion = {
@@ -3485,6 +3486,7 @@ function renderEventCarousel() {
   const slides = buildEventSlides(campaigns);
   eventVisualIndex = campaigns.length > 1 ? activeEventIndex + 1 : activeEventIndex;
   eventLoopResetIndex = null;
+  eventCarouselAnimating = false;
 
   eventCarouselTrack.innerHTML = slides.map((event) => `
     <article class="event-slide" data-event-index="${event.sourceIndex ?? 0}" aria-roledescription="slide" aria-label="${event.title}">
@@ -3505,7 +3507,7 @@ function renderEventCarousel() {
         <div class="event-slide-side">
           ${event.image ? `
             <div class="event-slide-image-panel">
-              <img src="${event.image}" alt="${event.title}" draggable="false" loading="lazy" />
+              <img src="${event.image}" alt="${event.title}" draggable="false" loading="eager" decoding="async" />
             </div>
           ` : `
             <div class="event-slide-image-panel is-empty">
@@ -3607,6 +3609,7 @@ function scheduleEventAutoplay() {
 function goToEventSlide(index, options = {}) {
   const campaigns = getEventCampaignList();
   if (!campaigns.length) return;
+  if (eventCarouselAnimating && !options.force) return;
   const reason = options.reason || "button";
   const previousIndex = activeEventIndex;
   alignEventCarouselToRealSlide(previousIndex);
@@ -3629,11 +3632,14 @@ function goToEventSlide(index, options = {}) {
 
   if (isWrappingBackward) {
     eventLoopResetIndex = normalizedIndex;
+    eventCarouselAnimating = true;
     updateEventCarouselPosition(0, 0);
   } else if (isWrappingForward) {
     eventLoopResetIndex = normalizedIndex;
+    eventCarouselAnimating = true;
     updateEventCarouselPosition(0, campaigns.length + 1);
   } else {
+    eventCarouselAnimating = campaigns.length > 1 && eventVisualIndex !== (normalizedIndex + 1);
     updateEventCarouselPosition(0, campaigns.length > 1 ? normalizedIndex + 1 : normalizedIndex);
   }
   scheduleEventAutoplay();
@@ -3642,6 +3648,7 @@ function goToEventSlide(index, options = {}) {
 function startEventDrag(event) {
   const startLink = event.target.closest(".event-slide-card[href^='#event/']");
   if (!eventCarouselTrack || !startLink) return;
+  if (eventCarouselAnimating) return;
   if (event.pointerType === "mouse" && event.button !== 0) return;
   eventCarouselLastInteractionAt = Date.now();
   if (location.hash && !location.hash.startsWith("#event/")) {
@@ -3716,13 +3723,24 @@ function endEventDrag(event) {
 
 function handleEventTrackTransitionEnd(event) {
   if (!eventCarouselTrack || event.target !== eventCarouselTrack || event.propertyName !== "transform") return;
-  if (eventLoopResetIndex == null) return;
+  if (eventLoopResetIndex == null) {
+    eventCarouselAnimating = false;
+    return;
+  }
   const resetIndex = eventLoopResetIndex;
   eventLoopResetIndex = null;
-  eventCarouselTrack.classList.add("is-dragging");
-  updateEventCarouselPosition(0, resetIndex + 1);
-  void eventCarouselTrack.offsetWidth;
-  eventCarouselTrack.classList.remove("is-dragging");
+  updateEventCarouselPosition(0, resetIndex + 1, { immediate: true });
+  eventCarouselAnimating = false;
+}
+
+function handleEventTrackTransitionCancel(event) {
+  if (!eventCarouselTrack || event.target !== eventCarouselTrack || event.propertyName !== "transform") return;
+  eventCarouselAnimating = false;
+  if (eventLoopResetIndex != null) {
+    const resetIndex = eventLoopResetIndex;
+    eventLoopResetIndex = null;
+    updateEventCarouselPosition(0, resetIndex + 1, { immediate: true });
+  }
 }
 
 function eventByIndex(index) {
@@ -10802,6 +10820,7 @@ eventCarouselTrack?.addEventListener("pointermove", moveEventDrag);
 eventCarouselTrack?.addEventListener("pointerup", endEventDrag);
 eventCarouselTrack?.addEventListener("pointercancel", endEventDrag);
 eventCarouselTrack?.addEventListener("transitionend", handleEventTrackTransitionEnd);
+eventCarouselTrack?.addEventListener("transitioncancel", handleEventTrackTransitionCancel);
 eventCarouselTrack?.addEventListener("pointerleave", (event) => {
   if (eventDragState) {
     endEventDrag(event);
