@@ -4447,23 +4447,35 @@ body[data-theme="dark"] .profile-support-badges span {
   place-items: center;
   min-height: 34px;
   padding: 0 12px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255,255,255,0.66);
   border-radius: 999px;
-  background: rgba(255,255,255,0.62);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.74), rgba(255,255,255,0.34));
   color: var(--ink);
   font-size: 0.86rem;
   font-weight: 880;
+  box-shadow:
+    0 10px 24px rgba(20,20,20,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.82);
+  backdrop-filter: blur(18px) saturate(1.3);
 }
 
 .profile-tip-card-amounts button:hover {
-  border-color: rgba(30,30,30,0.22);
-  background: rgba(255,255,255,0.9);
-  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.86);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.48));
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 32px rgba(20,20,20,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.92);
 }
 
 .profile-tip-card .profile-tip-button {
   min-width: 148px;
   min-height: 48px;
+  box-shadow:
+    0 16px 42px rgba(20,20,20,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.34);
 }
 
 [data-theme="dark"] .profile-tip-card,
@@ -4476,13 +4488,19 @@ body[data-theme="dark"] .profile-tip-card {
 
 [data-theme="dark"] .profile-tip-card-amounts button,
 body[data-theme="dark"] .profile-tip-card-amounts button {
-  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.16);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05));
+  box-shadow:
+    0 12px 28px rgba(0,0,0,0.24),
+    inset 0 1px 0 rgba(255,255,255,0.1);
 }
 
 [data-theme="dark"] .profile-tip-card-amounts button:hover,
 body[data-theme="dark"] .profile-tip-card-amounts button:hover {
-  border-color: rgba(255,255,255,0.24);
-  background: rgba(255,255,255,0.13);
+  border-color: rgba(255,255,255,0.28);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
 }
 
 .profile-subscription-section {
@@ -7805,7 +7823,9 @@ body[data-theme="dark"] .request-sheet-actions .soft-button:hover {
   transform: translateX(20px);
 }
 
-.settings-field select {
+.settings-field select,
+.settings-field textarea {
+  width: 100%;
   min-width: 180px;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -7814,6 +7834,16 @@ body[data-theme="dark"] .request-sheet-actions .soft-button:hover {
   padding: 10px 12px;
   font: inherit;
   font-weight: 720;
+}
+
+.settings-field textarea {
+  min-height: 116px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.settings-textarea-field small {
+  color: var(--muted);
 }
 
 .settings-wide-button {
@@ -8418,6 +8448,32 @@ body[data-theme="dark"] .request-sheet-actions .soft-button:hover {
   justify-self: end;
   min-width: 0;
   text-align: right;
+}
+
+.tip-thanks-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.tip-share-x-button {
+  min-width: 132px;
+  border-color: rgba(25,25,25,0.12);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.68), rgba(255,255,255,0.38));
+  color: var(--ink);
+  box-shadow:
+    0 14px 34px rgba(20,20,20,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.72);
+}
+
+[data-theme="dark"] .tip-share-x-button,
+body[data-theme="dark"] .tip-share-x-button {
+  border-color: rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.1);
+  color: #fff8ed;
 }
 
 .tip-thanks-burst {
@@ -11610,6 +11666,104 @@ body[data-theme="dark"] .trust-layout {
   line-height: 1.6;
 }
 
+.trust-panel.profile-tip-card {
+  --tip-glass-edge: rgba(255,255,255,0.76);
+  --tip-glass-sheen: rgba(255,255,255,0.42);
+  --tip-glass-shadow: rgba(40,45,55,0.16);
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  margin: 16px 0 18px;
+  overflow: hidden;
+  padding: clamp(20px, 3vw, 30px);
+  border: 1px solid var(--tip-glass-edge);
+  border-radius: 30px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.74), rgba(255,255,255,0.28) 48%, rgba(255,255,255,0.56)),
+    radial-gradient(ellipse at 86% 4%, rgba(255,243,206,0.76), transparent 36%),
+    radial-gradient(ellipse at 8% 92%, rgba(174,212,255,0.66), transparent 42%),
+    linear-gradient(100deg, rgba(255,255,255,0.12), rgba(255,255,255,0) 32%, rgba(255,255,255,0.18) 58%, rgba(255,255,255,0.06));
+  box-shadow:
+    0 34px 96px var(--tip-glass-shadow),
+    0 12px 34px rgba(255,238,193,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.92),
+    inset 0 -1px 0 rgba(255,255,255,0.36),
+    inset 18px 0 34px rgba(255,255,255,0.16),
+    inset -18px 0 34px rgba(95,139,198,0.08);
+  backdrop-filter: blur(30px) saturate(1.42) contrast(1.04);
+}
+
+.trust-panel.profile-tip-card::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  border-radius: 29px;
+  background:
+    radial-gradient(ellipse at 18% 12%, rgba(255,255,255,0.86), transparent 23%),
+    radial-gradient(ellipse at 88% 86%, rgba(255,255,255,0.28), transparent 28%),
+    linear-gradient(117deg, rgba(255,255,255,0.64), rgba(255,255,255,0.1) 34%, rgba(255,255,255,0.34) 62%, rgba(255,255,255,0.08));
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.38),
+    inset 0 18px 32px rgba(255,255,255,0.18);
+  pointer-events: none;
+}
+
+.trust-panel.profile-tip-card::after {
+  content: "";
+  position: absolute;
+  top: -58%;
+  right: -15%;
+  z-index: -1;
+  width: 420px;
+  height: 420px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 42% 42%, rgba(255,255,255,0.8), rgba(255,255,255,0.22) 35%, rgba(255,255,255,0) 68%);
+  filter: blur(10px);
+  transform: rotate(-14deg);
+  pointer-events: none;
+}
+
+[data-theme="dark"] .trust-panel.profile-tip-card,
+body[data-theme="dark"] .trust-panel.profile-tip-card {
+  --tip-glass-edge: rgba(255,255,255,0.22);
+  --tip-glass-shadow: rgba(0,0,0,0.48);
+  border-color: var(--tip-glass-edge);
+  background:
+    linear-gradient(135deg, rgba(42,42,39,0.78), rgba(13,13,13,0.48) 48%, rgba(31,31,29,0.7)),
+    radial-gradient(ellipse at 86% 4%, rgba(192,145,67,0.46), transparent 36%),
+    radial-gradient(ellipse at 8% 92%, rgba(82,124,184,0.38), transparent 42%),
+    linear-gradient(100deg, rgba(255,255,255,0.08), rgba(255,255,255,0) 32%, rgba(255,255,255,0.12) 58%, rgba(255,255,255,0.04));
+  box-shadow:
+    0 36px 104px var(--tip-glass-shadow),
+    0 12px 42px rgba(192,145,67,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.2),
+    inset 0 -1px 0 rgba(255,255,255,0.08),
+    inset 18px 0 34px rgba(255,255,255,0.06),
+    inset -18px 0 34px rgba(95,139,198,0.08);
+}
+
+[data-theme="dark"] .trust-panel.profile-tip-card::before,
+body[data-theme="dark"] .trust-panel.profile-tip-card::before {
+  background:
+    radial-gradient(ellipse at 18% 12%, rgba(255,255,255,0.18), transparent 23%),
+    radial-gradient(ellipse at 88% 86%, rgba(255,255,255,0.08), transparent 28%),
+    linear-gradient(117deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03) 34%, rgba(255,255,255,0.08) 62%, rgba(255,255,255,0.02));
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.08),
+    inset 0 18px 32px rgba(255,255,255,0.04);
+}
+
+[data-theme="dark"] .trust-panel.profile-tip-card::after,
+body[data-theme="dark"] .trust-panel.profile-tip-card::after {
+  background:
+    radial-gradient(circle at 42% 42%, rgba(255,255,255,0.16), rgba(255,255,255,0.06) 35%, rgba(255,255,255,0) 68%);
+}
+
 .trust-status {
   display: grid;
   align-content: center;
@@ -12915,7 +13069,8 @@ body.is-dragging .drop-hint {
     margin-top: 18px;
   }
 
-  .profile-tip-card {
+  .profile-tip-card,
+  .trust-panel.profile-tip-card {
     grid-template-columns: 1fr;
     align-items: start;
   }

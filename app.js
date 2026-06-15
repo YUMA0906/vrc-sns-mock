@@ -998,6 +998,8 @@ const settingsLanguage = document.querySelector("#settingsLanguage");
 const settingsThemeMode = document.querySelector("#settingsThemeMode");
 const settingsReducedMotion = document.querySelector("#settingsReducedMotion");
 const settingsLikedVisibility = document.querySelector("#settingsLikedVisibility");
+const settingsAcceptTips = document.querySelector("#settingsAcceptTips");
+const settingsTipThanksMessage = document.querySelector("#settingsTipThanksMessage");
 const settingsSaveStatus = document.querySelector("#settingsSaveStatus");
 settingsSaveStatus?.remove();
 const requestManagerList = document.querySelector("#requestManagerList");
@@ -1391,6 +1393,7 @@ const tipThanksUserMessageWrap = document.querySelector("#tipThanksUserMessageWr
 const tipThanksUserMessage = document.querySelector("#tipThanksUserMessage");
 const tipThanksCreator = document.querySelector("#tipThanksCreator");
 const tipThanksAmount = document.querySelector("#tipThanksAmount");
+const tipThanksShareX = document.querySelector("#tipThanksShareX");
 const tipThanksClose = document.querySelector("#tipThanksClose");
 
 let activeCategory = "All";
@@ -1468,7 +1471,6 @@ let eventVisualIndex = 0;
 let eventLoopResetIndex = null;
 let eventDragFrame = 0;
 let ignoreEventSlideClick = false;
-let eventCarouselAnimating = false;
 let eventCarouselLastInteractionAt = Date.now();
 const eventAutoplayIdleDelay = 9000;
 const eventCarouselMotion = {
@@ -1535,6 +1537,7 @@ let myProfile = {
   joinedAt: "2024-08-21",
   premiumSince: "2024-09-03",
   earlyPremiumSupporter: true,
+  acceptTips: true,
 };
 let activeAccountId = "main";
 let userAccounts = [
@@ -2084,6 +2087,11 @@ const translations = {
     sensitiveReveal: "センシティブ投稿の初期表示",
     sensitiveBlur: "ぼかして「見る」ボタンを表示",
     sensitiveVisible: "最初から表示",
+    settingsTipTitle: "投げ銭",
+    acceptTips: "投げ銭を受け付ける",
+    acceptTipsHelp: "OFFにすると、他のユーザーから見たプロフィールに投げ銭カードを表示しません。",
+    tipThanksSetting: "投げ銭感謝モーダルの文章",
+    tipThanksSettingHelp: "投げ銭完了後に、あなたのアイコンと一緒に支援者へ表示されます。",
     muteBlockManage: "ミュート・ブロック管理",
     stripePlanned: "Stripe 連携予定",
     stripeConnect: "Stripe連携",
@@ -2299,6 +2307,11 @@ const translations = {
     sensitiveReveal: "Initial sensitive post display",
     sensitiveBlur: "Blur with a View button",
     sensitiveVisible: "Show immediately",
+    settingsTipTitle: "Tips",
+    acceptTips: "Accept one-time tips",
+    acceptTipsHelp: "When off, the tip card is hidden from your public profile.",
+    tipThanksSetting: "Tip thank-you modal message",
+    tipThanksSettingHelp: "Shown to supporters with your icon after a one-time tip is sent.",
     muteBlockManage: "Manage mute / block",
     stripePlanned: "Stripe integration planned",
     stripeConnect: "Stripe connection",
@@ -2514,6 +2527,11 @@ const translations = {
     sensitiveReveal: "민감한 게시물 초기 표시",
     sensitiveBlur: "흐림 처리 후 보기 버튼 표시",
     sensitiveVisible: "처음부터 표시",
+    settingsTipTitle: "후원 팁",
+    acceptTips: "일회성 후원 받기",
+    acceptTipsHelp: "OFF로 하면 다른 사용자가 보는 프로필에 후원 카드가 표시되지 않습니다.",
+    tipThanksSetting: "후원 감사 모달 문구",
+    tipThanksSettingHelp: "일회성 후원이 완료된 뒤 아이콘과 함께 후원자에게 표시됩니다.",
     muteBlockManage: "뮤트 / 차단 관리",
     stripePlanned: "Stripe 연동 예정",
     stripeConnect: "Stripe 연동",
@@ -3511,7 +3529,6 @@ function renderEventCarousel() {
   const slides = buildEventSlides(campaigns);
   eventVisualIndex = campaigns.length > 1 ? activeEventIndex + 1 : activeEventIndex;
   eventLoopResetIndex = null;
-  eventCarouselAnimating = false;
 
   eventCarouselTrack.innerHTML = slides.map((event) => `
     <article class="event-slide" data-event-index="${event.sourceIndex ?? 0}" aria-roledescription="slide" aria-label="${event.title}">
@@ -3634,7 +3651,6 @@ function scheduleEventAutoplay() {
 function goToEventSlide(index, options = {}) {
   const campaigns = getEventCampaignList();
   if (!campaigns.length) return;
-  if (eventCarouselAnimating && !options.force) return;
   const reason = options.reason || "button";
   const previousIndex = activeEventIndex;
   alignEventCarouselToRealSlide(previousIndex);
@@ -3657,14 +3673,11 @@ function goToEventSlide(index, options = {}) {
 
   if (isWrappingBackward) {
     eventLoopResetIndex = normalizedIndex;
-    eventCarouselAnimating = true;
     updateEventCarouselPosition(0, 0);
   } else if (isWrappingForward) {
     eventLoopResetIndex = normalizedIndex;
-    eventCarouselAnimating = true;
     updateEventCarouselPosition(0, campaigns.length + 1);
   } else {
-    eventCarouselAnimating = campaigns.length > 1 && eventVisualIndex !== (normalizedIndex + 1);
     updateEventCarouselPosition(0, campaigns.length > 1 ? normalizedIndex + 1 : normalizedIndex);
   }
   scheduleEventAutoplay();
@@ -3673,7 +3686,6 @@ function goToEventSlide(index, options = {}) {
 function startEventDrag(event) {
   const startLink = event.target.closest(".event-slide-card[href^='#event/']");
   if (!eventCarouselTrack || !startLink) return;
-  if (eventCarouselAnimating) return;
   if (event.pointerType === "mouse" && event.button !== 0) return;
   eventCarouselLastInteractionAt = Date.now();
   if (location.hash && !location.hash.startsWith("#event/")) {
@@ -3748,24 +3760,13 @@ function endEventDrag(event) {
 
 function handleEventTrackTransitionEnd(event) {
   if (!eventCarouselTrack || event.target !== eventCarouselTrack || event.propertyName !== "transform") return;
-  if (eventLoopResetIndex == null) {
-    eventCarouselAnimating = false;
-    return;
-  }
+  if (eventLoopResetIndex == null) return;
   const resetIndex = eventLoopResetIndex;
   eventLoopResetIndex = null;
-  updateEventCarouselPosition(0, resetIndex + 1, { immediate: true });
-  eventCarouselAnimating = false;
-}
-
-function handleEventTrackTransitionCancel(event) {
-  if (!eventCarouselTrack || event.target !== eventCarouselTrack || event.propertyName !== "transform") return;
-  eventCarouselAnimating = false;
-  if (eventLoopResetIndex != null) {
-    const resetIndex = eventLoopResetIndex;
-    eventLoopResetIndex = null;
-    updateEventCarouselPosition(0, resetIndex + 1, { immediate: true });
-  }
+  eventCarouselTrack.classList.add("is-dragging");
+  updateEventCarouselPosition(0, resetIndex + 1);
+  void eventCarouselTrack.offsetWidth;
+  eventCarouselTrack.classList.remove("is-dragging");
 }
 
 function eventByIndex(index) {
@@ -4209,6 +4210,17 @@ function updateSettingsPanelLanguage() {
     const field = contentPanel.querySelector(".settings-field");
     setText(field?.querySelector("span"), "sensitiveReveal");
     setSelectOptionTexts(field?.querySelector("select"), ["sensitiveBlur", "sensitiveVisible"]);
+  }
+
+  const tipPanel = settingsView.querySelector("[aria-labelledby='settingsTipTitle']");
+  if (tipPanel) {
+    setText(tipPanel.querySelector("h2"), "settingsTipTitle");
+    const row = tipPanel.querySelector(".settings-row");
+    setText(row?.querySelector("strong"), "acceptTips");
+    setText(row?.querySelector("small"), "acceptTipsHelp");
+    const field = tipPanel.querySelector(".settings-field");
+    setText(field?.querySelector("span"), "tipThanksSetting");
+    setText(field?.querySelector("small"), "tipThanksSettingHelp");
   }
 
   const accountPanel = settingsView.querySelector("[aria-labelledby='settingsAccountTitle']");
@@ -4670,6 +4682,77 @@ function applyContentDisplaySettings() {
   document.documentElement.dataset.sensitiveReveal = revealMode;
 }
 
+function tipThanksSettingKey() {
+  return `settingsTipThanksMessage:${activeAccountId}`;
+}
+
+function acceptTipsSettingKey() {
+  return `settingsAcceptTips:${activeAccountId}`;
+}
+
+function currentTipThanksMessage() {
+  return currentAccountRecord()?.profile?.tipThanks || myProfile.tipThanks || defaultTipThanksMessage();
+}
+
+function currentAcceptTips() {
+  const profile = currentAccountRecord()?.profile || myProfile;
+  return profile.acceptTips !== false;
+}
+
+function syncTipSettingsFields() {
+  if (settingsAcceptTips) {
+    const key = acceptTipsSettingKey();
+    settingsAcceptTips.dataset.settingKey = key;
+    settingsAcceptTips.checked = currentAcceptTips();
+    try {
+      const stored = localStorage.getItem(`vrc-sns-setting:${key}`);
+      if (stored) {
+        applySettingPayload(settingsAcceptTips, JSON.parse(stored));
+      } else {
+        settingsAcceptTips.checked = true;
+      }
+    } catch {
+      localStorage.removeItem(`vrc-sns-setting:${key}`);
+      settingsAcceptTips.checked = true;
+    }
+    applyAcceptTipsSettingFromControl();
+  }
+  if (!settingsTipThanksMessage) return;
+  const key = tipThanksSettingKey();
+  settingsTipThanksMessage.dataset.settingKey = key;
+  try {
+    const stored = localStorage.getItem(`vrc-sns-setting:${key}`);
+    if (stored) {
+      const payload = JSON.parse(stored);
+      applySettingPayload(settingsTipThanksMessage, payload);
+      if (settingsTipThanksMessage.value === "投げ銭ありがとうございます。いただいた応援を次の作品づくりに大切に使わせてもらいます。") {
+        settingsTipThanksMessage.value = defaultTipThanksMessage();
+        saveSetting(settingsTipThanksMessage);
+      }
+    } else {
+      settingsTipThanksMessage.value = currentTipThanksMessage();
+    }
+  } catch {
+    localStorage.removeItem(`vrc-sns-setting:${key}`);
+    settingsTipThanksMessage.value = currentTipThanksMessage();
+  }
+}
+
+function applyAcceptTipsSettingFromControl() {
+  const value = settingsAcceptTips ? settingsAcceptTips.checked : true;
+  const record = currentAccountRecord();
+  if (record?.profile) record.profile.acceptTips = value;
+  myProfile.acceptTips = value;
+}
+
+function applyTipThanksSettingFromControl() {
+  if (!settingsTipThanksMessage) return;
+  const value = settingsTipThanksMessage.value.trim();
+  const record = currentAccountRecord();
+  if (record?.profile) record.profile.tipThanks = value;
+  myProfile.tipThanks = value;
+}
+
 function saveSetting(control) {
   if (!control || control === settingsLanguage) return;
   const key = control.dataset.settingKey || settingsControlKey(control, settingsControls().indexOf(control));
@@ -4692,6 +4775,8 @@ function handleSettingsAutoSave(event) {
   if (control === settingsThemeMode) applyThemeMode(control.value);
   if (control === settingsReducedMotion) applyReducedMotionSetting();
   if (control === settingsLikedVisibility) renderProfilePostArchive();
+  if (control === settingsAcceptTips) applyAcceptTipsSettingFromControl();
+  if (control === settingsTipThanksMessage) applyTipThanksSettingFromControl();
   if (control?.id === "settingsR18Content" || control?.id === "settingsGoreContent" || control?.id === "settingsSensitiveReveal") {
     applyContentDisplaySettings();
   }
@@ -4854,7 +4939,23 @@ function eventOrganizerBySlug(slug) {
 
 function profileNameBySlug(slug) {
   if (slug === "you") return "You";
+  if (isOwnProfileSlug(slug)) return "You";
   return profileNameFromEntry(creatorBySlug(slug)) || eventOrganizerBySlug(slug);
+}
+
+function isOwnProfileSlug(slug) {
+  const target = String(slug || "");
+  const profile = currentAccountRecord()?.profile || myProfile;
+  const handle = currentUserHandle().replace(/^@/, "");
+  return [profile?.displayName, handle, currentUserHandle(), "You"]
+    .filter(Boolean)
+    .some((value) => slugify(String(value).replace(/^@/, "")) === target);
+}
+
+function isOwnProfileName(name) {
+  if (name === "You") return true;
+  const target = slugify(String(name || "").replace(/^@/, ""));
+  return isOwnProfileSlug(target);
 }
 
 function officialProfileNames() {
@@ -4879,6 +4980,10 @@ function currentAccountRecord() {
 function profileMetaFor(name) {
   if (name === "You") return currentAccountRecord()?.profile || myProfile;
   return creatorProfileMeta[name] || {};
+}
+
+function defaultTipThanksMessage() {
+  return "ありがとうございます！";
 }
 
 function monthsBetween(startDate, endDate = new Date()) {
@@ -5687,7 +5792,7 @@ function tipCreatorAvatarImage(creator, fallbackPost = null) {
 function tipThanksMessageFor(creator) {
   const meta = profileMetaFor(creator);
   if (meta?.tipThanks) return meta.tipThanks;
-  return "投げ銭ありがとうございます。いただいた応援を次の作品づくりに大切に使わせてもらいます。";
+  return defaultTipThanksMessage();
 }
 
 function openTipThanksDialog(creator, amount, userMessage = "") {
@@ -5709,6 +5814,22 @@ function openTipThanksDialog(creator, amount, userMessage = "") {
     tipThanksAvatar.classList.toggle("has-image", Boolean(avatarImage));
   }
   showModalElement(tipThanksDialog);
+}
+
+function tipShareText(creator) {
+  return `${tipDisplayName(creator)}さんを支援しました！！`;
+}
+
+function shareTipToX() {
+  const creator = activeProfile || tipThanksCreator?.textContent || "";
+  const shareText = tipShareText(creator);
+  const profileUrl = creator
+    ? `${location.origin}${location.pathname}${location.search}#profile/${slugify(tipDisplayName(creator))}`
+    : `${location.origin}${location.pathname}${location.search}`;
+  const intentUrl = new URL("https://twitter.com/intent/tweet");
+  intentUrl.searchParams.set("text", shareText);
+  intentUrl.searchParams.set("url", profileUrl);
+  window.open(intentUrl.toString(), "_blank", "noopener,noreferrer");
 }
 
 function closeTipThanksDialog() {
@@ -7455,6 +7576,7 @@ function renderSettingsPage() {
   if (subscriptionsView) subscriptionsView.hidden = true;
   settingsView.hidden = false;
   serviceView.hidden = true;
+  syncTipSettingsFields();
   scrollPageTop();
 }
 
@@ -11084,7 +11206,6 @@ eventCarouselTrack?.addEventListener("pointermove", moveEventDrag);
 eventCarouselTrack?.addEventListener("pointerup", endEventDrag);
 eventCarouselTrack?.addEventListener("pointercancel", endEventDrag);
 eventCarouselTrack?.addEventListener("transitionend", handleEventTrackTransitionEnd);
-eventCarouselTrack?.addEventListener("transitioncancel", handleEventTrackTransitionCancel);
 eventCarouselTrack?.addEventListener("pointerleave", (event) => {
   if (eventDragState) {
     endEventDrag(event);
@@ -11102,6 +11223,10 @@ settingsView?.addEventListener("click", (event) => {
   event.preventDefault();
 });
 settingsView?.addEventListener("change", handleSettingsAutoSave);
+settingsTipThanksMessage?.addEventListener("input", () => {
+  saveSetting(settingsTipThanksMessage);
+  applyTipThanksSettingFromControl();
+});
 eventProposalCancel?.addEventListener("click", closeEventProposalDialog);
 eventProposalImageInput?.addEventListener("change", () => {
   loadEventProposalImage(eventProposalImageInput.files?.[0]);
@@ -11738,6 +11863,7 @@ tipPresetButtons.forEach((button) => {
   });
 });
 tipSubmitButton?.addEventListener("click", submitTip);
+tipThanksShareX?.addEventListener("click", shareTipToX);
 tipThanksClose?.addEventListener("click", closeTipThanksDialog);
 tipThanksDialog?.addEventListener("click", (event) => {
   if (event.target === tipThanksDialog) closeTipThanksDialog();
@@ -13386,7 +13512,7 @@ function openEditProfile() {
 }
 
 function renderProfile(creator) {
-  const isMine = creator === "You";
+  const isMine = isOwnProfileName(creator);
   const directPosts = creatorPosts(creator);
   const syntheticPosts = syntheticClientPosts(creator);
   const organizerPosts = syntheticEventOrganizerPosts(creator);
@@ -13483,10 +13609,11 @@ function renderProfile(creator) {
     updateProfileSocialButtons(creator, false);
     profileRequestButton.hidden = !directPosts.some((pin) => pin.request?.open);
     profileRequestButton.textContent = t("requestOpen");
-    if (profileTipCard) profileTipCard.hidden = false;
+    const acceptsTips = profileMetaFor(creator).acceptTips !== false;
+    if (profileTipCard) profileTipCard.hidden = !acceptsTips;
     if (profileTipCardName) profileTipCardName.textContent = tipDisplayName(creator);
     if (profileTipButton) {
-      profileTipButton.hidden = false;
+      profileTipButton.hidden = !acceptsTips;
       profileTipButton.textContent = "投げ銭する";
     }
     if (savedPostsSection) savedPostsSection.hidden = true;

@@ -761,7 +761,10 @@
             <span>金額</span>
             <strong id="tipThanksAmount">¥0</strong>
           </div>
-          <button id="tipThanksClose" class="primary-button" type="button">閉じる</button>
+          <div class="tip-thanks-actions">
+            <button id="tipThanksShareX" class="soft-button tip-share-x-button" type="button">Xで報告</button>
+            <button id="tipThanksClose" class="primary-button" type="button">閉じる</button>
+          </div>
         </form>
       </dialog>
       <section id="settingsView" class="settings-view app-view" hidden>
@@ -902,6 +905,27 @@
                   <option value="blur">ぼかして「見る」ボタンを表示</option>
                   <option value="visible">最初から表示</option>
                 </select>
+              </label>
+            </section>
+
+            <section class="settings-panel settings-panel-wide" aria-labelledby="settingsTipTitle">
+              <div class="settings-panel-heading">
+                <span class="settings-panel-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M20 12v8H4v-8" /><path d="M2 7h20v5H2z" /><path d="M12 22V7" /><path d="M12 7H7.5a2.5 2.5 0 1 1 2.2-3.7C10.4 4.5 12 7 12 7Z" /><path d="M12 7h4.5a2.5 2.5 0 1 0-2.2-3.7C13.6 4.5 12 7 12 7Z" /></svg>
+                </span>
+              <div>
+                <p class="eyebrow">Tips</p>
+                <h2 id="settingsTipTitle">投げ銭</h2>
+              </div>
+            </div>
+              <label class="settings-row">
+                <span><strong>投げ銭を受け付ける</strong><small>OFFにすると、他のユーザーから見たプロフィールに投げ銭カードを表示しません。</small></span>
+                <input id="settingsAcceptTips" type="checkbox" checked />
+              </label>
+              <label class="settings-field settings-textarea-field">
+                <span>投げ銭感謝モーダルの文章</span>
+                <textarea id="settingsTipThanksMessage" rows="4" maxlength="160" placeholder="ありがとうございます！"></textarea>
+                <small>投げ銭完了後に、あなたのアイコンと一緒に支援者へ表示されます。</small>
               </label>
             </section>
 
