@@ -8026,15 +8026,49 @@ function myRequestStateLabel(state) {
 
 function myRequestTabItems(state = activeMyRequestState) {
   if (state === "todo") {
-    return myRequestItems.filter((item) => ["estimate", "consulting", "review"].includes(item.status));
+    return myRequestItems.filter(myRequestNeedsAction);
   }
   return myRequestItems.filter((item) => item.status === state);
 }
 
+function myRequestNeedsAction(item) {
+  if (!item || item.waitingForCreatorReply) return false;
+  if (["draft", "sent", "creator_review", "completed", "closed"].includes(item.status)) return false;
+  return myRequestTurnInfo(item).key === "mine";
+}
+
+function myRequestTabCount(state) {
+  return myRequestTabItems(state).length;
+}
+
+function visibleMyRequestTabStates() {
+  return myRequestStateTabs
+    .map((button) => button.dataset.myRequestState)
+    .filter((state) => state && (state === "todo" || myRequestTabCount(state) > 0));
+}
+
+function syncMyRequestTabsVisibility() {
+  const visibleStates = visibleMyRequestTabStates();
+  if (visibleStates.length && !visibleStates.includes(activeMyRequestState)) {
+    activeMyRequestState = visibleStates[0];
+  }
+  myRequestStateTabs.forEach((button) => {
+    const state = button.dataset.myRequestState;
+    const count = myRequestTabCount(state);
+    button.hidden = state !== "todo" && count === 0;
+    button.classList.toggle("is-active", !button.hidden && state === activeMyRequestState);
+    const countLabel = button.querySelector("small");
+    if (countLabel) countLabel.textContent = String(count);
+    if (!button.hidden && state === activeMyRequestState) ensureMyRequestTabVisible(button);
+  });
+  window.requestAnimationFrame(clampMyRequestsTabOffset);
+}
+
 function myRequestTurnInfo(item) {
   if (item.status === "draft") return { label: "未送信", key: "client", detail: "依頼者側で作成中" };
-  if (["estimate", "consulting", "review"].includes(item.status)) return { label: "自分のターン", key: "mine", detail: "確認または返信が必要" };
   if (["sent", "creator_review"].includes(item.status)) return { label: "相手待ち", key: "client", detail: "クリエイターの対応待ち" };
+  if (item.waitingForCreatorReply) return { label: "相手待ち", key: "client", detail: "クリエイターの返信待ち" };
+  if (item.status === "review") return { label: "自分のターン", key: "mine", detail: "納品確認と評価が必要" };
   const messages = item.messages || [];
   const last = messages[messages.length - 1];
   if (!last) return { label: "自分のターン", key: "mine", detail: "初回内容を確認" };
@@ -8089,27 +8123,47 @@ function renderMyRequestProgress(item) {
 
 function myRequestActionButtons(item) {
   if (!item) return "";
+  const turn = myRequestTurnInfo(item);
   if (item.status === "draft") return `<button class="primary-button" type="button" data-my-request-action="edit-draft">下書きを編集</button><button class="soft-button" type="button" data-my-request-action="delete-draft">下書きを破棄</button>`;
   if (item.status === "estimate") return `<button class="primary-button" type="button" data-my-request-action="confirm-estimate">見積もりを確認</button><button class="soft-button" type="button" data-my-request-action="ask">質問する</button>`;
-  if (item.status === "consulting") return `<button class="primary-button" type="button" data-my-request-action="reply">相談に返信</button><button class="soft-button" type="button" data-my-request-action="cancel">相談を閉じる</button>`;
+  if (item.status === "consulting" && turn.key === "mine") return `<button class="primary-button" type="button" data-my-request-action="reply">相談に返信</button><button class="soft-button" type="button" data-my-request-action="cancel">相談を閉じる</button>`;
+  if (item.status === "consulting") return `<button class="soft-button" type="button" data-my-request-action="open-chat">チャットを確認</button>`;
+  if (item.status === "in_progress" && turn.key === "mine") return `<button class="primary-button" type="button" data-my-request-action="reply">返信する</button><button class="soft-button" type="button" data-my-request-action="open-chat">チャットを確認</button>`;
+  if (item.status === "in_progress") return `<button class="soft-button" type="button" data-my-request-action="open-chat">チャットを確認</button>`;
   if (item.status === "review") return `<button class="primary-button" type="button" data-my-request-action="review-delivery">納品を確認して評価</button><button class="soft-button" type="button" data-my-request-action="retake">リテイクを相談</button>`;
   if (item.status === "completed") return `<button class="soft-button" type="button" data-my-request-action="request-again">同じクリエイターに再依頼</button>`;
   if (item.status === "closed") return `<button class="soft-button" type="button" data-my-request-action="request-again">新しい依頼として再送信</button>`;
   return `<button class="soft-button" type="button" data-my-request-action="open-chat">チャットを確認</button>`;
 }
 
+function myRequestNextText(item) {
+  if (!item) return "";
+  if (item.waitingForCreatorReply) {
+    return "返信済みです。クリエイターからの確認や次の案内を待っています。";
+  }
+  const turn = myRequestTurnInfo(item);
+  if (turn.key === "client" && !["sent", "creator_review", "completed", "closed"].includes(item.status)) {
+    return "返信済みです。クリエイターからの確認や次の案内を待っています。";
+  }
+  return item.next;
+}
+
 function renderMyRequestsList() {
+  syncMyRequestTabsVisibility();
   const items = myRequestTabItems();
   updateRequestActionBadges();
-  myRequestStateTabs.forEach((button) => {
-    const state = button.dataset.myRequestState;
-    const count = state === "todo" ? myRequestTabItems("todo").length : myRequestItems.filter((item) => item.status === state).length;
-    const countLabel = button.querySelector("small");
-    if (countLabel) countLabel.textContent = String(count);
-    button.classList.toggle("is-active", state === activeMyRequestState);
-    if (state === activeMyRequestState) ensureMyRequestTabVisible(button);
-  });
-  if (myRequestsEmpty) myRequestsEmpty.hidden = items.length !== 0;
+  if (myRequestsEmpty) {
+    myRequestsEmpty.hidden = items.length !== 0;
+    const title = myRequestsEmpty.querySelector("p");
+    const body = myRequestsEmpty.querySelector("span");
+    if (activeMyRequestState === "todo") {
+      if (title) title.textContent = "要対応はありません";
+      if (body) body.textContent = "確認、返信、支払い前確認、納品評価など、自分の対応が必要な依頼がここに表示されます。";
+    } else {
+      if (title) title.textContent = "該当する依頼はありません";
+      if (body) body.textContent = "他のタブを見るか、クリエイターの依頼受付ページから新しく依頼できます。";
+    }
+  }
   if (!myRequestsList) return;
   myRequestsList.innerHTML = items.map((item) => `
     <article class="my-request-card" data-my-request-item="${item.id}">
@@ -8238,7 +8292,7 @@ function renderMyRequestDetailPage(itemId) {
     ].join("");
   }
   renderMyRequestProgress(item);
-  if (myRequestNextBody) myRequestNextBody.textContent = item.next;
+  if (myRequestNextBody) myRequestNextBody.textContent = myRequestNextText(item);
   if (myRequestNextActions) myRequestNextActions.innerHTML = myRequestActionButtons(item);
   if (myRequestBriefList) myRequestBriefList.innerHTML = item.scope.map((entry) => `<span>${escapeHtml(entry)}</span>`).join("");
   renderMyRequestDeliveryList(item);
@@ -9336,18 +9390,38 @@ function sortedRequestManagerItems(state = activeRequestManagerState) {
   return items.sort((a, b) => a.deadline.localeCompare(b.deadline));
 }
 
+function requestManagerStateCount(state) {
+  return requestManagerItems.filter((item) => item.status === state).length;
+}
+
+function visibleRequestManagerStates() {
+  return requestStateTabs
+    .map((tab) => tab.dataset.requestState)
+    .filter((state) => state && requestManagerStateCount(state) > 0);
+}
+
+function syncRequestManagerTabsVisibility() {
+  const visibleStates = visibleRequestManagerStates();
+  if (visibleStates.length && !visibleStates.includes(activeRequestManagerState)) {
+    activeRequestManagerState = visibleStates[0];
+  }
+  requestStateTabs.forEach((tab) => {
+    const state = tab.dataset.requestState;
+    const count = requestManagerStateCount(state);
+    tab.hidden = count === 0;
+    const countLabel = tab.querySelector("small");
+    if (countLabel) countLabel.textContent = String(count);
+    tab.classList.toggle("is-active", !tab.hidden && state === activeRequestManagerState);
+  });
+}
+
 function renderRequestManagerList() {
+  syncRequestManagerTabsVisibility();
   const items = sortedRequestManagerItems();
   updateRequestActionBadges();
   if (pendingSortControls) pendingSortControls.hidden = activeRequestManagerState !== "pending";
   pendingSortButtons.forEach((button) => {
     button.classList.toggle("is-active", button.dataset.pendingSort === pendingRequestSort);
-  });
-  requestStateTabs.forEach((tab) => {
-    const count = requestManagerItems.filter((item) => item.status === tab.dataset.requestState).length;
-    const countLabel = tab.querySelector("small");
-    if (countLabel) countLabel.textContent = String(count);
-    tab.classList.toggle("is-active", tab.dataset.requestState === activeRequestManagerState);
   });
   requestManagerEmpty.hidden = items.length !== 0;
   requestManagerList.innerHTML = items.map((item) => `
@@ -11728,6 +11802,7 @@ myRequestNextActions?.addEventListener("click", (event) => {
   }
   if (action === "retake") {
     item.status = "in_progress";
+    item.waitingForCreatorReply = true;
     item.messages.push({ from: "you", time: "いま", text: "納品物を確認しました。リテイク相談をお願いします。" });
     renderMyRequestDetailPage(item.id);
     showProfileCopyToast("リテイク相談に戻しました");
@@ -11745,9 +11820,11 @@ myRequestChatForm?.addEventListener("submit", (event) => {
   const item = myRequestItemById(activeMyRequestItemId);
   const text = myRequestChatInput?.value.trim();
   if (!item || !text) return;
+  item.waitingForCreatorReply = true;
   item.messages.push({ from: "you", time: "いま", text });
   if (myRequestChatInput) myRequestChatInput.value = "";
   renderMyRequestDetailPage(item.id);
+  showProfileCopyToast("返信しました。相手の返信待ちに切り替わりました。");
 });
 
 myRequestReportButton?.addEventListener("click", () => openRequestReportDialog("sent"));

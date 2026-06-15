@@ -299,7 +299,7 @@ Requester-side statuses:
 - `completed`: completed request history.
 - `closed`: canceled, rejected, or reported request.
 
-The `todo` tab is derived, not stored. It groups requests where the requester needs to act, currently `estimate`, `consulting`, and `review`.
+The `todo` tab is displayed to users as `要対応`. It is derived, not stored. It groups requests where the requester needs to act based on the turn state, while requests already replied to by the requester are marked as waiting for the creator and leave this tab.
 
 My Requests and creator-side request manager currently use text-first list/detail layouts with no request thumbnails.
 
