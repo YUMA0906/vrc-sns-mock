@@ -1451,7 +1451,7 @@ let activeMyRequestItemId = null;
 let missionReturnHash = "";
 let eventDetailReturnHash = "";
 let eventsReturnHash = "";
-let activeRequestManagerState = "pending";
+let activeRequestManagerState = "todo";
 let activeMyRequestState = "todo";
 let pendingRequestSort = "deadline";
 let activeEventsFilter = "all";
@@ -7803,6 +7803,7 @@ function isDeadlineSoon(deadline) {
 
 function requestStateLabel(state) {
   const labels = {
+    todo: "要対応",
     pending: t("pending"),
     accepted: t("accepted"),
     in_progress: t("inProgress"),
@@ -9383,21 +9384,33 @@ function budgetValue(item) {
 }
 
 function sortedRequestManagerItems(state = activeRequestManagerState) {
-  const items = requestManagerItems.filter((item) => item.status === state);
+  const items = requestManagerTabItems(state);
   if (state === "pending" && pendingRequestSort === "budget") {
     return items.sort((a, b) => budgetValue(b) - budgetValue(a) || a.deadline.localeCompare(b.deadline));
   }
   return items.sort((a, b) => a.deadline.localeCompare(b.deadline));
 }
 
+function requestManagerNeedsAction(item) {
+  if (!item || item.status === "completed") return false;
+  return requestTurnInfo(item).key === "mine";
+}
+
+function requestManagerTabItems(state = activeRequestManagerState) {
+  if (state === "todo") {
+    return requestManagerItems.filter(requestManagerNeedsAction);
+  }
+  return requestManagerItems.filter((item) => item.status === state);
+}
+
 function requestManagerStateCount(state) {
-  return requestManagerItems.filter((item) => item.status === state).length;
+  return requestManagerTabItems(state).length;
 }
 
 function visibleRequestManagerStates() {
   return requestStateTabs
     .map((tab) => tab.dataset.requestState)
-    .filter((state) => state && requestManagerStateCount(state) > 0);
+    .filter((state) => state && (state === "todo" || requestManagerStateCount(state) > 0));
 }
 
 function syncRequestManagerTabsVisibility() {
@@ -9408,7 +9421,7 @@ function syncRequestManagerTabsVisibility() {
   requestStateTabs.forEach((tab) => {
     const state = tab.dataset.requestState;
     const count = requestManagerStateCount(state);
-    tab.hidden = count === 0;
+    tab.hidden = state !== "todo" && count === 0;
     const countLabel = tab.querySelector("small");
     if (countLabel) countLabel.textContent = String(count);
     tab.classList.toggle("is-active", !tab.hidden && state === activeRequestManagerState);
@@ -9423,7 +9436,18 @@ function renderRequestManagerList() {
   pendingSortButtons.forEach((button) => {
     button.classList.toggle("is-active", button.dataset.pendingSort === pendingRequestSort);
   });
-  requestManagerEmpty.hidden = items.length !== 0;
+  if (requestManagerEmpty) {
+    requestManagerEmpty.hidden = items.length !== 0;
+    const title = requestManagerEmpty.querySelector("p");
+    const body = requestManagerEmpty.querySelector("span");
+    if (activeRequestManagerState === "todo") {
+      if (title) title.textContent = "要対応はありません";
+      if (body) body.textContent = "返信、承諾、作業開始、評価返しなど、クリエイター側の対応が必要な依頼がここに表示されます。";
+    } else {
+      if (title) title.textContent = "該当する依頼はありません";
+      if (body) body.textContent = "このステータスに入っている依頼はまだありません。";
+    }
+  }
   requestManagerList.innerHTML = items.map((item) => `
     <article class="request-manager-card" data-request-item="${item.id}">
       <div class="request-manager-card-copy">

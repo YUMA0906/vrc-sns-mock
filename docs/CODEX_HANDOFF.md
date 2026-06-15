@@ -303,6 +303,8 @@ The `todo` tab is displayed to users as `要対応`. It is derived, not stored. 
 
 My Requests and creator-side request manager currently use text-first list/detail layouts with no request thumbnails.
 
+Creator-side Request Manager also has a derived `todo` tab displayed as `要対応`. It is always visible, even when the count is zero, and groups requests where `requestTurnInfo(item).key === "mine"`. Other lifecycle tabs hide when their count is zero.
+
 ### Membership Data
 
 Membership plans are attached to creators and circles. Display wording should be "メンバーシップ".
