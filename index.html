@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.squarespace-cdn.com" />
-    <link rel="stylesheet" href="./styles.css?v=tip-message-limit" />
+    <link rel="stylesheet" href="./styles.css?v=profile-tip-presets" />
   </head>
   <body>
     <header class="topbar">
@@ -364,7 +364,6 @@
                 <button id="profileMuteButton" class="icon-button profile-social-button" type="button" aria-label="ミュート" title="ミュート"></button>
                 <button id="profileBlockButton" class="icon-button profile-social-button profile-block-button" type="button" aria-label="ブロック" title="ブロック"></button>
                 <button id="profileRequestButton" class="soft-button" type="button">依頼受付を見る</button>
-                <button id="profileTipButton" class="soft-button profile-tip-button" type="button">投げ銭</button>
                 <button id="profileFollowingButton" class="icon-button profile-social-button profile-following-button" type="button" aria-label="フォロー中一覧" title="フォロー中一覧" hidden>
                   <svg aria-hidden="true" viewBox="0 0 24 24">
                     <path d="M16 20v-1.4a4.6 4.6 0 0 0-4.6-4.6H6.6A4.6 4.6 0 0 0 2 18.6V20" />
@@ -400,6 +399,21 @@
             </section>
           </div>
         </div>
+        <section id="profileTipCard" class="trust-panel profile-tip-card" hidden aria-labelledby="profileTipCardTitle">
+          <div class="profile-tip-card-copy">
+            <p class="eyebrow">One-time tip</p>
+            <h2 id="profileTipCardTitle"><span id="profileTipCardName">Creator</span>を投げ銭で応援</h2>
+            <p>メンバーシップ加入ではなく、好きな金額でその場だけ応援できます。ログインしていなくても送れる想定です。</p>
+          </div>
+          <div class="profile-tip-card-side">
+            <div class="profile-tip-card-amounts" aria-label="投げ銭例">
+              <button type="button" data-profile-tip-amount="500">¥500</button>
+              <button type="button" data-profile-tip-amount="1000">¥1,000</button>
+              <button type="button" data-profile-tip-amount="3000">¥3,000+</button>
+            </div>
+            <button id="profileTipButton" class="primary-button profile-tip-button" type="button">投げ銭する</button>
+          </div>
+        </section>
         <section class="trust-panel trust-featured" aria-labelledby="trustFeaturedTitle">
           <div class="section-heading-row">
             <div>
@@ -2755,6 +2769,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=tip-message-limit"></script>
+    <script src="./app.js?v=profile-tip-presets"></script>
   </body>
 </html>

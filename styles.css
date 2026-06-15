@@ -4392,6 +4392,99 @@ body[data-theme="dark"] .profile-support-badges span {
   color: #fffaf1;
 }
 
+.profile-tip-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  margin-top: 16px;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.82), rgba(255,255,255,0.58)),
+    radial-gradient(circle at 92% 18%, rgba(255,224,154,0.42), transparent 32%),
+    radial-gradient(circle at 12% 80%, rgba(203,224,255,0.46), transparent 34%);
+  box-shadow: 0 24px 72px rgba(20,20,20,0.1);
+}
+
+.profile-tip-card[hidden] {
+  display: none;
+}
+
+.profile-tip-card-copy {
+  display: grid;
+  gap: 8px;
+}
+
+.profile-tip-card h2 {
+  margin: 0;
+  font-size: clamp(1.45rem, 3vw, 2.2rem);
+  line-height: 1.14;
+}
+
+.profile-tip-card p:not(.eyebrow) {
+  margin: 0;
+  max-width: 58ch;
+  color: var(--muted);
+  font-weight: 720;
+  line-height: 1.7;
+}
+
+.profile-tip-card-side {
+  display: grid;
+  gap: 12px;
+  justify-items: end;
+}
+
+.profile-tip-card-amounts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.profile-tip-card-amounts button {
+  display: inline-grid;
+  place-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.62);
+  color: var(--ink);
+  font-size: 0.86rem;
+  font-weight: 880;
+}
+
+.profile-tip-card-amounts button:hover {
+  border-color: rgba(30,30,30,0.22);
+  background: rgba(255,255,255,0.9);
+  transform: translateY(-1px);
+}
+
+.profile-tip-card .profile-tip-button {
+  min-width: 148px;
+  min-height: 48px;
+}
+
+[data-theme="dark"] .profile-tip-card,
+body[data-theme="dark"] .profile-tip-card {
+  background:
+    linear-gradient(135deg, rgba(24,24,23,0.88), rgba(24,24,23,0.68)),
+    radial-gradient(circle at 92% 18%, rgba(143,108,48,0.3), transparent 32%),
+    radial-gradient(circle at 12% 80%, rgba(67,96,140,0.28), transparent 34%);
+}
+
+[data-theme="dark"] .profile-tip-card-amounts button,
+body[data-theme="dark"] .profile-tip-card-amounts button {
+  background: rgba(255,255,255,0.07);
+}
+
+[data-theme="dark"] .profile-tip-card-amounts button:hover,
+body[data-theme="dark"] .profile-tip-card-amounts button:hover {
+  border-color: rgba(255,255,255,0.24);
+  background: rgba(255,255,255,0.13);
+}
+
 .profile-subscription-section {
   display: grid;
   gap: 16px;
@@ -8252,19 +8345,21 @@ body[data-theme="dark"] .request-sheet-actions .soft-button:hover {
 }
 
 .tip-thanks-card h2 {
-  margin: 8px auto 10px;
-  max-width: 12em;
-  font-size: clamp(1.8rem, 5vw, 2.8rem);
-  line-height: 1.04;
+  margin: 6px auto 12px;
+  max-width: 24em;
+  color: var(--muted);
+  font-size: clamp(0.98rem, 2.4vw, 1.25rem);
+  font-weight: 860;
+  line-height: 1.35;
 }
 
 .tip-thanks-message {
   margin: 0 auto;
-  max-width: 36ch;
+  max-width: 22ch;
   color: var(--ink);
-  font-size: 1.02rem;
-  font-weight: 820;
-  line-height: 1.75;
+  font-size: clamp(1.35rem, 4.4vw, 2rem);
+  font-weight: 940;
+  line-height: 1.42;
 }
 
 .tip-thanks-user-message {
@@ -12818,6 +12913,23 @@ body.is-dragging .drop-hint {
   .profile-overview-grid {
     grid-template-columns: 1fr;
     margin-top: 18px;
+  }
+
+  .profile-tip-card {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .profile-tip-card-side {
+    justify-items: stretch;
+  }
+
+  .profile-tip-card-amounts {
+    justify-content: flex-start;
+  }
+
+  .profile-tip-card .profile-tip-button {
+    width: 100%;
   }
 
   .profile-hero {

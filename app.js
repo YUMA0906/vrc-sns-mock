@@ -930,6 +930,8 @@ const profileNotifyButton = document.querySelector("#profileNotifyButton");
 const profileMuteButton = document.querySelector("#profileMuteButton");
 const profileBlockButton = document.querySelector("#profileBlockButton");
 const profileRequestButton = document.querySelector("#profileRequestButton");
+const profileTipCard = document.querySelector("#profileTipCard");
+const profileTipCardName = document.querySelector("#profileTipCardName");
 const profileTipButton = document.querySelector("#profileTipButton");
 const profileFollowingButton = document.querySelector("#profileFollowingButton");
 const profileShareButton = document.querySelector("#profileShareButton");
@@ -5711,10 +5713,21 @@ function openTipThanksDialog(creator, amount, userMessage = "") {
 
 function closeTipThanksDialog() {
   if (!tipThanksDialog || !modalIsOpen(tipThanksDialog)) return;
+  const creator = activeProfile;
   closeModalElement(tipThanksDialog);
+  if (creator && creator !== "You") {
+    window.setTimeout(() => {
+      if (tipReturnHash) {
+        returnFromTipPage();
+        return;
+      }
+      history.pushState("", document.title, `${location.pathname}${location.search}#profile/${slugify(creator)}`);
+      routeFromHash();
+    }, 80);
+  }
 }
 
-function renderTipPage(slug) {
+function renderTipPage(slug, presetAmount = 0) {
   const creator = profileNameBySlug(slug);
   if (!creator) {
     showFeed();
@@ -5752,7 +5765,7 @@ function renderTipPage(slug) {
     tipCreatorAvatar.style.backgroundImage = avatarImage ? `url("${avatarImage}")` : "";
     tipCreatorAvatar.classList.toggle("has-image", Boolean(avatarImage));
   }
-  if (tipAmountInput) tipAmountInput.value = "";
+  if (tipAmountInput) tipAmountInput.value = Number(presetAmount || 0) > 0 ? String(Number(presetAmount)) : "";
   if (tipMessageInput) tipMessageInput.value = "";
   if (tipAnonymousInput) tipAnonymousInput.checked = false;
   updateTipMessageLimit();
@@ -5760,7 +5773,7 @@ function renderTipPage(slug) {
   scrollPageTop();
 }
 
-function openTipPage(creator) {
+function openTipPage(creator, presetAmount = 0) {
   if (!creator) return;
   if (modalIsOpen(dialog)) closeModalElement(dialog);
   if (modalIsOpen(composeDialog)) closeComposeDialog();
@@ -5770,8 +5783,9 @@ function openTipPage(creator) {
   } else if (!location.hash) {
     tipReturnHash = "";
   }
-  location.hash = `tip/${slugify(creator)}`;
-  renderTipPage(slugify(creator));
+  const amount = Number(presetAmount || 0);
+  location.hash = amount > 0 ? `tip/${slugify(creator)}?amount=${amount}` : `tip/${slugify(creator)}`;
+  renderTipPage(slugify(creator), amount);
 }
 
 function returnFromTipPage() {
@@ -6901,9 +6915,9 @@ function routeFromHash() {
     renderSubscriptionsPage();
     return;
   }
-  const tipMatch = location.hash.match(/^#tip\/(.+)$/);
+  const tipMatch = location.hash.match(/^#tip\/([^?]+)(?:\?amount=(\d+))?$/);
   if (tipMatch) {
-    renderTipPage(tipMatch[1]);
+    renderTipPage(tipMatch[1], tipMatch[2] ? Number(tipMatch[2]) : 0);
     return;
   }
   if (location.hash === "#me") {
@@ -11661,6 +11675,11 @@ profileTipButton?.addEventListener("click", () => {
   if (profileTipButton.hidden || !activeProfile) return;
   openTipPage(activeProfile);
 });
+profileTipCard?.addEventListener("click", (event) => {
+  const amountButton = event.target.closest("[data-profile-tip-amount]");
+  if (!amountButton || !activeProfile || activeProfile === "You") return;
+  openTipPage(activeProfile, Number(amountButton.dataset.profileTipAmount || 0));
+});
 profileShareButton?.addEventListener("click", shareCurrentProfile);
 subscriptionPlanManageButton?.addEventListener("click", () => openSubscriptionPlanDialog());
 subscriptionPlanForm?.addEventListener("submit", saveSubscriptionPlan);
@@ -13450,6 +13469,7 @@ function renderProfile(creator) {
     if (profileFollowingButton) profileFollowingButton.hidden = false;
     updateProfileSocialButtons(creator, true);
     profileRequestButton.hidden = true;
+    if (profileTipCard) profileTipCard.hidden = true;
     if (profileTipButton) profileTipButton.hidden = true;
   } else {
     activeProfileArchiveTab = "posts";
@@ -13463,9 +13483,11 @@ function renderProfile(creator) {
     updateProfileSocialButtons(creator, false);
     profileRequestButton.hidden = !directPosts.some((pin) => pin.request?.open);
     profileRequestButton.textContent = t("requestOpen");
+    if (profileTipCard) profileTipCard.hidden = false;
+    if (profileTipCardName) profileTipCardName.textContent = tipDisplayName(creator);
     if (profileTipButton) {
       profileTipButton.hidden = false;
-      profileTipButton.textContent = "投げ銭";
+      profileTipButton.textContent = "投げ銭する";
     }
     if (savedPostsSection) savedPostsSection.hidden = true;
   }
