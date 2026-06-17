@@ -1014,6 +1014,17 @@ The backend should eventually model these domains:
 
 Mock data in `backendSpecCards` is an in-app summary, but this document is the more detailed handoff.
 
+## Recent Change Notes
+
+2026-06-17:
+
+- Post creation now reads VRChat-style image metadata before client-side image normalization.
+- Supported metadata candidates include `vrc:WorldDisplayName`, `vrc:WorldID`, `Author`, and `vrc:AuthorID`.
+- Detected world names are automatically reflected into the World field and committed as a tag chip.
+- Detected `wrld_...` IDs can be converted to `https://vrchat.com/home/world/{worldId}/info`; post detail shows a VRChat world link when the saved post has a valid world ID.
+- Compose tags are now committed with Enter and rendered as removable chips above the tag input.
+- Avatar/World links in post detail now search from an unfiltered All state instead of applying category narrowing.
+
 ## Pre-Push Checklist
 
 Unless the user requests full QA, keep this lightweight:

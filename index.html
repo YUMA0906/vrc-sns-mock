@@ -11,11 +11,14 @@
     <meta property="og:url" content="https://yuma0906.github.io/vrc-sns-mock/" />
     <meta property="og:image" content="https://images.squarespace-cdn.com/content/5f0770791aaf57311515b23d/42a6aa4e-ca30-4d01-a8f1-01be8dcef940/Tribe.webp?format=1500w" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Veacon - VRChat Creator Profiles" />
+    <meta name="twitter:description" content="作品、実績、依頼受付状況、外部リンクをまとめて見せるVRChatクリエイター向けプロフィールモック。" />
+    <meta name="twitter:image" content="https://images.squarespace-cdn.com/content/5f0770791aaf57311515b23d/42a6aa4e-ca30-4d01-a8f1-01be8dcef940/Tribe.webp?format=1500w" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.squarespace-cdn.com" />
-    <link rel="stylesheet" href="./styles.css?v=pin-dialog-content-top-scroll" />
+    <link rel="stylesheet" href="./styles.css?v=vrchat-image-metadata" />
   </head>
   <body>
     <header class="topbar">
@@ -576,6 +579,14 @@
                 <small class="request-amount-help">初回申請と納品完了時の連絡は必須です。</small>
               </label>
               <label class="field">
+                <span>実績公開</span>
+                <select id="requestPortfolioPermission">
+                  <option value="allow" selected>最終納品物の実績公開を許可する</option>
+                  <option value="deny">実績公開を許可しない</option>
+                </select>
+                <small class="request-amount-help">許可した場合でも、掲載内容は納品後に確認できる想定です。</small>
+              </label>
+              <label class="field">
                 <span>希望納期</span>
                 <input id="requestDesiredDate" type="date" />
               </label>
@@ -978,7 +989,7 @@
                 <small>公開にするとプロフィールでいいねした投稿を見せられます</small>
               </label>
               <label class="settings-row">
-                <span><strong>外部リンク警告</strong><small>VRChat / BOOTH / X 以外のリンクを開く前に確認</small></span>
+                <span><strong>外部リンク警告</strong><small>VRChat / BOOTH / X / YouTube 以外のリンクを開く前に確認</small></span>
                 <input type="checkbox" checked />
               </label>
               <label class="settings-row">
@@ -2236,8 +2247,8 @@
           <p id="dialogCategory" class="eyebrow"></p>
           <h2 id="dialogTitle"></h2>
           <p id="dialogDescription"></p>
+          <div id="dialogCreator" class="dialog-creator-card"></div>
           <div class="dialog-meta">
-            <span id="dialogCreator"></span>
             <span id="dialogAvatar"></span>
             <span id="dialogWorld"></span>
             <span id="dialogTags"></span>
@@ -2441,9 +2452,12 @@
               <span>World</span>
               <input id="composeWorld" type="text" placeholder="Yayoi Rain" autocomplete="off" />
             </label>
+            <div id="composeMetadataHint" class="compose-metadata-hint wide" hidden></div>
             <label class="field wide">
               <span>タグ</span>
-              <input id="composeTags" type="text" placeholder="#avatar #改変 #booth" autocomplete="off" />
+              <div id="composeTagChips" class="compose-tag-chips" aria-label="確定済みタグ" hidden></div>
+              <input id="composeTags" type="text" placeholder="#avatar を入力してEnter" autocomplete="off" />
+              <small>タグを入力してEnterで確定</small>
             </label>
             <label class="field wide">
               <span>説明</span>
@@ -2901,6 +2915,6 @@
       <span>投稿タイプは前回の設定を引き継ぎます。</span>
     </div>
 
-    <script src="./app.js?v=pin-dialog-scroll-reset"></script>
+    <script src="./app.js?v=vrchat-image-metadata"></script>
   </body>
 </html>

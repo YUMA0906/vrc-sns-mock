@@ -155,6 +155,10 @@ const pins = [
   { id: 24, title: "Subscriber memo: booth fitting notes", category: "Avatar", creator: "Mika Alterworks", role: "Avatar editor", avatar: "Selestia", world: "Atelier room", tags: ["#subscriber", "#booth", "#fitting"], request: null, description: "メンバーシップ加入者だけが見られる衣装合わせメモ。購入前の比較や、どの衣装が相性良いかの途中記録をまとめています。", image: vrchatImages.steamAvatarB, visibility: "SubscriberOnly" },
   { id: 25, title: "Members album: hidden cuts", category: "Photo", creator: "Lumi Photo", role: "Photographer", avatar: "Manuka", world: "Moonlit Harbor", tags: ["#subscriber", "#album", "#portrait"], request: null, description: "メンバーシップ向けの未公開カット集。通常投稿には出していない構図やレタッチ前後の比較も載せる想定です。", image: vrchatImages.steamSocial, visibility: "SubscriberOnly" },
   { id: 26, title: "Devlog: optimization breakdown", category: "World", creator: "Orbit Build", role: "World creator", avatar: "World sample", world: "Soft Club", tags: ["#subscriber", "#optimization", "#devlog"], request: null, description: "支援者限定の制作ログ。容量削減やライティング調整の判断理由を詳しく共有する想定です。", image: vrchatImages.steamWorldB, visibility: "SubscriberOnly" },
+  { id: 27, title: "Vertical shrine portrait", category: "Photo", creator: "Lumi Photo", role: "Photographer", avatar: "Manuka", world: "Yayoi Rain", tags: ["#portrait", "#vertical", "#写真"], request: null, description: "スマホ壁紙やプロフィールカードに使いやすい縦長構図のVRChatポートレート投稿例。", image: "https://picsum.photos/seed/veacon-vrc-portrait-1/900/1600.jpg" },
+  { id: 28, title: "Tall outfit detail board", category: "Avatar", creator: "Nagi Closet", role: "Outfit stylist", avatar: "Shinra", world: "Soft Garden", tags: ["#lookbook", "#vertical", "#衣装"], request: null, description: "衣装の全身シルエットと小物の見え方を縦長で確認するためのルックブック投稿例。", image: "https://picsum.photos/seed/veacon-vrc-portrait-2/900/1350.jpg" },
+  { id: 29, title: "Phone wallpaper retouch", category: "Retouch", creator: "Aoi Retouch", role: "Retoucher", avatar: "Kikyo", world: "White Studio", tags: ["#retouch", "#vertical", "#wallpaper"], request: { open: true, title: "スマホ壁紙レタッチ", price: "¥3,000〜", capacity: "受付 2 / 5", delivery: "平均 2日" }, description: "スマホ待ち受けや縦長SNS投稿を想定した、縦構図のレタッチ依頼サンプル。", image: "https://picsum.photos/seed/veacon-vrc-portrait-3/900/1600.jpg" },
+  { id: 30, title: "Event story poster", category: "Commission", creator: "Rin Works", role: "Commission designer", avatar: "Creator profile", world: "Club Prism", tags: ["#依頼受付", "#vertical", "#poster"], request: { open: true, title: "縦長告知画像制作", price: "¥5,000〜", capacity: "受付 4 / 8", delivery: "平均 4日" }, description: "スマホでそのまま見やすい縦長イベント告知画像の制作サンプル。", image: "https://picsum.photos/seed/veacon-vrc-portrait-4/900/1200.jpg" },
   { id: 101, title: "Draft avatar board", category: "Avatar", creator: "You", role: "VRChat creator", avatar: "Rurune", world: "Creator Room", tags: ["#draft", "#avatar", "#memo"], request: null, description: "自分用の下書きアバターボード。", image: vrchatImages.steamAvatarA },
   { id: 102, title: "Saved outfit ideas", category: "Avatar", creator: "You", role: "VRChat creator", avatar: "Shinra", world: "Soft Garden", tags: ["#saved", "#outfit", "#booth"], request: null, description: "保存した衣装アイデアをまとめたマイページ用投稿。", image: vrchatImages.steamAvatarB },
   { id: 103, title: "World walk archive", category: "World", creator: "You", role: "VRChat creator", avatar: "Rurune", world: "Silent Harbor", tags: ["#world", "#archive", "#photo"], request: null, description: "お気に入りワールドの散歩ログ。", image: vrchatImages.steamWorldA },
@@ -617,6 +621,7 @@ const requestManagerItems = [
 ];
 
 requestManagerItems.forEach((item) => {
+  if (!item.portfolioPermission) item.portfolioPermission = item.id % 3 === 0 ? "deny" : "allow";
   if (!Array.isArray(item.deliveries)) {
     item.deliveries = item.status === "awaiting_review" || item.status === "awaiting_your_review" || item.status === "completed"
       ? [{
@@ -801,6 +806,9 @@ const myRequestItems = [
     ],
   },
 ];
+myRequestItems.forEach((item) => {
+  if (!item.portfolioPermission) item.portfolioPermission = item.id % 4 === 0 ? "deny" : "allow";
+});
 const board = document.querySelector("#board");
 const profileBoard = document.querySelector("#profileBoard");
 const profilePostSearch = document.querySelector("#profilePostSearch");
@@ -987,6 +995,7 @@ const requestAmountInput = document.querySelector("#requestAmountInput");
 const requestAmountHelp = document.querySelector("#requestAmountHelp");
 const requestAmountError = document.querySelector("#requestAmountError");
 const requestChatPreference = document.querySelector("#requestChatPreference");
+const requestPortfolioPermission = document.querySelector("#requestPortfolioPermission");
 const requestDesiredDate = document.querySelector("#requestDesiredDate");
 const requestBriefInput = document.querySelector("#requestBriefInput");
 const requestReferenceInput = document.querySelector("#requestReferenceInput");
@@ -1302,6 +1311,8 @@ const composeCircle = document.querySelector("#composeCircle");
 const composeAvatar = document.querySelector("#composeAvatar");
 const composeWorld = document.querySelector("#composeWorld");
 const composeTags = document.querySelector("#composeTags");
+const composeTagChips = document.querySelector("#composeTagChips");
+const composeMetadataHint = document.querySelector("#composeMetadataHint");
 const composeDescription = document.querySelector("#composeDescription");
 const composeNotice = document.querySelector("#composeNotice");
 const composeSubmit = document.querySelector("#composeSubmit");
@@ -1517,6 +1528,8 @@ let accountMenuLockedScrollY = 0;
 let composeImages = [];
 let composeImageIndex = 0;
 let composePreviousVisibility = "Public";
+let pendingComposeMetadata = null;
+let composeTagItems = [];
 let requestComposeImageData = "";
 let bookmarkFolders = [
   { id: "folder-photo", name: "撮影参考", pinIds: [3, 12] },
@@ -2099,7 +2112,7 @@ const translations = {
     likedVisibilityPublic: "公開",
     likedVisibilityPrivate: "非公開",
     externalLinkWarning: "外部リンク警告",
-    externalLinkWarningHelp: "VRChat / BOOTH / X 以外のリンクを開く前に確認",
+    externalLinkWarningHelp: "VRChat / BOOTH / X / YouTube 以外のリンクを開く前に確認",
     onlineStatus: "オンライン状態を表示",
     onlineStatusHelp: "依頼チャットで対応可能かを表示",
     settingsContentTitle: "コンテンツ表示",
@@ -2319,7 +2332,7 @@ const translations = {
     likedVisibilityPublic: "Public",
     likedVisibilityPrivate: "Private",
     externalLinkWarning: "External link warning",
-    externalLinkWarningHelp: "Confirm before opening links other than VRChat / BOOTH / X",
+    externalLinkWarningHelp: "Confirm before opening links other than VRChat / BOOTH / X / YouTube",
     onlineStatus: "Show online status",
     onlineStatusHelp: "Show availability in request chat",
     settingsContentTitle: "Content display",
@@ -2539,7 +2552,7 @@ const translations = {
     likedVisibilityPublic: "공개",
     likedVisibilityPrivate: "비공개",
     externalLinkWarning: "외부 링크 경고",
-    externalLinkWarningHelp: "VRChat / BOOTH / X 외 링크를 열기 전에 확인",
+    externalLinkWarningHelp: "VRChat / BOOTH / X / YouTube 외 링크를 열기 전에 확인",
     onlineStatus: "온라인 상태 표시",
     onlineStatusHelp: "의뢰 채팅에서 대응 가능 여부 표시",
     settingsContentTitle: "콘텐츠 표시",
@@ -4920,17 +4933,33 @@ function enhanceSheetCloseButtons() {
   });
 }
 
+function eventInsideOpenModal(event) {
+  return Boolean(event.target?.closest?.("dialog[open], dialog.is-fallback-open"));
+}
+
+function preventBackgroundScrollWhileLocked(event) {
+  if (!document.body.classList.contains("modal-scroll-locked")) return;
+  if (eventInsideOpenModal(event)) return;
+  event.preventDefault();
+}
+
 function lockPageScroll() {
   if (document.body.classList.contains("modal-scroll-locked")) return;
   lockedScrollY = window.scrollY;
   document.body.style.setProperty("--locked-scroll-y", `-${lockedScrollY}px`);
   document.body.classList.add("modal-scroll-locked");
+  document.documentElement.classList.add("modal-scroll-locked");
+  window.addEventListener("wheel", preventBackgroundScrollWhileLocked, { passive: false });
+  window.addEventListener("touchmove", preventBackgroundScrollWhileLocked, { passive: false });
 }
 
 function unlockPageScroll() {
   if (!document.body.classList.contains("modal-scroll-locked")) return;
   document.body.classList.remove("modal-scroll-locked");
+  document.documentElement.classList.remove("modal-scroll-locked");
   document.body.style.removeProperty("--locked-scroll-y");
+  window.removeEventListener("wheel", preventBackgroundScrollWhileLocked);
+  window.removeEventListener("touchmove", preventBackgroundScrollWhileLocked);
   window.scrollTo(0, lockedScrollY);
 }
 
@@ -5107,6 +5136,28 @@ function canViewPin(pin) {
 
 function creatorPosts(creator) {
   return pins.filter((pin) => pin.creator === creator && canViewPin(pin));
+}
+
+function creatorAvatarImage(creator, fallbackPost = null) {
+  if (creator === "You") return myProfile.avatar || fallbackPost?.image || "";
+  return creatorPosts(creator)[0]?.image || fallbackPost?.image || creatorBySlug(slugify(creator))?.image || "";
+}
+
+function dialogCreatorMarkup(pin) {
+  const creator = pin?.creator || "Creator";
+  const role = pin?.role || profileMetaFor(creator)?.role || "Creator";
+  const image = creatorAvatarImage(creator, pin);
+  const initial = creator.slice(0, 1).toUpperCase();
+  const avatarStyle = image ? ` style="background-image:url('${escapeHtml(image)}')"` : "";
+  return `
+    <button class="creator-link" type="button" data-profile="${escapeHtml(slugify(creator))}">
+      <span class="dialog-creator-avatar"${avatarStyle}>${image ? "" : escapeHtml(initial)}</span>
+      <span class="dialog-creator-copy">
+        <strong>${escapeHtml(creator)}</strong>
+        <small>${escapeHtml(role)}</small>
+      </span>
+    </button>
+  `;
 }
 
 function requestItemsByClient(client) {
@@ -6893,6 +6944,19 @@ function metaSearchLink(label, value, category) {
   return `<button class="meta-search-link" type="button" data-meta-category="${category}" data-meta-query="${value}">${label}: ${value}</button>`;
 }
 
+function vrchatWorldUrl(worldId) {
+  const cleanId = String(worldId || "").trim();
+  if (!/^wrld_[0-9a-f-]{36}$/i.test(cleanId)) return "";
+  return `https://vrchat.com/home/world/${cleanId}/info`;
+}
+
+function worldMetaMarkup(pin) {
+  const search = metaSearchLink("World", pin.world, "World");
+  const worldUrl = vrchatWorldUrl(pin.worldId);
+  if (!worldUrl) return search;
+  return `${search}<a class="world-external-link" href="${escapeHtml(worldUrl)}" target="_blank" rel="noreferrer">VRChatで開く</a>`;
+}
+
 function handleInlinePinOpen(event, pinId, card) {
   if (shouldIgnorePinOpenTarget(event.target)) return;
   openPinFromCard(card || event.currentTarget, event);
@@ -6908,7 +6972,7 @@ function pinCard(pin) {
     <article class="pin-card" role="button" tabindex="0" data-id="${pin.id}" aria-label="${pin.title}" onclick="handleInlinePinOpen(event, ${pin.id}, this)">
       <div class="pin-media">
         <img src="${pin.image}" alt="${pin.title}" loading="lazy" />
-        <a class="pin-open-link" href="#post/${pin.id}" aria-label="Open ${pin.title}"></a>
+        <span class="pin-open-link" aria-hidden="true"></span>
         <div class="pin-overlay">
           ${status ? `<span class="status-chip">${status}</span>` : "<span></span>"}
           <button class="save-dot ${saved ? "is-saved" : ""}" type="button" data-save="${pin.id}" aria-label="${saved ? "Unsave" : "Save"} ${pin.title}">
@@ -7134,9 +7198,14 @@ function openPin(pinId, sourceElement = null) {
 
   setDialogOrigin(sourceElement);
   resetPinDialogScroll();
+  dialog.classList.remove("is-landscape-image", "is-portrait-image", "is-square-image");
+  dialog.classList.add("is-square-image");
+  dialogImageWrap?.style.setProperty("--dialog-image-bg", `url(${JSON.stringify(currentPin.image)})`);
   dialogImage.src = currentPin.image;
   dialogImage.alt = currentPin.title;
-  dialogImageWrap?.style.setProperty("--dialog-image-bg", `url(${JSON.stringify(currentPin.image)})`);
+  if (dialogImage.complete && dialogImage.naturalWidth) {
+    applyDialogImageOrientation();
+  }
   const currentCircle = currentPin.circleId ? circleById(currentPin.circleId) : null;
   const visibilityLabel = currentPin.circleId ? "サークル限定" : currentPin.visibility === "SubscriberOnly" ? "メンバーシップ限定" : t("normalPost");
   const circleTrail = currentCircle
@@ -7147,9 +7216,9 @@ function openPin(pinId, sourceElement = null) {
     : `${categoryLink(currentPin.category)} / ${visibilityLabel}${circleTrail}`;
   dialogTitle.textContent = currentPin.title;
   dialogDescription.textContent = currentPin.description;
-  dialogCreator.innerHTML = `<button class="creator-link" type="button" data-profile="${slugify(currentPin.creator)}">${currentPin.creator}</button>`;
+  dialogCreator.innerHTML = dialogCreatorMarkup(currentPin);
   dialogAvatar.innerHTML = metaSearchLink("Avatar", currentPin.avatar, "Avatar");
-  dialogWorld.innerHTML = metaSearchLink("World", currentPin.world, "World");
+  dialogWorld.innerHTML = worldMetaMarkup(currentPin);
   dialogTags.innerHTML = tagLinks(currentPin.tags);
   const creatorOpenRequest = primaryOpenRequestForCreator(currentPin.creator);
   const creatorPlans = subscriptionProgramFor(currentPin.creator);
@@ -7180,6 +7249,21 @@ function openPin(pinId, sourceElement = null) {
   renderDialogComments();
   showModalElement(dialog);
   requestAnimationFrame(resetPinDialogScroll);
+}
+
+function applyDialogImageOrientation() {
+  if (!dialog || !dialogImage) return;
+  const width = dialogImage.naturalWidth || 0;
+  const height = dialogImage.naturalHeight || 0;
+  dialog.classList.remove("is-landscape-image", "is-portrait-image", "is-square-image");
+  if (!width || !height) {
+    dialog.classList.add("is-square-image");
+    return;
+  }
+  const ratio = width / height;
+  dialog.classList.toggle("is-landscape-image", ratio >= 1.18);
+  dialog.classList.toggle("is-portrait-image", ratio <= 0.82);
+  dialog.classList.toggle("is-square-image", ratio > 0.82 && ratio < 1.18);
 }
 
 function resetPinDialogScroll() {
@@ -7693,6 +7777,7 @@ function renderRequestPage(creator, postId = null) {
   if (requestReferenceInput) requestReferenceInput.value = "";
   requestAgreement.checked = false;
   if (requestChatPreference) requestChatPreference.value = requestChatMode(post) === "limited" ? "minimal" : "use";
+  if (requestPortfolioPermission) requestPortfolioPermission.value = "allow";
   updateRequestAmountState();
   updateRequestAuthView();
   renderOtherRequestCards(post.creator, post.id);
@@ -7725,6 +7810,7 @@ function openRequestCheckoutDialog() {
   const desiredDate = requestDesiredDate?.value || "未指定";
   const requestBrief = requestBriefInput?.value.trim() || "依頼時に具体的な内容を入力する想定";
   const requestReference = requestReferenceInput?.value.trim() || "未指定";
+  const portfolioPermission = requestPortfolioPermission?.value || "allow";
   requestCheckoutSummary.innerHTML = [
     `<div><strong>依頼タイトル</strong><span>${post.request.title}</span></div>`,
     `<div><strong>投稿名</strong><span>${post.title}</span></div>`,
@@ -7734,6 +7820,7 @@ function openRequestCheckoutDialog() {
     `<div><strong>依頼内容</strong><span>${escapeHtml(requestBrief)}</span></div>`,
     `<div><strong>参考資料</strong><span>${escapeHtml(requestReference)}</span></div>`,
     `<div><strong>通常チャット</strong><span>${requestChatLabel(post)} / ${requesterChatPreferenceLabel(requestChatPreference?.value || "use")}</span></div>`,
+    `<div><strong>実績公開</strong><span>${requestPortfolioPermissionLabel(portfolioPermission)}</span></div>`,
     `<div><strong>必須連絡</strong><span>初回申請時と納品完了時</span></div>`,
   ].join("");
   requestCheckoutAgreement.checked = false;
@@ -8253,6 +8340,18 @@ function requesterChatPreferenceLabel(value) {
     : (currentLanguage === "en" ? "Chat when needed" : currentLanguage === "ko" ? "필요 시 채팅" : "必要に応じて通常チャットを使う");
 }
 
+function requestPortfolioPermissionLabel(value) {
+  return value === "deny"
+    ? (currentLanguage === "en" ? "Do not allow portfolio publishing" : currentLanguage === "ko" ? "최종 납품물 실적 공개 불가" : "最終納品物の実績公開を許可しない")
+    : (currentLanguage === "en" ? "Allow portfolio publishing" : currentLanguage === "ko" ? "최종 납품물 실적 공개 허용" : "最終納品物の実績公開を許可する");
+}
+
+function requestPortfolioPermissionShortLabel(value) {
+  return value === "deny"
+    ? (currentLanguage === "en" ? "Portfolio use denied" : currentLanguage === "ko" ? "실적 공개 불가" : "実績公開不可")
+    : (currentLanguage === "en" ? "Portfolio use OK" : currentLanguage === "ko" ? "실적 공개 OK" : "実績公開OK");
+}
+
 function requestServiceLines(post) {
   const base = [
     `サービス内容: ${post.request?.title || post.category}`,
@@ -8616,6 +8715,7 @@ function renderMyRequestDetailPage(itemId) {
       `<span>${escapeHtml(item.amount)}</span>`,
       `<span>希望納期: ${escapeHtml(item.desiredDue)}</span>`,
       `<span>予定納期: ${escapeHtml(item.plannedDue)}</span>`,
+      `<span>成果公開: ${escapeHtml(requestPortfolioPermissionShortLabel(item.portfolioPermission))}</span>`,
       `<span>${escapeHtml(item.requestedAt)}</span>`,
     ].join("");
   }
@@ -9119,12 +9219,147 @@ function persistComposeDraft() {
     circleId: composeCircle?.value || "",
     avatar: composeAvatar.value,
     world: composeWorld.value,
-    tags: composeTags.value,
+    tags: composeTagsText(),
     description: composeDescription.value,
     images: composeImages,
     savedAt: Date.now()
   };
   localStorage.setItem(composeDraftStorageKey, JSON.stringify(payload));
+}
+
+function formatVrchatMetadataRows(metadata) {
+  if (!metadata) return "";
+  return [
+    metadata.worldName ? `<span>World: ${escapeHtml(metadata.worldName)}</span>` : "",
+    metadata.worldId ? `<span>ID: ${escapeHtml(metadata.worldId)}</span>` : "",
+    metadata.authorName ? `<span>撮影者: ${escapeHtml(metadata.authorName)}</span>` : "",
+    metadata.authorId ? `<span>AuthorID: ${escapeHtml(metadata.authorId)}</span>` : ""
+  ].filter(Boolean).join("");
+}
+
+function normalizeComposeTag(value) {
+  const clean = String(value || "")
+    .normalize("NFKC")
+    .trim()
+    .replace(/\s+/g, "");
+  if (!clean) return "";
+  const body = clean.replace(/^[#＃]+/, "").replace(/[^\p{L}\p{N}_-]+/gu, "");
+  return body ? `#${body}` : "";
+}
+
+function renderComposeTagChips() {
+  if (!composeTagChips) return;
+  composeTagChips.innerHTML = composeTagItems.map((tag) => `
+    <button class="compose-tag-chip" type="button" data-compose-tag="${escapeHtml(tag)}" aria-label="${escapeHtml(tag)}を削除">
+      <span>${escapeHtml(tag)}</span>
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M18 6 6 18" />
+        <path d="m6 6 12 12" />
+      </svg>
+    </button>
+  `).join("");
+  composeTagChips.hidden = composeTagItems.length === 0;
+}
+
+function addComposeTag(value) {
+  const tag = normalizeComposeTag(value);
+  if (!tag) return false;
+  if (composeTagItems.some((item) => item.toLowerCase() === tag.toLowerCase())) return false;
+  composeTagItems.push(tag);
+  renderComposeTagChips();
+  updateComposePreview();
+  updateComposeSubmitState();
+  persistComposeDraft();
+  return true;
+}
+
+function commitComposeTagInput() {
+  if (!composeTags) return false;
+  const values = composeTags.value.split(/[\s,、]+/).filter(Boolean);
+  let changed = false;
+  values.forEach((value) => {
+    if (addComposeTag(value)) changed = true;
+  });
+  composeTags.value = "";
+  updateComposePreview();
+  persistComposeDraft();
+  return changed;
+}
+
+function setComposeTagsFromText(value) {
+  composeTagItems = String(value || "")
+    .split(/\s+/)
+    .map(normalizeComposeTag)
+    .filter(Boolean)
+    .filter((tag, index, array) => array.findIndex((item) => item.toLowerCase() === tag.toLowerCase()) === index);
+  renderComposeTagChips();
+  if (composeTags) composeTags.value = "";
+}
+
+function composeTagsText() {
+  return composeTagItems.join(" ");
+}
+
+function hideComposeMetadataHint() {
+  pendingComposeMetadata = null;
+  if (!composeMetadataHint) return;
+  composeMetadataHint.hidden = true;
+  composeMetadataHint.innerHTML = "";
+}
+
+function applyComposeMetadata(metadata, options = {}) {
+  if (!metadata) return false;
+  let changed = false;
+  if (metadata.worldName && (!composeWorld.value.trim() || options.force)) {
+    composeWorld.value = metadata.worldName;
+    changed = true;
+  }
+  if (ensureComposeWorldTag(metadata)) {
+    changed = true;
+  }
+  if (changed) {
+    updateComposePreview();
+    updateComposeSubmitState();
+    persistComposeDraft();
+  }
+  return changed;
+}
+
+function worldNameToHashTag(worldName) {
+  return normalizeComposeTag(worldName);
+}
+
+function ensureComposeWorldTag(metadata) {
+  const tag = worldNameToHashTag(metadata?.worldName);
+  return addComposeTag(tag);
+}
+
+function showComposeMetadataHint(metadata, options = {}) {
+  if (!composeMetadataHint || !metadata) return;
+  pendingComposeMetadata = metadata;
+  const wasApplied = options.applied || false;
+  composeMetadataHint.hidden = false;
+  composeMetadataHint.innerHTML = `
+    <div>
+      <strong>メタデータを検出したので反映しました</strong>
+      <p>${wasApplied ? "World情報とハッシュタグを投稿フォームに反映済みです。" : "検出した情報は保持しています。"}</p>
+      <div class="compose-metadata-tags">${formatVrchatMetadataRows(metadata)}</div>
+    </div>
+  `;
+}
+
+function handleComposeMetadataFromImages(images, options = {}) {
+  const metadata = images.find((image) => image?.metadata)?.metadata || null;
+  if (!metadata) {
+    if (!composeImages.some((image) => image?.metadata)) hideComposeMetadataHint();
+    return;
+  }
+  const applied = applyComposeMetadata(metadata);
+  showComposeMetadataHint(metadata, { ...options, applied });
+}
+
+function currentComposeMetadata() {
+  return pendingComposeMetadata || composeImages.find((image) => image?.metadata)?.metadata || null;
 }
 
 function normalizeComposeVisibility(value) {
@@ -9238,11 +9473,16 @@ function restoreComposeDraft() {
     if (composeCircle) composeCircle.value = draft.circleId || joinedCircleIds.values().next().value || "";
     composeAvatar.value = draft.avatar || "";
     composeWorld.value = draft.world || "";
-    composeTags.value = draft.tags || "";
+    setComposeTagsFromText(draft.tags || "");
     composeDescription.value = draft.description || "";
     composeImages = Array.isArray(draft.images) ? draft.images : [];
     composeImageIndex = 0;
     renderComposeImage();
+    if (composeImages.some((image) => image?.metadata)) {
+      handleComposeMetadataFromImages(composeImages, { restored: true });
+    } else {
+      hideComposeMetadataHint();
+    }
     updateComposeCircleVisibility();
     refreshPostComposeCustomSelects();
     updateComposeSubmitState();
@@ -9273,11 +9513,12 @@ function resetComposeFormState() {
   if (composeCircle) composeCircle.value = joinedCircleIds.values().next().value || "";
   composeAvatar.value = "";
   composeWorld.value = "";
-  composeTags.value = "";
+  setComposeTagsFromText("");
   composeDescription.value = "";
   composeImages = [];
   composeImageIndex = 0;
   renderComposeImage();
+  hideComposeMetadataHint();
   updateComposeCircleVisibility();
   refreshPostComposeCustomSelects();
   syncTrimRequiredFields(composeForm);
@@ -9290,6 +9531,7 @@ function composeHasDraftableInput() {
     composeAvatar.value.trim() ||
     composeWorld.value.trim() ||
     composeTags.value.trim() ||
+    composeTagItems.length ||
     composeDescription.value.trim() ||
     composeImages.length ||
     composeCategory.value !== "Photo" ||
@@ -10130,6 +10372,7 @@ function renderRequestManagerDetailPage(itemId) {
     `<span>${item.budget}</span>`,
     `<span>${requestStateLabel(item.status)}</span>`,
     requestTurnPill(item),
+    `<span>成果公開: ${requestPortfolioPermissionShortLabel(item.portfolioPermission)}</span>`,
     `<span>${item.deadline}</span>`,
   ].join("");
   renderRequestProgress(item);
@@ -10587,7 +10830,7 @@ function searchByMeta(category, query) {
   feedView.hidden = false;
   searchInput.value = query;
   setView("discover", { keepSearch: true });
-  setCategory(category);
+  setCategory("All");
   renderPins();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -10789,7 +11032,7 @@ function handleComposeCircleToggleChange({ openMenu = false } = {}) {
 function updateComposePreview() {
   const category = composeCategory.value || "Avatar";
   const title = composePostTitle.value.trim() || "新しい投稿タイトル";
-  const tags = composeTags.value.trim() || "#vrchat #portfolio";
+  const tags = composeTagsText() || "#vrchat #portfolio";
   const creator = "You";
   const circle = isComposeCirclePost() ? circleById(composeCircle?.value) : null;
   const contentFlags = [
@@ -10918,6 +11161,127 @@ function canvasToDataUrl(canvas, type = "image/jpeg", quality = 0.88) {
   });
 }
 
+function decodeBytes(bytes, encoding = "utf-8") {
+  try {
+    return new TextDecoder(encoding, { fatal: false }).decode(bytes);
+  } catch {
+    return "";
+  }
+}
+
+function decodeNullSafeText(bytes, encoding = "utf-8") {
+  return decodeBytes(bytes, encoding)
+    .replace(/\u0000+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function decodeMetadataEntities(value) {
+  return String(value || "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, "\"")
+    .replace(/&#39;/g, "'");
+}
+
+function assignMetadataValue(target, key, value) {
+  const cleanKey = String(key || "").trim();
+  const cleanValue = decodeMetadataEntities(String(value || "").trim().replace(/\u0000+/g, " "));
+  if (!cleanKey || !cleanValue || cleanValue.length > 220) return;
+  target[cleanKey] = cleanValue;
+}
+
+function parsePngTextChunks(buffer) {
+  const view = new DataView(buffer);
+  const bytes = new Uint8Array(buffer);
+  const pngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+  if (bytes.length < 12 || !pngSignature.every((value, index) => bytes[index] === value)) return {};
+
+  const metadata = {};
+  let offset = 8;
+  while (offset + 12 <= bytes.length) {
+    const length = view.getUint32(offset);
+    const type = decodeBytes(bytes.slice(offset + 4, offset + 8), "ascii");
+    const dataStart = offset + 8;
+    const dataEnd = dataStart + length;
+    if (dataEnd > bytes.length) break;
+    const chunk = bytes.slice(dataStart, dataEnd);
+
+    if (type === "tEXt") {
+      const divider = chunk.indexOf(0);
+      if (divider > 0) {
+        assignMetadataValue(metadata, decodeBytes(chunk.slice(0, divider), "latin1"), decodeBytes(chunk.slice(divider + 1), "utf-8"));
+      }
+    } else if (type === "iTXt") {
+      const divider = chunk.indexOf(0);
+      if (divider > 0) {
+        const keyword = decodeBytes(chunk.slice(0, divider), "utf-8");
+        const compressionFlag = chunk[divider + 1];
+        if (compressionFlag === 0) {
+          let textStart = divider + 3;
+          for (let separatorCount = 0; separatorCount < 2 && textStart < chunk.length; separatorCount += 1) {
+            const nextDivider = chunk.indexOf(0, textStart);
+            textStart = nextDivider >= 0 ? nextDivider + 1 : chunk.length;
+          }
+          assignMetadataValue(metadata, keyword, decodeBytes(chunk.slice(textStart), "utf-8"));
+        }
+      }
+    }
+
+    offset = dataEnd + 4;
+    if (type === "IEND") break;
+  }
+  return metadata;
+}
+
+function extractLooseMetadataValue(text, key) {
+  const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const patterns = [
+    new RegExp(`<${escapedKey}[^>]*>([^<]{1,220})<\\/${escapedKey}>`, "i"),
+    new RegExp(`${escapedKey}\\s*=\\s*["']([^"']{1,220})["']`, "i"),
+    new RegExp(`${escapedKey}\\s*[:=]\\s*([^\\r\\n<>]{1,220})`, "i")
+  ];
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match?.[1]) return match[1].trim();
+  }
+  return "";
+}
+
+function scanVrchatMetadataStrings(buffer) {
+  const bytes = new Uint8Array(buffer);
+  const utf8 = decodeNullSafeText(bytes, "utf-8");
+  const latin1 = decodeNullSafeText(bytes, "latin1");
+  const source = `${utf8} ${latin1}`;
+  const keys = ["vrc:WorldDisplayName", "WorldDisplayName", "vrc:WorldID", "WorldID", "vrc:AuthorID", "Author"];
+  return keys.reduce((metadata, key) => {
+    const value = extractLooseMetadataValue(source, key);
+    if (value) assignMetadataValue(metadata, key, value);
+    return metadata;
+  }, {});
+}
+
+async function readVrchatImageMetadata(file) {
+  if (!file || !file.type.startsWith("image/")) return null;
+  try {
+    const buffer = await file.arrayBuffer();
+    const raw = {
+      ...parsePngTextChunks(buffer),
+      ...scanVrchatMetadataStrings(buffer)
+    };
+    const metadata = {
+      worldName: raw["vrc:WorldDisplayName"] || raw.WorldDisplayName || raw.World || raw.WorldName || "",
+      worldId: raw["vrc:WorldID"] || raw.WorldID || "",
+      authorName: raw.Author || raw["vrc:Author"] || "",
+      authorId: raw["vrc:AuthorID"] || raw.AuthorID || ""
+    };
+    return Object.values(metadata).some(Boolean) ? metadata : null;
+  } catch {
+    return null;
+  }
+}
+
 async function normalizeUploadImage(file, options = {}) {
   if (!file || !file.type.startsWith("image/")) return null;
   const source = URL.createObjectURL(file);
@@ -10968,7 +11332,11 @@ async function normalizeUploadImage(file, options = {}) {
 }
 
 async function readImageFile(file, options = {}) {
-  return normalizeUploadImage(file, options);
+  const [image, metadata] = await Promise.all([
+    normalizeUploadImage(file, options),
+    readVrchatImageMetadata(file)
+  ]);
+  return image ? { ...image, metadata } : null;
 }
 
 async function loadComposeImages(files, append = true) {
@@ -10979,6 +11347,7 @@ async function loadComposeImages(files, append = true) {
   composeImageIndex = append ? composeImages.length - images.length : 0;
   composeImage.value = "";
   renderComposeImage();
+  handleComposeMetadataFromImages(images);
 }
 
 async function loadRequestComposeImage(file) {
@@ -11029,6 +11398,11 @@ function removeCurrentComposeImage() {
     composeImageIndex = Math.max(0, composeImages.length - 1);
   }
   renderComposeImage();
+  if (composeImages.some((image) => image?.metadata)) {
+    handleComposeMetadataFromImages(composeImages);
+  } else {
+    hideComposeMetadataHint();
+  }
 }
 
 function handleMockSubmit(event) {
@@ -11047,9 +11421,14 @@ function handleMockSubmit(event) {
     composeNotice.textContent = "サークル限定投稿を作成するには、参加中のサークルを選択してください。";
     return;
   }
-  const tags = composeTags.value.trim()
-    ? composeTags.value.trim().split(/\s+/)
+  const tags = composeTagsText()
+    ? [...composeTagItems]
     : (circle ? ["#circle", ...circle.tags.slice(0, 2)] : ["#vrchat", "#portfolio"]);
+  const metadata = currentComposeMetadata();
+  const worldTag = worldNameToHashTag(metadata?.worldName || composeWorld.value);
+  const normalizedTags = worldTag && !tags.some((tag) => tag.toLowerCase() === worldTag.toLowerCase())
+    ? [...tags, worldTag]
+    : tags;
   const newPin = {
     id: Date.now(),
     title: composePostTitle.value.trim() || "新しい投稿",
@@ -11060,8 +11439,9 @@ function handleMockSubmit(event) {
     creator: "You",
     role: "VRChat creator",
     avatar: composeAvatar.value.trim() || "Rurune",
-    world: composeWorld.value.trim() || "Creator Room",
-    tags,
+    world: composeWorld.value.trim() || metadata?.worldName || "Creator Room",
+    worldId: metadata?.worldId || "",
+    tags: normalizedTags,
     request: null,
     description: composeDescription.value.trim() || (circle ? `${circle.name}の参加者向け限定投稿です。` : "通常投稿のモックです。"),
     image: composeImages[0]?.src || vrchatImages.portrait,
@@ -11083,7 +11463,7 @@ function handleMockSubmit(event) {
   composePostTitle.value = "";
   composeAvatar.value = "";
   composeWorld.value = "";
-  composeTags.value = "";
+  setComposeTagsFromText("");
   composeDescription.value = "";
   if (composeR18Toggle) composeR18Toggle.checked = false;
   if (composeGoreToggle) composeGoreToggle.checked = false;
@@ -11091,6 +11471,7 @@ function handleMockSubmit(event) {
   composeImages = [];
   composeImageIndex = 0;
   renderComposeImage();
+  hideComposeMetadataHint();
   updateComposePreview();
   renderPins();
   if (activeProfile === "You") renderProfile("You");
@@ -11162,10 +11543,6 @@ function openPinFromCard(card, event = null) {
 function handleBoardClick(event) {
   if (ignoreNextBoardClick) {
     ignoreNextBoardClick = false;
-    return;
-  }
-
-  if (event.target.closest(".pin-open-link")) {
     return;
   }
 
@@ -12419,6 +12796,7 @@ board.addEventListener("keydown", (event) => {
 });
 
 closeDialog.addEventListener("click", closePinDialog);
+dialogImage?.addEventListener("load", applyDialogImageOrientation);
 
 dialog.addEventListener("click", (event) => {
   if (event.target === dialog) closePinDialog();
@@ -13019,6 +13397,9 @@ function linkIconMarkup(kind) {
   if (kind === "vrchat") {
     return `<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h18v9l-4 3-3-3h-4l-3 3-4-3V6Z" /><path d="M8 10h2" /><path d="M14 10h2" /></svg>`;
   }
+  if (kind === "youtube") {
+    return `<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M21.6 7.2a3 3 0 0 0-2.1-2.1C17.6 4.6 12 4.6 12 4.6s-5.6 0-7.5.5a3 3 0 0 0-2.1 2.1A31 31 0 0 0 2 12a31 31 0 0 0 .4 4.8 3 3 0 0 0 2.1 2.1c1.9.5 7.5.5 7.5.5s5.6 0 7.5-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 22 12a31 31 0 0 0-.4-4.8Z" /><path d="m10 9 5 3-5 3V9Z" /></svg>`;
+  }
   return `<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M10 14 21 3" /><path d="M15 3h6v6" /><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5" /></svg>`;
 }
 
@@ -13028,15 +13409,16 @@ function detectLinkKind(url) {
   if (value.includes("x.com") || value.includes("twitter.com")) return "x";
   if (value.includes("booth.pm")) return "booth";
   if (value.includes("vrchat.com")) return "vrchat";
+  if (value.includes("youtube.com") || value.includes("youtu.be")) return "youtube";
   return "generic";
 }
 
 function isTrustedProfileLinkKind(kind) {
-  return kind === "x" || kind === "booth" || kind === "vrchat";
+  return kind === "x" || kind === "booth" || kind === "vrchat" || kind === "youtube";
 }
 
 function confirmGenericProfileLink(url) {
-  return window.confirm(`このリンクはVRChat / BOOTH / X以外の外部サイトです。\n\n${url}\n\n開いてもよろしいですか？`);
+  return window.confirm(`このリンクはVRChat / BOOTH / X / YouTube以外の外部サイトです。\n\n${url}\n\n開いてもよろしいですか？`);
 }
 
 
@@ -13339,6 +13721,31 @@ saveDraftButton?.addEventListener("click", () => {
   });
 });
 
+composeTags?.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter") return;
+  event.preventDefault();
+  commitComposeTagInput();
+});
+
+composeTags?.addEventListener("paste", (event) => {
+  const pasted = event.clipboardData?.getData("text") || "";
+  if (!/[\s,、]/.test(pasted.trim())) return;
+  event.preventDefault();
+  pasted.split(/[\s,、]+/).filter(Boolean).forEach(addComposeTag);
+  composeTags.value = "";
+  updateComposePreview();
+  persistComposeDraft();
+});
+
+composeTagChips?.addEventListener("click", (event) => {
+  const chip = event.target.closest("[data-compose-tag]");
+  if (!chip) return;
+  composeTagItems = composeTagItems.filter((tag) => tag !== chip.dataset.composeTag);
+  renderComposeTagChips();
+  updateComposePreview();
+  persistComposeDraft();
+});
+
 composeCircleToggle?.addEventListener("change", () => {
   handleComposeCircleToggleChange();
   unlockComposeVisibilityWhenCircleOff();
@@ -13550,7 +13957,9 @@ function getProfileLinks() {
 
 function renderProfileLinks(urls) {
   const linksRow = ensureProfileLinksRow();
-  const list = Array.isArray(urls) ? urls.filter(Boolean) : (urls ? [urls] : []);
+  const list = [...new Set((Array.isArray(urls) ? urls : (urls ? [urls] : []))
+    .map((url) => String(url || "").trim())
+    .filter(Boolean))];
   if (!list.length) {
     linksRow.innerHTML = "";
     linksRow.hidden = true;
@@ -13559,7 +13968,7 @@ function renderProfileLinks(urls) {
   linksRow.hidden = false;
   linksRow.innerHTML = list.map((url) => {
     const kind = detectLinkKind(url);
-    const label = kind === "x" ? "X" : kind === "booth" ? "BOOTH" : kind === "vrchat" ? "VRChat" : "Link";
+    const label = kind === "x" ? "X" : kind === "booth" ? "BOOTH" : kind === "vrchat" ? "VRChat" : kind === "youtube" ? "YouTube" : "Link";
     const safeUrl = url.replace(/"/g, "&quot;");
     const warningAttr = isTrustedProfileLinkKind(kind) ? "" : ` data-external-warning="true"`;
     return `<a class="profile-link-button" href="${safeUrl}" target="_blank" rel="noreferrer"${warningAttr} aria-label="${label}を開く">${linkIconMarkup(kind)}<span>${label}</span></a>`;
@@ -13584,11 +13993,12 @@ function topTagsFromPosts(posts, limit = 3) {
 function getTrustProfile(creator, posts, isMine) {
   const fallback = trustProfiles[creator] || {};
   const frequentTags = topTagsFromPosts(posts, 3);
+  const links = isMine ? getProfileLinks() : (fallback.links || []);
   return {
     summary: fallback.summary || `${creator}の投稿、依頼受付状況、代表作、外部リンクをまとめて確認できる公開プロフィール。`,
     style: fallback.style || `${posts[0]?.category || "VRChat"}を中心に、過去作品から作風を確認できる構成です。`,
     scope: frequentTags.length ? frequentTags : [...new Set(posts.map((post) => post.category))].slice(0, 3),
-    links: isMine ? getProfileLinks().concat(fallback.links || []) : (fallback.links || []),
+    links,
     completed: fallback.completed ?? posts.filter((post) => post.request).length * 4,
     likes: fallback.likes ?? posts.length * 42,
     saves: fallback.saves ?? posts.length * 14,
@@ -13607,7 +14017,7 @@ function clampScore(value, max) {
 function trustedLinkCount(links) {
   return new Set((links || [])
     .map((url) => detectLinkKind(url))
-    .filter((kind) => kind === "x" || kind === "booth" || kind === "vrchat")).size;
+    .filter((kind) => kind === "x" || kind === "booth" || kind === "vrchat" || kind === "youtube")).size;
 }
 
 function postLikeCount(post) {
@@ -13824,9 +14234,13 @@ function showProfileCopyToast(message = t("copySuccess"), ok = true) {
 }
 
 async function copyTextToClipboard(text) {
-  if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(text);
-    return true;
+  try {
+    if (navigator.clipboard?.writeText && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    // Fall through to the textarea method; some local/browser contexts reject async clipboard writes.
   }
   const textarea = document.createElement("textarea");
   textarea.value = text;
@@ -13876,8 +14290,11 @@ async function shareCurrentProfile() {
 }
 
 function currentPostShareUrl(post) {
-  const base = `${location.origin}${location.pathname}`;
-  return `${base}#post/${post.id}`;
+  const currentPath = location.pathname || "/index.html";
+  const basePath = currentPath.endsWith("/")
+    ? currentPath
+    : currentPath.slice(0, currentPath.lastIndexOf("/") + 1);
+  return `${location.origin}${basePath}share/post-${post.id}.html`;
 }
 
 function shareCurrentPinToX() {
@@ -14051,7 +14468,10 @@ function renderProfile(creator) {
     });
     profileFollow.hidden = true;
     if (profileEditButton) profileEditButton.hidden = false;
-    if (profileFollowingButton) profileFollowingButton.hidden = false;
+    if (profileFollowingButton) profileFollowingButton.hidden = true;
+    if (profileNotifyButton) profileNotifyButton.hidden = true;
+    if (profileMuteButton) profileMuteButton.hidden = true;
+    if (profileBlockButton) profileBlockButton.hidden = true;
     updateProfileSocialButtons(creator, true);
     profileRequestButton.hidden = true;
     if (profileTipCard) profileTipCard.hidden = true;
@@ -14064,6 +14484,9 @@ function renderProfile(creator) {
     profileFollow.hidden = false;
     if (profileEditButton) profileEditButton.hidden = true;
     if (profileFollowingButton) profileFollowingButton.hidden = true;
+    if (profileNotifyButton) profileNotifyButton.hidden = false;
+    if (profileMuteButton) profileMuteButton.hidden = false;
+    if (profileBlockButton) profileBlockButton.hidden = false;
     updateFollowButton(profileFollow, creator);
     updateProfileSocialButtons(creator, false);
     profileRequestButton.hidden = !directPosts.some((pin) => pin.request?.open);
