@@ -1250,6 +1250,7 @@ const bookmarkFolderCreate = document.querySelector("#bookmarkFolderCreate");
 const bookmarkFolderSave = document.querySelector("#bookmarkFolderSave");
 const dialog = document.querySelector("#pinDialog");
 const closeDialog = document.querySelector("#closeDialog");
+const dialogImageWrap = document.querySelector(".dialog-image-wrap");
 const dialogImage = document.querySelector("#dialogImage");
 const dialogCategory = document.querySelector("#dialogCategory");
 const dialogTitle = document.querySelector("#dialogTitle");
@@ -7132,6 +7133,7 @@ function openPin(pinId, sourceElement = null) {
   setDialogOrigin(sourceElement);
   dialogImage.src = currentPin.image;
   dialogImage.alt = currentPin.title;
+  dialogImageWrap?.style.setProperty("--dialog-image-bg", `url(${JSON.stringify(currentPin.image)})`);
   const currentCircle = currentPin.circleId ? circleById(currentPin.circleId) : null;
   const visibilityLabel = currentPin.circleId ? "サークル限定" : currentPin.visibility === "SubscriberOnly" ? "メンバーシップ限定" : t("normalPost");
   const circleTrail = currentCircle
