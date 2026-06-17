@@ -1,6 +1,6 @@
 # Veacon Mock Codex Handoff
 
-Last updated: 2026-06-12
+Last updated: 2026-06-17
 
 This document is intended for another Codex instance that needs to understand and continue the current frontend prototype without relying on chat history.
 
@@ -81,6 +81,7 @@ Update this document in the same commit whenever a change affects:
 
 ## Recent Changes
 
+- 2026-06-17: Added a global text-clarity CSS guard in `styles.css`. Visible UI text now disables `text-shadow` and element-level `backdrop-filter` so headings, cards, event banner copy, post dialogs, and profile controls do not render with blurred or hazy text. Modal backdrop blur can still be handled by pseudo-backdrops instead of text-bearing elements.
 - 2026-06-12: Added one-time tipping as a separate support flow from Memberships. Public creator profiles now show a `投げ銭` action that routes to `#tip/{creator-slug}`; the tip page accepts any positive free-form amount, optional message, anonymous sending, and displays a mock checkout card without requiring login. The optional message limit scales by amount: under ¥500 = 80 chars, ¥500+ = 120, ¥1,000+ = 180, ¥3,000+ = 320, ¥10,000+ = 600. After sending, a more celebratory creator-thank-you popup opens with the creator avatar, configured thank-you text, sender message when present, recipient, and amount.
 - 2026-06-15: Moved the creator profile tipping entry into a dedicated profile card instead of the small profile action row. The amount chips on that card route to `#tip/{creatorSlug}?amount={amount}` so the tip page opens with the amount prefilled. Closing the thank-you popup after a tip returns the viewer to the creator profile.
 - 2026-06-12: Adjusted requester-side My Requests cards for smartphone layouts. The mobile CSS now removes the previous fixed `560px` minimum card width, constrains card content to the viewport, wraps metadata safely, and keeps status/turn pills readable without horizontal overflow.
