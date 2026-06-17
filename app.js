@@ -825,6 +825,7 @@ const serviceView = document.querySelector("#serviceView");
 const adminView = document.querySelector("#adminView");
 const backendSpecView = document.querySelector("#backendSpecView");
 const subscriptionsView = document.querySelector("#subscriptionsView");
+const earningsView = document.querySelector("#earningsView");
 const tipView = document.querySelector("#tipView");
 const eventDetailView = document.querySelector("#eventDetailView");
 const eventsView = document.querySelector("#eventsView");
@@ -868,6 +869,7 @@ const likedPostsButton = document.querySelector("#likedPostsButton");
 const bookmarkFoldersButton = document.querySelector("#bookmarkFoldersButton");
 const circlePageButton = document.querySelector("#circlePageButton");
 const eventPageButton = document.querySelector("#eventPageButton");
+const earningsButton = document.querySelector("#earningsButton");
 const missionButton = document.querySelector("#missionButton");
 const missionCardButton = document.querySelector("#missionCardButton");
 const requestManagerButton = document.querySelector("#requestManagerButton");
@@ -887,6 +889,7 @@ const accountSwitcherList = document.querySelector("#accountSwitcherList");
 const accountAddButton = document.querySelector("#accountAddButton");
 const accountMenuProfile = document.querySelector("#accountMenuProfile");
 const accountMenuSubscriptions = document.querySelector("#accountMenuSubscriptions");
+const accountMenuEarnings = document.querySelector("#accountMenuEarnings");
 const accountMenuMyRequests = document.querySelector("#accountMenuMyRequests");
 const accountMenuService = document.querySelector("#accountMenuService");
 const accountMenuAdmin = document.querySelector("#accountMenuAdmin");
@@ -897,6 +900,7 @@ const accountMenuLogout = document.querySelector("#accountMenuLogout");
 const backToFeed = document.querySelector("#backToFeed");
 const backFromRequest = document.querySelector("#backFromRequest");
 const backFromNotifications = document.querySelector("#backFromNotifications");
+const backFromEarnings = document.querySelector("#backFromEarnings");
 const backFromSettings = document.querySelector("#backFromSettings");
 const backFromAdmin = document.querySelector("#backFromAdmin");
 const backFromSpecs = document.querySelector("#backFromSpecs");
@@ -911,6 +915,15 @@ const backFromCircles = document.querySelector("#backFromCircles");
 const backFromMission = document.querySelector("#backFromMission");
 const backFromSubscriptions = document.querySelector("#backFromSubscriptions");
 const subscriptionsCreatePlanButton = document.querySelector("#subscriptionsCreatePlanButton");
+const earningsThisMonthAmount = document.querySelector("#earningsThisMonthAmount");
+const earningsProgressText = document.querySelector("#earningsProgressText");
+const earningsPayoutAmount = document.querySelector("#earningsPayoutAmount");
+const earningsMetricRequests = document.querySelector("#earningsMetricRequests");
+const earningsMetricTips = document.querySelector("#earningsMetricTips");
+const earningsMetricMemberships = document.querySelector("#earningsMetricMemberships");
+const earningsMonthList = document.querySelector("#earningsMonthList");
+const earningsYearList = document.querySelector("#earningsYearList");
+const earningsRecentList = document.querySelector("#earningsRecentList");
 const subscriptionsJoinedList = document.querySelector("#subscriptionsJoinedList");
 const subscriptionsSearchInput = document.querySelector("#subscriptionsSearchInput");
 const subscriptionsPlanResults = document.querySelector("#subscriptionsPlanResults");
@@ -1451,6 +1464,7 @@ let activeMyRequestItemId = null;
 let missionReturnHash = "";
 let eventDetailReturnHash = "";
 let eventsReturnHash = "";
+let earningsReturnHash = "";
 let activeRequestManagerState = "todo";
 let activeMyRequestState = "todo";
 let pendingRequestSort = "deadline";
@@ -4264,6 +4278,11 @@ function applyLanguage({ rerender = false } = {}) {
     eventPageButton.setAttribute("aria-label", t("events"));
     setTooltip(eventPageButton, t("events"), { raw: true });
   }
+  if (earningsButton) {
+    const label = currentLanguage === "en" ? "Earnings" : currentLanguage === "ko" ? "수익" : "収益";
+    earningsButton.setAttribute("aria-label", label);
+    setTooltip(earningsButton, label, { raw: true });
+  }
   setAttr(requestManagerButton, "aria-label", "requestManager");
   setTooltip(requestManagerButton, "requestManager");
   if (myRequestsButton) {
@@ -4278,6 +4297,7 @@ function applyLanguage({ rerender = false } = {}) {
   setTooltip(avatarButton, "account");
   setText("#accountMenuProfile span", "myPage");
   if (accountMenuSubscriptions) accountMenuSubscriptions.querySelector("span").textContent = currentLanguage === "en" ? "Memberships" : currentLanguage === "ko" ? "멤버십" : "メンバーシップ";
+  if (accountMenuEarnings) accountMenuEarnings.querySelector("span").textContent = currentLanguage === "en" ? "Earnings" : currentLanguage === "ko" ? "수익" : "収益";
   if (accountMenuMyRequests) accountMenuMyRequests.querySelector("span").textContent = currentLanguage === "en" ? "My requests" : currentLanguage === "ko" ? "내 의뢰" : "マイリクエスト";
   if (accountMenuService) accountMenuService.querySelector("span").textContent = currentLanguage === "en" ? "Service guide" : currentLanguage === "ko" ? "서비스 설명" : "サービス説明";
   if (accountMenuAdmin) accountMenuAdmin.querySelector("span").textContent = currentLanguage === "en" ? "Operations" : currentLanguage === "ko" ? "운영 관리" : "運営管理";
@@ -4291,6 +4311,7 @@ function applyLanguage({ rerender = false } = {}) {
     likes: currentLanguage === "en" ? "Liked posts" : currentLanguage === "ko" ? "좋아요" : "いいね",
     bookmarks: currentLanguage === "en" ? "Bookmarks" : currentLanguage === "ko" ? "북마크" : "ブックマーク",
     subscriptions: currentLanguage === "en" ? "Memberships" : currentLanguage === "ko" ? "멤버십" : "メンバーシップ",
+    earnings: currentLanguage === "en" ? "Earnings" : currentLanguage === "ko" ? "수익" : "収益",
     circles: t("circles"),
     requests: currentLanguage === "en" ? "Requests" : currentLanguage === "ko" ? "의뢰 확인" : "依頼確認",
     "my-requests": currentLanguage === "en" ? "My requests" : currentLanguage === "ko" ? "내 의뢰" : "マイリクエスト",
@@ -4503,7 +4524,7 @@ function applyLanguage({ rerender = false } = {}) {
   setText("#createButton", "post");
   setText("#emptyState p", "noResultsTitle");
   setText("#emptyState span", "noResultsBody");
-  document.querySelectorAll("#backToFeed, #backFromRequest, #backFromNotifications, #backFromSettings, #backFromRequestManager, #backFromRequestDetail, #backFromEventDetail, #backFromEvents, #backFromMission, #backFromAdmin, #backFromSpecs").forEach((button) => {
+  document.querySelectorAll("#backToFeed, #backFromRequest, #backFromNotifications, #backFromEarnings, #backFromSettings, #backFromRequestManager, #backFromRequestDetail, #backFromEventDetail, #backFromEvents, #backFromMission, #backFromAdmin, #backFromSpecs").forEach((button) => {
     const svg = button.querySelector("svg")?.outerHTML || "";
     button.innerHTML = `${svg}${t("back")}`;
   });
@@ -5741,6 +5762,188 @@ function returnFromSubscriptionsPage() {
   routeFromHash();
 }
 
+function earningAmountValue(value) {
+  return Number(String(value || "").replace(/[^\d]/g, "")) || 0;
+}
+
+function creatorEarningTransactions() {
+  const requestIncome = requestManagerItems
+    .filter((item) => item.status !== "pending")
+    .map((item) => ({
+      id: `request-${item.id}`,
+      type: "依頼",
+      title: item.title,
+      source: item.client,
+      date: item.deadline,
+      amount: earningAmountValue(item.budget),
+      status: item.status === "completed" ? "確定" : "進行中",
+    }));
+  const tips = [
+    { id: "tip-1", type: "投げ銭", title: "ポートフォリオ応援", source: "Guest supporter", date: "2026-06-15", amount: 3000, status: "確定" },
+    { id: "tip-2", type: "投げ銭", title: "衣装検証への支援", source: "Lumi Photo", date: "2026-06-08", amount: 1000, status: "確定" },
+    { id: "tip-3", type: "投げ銭", title: "制作ログへの支援", source: "Rin Works", date: "2026-05-26", amount: 5000, status: "確定" },
+    { id: "tip-4", type: "投げ銭", title: "過去作への支援", source: "Sora Closet", date: "2025-12-18", amount: 2000, status: "確定" },
+  ];
+  const memberships = [
+    { id: "member-1", type: "メンバーシップ", title: "Atelier Supporter", source: "8 members", date: "2026-06-01", amount: 9600, status: "今月分" },
+    { id: "member-2", type: "メンバーシップ", title: "Atelier Supporter", source: "7 members", date: "2026-05-01", amount: 8400, status: "確定" },
+    { id: "member-3", type: "メンバーシップ", title: "Atelier Supporter", source: "6 members", date: "2026-04-01", amount: 7200, status: "確定" },
+    { id: "member-4", type: "メンバーシップ", title: "Early Support", source: "2025 members", date: "2025-11-01", amount: 6400, status: "確定" },
+  ];
+  return [...requestIncome, ...tips, ...memberships]
+    .filter((item) => item.amount > 0)
+    .sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function earningMonthKey(dateValue) {
+  return String(dateValue || "").slice(0, 7);
+}
+
+function earningYearKey(dateValue) {
+  return String(dateValue || "").slice(0, 4);
+}
+
+function sumEarnings(items) {
+  return items.reduce((total, item) => total + Number(item.amount || 0), 0);
+}
+
+function groupEarnings(items, keyFn) {
+  return items.reduce((groups, item) => {
+    const key = keyFn(item.date);
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(item);
+    return groups;
+  }, {});
+}
+
+function creatorPayoutEstimate(gross) {
+  return Math.max(0, Math.round(gross * 0.88));
+}
+
+function earningTypeClass(type) {
+  if (type === "投げ銭") return "tip";
+  if (type === "メンバーシップ") return "membership";
+  return "request";
+}
+
+function renderEarningsPage() {
+  activeProfile = null;
+  hideMyRequestViews();
+  feedView.hidden = true;
+  profileView.hidden = true;
+  requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
+  eventsView.hidden = true;
+  circleView.hidden = true;
+  missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
+  if (subscriptionsView) subscriptionsView.hidden = true;
+  if (tipView) tipView.hidden = true;
+  if (earningsView) earningsView.hidden = false;
+  updateTopbarSearchVisibility();
+
+  const transactions = creatorEarningTransactions();
+  const now = new Date();
+  const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const currentMonthItems = transactions.filter((item) => earningMonthKey(item.date) === currentMonthKey);
+  const currentMonthGross = sumEarnings(currentMonthItems);
+  const requestGross = sumEarnings(currentMonthItems.filter((item) => item.type === "依頼"));
+  const tipGross = sumEarnings(currentMonthItems.filter((item) => item.type === "投げ銭"));
+  const membershipGross = sumEarnings(currentMonthItems.filter((item) => item.type === "メンバーシップ"));
+
+  if (earningsThisMonthAmount) earningsThisMonthAmount.textContent = formatYen(currentMonthGross);
+  if (earningsPayoutAmount) earningsPayoutAmount.textContent = formatYen(creatorPayoutEstimate(currentMonthGross));
+  if (earningsMetricRequests) earningsMetricRequests.textContent = formatYen(requestGross);
+  if (earningsMetricTips) earningsMetricTips.textContent = formatYen(tipGross);
+  if (earningsMetricMemberships) earningsMetricMemberships.textContent = formatYen(membershipGross);
+  if (earningsProgressText) {
+    const day = now.getDate();
+    const monthDays = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    earningsProgressText.textContent = `${now.getMonth() + 1}月${day}日現在 / ${monthDays}日中`;
+  }
+
+  const byMonth = groupEarnings(transactions, earningMonthKey);
+  const monthKeys = Object.keys(byMonth).sort().reverse().slice(0, 6);
+  const maxMonth = Math.max(1, ...monthKeys.map((key) => sumEarnings(byMonth[key])));
+  if (earningsMonthList) {
+    earningsMonthList.innerHTML = monthKeys.map((key) => {
+      const total = sumEarnings(byMonth[key]);
+      const width = Math.max(8, Math.round((total / maxMonth) * 100));
+      return `
+        <article class="earnings-month-row">
+          <div>
+            <strong>${escapeHtml(key.replace("-", " / "))}</strong>
+            <span>${byMonth[key].length}件</span>
+          </div>
+          <div class="earnings-bar" aria-hidden="true"><i style="width:${width}%"></i></div>
+          <b>${formatYen(total)}</b>
+        </article>
+      `;
+    }).join("");
+  }
+
+  const byYear = groupEarnings(transactions, earningYearKey);
+  const yearKeys = Object.keys(byYear).sort().reverse();
+  if (earningsYearList) {
+    earningsYearList.innerHTML = yearKeys.map((key) => {
+      const items = byYear[key];
+      return `
+        <article class="earnings-year-card">
+          <span>${escapeHtml(key)}</span>
+          <strong>${formatYen(sumEarnings(items))}</strong>
+          <small>${items.length}件 / 平均 ${formatYen(Math.round(sumEarnings(items) / Math.max(1, items.length)))}</small>
+        </article>
+      `;
+    }).join("");
+  }
+
+  if (earningsRecentList) {
+    earningsRecentList.innerHTML = transactions.slice(0, 8).map((item) => `
+      <article class="earnings-recent-row">
+        <span class="earning-type is-${earningTypeClass(item.type)}">${escapeHtml(item.type)}</span>
+        <div>
+          <strong>${escapeHtml(item.title)}</strong>
+          <small>${escapeHtml(item.source)} / ${escapeHtml(item.date)} / ${escapeHtml(item.status)}</small>
+        </div>
+        <b>${formatYen(item.amount)}</b>
+      </article>
+    `).join("");
+  }
+
+  scrollPageTop();
+}
+
+function openEarningsPage() {
+  closeAccountMenu();
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
+  if (modalIsOpen(composeDialog)) closeComposeDialog();
+  if (modalIsOpen(requestComposeDialog)) closeRequestComposeDialog();
+  if (location.hash && location.hash !== "#earnings") {
+    earningsReturnHash = location.hash;
+  } else if (!location.hash) {
+    earningsReturnHash = "";
+  }
+  location.hash = "earnings";
+  renderEarningsPage();
+}
+
+function returnFromEarningsPage() {
+  const targetHash = earningsReturnHash;
+  earningsReturnHash = "";
+  if (!targetHash) {
+    showFeed();
+    return;
+  }
+  history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
+  routeFromHash();
+}
+
 function tipDisplayName(creator) {
   if (creator === "You") return myProfile.displayName || "You";
   return creator || "Creator";
@@ -6920,6 +7123,7 @@ function updateTopbarSearchVisibility() {
 function hideMyRequestViews() {
   if (myRequestsView) myRequestsView.hidden = true;
   if (myRequestDetailView) myRequestDetailView.hidden = true;
+  if (earningsView) earningsView.hidden = true;
   if (tipView) tipView.hidden = true;
 }
 
@@ -6939,12 +7143,13 @@ function showFeed() {
   adminView.hidden = true;
   backendSpecView.hidden = true;
   if (subscriptionsView) subscriptionsView.hidden = true;
+  if (earningsView) earningsView.hidden = true;
   if (tipView) tipView.hidden = true;
   profileView.hidden = true;
   profileView.classList.remove("is-mine");
   feedView.hidden = false;
   updateTopbarSearchVisibility();
-  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#tip/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#my-requests") || location.hash.startsWith("#event/") || location.hash.startsWith("#circle/") || location.hash.startsWith("#circle-manager") || location.hash === "#circles" || location.hash === "#events" || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#subscriptions" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#admin" || location.hash === "#backend-spec" || location.hash === "#me") {
+  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#tip/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#my-requests") || location.hash.startsWith("#event/") || location.hash.startsWith("#circle/") || location.hash.startsWith("#circle-manager") || location.hash === "#circles" || location.hash === "#events" || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#subscriptions" || location.hash === "#earnings" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#admin" || location.hash === "#backend-spec" || location.hash === "#me") {
     history.pushState("", document.title, location.pathname + location.search);
   }
   renderPins();
@@ -6956,6 +7161,7 @@ function routeFromHash() {
   closeSavedSearchContextMenu();
   hideFloatingPostActions();
   if (subscriptionsView) subscriptionsView.hidden = true;
+  if (earningsView) earningsView.hidden = true;
   if (tipView) tipView.hidden = true;
   const postMatch = location.hash.match(/^#post\/(\d+)$/);
   if (postMatch) {
@@ -7034,6 +7240,10 @@ function routeFromHash() {
   }
   if (location.hash === "#subscriptions") {
     renderSubscriptionsPage();
+    return;
+  }
+  if (location.hash === "#earnings") {
+    renderEarningsPage();
     return;
   }
   const tipMatch = location.hash.match(/^#tip\/([^?]+)(?:\?amount=(\d+))?$/);
@@ -11424,6 +11634,7 @@ likedPostsButton?.addEventListener("click", () => openMyProfileArchive("likes"))
 bookmarkFoldersButton?.addEventListener("click", () => openMyProfileArchive("folders"));
 circlePageButton?.addEventListener("click", () => openCirclesPage());
 eventPageButton?.addEventListener("click", openEventsPage);
+earningsButton?.addEventListener("click", openEarningsPage);
 missionButton?.addEventListener("click", openServicePage);
 missionCardButton?.addEventListener("click", openServicePage);
 requestManagerButton?.addEventListener("click", openRequestManagerPage);
@@ -11441,6 +11652,10 @@ accountMenuProfile?.addEventListener("click", () => {
 accountMenuSubscriptions?.addEventListener("click", () => {
   closeAccountMenu();
   openSubscriptionsPage();
+});
+accountMenuEarnings?.addEventListener("click", () => {
+  closeAccountMenu();
+  openEarningsPage();
 });
 accountMenuMyRequests?.addEventListener("click", () => {
   closeAccountMenu();
@@ -11495,6 +11710,8 @@ accountMenu?.addEventListener("click", (event) => {
     openMyProfileArchive("folders");
   } else if (action === "subscriptions") {
     openSubscriptionsPage();
+  } else if (action === "earnings") {
+    openEarningsPage();
   } else if (action === "circles") {
     openCirclesPage();
   } else if (action === "requests") {
@@ -11953,6 +12170,7 @@ subscriptionPlanDetailLeave?.addEventListener("click", () => {
   closeSubscriptionPlanDetailDialog();
 });
 backFromSubscriptions?.addEventListener("click", returnFromSubscriptionsPage);
+backFromEarnings?.addEventListener("click", returnFromEarningsPage);
 backFromTip?.addEventListener("click", returnFromTipPage);
 tipAmountInput?.addEventListener("input", updateTipSummary);
 tipMessageInput?.addEventListener("input", () => updateTipMessageLimit({ trim: false }));

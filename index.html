@@ -66,6 +66,16 @@
             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
           </svg>
         </button>
+        <button id="earningsButton" class="icon-button" type="button" aria-label="収益" data-tooltip="収益">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M4 19V5" />
+            <path d="M4 19h17" />
+            <path d="M8 16v-5" />
+            <path d="M13 16V8" />
+            <path d="M18 16v-8" />
+            <path d="M7.5 7.5 11 4l3 3 5-5" />
+          </svg>
+        </button>
         <button id="myRequestsButton" class="icon-button" type="button" aria-label="マイリクエスト" data-tooltip="マイリクエスト">
           <span id="myRequestsBadge" class="badge" aria-label="My request actions" hidden></span>
           <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -130,6 +140,16 @@
                 </svg>
                 <span>メンバーシップ</span>
               </button>
+              <button type="button" role="menuitem" data-mobile-menu-action="earnings">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M4 19V5" />
+                  <path d="M4 19h17" />
+                  <path d="M8 16v-5" />
+                  <path d="M13 16V8" />
+                  <path d="M18 16v-8" />
+                </svg>
+                <span>収益</span>
+              </button>
               <button type="button" role="menuitem" data-mobile-menu-action="circles">
                 <svg aria-hidden="true" viewBox="0 0 24 24">
                   <circle cx="9" cy="8" r="3.5" />
@@ -190,6 +210,16 @@
                 <path d="M9.5 16h5" />
               </svg>
               <span>メンバーシップ</span>
+            </button>
+            <button id="accountMenuEarnings" type="button" role="menuitem">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4 19V5" />
+                <path d="M4 19h17" />
+                <path d="M8 16v-5" />
+                <path d="M13 16V8" />
+                <path d="M18 16v-8" />
+              </svg>
+              <span>収益</span>
             </button>
             <button id="accountMenuMyRequests" type="button" role="menuitem">
               <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -673,6 +703,78 @@
               </div>
             </div>
             <div id="subscriptionsCreatorPlans" class="subscriptions-card-grid"></div>
+          </section>
+        </div>
+      </section>
+      <section id="earningsView" class="earnings-view app-view" hidden>
+        <button id="backFromEarnings" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <div class="earnings-shell">
+          <header class="earnings-hero">
+            <div>
+              <p class="eyebrow">Creator earnings</p>
+              <h1>収益</h1>
+              <p>依頼、投げ銭、メンバーシップの売上を年別・月別・今月の途中経過で確認するクリエイター向け画面です。</p>
+            </div>
+            <div class="earnings-hero-card" aria-label="今月の売上">
+              <span>今月の途中経過</span>
+              <strong id="earningsThisMonthAmount">¥0</strong>
+              <small id="earningsProgressText">集計中</small>
+            </div>
+          </header>
+          <section class="earnings-summary-grid" aria-label="Earnings summary">
+            <article class="earnings-summary-card">
+              <span>振込予定額</span>
+              <strong id="earningsPayoutAmount">¥0</strong>
+              <small>決済手数料とサービス手数料を差し引いた概算です。</small>
+            </article>
+            <article class="earnings-summary-card">
+              <span>依頼売上</span>
+              <strong id="earningsMetricRequests">¥0</strong>
+              <small>承諾済み・制作中・完了済み依頼を含む想定。</small>
+            </article>
+            <article class="earnings-summary-card">
+              <span>投げ銭</span>
+              <strong id="earningsMetricTips">¥0</strong>
+              <small>単発支援の合計。</small>
+            </article>
+            <article class="earnings-summary-card">
+              <span>メンバーシップ</span>
+              <strong id="earningsMetricMemberships">¥0</strong>
+              <small>月額支援の今月分。</small>
+            </article>
+          </section>
+          <section class="earnings-panel" aria-labelledby="earningsMonthlyTitle">
+            <div class="section-heading-row">
+              <div>
+                <p class="eyebrow">Monthly</p>
+                <h2 id="earningsMonthlyTitle">月別売上</h2>
+              </div>
+              <span class="earnings-panel-note">直近6ヶ月</span>
+            </div>
+            <div id="earningsMonthList" class="earnings-month-list"></div>
+          </section>
+          <section class="earnings-panel" aria-labelledby="earningsYearlyTitle">
+            <div class="section-heading-row">
+              <div>
+                <p class="eyebrow">Yearly</p>
+                <h2 id="earningsYearlyTitle">年別売上</h2>
+              </div>
+            </div>
+            <div id="earningsYearList" class="earnings-year-list"></div>
+          </section>
+          <section class="earnings-panel" aria-labelledby="earningsRecentTitle">
+            <div class="section-heading-row">
+              <div>
+                <p class="eyebrow">Recent</p>
+                <h2 id="earningsRecentTitle">最近の入金内訳</h2>
+              </div>
+            </div>
+            <div id="earningsRecentList" class="earnings-recent-list"></div>
           </section>
         </div>
       </section>

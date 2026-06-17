@@ -319,6 +319,18 @@ Features:
 - Creator/circle membership pages aggregate joined plans, plan search, and plan creation.
 - Circle membership support can pay out to owner only or split among members based on circle setting.
 
+### Creator Earnings
+
+The `#earnings` page is a creator-side revenue dashboard. It is reachable from the desktop topbar, account menu, and mobile account menu. The mock view aggregates request revenue, one-time tips, and memberships into:
+
+- Current month progress.
+- Estimated payout after fees.
+- Monthly totals for recent months.
+- Yearly totals.
+- Recent revenue items.
+
+The current data is mock/derived and should be replaced with backend payment ledger data later.
+
 ## Header And Navigation Rules
 
 Desktop topbar:
@@ -326,7 +338,7 @@ Desktop topbar:
 - Brand returns home.
 - Search is visible only on home.
 - When search is hidden, topbar should become narrower rather than reserving full search space.
-- Icon buttons exist for likes, bookmarks, circles, events, request manager, notifications, and account menu.
+- Icon buttons exist for likes, bookmarks, circles, events, request manager, creator earnings, notifications, and account menu.
 - Light/dark toggle lives in the account dropdown, not as a standalone topbar button.
 - Tooltip style should match the small polished floating hint used by the floating post button.
 
@@ -334,7 +346,7 @@ Mobile:
 
 - User icon appears at top left.
 - Tapping it opens a Twitter-like menu.
-- Mobile menu includes Home, night mode, likes, bookmarks, memberships, circles, requests, events, notifications, profile/settings/service/admin entries.
+- Mobile menu includes Home, night mode, likes, bookmarks, memberships, earnings, circles, requests, events, notifications, profile/settings/service/admin entries.
 - Topbar button density must stay compact.
 
 ## Home Feed

@@ -8012,8 +8012,13 @@ body[data-theme="dark"] .request-sheet-actions .soft-button:hover {
   animation: fadeIn 220ms ease both;
 }
 
-.subscriptions-view[hidden] {
+.subscriptions-view[hidden],
+.earnings-view[hidden] {
   display: none;
+}
+
+.earnings-view {
+  animation: fadeIn 220ms ease both;
 }
 
 .subscriptions-shell {
@@ -8022,8 +8027,17 @@ body[data-theme="dark"] .request-sheet-actions .soft-button:hover {
   margin-top: 18px;
 }
 
+.earnings-shell {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+}
+
 .subscriptions-hero,
-.subscriptions-panel {
+.subscriptions-panel,
+.earnings-hero,
+.earnings-panel,
+.earnings-summary-card {
   border: 1px solid var(--line);
   border-radius: 28px;
   background:
@@ -8041,17 +8055,53 @@ body[data-theme="dark"] .request-sheet-actions .soft-button:hover {
   padding: clamp(24px, 4vw, 42px);
 }
 
-.subscriptions-hero h1 {
+.earnings-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 340px);
+  gap: 18px;
+  align-items: stretch;
+  padding: clamp(24px, 4vw, 42px);
+}
+
+.subscriptions-hero h1,
+.earnings-hero h1 {
   margin: 6px 0 12px;
   font-size: clamp(2.1rem, 5vw, 4.7rem);
   line-height: 1.02;
 }
 
-.subscriptions-hero p:not(.eyebrow) {
+.subscriptions-hero p:not(.eyebrow),
+.earnings-hero p:not(.eyebrow) {
   margin: 0;
   max-width: 68ch;
   color: var(--muted);
   line-height: 1.7;
+}
+
+.earnings-hero-card {
+  display: grid;
+  align-content: end;
+  gap: 8px;
+  min-height: 190px;
+  padding: 22px;
+  border: 1px solid rgba(20,20,20,0.08);
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(27,27,25,0.94), rgba(57,55,48,0.92)),
+    radial-gradient(circle at 85% 12%, rgba(255,236,178,0.22), transparent 34%);
+  color: #fffaf1;
+  box-shadow: 0 24px 70px rgba(20,20,20,0.18);
+}
+
+.earnings-hero-card span,
+.earnings-hero-card small {
+  color: rgba(255,250,241,0.76);
+  font-weight: 780;
+}
+
+.earnings-hero-card strong {
+  font-size: clamp(2.2rem, 5vw, 4.4rem);
+  line-height: 0.98;
 }
 
 .subscriptions-panel {
@@ -8059,6 +8109,145 @@ body[data-theme="dark"] .request-sheet-actions .soft-button:hover {
   gap: 16px;
   padding: clamp(18px, 3vw, 28px);
   background: rgba(255,255,255,0.76);
+}
+
+.earnings-panel {
+  display: grid;
+  gap: 16px;
+  padding: clamp(18px, 3vw, 28px);
+  background: rgba(255,255,255,0.76);
+}
+
+.earnings-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.earnings-summary-card {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  background: rgba(255,255,255,0.78);
+}
+
+.earnings-summary-card span,
+.earnings-panel-note {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 820;
+}
+
+.earnings-summary-card strong {
+  font-size: clamp(1.4rem, 2.7vw, 2.3rem);
+  line-height: 1;
+}
+
+.earnings-summary-card small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.earnings-month-list,
+.earnings-recent-list {
+  display: grid;
+  gap: 10px;
+}
+
+.earnings-month-row,
+.earnings-recent-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.9fr) minmax(160px, 1.8fr) auto;
+  gap: 14px;
+  align-items: center;
+  min-height: 68px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255,255,255,0.74);
+}
+
+.earnings-month-row > div:first-child,
+.earnings-recent-row > div {
+  display: grid;
+  gap: 3px;
+}
+
+.earnings-month-row span,
+.earnings-recent-row small {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 760;
+}
+
+.earnings-month-row b,
+.earnings-recent-row b {
+  justify-self: end;
+  font-size: 1rem;
+}
+
+.earnings-bar {
+  overflow: hidden;
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(20,20,20,0.08);
+}
+
+.earnings-bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #1f1f1d, #7a7568);
+}
+
+.earnings-year-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.earnings-year-card {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(255,255,255,0.72);
+}
+
+.earnings-year-card span,
+.earnings-year-card small {
+  color: var(--muted);
+  font-weight: 780;
+}
+
+.earnings-year-card strong {
+  font-size: 1.65rem;
+}
+
+.earning-type {
+  justify-self: start;
+  min-width: 86px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 880;
+}
+
+.earning-type.is-request {
+  background: #e9f1ff;
+  color: #225083;
+}
+
+.earning-type.is-tip {
+  background: #fff0d7;
+  color: #8a5200;
+}
+
+.earning-type.is-membership {
+  background: #e7f7ee;
+  color: #1d6a43;
 }
 
 .subscriptions-card-grid,
@@ -8580,8 +8769,14 @@ body[data-theme="dark"] .tip-thanks-user-message {
 
 [data-theme="dark"] .subscriptions-hero,
 [data-theme="dark"] .subscriptions-panel,
+[data-theme="dark"] .earnings-hero,
+[data-theme="dark"] .earnings-panel,
+[data-theme="dark"] .earnings-summary-card,
 body[data-theme="dark"] .subscriptions-hero,
-body[data-theme="dark"] .subscriptions-panel {
+body[data-theme="dark"] .subscriptions-panel,
+body[data-theme="dark"] .earnings-hero,
+body[data-theme="dark"] .earnings-panel,
+body[data-theme="dark"] .earnings-summary-card {
   background:
     linear-gradient(135deg, rgba(24,24,23,0.88), rgba(24,24,23,0.72)),
     radial-gradient(circle at 92% 8%, rgba(87,111,146,0.32), transparent 30%),
@@ -8590,9 +8785,25 @@ body[data-theme="dark"] .subscriptions-panel {
 
 [data-theme="dark"] .subscriptions-search,
 [data-theme="dark"] .subscriptions-empty-card,
+[data-theme="dark"] .earnings-month-row,
+[data-theme="dark"] .earnings-recent-row,
+[data-theme="dark"] .earnings-year-card,
 body[data-theme="dark"] .subscriptions-search,
-body[data-theme="dark"] .subscriptions-empty-card {
+body[data-theme="dark"] .subscriptions-empty-card,
+body[data-theme="dark"] .earnings-month-row,
+body[data-theme="dark"] .earnings-recent-row,
+body[data-theme="dark"] .earnings-year-card {
   background: rgba(18,18,17,0.62);
+}
+
+[data-theme="dark"] .earnings-bar,
+body[data-theme="dark"] .earnings-bar {
+  background: rgba(255,250,241,0.12);
+}
+
+[data-theme="dark"] .earnings-bar i,
+body[data-theme="dark"] .earnings-bar i {
+  background: linear-gradient(90deg, #fff4df, #8b8377);
 }
 
 [data-theme="dark"] .tip-hero,
@@ -13141,14 +13352,16 @@ body.is-dragging .drop-hint {
     grid-template-columns: 1fr;
   }
 
-  .subscriptions-hero {
+  .subscriptions-hero,
+  .earnings-hero {
     grid-template-columns: 1fr;
     align-items: start;
     border-radius: 22px;
     padding: 22px;
   }
 
-  .subscriptions-hero h1 {
+  .subscriptions-hero h1,
+  .earnings-hero h1 {
     font-size: clamp(2rem, 13vw, 3.1rem);
   }
 
@@ -13156,9 +13369,36 @@ body.is-dragging .drop-hint {
     width: 100%;
   }
 
-  .subscriptions-panel {
+  .subscriptions-panel,
+  .earnings-panel {
     border-radius: 22px;
     padding: 16px;
+  }
+
+  .earnings-hero-card {
+    min-height: 150px;
+    border-radius: 20px;
+  }
+
+  .earnings-summary-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .earnings-summary-card {
+    border-radius: 20px;
+    padding: 14px;
+  }
+
+  .earnings-month-row,
+  .earnings-recent-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .earnings-month-row b,
+  .earnings-recent-row b {
+    justify-self: start;
   }
 
   .subscriptions-search-heading {
