@@ -81,6 +81,7 @@ Update this document in the same commit whenever a change affects:
 
 ## Recent Changes
 
+- 2026-06-17: Added post modal scroll reset behavior. Opening a post now resets the dialog, grid, and content column scroll positions before render and again on the next animation frame; closing also resets after the close completes, so reopening a post never starts from the previous lower scroll position. Updated the `app.js` cache key in `index.html`.
 - 2026-06-17: Fixed the post detail modal content column so long descriptions start at the top when scrolling is needed. `.dialog-content` now uses `justify-content: flex-start` with `overflow-y: auto`, preventing the top of the modal copy from being clipped. Updated the stylesheet cache key in `index.html`.
 - 2026-06-17: Rebalanced the blurred fill brightness in the post detail modal after the brighter version felt too strong. The light theme blurred image fill now uses a slightly lower opacity, and the dark theme uses a lower opacity/brightness combination. Updated the stylesheet cache key in `index.html`.
 - 2026-06-17: Restored post detail modal scrolling for long descriptions. On desktop, the right-side `.dialog-content` scrolls independently when its content exceeds the viewport; on mobile, the dialog keeps the existing full-dialog scroll behavior to avoid nested scrolling. Slightly brightened the blurred fill image behind contained post images and updated the stylesheet cache key in `index.html`.

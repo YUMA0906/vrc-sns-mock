@@ -1252,6 +1252,8 @@ const dialog = document.querySelector("#pinDialog");
 const closeDialog = document.querySelector("#closeDialog");
 const dialogImageWrap = document.querySelector(".dialog-image-wrap");
 const dialogImage = document.querySelector("#dialogImage");
+const dialogGrid = document.querySelector(".dialog-grid");
+const dialogContent = document.querySelector(".dialog-content");
 const dialogCategory = document.querySelector("#dialogCategory");
 const dialogTitle = document.querySelector("#dialogTitle");
 const dialogDescription = document.querySelector("#dialogDescription");
@@ -7131,6 +7133,7 @@ function openPin(pinId, sourceElement = null) {
   }
 
   setDialogOrigin(sourceElement);
+  resetPinDialogScroll();
   dialogImage.src = currentPin.image;
   dialogImage.alt = currentPin.title;
   dialogImageWrap?.style.setProperty("--dialog-image-bg", `url(${JSON.stringify(currentPin.image)})`);
@@ -7176,6 +7179,13 @@ function openPin(pinId, sourceElement = null) {
   updateFollowButton(dialogFollow, currentPin.creator);
   renderDialogComments();
   showModalElement(dialog);
+  requestAnimationFrame(resetPinDialogScroll);
+}
+
+function resetPinDialogScroll() {
+  [dialog, dialogGrid, dialogContent].forEach((element) => {
+    if (element) element.scrollTop = 0;
+  });
 }
 
 function closePinDialog() {
@@ -7184,6 +7194,7 @@ function closePinDialog() {
   window.setTimeout(() => {
     dialog.classList.remove("is-closing");
     closeModalElement(dialog);
+    resetPinDialogScroll();
     if (returnToNotificationsFromTarget()) return;
     if (location.hash.startsWith("#post/")) {
       history.pushState("", document.title, `${location.pathname}${location.search}#`);
