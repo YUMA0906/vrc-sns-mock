@@ -4426,6 +4426,422 @@ body[data-theme="dark"] .profile-support-badges span {
   display: none !important;
 }
 
+@media (max-width: 600px) {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-size: 15px;
+  }
+
+  main {
+    padding-inline: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+
+  .topbar {
+    min-height: var(--topbar-height);
+  }
+
+  body:not(.is-home-view) .topbar {
+    min-height: var(--topbar-height);
+  }
+
+  body:not(.is-home-view) main {
+    padding-top: 18px;
+  }
+
+  .brand {
+    min-width: 0;
+    font-size: 1rem;
+  }
+
+  .search-shell {
+    max-width: 100%;
+  }
+
+  body:not(.is-home-view) .search-shell {
+    display: none !important;
+  }
+
+  body:not(.is-home-view) .brand {
+    grid-column: 2;
+  }
+
+  .hero {
+    margin-bottom: 12px;
+  }
+
+  .rotating-hero-title {
+    min-width: 0;
+    font-size: clamp(1.35rem, 8vw, 1.78rem);
+    line-height: 1.02;
+  }
+
+  .event-banner {
+    margin-bottom: 14px;
+  }
+
+  .event-banner-shell {
+    padding: 12px;
+    border-radius: 20px;
+  }
+
+  .event-banner-head {
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .event-banner-head h2 {
+    font-size: 0.86rem;
+  }
+
+  .event-proposal-trigger {
+    min-height: 32px;
+    padding-inline: 12px;
+    font-size: 0.74rem;
+  }
+
+  .event-carousel-window {
+    margin: 0;
+    padding: 4px 0 12px;
+    overflow: hidden;
+  }
+
+  .event-slide {
+    padding: 0 5px;
+  }
+
+  .event-slide-card {
+    height: 120px;
+    min-height: 120px;
+    grid-template-columns: minmax(0, 1fr) 78px;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 18px;
+  }
+
+  .event-slide-copy {
+    min-width: 0;
+    padding: 8px 9px;
+    border-radius: 14px;
+  }
+
+  .event-slide-meta {
+    gap: 5px;
+    margin-bottom: 4px;
+  }
+
+  .event-pill,
+  .event-date {
+    min-height: 22px;
+    padding-inline: 7px;
+    font-size: 0.6rem;
+  }
+
+  .event-slide-card h3 {
+    font-size: clamp(0.94rem, 4.3vw, 1.08rem);
+    line-height: 1.1;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .event-slide-card p {
+    display: none !important;
+  }
+
+  .event-slide-highlights {
+    margin-top: 6px;
+    gap: 4px;
+  }
+
+  .event-slide-highlights span {
+    min-height: 20px;
+    padding-inline: 7px;
+    font-size: 0.6rem;
+  }
+
+  .event-slide-side,
+  .event-slide-image-panel,
+  .event-slide-image-panel img {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .view-tabs {
+    grid-template-columns: minmax(0, 1fr) 38px;
+    gap: 7px;
+    padding: 6px;
+  }
+
+  .view-tab-group {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 1px;
+  }
+
+  .view-tab-group::-webkit-scrollbar {
+    display: none;
+  }
+
+  .view-tab-group .nav-pill {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 84px;
+    max-width: 128px;
+    height: 34px;
+    min-height: 34px;
+    padding-inline: 12px;
+    font-size: 0.74rem;
+    scroll-snap-align: start;
+  }
+
+  .nav-pill-add {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
+  }
+
+  .saved-search-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .saved-search-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .masonry,
+  .masonry.compact {
+    column-count: 2;
+    column-gap: 10px;
+  }
+
+  .pin-card {
+    margin-bottom: 10px;
+    border-radius: 16px;
+  }
+
+  .pin-copy {
+    padding: 8px 2px 2px;
+  }
+
+  .pin-copy strong {
+    font-size: 0.88rem;
+  }
+
+  .profile-banner {
+    min-height: 132px;
+    border-radius: 22px;
+  }
+
+  .profile-hero,
+  .trust-layout,
+  .profile-tip-card,
+  .profile-subscription-section,
+  .settings-panel,
+  .subscriptions-panel,
+  .earnings-panel,
+  .events-heading,
+  .events-search-panel {
+    border-radius: 20px;
+  }
+
+  .profile-hero {
+    padding: 16px;
+  }
+
+  .profile-page-avatar {
+    width: 76px;
+    height: 76px;
+  }
+
+  .profile-hero h1 {
+    font-size: clamp(1.72rem, 9vw, 2.35rem);
+  }
+
+  .profile-actions {
+    gap: 8px;
+  }
+
+  .request-publishing-panel,
+  .request-manager-heading,
+  .my-requests-hero {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .request-publishing-panel h1,
+  .request-manager-heading h1,
+  .my-requests-hero h1 {
+    font-size: clamp(1.82rem, 10vw, 2.4rem);
+    line-height: 1.04;
+  }
+
+  .request-manager-tabs,
+  .my-requests-tabs {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 6px;
+    padding: 6px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .request-manager-tabs::-webkit-scrollbar,
+  .my-requests-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .request-state-tab,
+  .my-requests-tabs button {
+    flex: 0 0 auto;
+    min-width: max-content;
+    min-height: 34px;
+    padding-inline: 12px;
+    scroll-snap-align: start;
+    white-space: nowrap;
+  }
+
+  .my-requests-tabs-shell {
+    overflow: visible;
+  }
+
+  .my-requests-scroll-cue {
+    display: none !important;
+  }
+
+  .request-manager-list,
+  .my-requests-list {
+    gap: 10px;
+  }
+
+  .request-manager-card,
+  .my-request-card {
+    border-radius: 18px;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .request-manager-card-copy,
+  .my-request-card-copy {
+    padding: 12px;
+  }
+
+  .request-manager-card-topline {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px;
+  }
+
+  .request-manager-state,
+  .request-turn-pill {
+    max-width: 42vw;
+    white-space: nowrap;
+  }
+
+  .request-manager-card h2,
+  .my-request-card h2 {
+    font-size: clamp(1rem, 4.6vw, 1.12rem);
+    line-height: 1.22;
+  }
+
+  .request-manager-card p,
+  .my-request-card p {
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .request-detail-main-copy {
+    padding: 16px 14px;
+  }
+
+  .request-progress-steps {
+    grid-auto-columns: minmax(86px, 1fr);
+    gap: 6px;
+  }
+
+  .request-progress-step {
+    min-height: 74px;
+    padding: 10px;
+  }
+
+  .request-progress-step strong {
+    font-size: 0.82rem;
+  }
+
+  .request-progress-step small {
+    font-size: 0.68rem;
+  }
+
+  .dialog-grid,
+  .compose-dialog,
+  .edit-profile-dialog,
+  .request-sheet-dialog,
+  .pin-dialog {
+    max-width: calc(100vw - 16px);
+  }
+
+  .compose-dialog,
+  .edit-profile-dialog,
+  .request-sheet-dialog {
+    max-height: calc(100dvh - 16px);
+  }
+
+  .request-chat-panel {
+    min-height: min(66dvh, 560px);
+  }
+}
+
+@media (max-width: 420px) {
+  main {
+    padding-inline: 10px;
+  }
+
+  .event-slide-card {
+    height: 116px;
+    min-height: 116px;
+    grid-template-columns: minmax(0, 1fr) 72px;
+  }
+
+  .view-tab-group .nav-pill {
+    min-width: 78px;
+    padding-inline: 10px;
+    font-size: 0.7rem;
+  }
+
+  .masonry,
+  .masonry.compact {
+    column-count: 2;
+    column-gap: 8px;
+  }
+
+  .request-manager-card-copy,
+  .my-request-card-copy {
+    padding: 11px;
+  }
+}
+
 .profile-tip-card-copy {
   display: grid;
   gap: 8px;
