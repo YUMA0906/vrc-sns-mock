@@ -2647,11 +2647,11 @@ body[data-theme="dark"] .avatar-editor-dialog {
 @keyframes dialogImageEnter {
   from {
     opacity: 0.88;
-    transform: scale(1.04);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
 }
 
@@ -3651,14 +3651,24 @@ body[data-theme="dark"] .commission-fields {
 .dialog-image-wrap {
   overflow: hidden;
   border-radius: 28px 0 0 28px;
-  background: var(--mint);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.74), rgba(238,239,232,0.78)),
+    var(--mint);
 }
 
 .dialog-image-wrap img {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
+}
+
+[data-theme="dark"] .dialog-image-wrap,
+body[data-theme="dark"] .dialog-image-wrap {
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255,255,255,0.08), transparent 34%),
+    linear-gradient(135deg, rgba(26,26,25,0.98), rgba(12,12,12,0.96));
 }
 
 .dialog-content {
