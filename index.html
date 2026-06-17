@@ -66,16 +66,6 @@
             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
           </svg>
         </button>
-        <button id="earningsButton" class="icon-button" type="button" aria-label="収益" data-tooltip="収益">
-          <svg aria-hidden="true" viewBox="0 0 24 24">
-            <path d="M4 19V5" />
-            <path d="M4 19h17" />
-            <path d="M8 16v-5" />
-            <path d="M13 16V8" />
-            <path d="M18 16v-8" />
-            <path d="M7.5 7.5 11 4l3 3 5-5" />
-          </svg>
-        </button>
         <button id="myRequestsButton" class="icon-button" type="button" aria-label="マイリクエスト" data-tooltip="マイリクエスト">
           <span id="myRequestsBadge" class="badge" aria-label="My request actions" hidden></span>
           <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -718,19 +708,19 @@
             <div>
               <p class="eyebrow">Creator earnings</p>
               <h1>収益</h1>
-              <p>依頼、投げ銭、メンバーシップの売上を年別・月別・今月の途中経過で確認するクリエイター向け画面です。</p>
+              <p>依頼、投げ銭、メンバーシップの売上を累計・年別・月別・今月の途中経過で確認するクリエイター向け画面です。</p>
             </div>
-            <div class="earnings-hero-card" aria-label="今月の売上">
-              <span>今月の途中経過</span>
+            <div class="earnings-hero-card" aria-label="累計クリエイター売上">
+              <span>累計クリエイター売上</span>
               <strong id="earningsThisMonthAmount">¥0</strong>
               <small id="earningsProgressText">集計中</small>
             </div>
           </header>
           <section class="earnings-summary-grid" aria-label="Earnings summary">
             <article class="earnings-summary-card">
-              <span>振込予定額</span>
+              <span>今月の途中経過</span>
               <strong id="earningsPayoutAmount">¥0</strong>
-              <small>決済手数料とサービス手数料を差し引いた概算です。</small>
+              <small>今月発生している売上の合計です。</small>
             </article>
             <article class="earnings-summary-card">
               <span>依頼売上</span>
@@ -754,7 +744,7 @@
                 <p class="eyebrow">Monthly</p>
                 <h2 id="earningsMonthlyTitle">月別売上</h2>
               </div>
-              <span class="earnings-panel-note">直近6ヶ月</span>
+              <span class="earnings-panel-note">今年分</span>
             </div>
             <div id="earningsMonthList" class="earnings-month-list"></div>
           </section>
@@ -778,6 +768,21 @@
           </section>
         </div>
       </section>
+      <dialog id="earningsMonthDialog" class="request-sheet-dialog earnings-month-dialog" aria-labelledby="earningsMonthDialogTitle">
+        <form method="dialog" class="request-sheet-card earnings-month-card">
+          <button id="earningsMonthClose" class="modal-close" type="button" aria-label="Close">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+          </button>
+          <p class="eyebrow">Monthly breakdown</p>
+          <h2 id="earningsMonthDialogTitle">月別売上内訳</h2>
+          <p id="earningsMonthDialogSummary" class="earnings-month-dialog-summary"></p>
+          <div id="earningsMonthBreakdown" class="earnings-month-breakdown"></div>
+          <div id="earningsMonthDetailList" class="earnings-month-detail-list"></div>
+        </form>
+      </dialog>
       <section id="tipView" class="tip-view app-view" hidden>
         <button id="backFromTip" class="soft-button" type="button">
           <svg aria-hidden="true" viewBox="0 0 24 24">

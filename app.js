@@ -924,6 +924,12 @@ const earningsMetricMemberships = document.querySelector("#earningsMetricMembers
 const earningsMonthList = document.querySelector("#earningsMonthList");
 const earningsYearList = document.querySelector("#earningsYearList");
 const earningsRecentList = document.querySelector("#earningsRecentList");
+const earningsMonthDialog = document.querySelector("#earningsMonthDialog");
+const earningsMonthClose = document.querySelector("#earningsMonthClose");
+const earningsMonthDialogTitle = document.querySelector("#earningsMonthDialogTitle");
+const earningsMonthDialogSummary = document.querySelector("#earningsMonthDialogSummary");
+const earningsMonthBreakdown = document.querySelector("#earningsMonthBreakdown");
+const earningsMonthDetailList = document.querySelector("#earningsMonthDetailList");
 const subscriptionsJoinedList = document.querySelector("#subscriptionsJoinedList");
 const subscriptionsSearchInput = document.querySelector("#subscriptionsSearchInput");
 const subscriptionsPlanResults = document.querySelector("#subscriptionsPlanResults");
@@ -5807,6 +5813,11 @@ function sumEarnings(items) {
   return items.reduce((total, item) => total + Number(item.amount || 0), 0);
 }
 
+function earningBarWidth(total, maxTotal) {
+  if (!total || !maxTotal) return 0;
+  return Math.min(100, Math.round((total / maxTotal) * 1000) / 10);
+}
+
 function groupEarnings(items, keyFn) {
   return items.reduce((groups, item) => {
     const key = keyFn(item.date);
@@ -5824,6 +5835,97 @@ function earningTypeClass(type) {
   if (type === "投げ銭") return "tip";
   if (type === "メンバーシップ") return "membership";
   return "request";
+}
+
+function earningsMonthLabel(monthKey) {
+  return String(monthKey || "").replace("-", " / ");
+}
+
+function renderEarningsTypeSummary(items) {
+  const types = ["依頼", "投げ銭", "メンバーシップ"];
+  return types.map((type) => {
+    const typeItems = items.filter((item) => item.type === type);
+    return `
+      <article class="earnings-breakdown-card">
+        <span class="earning-type is-${earningTypeClass(type)}">${escapeHtml(type)}</span>
+        <strong>${formatYen(sumEarnings(typeItems))}</strong>
+        <small>${typeItems.length}件</small>
+      </article>
+    `;
+  }).join("");
+}
+
+function openEarningsMonthDialog(monthKey) {
+  if (!earningsMonthDialog || !monthKey) return;
+  const items = creatorEarningTransactions()
+    .filter((item) => earningMonthKey(item.date) === monthKey)
+    .sort((a, b) => b.date.localeCompare(a.date));
+  if (!items.length) return;
+  const total = sumEarnings(items);
+  const payout = creatorPayoutEstimate(total);
+  if (earningsMonthDialogTitle) earningsMonthDialogTitle.textContent = `${earningsMonthLabel(monthKey)} 売上内訳`;
+  if (earningsMonthDialogSummary) {
+    earningsMonthDialogSummary.textContent = `${items.length}件 / 総売上 ${formatYen(total)} / 振込目安 ${formatYen(payout)}`;
+  }
+  if (earningsMonthBreakdown) {
+    earningsMonthBreakdown.innerHTML = renderEarningsTypeSummary(items);
+  }
+  if (earningsMonthDetailList) {
+    earningsMonthDetailList.innerHTML = items.map((item) => `
+      <article class="earnings-detail-row">
+        <span class="earning-type is-${earningTypeClass(item.type)}">${escapeHtml(item.type)}</span>
+        <div>
+          <strong>${escapeHtml(item.title)}</strong>
+          <small>${escapeHtml(item.source)} / ${escapeHtml(item.date)} / ${escapeHtml(item.status)}</small>
+        </div>
+        <b>${formatYen(item.amount)}</b>
+      </article>
+    `).join("");
+  }
+  if (!modalIsOpen(earningsMonthDialog)) showModalElement(earningsMonthDialog);
+}
+
+function openEarningsYearDialog(yearKey) {
+  if (!earningsMonthDialog || !yearKey) return;
+  const items = creatorEarningTransactions()
+    .filter((item) => earningYearKey(item.date) === yearKey)
+    .sort((a, b) => b.date.localeCompare(a.date));
+  if (!items.length) return;
+  const byMonth = groupEarnings(items, earningMonthKey);
+  const monthKeys = Object.keys(byMonth).sort().reverse();
+  const total = sumEarnings(items);
+  const payout = creatorPayoutEstimate(total);
+  const maxMonth = Math.max(1, ...monthKeys.map((key) => sumEarnings(byMonth[key])));
+  if (earningsMonthDialogTitle) earningsMonthDialogTitle.textContent = `${yearKey}年 月別売上`;
+  if (earningsMonthDialogSummary) {
+    earningsMonthDialogSummary.textContent = `${monthKeys.length}ヶ月 / ${items.length}件 / 総売上 ${formatYen(total)} / 振込目安 ${formatYen(payout)}`;
+  }
+  if (earningsMonthBreakdown) {
+    earningsMonthBreakdown.innerHTML = renderEarningsTypeSummary(items);
+  }
+  if (earningsMonthDetailList) {
+    earningsMonthDetailList.innerHTML = monthKeys.map((key) => {
+      const monthItems = byMonth[key];
+      const monthTotal = sumEarnings(monthItems);
+      const width = earningBarWidth(monthTotal, maxMonth);
+      return `
+        <button class="earnings-month-row is-inside-dialog" type="button" data-earnings-month="${escapeHtml(key)}" aria-label="${escapeHtml(earningsMonthLabel(key))}の売上内訳を表示">
+          <div>
+            <strong>${escapeHtml(earningsMonthLabel(key))}</strong>
+            <span>${monthItems.length}件</span>
+          </div>
+          <div class="earnings-bar" aria-hidden="true"><i style="width:${width}%"></i></div>
+          <b>${formatYen(monthTotal)}</b>
+        </button>
+      `;
+    }).join("");
+  }
+  if (!modalIsOpen(earningsMonthDialog)) showModalElement(earningsMonthDialog);
+}
+
+function closeEarningsMonthDialog() {
+  if (!earningsMonthDialog) return;
+  closeModalElement(earningsMonthDialog);
 }
 
 function renderEarningsPage() {
@@ -5852,38 +5954,40 @@ function renderEarningsPage() {
   const now = new Date();
   const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   const currentMonthItems = transactions.filter((item) => earningMonthKey(item.date) === currentMonthKey);
+  const lifetimeGross = sumEarnings(transactions);
   const currentMonthGross = sumEarnings(currentMonthItems);
   const requestGross = sumEarnings(currentMonthItems.filter((item) => item.type === "依頼"));
   const tipGross = sumEarnings(currentMonthItems.filter((item) => item.type === "投げ銭"));
   const membershipGross = sumEarnings(currentMonthItems.filter((item) => item.type === "メンバーシップ"));
 
-  if (earningsThisMonthAmount) earningsThisMonthAmount.textContent = formatYen(currentMonthGross);
-  if (earningsPayoutAmount) earningsPayoutAmount.textContent = formatYen(creatorPayoutEstimate(currentMonthGross));
+  if (earningsThisMonthAmount) earningsThisMonthAmount.textContent = formatYen(lifetimeGross);
+  if (earningsPayoutAmount) earningsPayoutAmount.textContent = formatYen(currentMonthGross);
   if (earningsMetricRequests) earningsMetricRequests.textContent = formatYen(requestGross);
   if (earningsMetricTips) earningsMetricTips.textContent = formatYen(tipGross);
   if (earningsMetricMemberships) earningsMetricMemberships.textContent = formatYen(membershipGross);
   if (earningsProgressText) {
     const day = now.getDate();
     const monthDays = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-    earningsProgressText.textContent = `${now.getMonth() + 1}月${day}日現在 / ${monthDays}日中`;
+    earningsProgressText.textContent = `過去の確定・進行中収益 / 今月 ${now.getMonth() + 1}月${day}日現在`;
   }
 
   const byMonth = groupEarnings(transactions, earningMonthKey);
-  const monthKeys = Object.keys(byMonth).sort().reverse().slice(0, 6);
+  const currentYearKey = String(now.getFullYear());
+  const monthKeys = Object.keys(byMonth).filter((key) => key.startsWith(`${currentYearKey}-`)).sort().reverse();
   const maxMonth = Math.max(1, ...monthKeys.map((key) => sumEarnings(byMonth[key])));
   if (earningsMonthList) {
     earningsMonthList.innerHTML = monthKeys.map((key) => {
       const total = sumEarnings(byMonth[key]);
-      const width = Math.max(8, Math.round((total / maxMonth) * 100));
+      const width = earningBarWidth(total, maxMonth);
       return `
-        <article class="earnings-month-row">
+        <button class="earnings-month-row" type="button" data-earnings-month="${escapeHtml(key)}" aria-label="${escapeHtml(earningsMonthLabel(key))}の売上内訳を表示">
           <div>
-            <strong>${escapeHtml(key.replace("-", " / "))}</strong>
+            <strong>${escapeHtml(earningsMonthLabel(key))}</strong>
             <span>${byMonth[key].length}件</span>
           </div>
           <div class="earnings-bar" aria-hidden="true"><i style="width:${width}%"></i></div>
           <b>${formatYen(total)}</b>
-        </article>
+        </button>
       `;
     }).join("");
   }
@@ -5894,11 +5998,11 @@ function renderEarningsPage() {
     earningsYearList.innerHTML = yearKeys.map((key) => {
       const items = byYear[key];
       return `
-        <article class="earnings-year-card">
+        <button class="earnings-year-card" type="button" data-earnings-year="${escapeHtml(key)}" aria-label="${escapeHtml(key)}年の月別売上を表示">
           <span>${escapeHtml(key)}</span>
           <strong>${formatYen(sumEarnings(items))}</strong>
           <small>${items.length}件 / 平均 ${formatYen(Math.round(sumEarnings(items) / Math.max(1, items.length)))}</small>
-        </article>
+        </button>
       `;
     }).join("");
   }
@@ -11927,6 +12031,29 @@ circleLeaveDialog?.addEventListener("cancel", (event) => {
   event.preventDefault();
   closeModalElement(circleLeaveDialog);
   resetCircleLeaveDialogState();
+});
+earningsMonthList?.addEventListener("click", (event) => {
+  const monthButton = event.target.closest("[data-earnings-month]");
+  if (!monthButton) return;
+  openEarningsMonthDialog(monthButton.dataset.earningsMonth);
+});
+earningsYearList?.addEventListener("click", (event) => {
+  const yearButton = event.target.closest("[data-earnings-year]");
+  if (!yearButton) return;
+  openEarningsYearDialog(yearButton.dataset.earningsYear);
+});
+earningsMonthDetailList?.addEventListener("click", (event) => {
+  const monthButton = event.target.closest("[data-earnings-month]");
+  if (!monthButton) return;
+  openEarningsMonthDialog(monthButton.dataset.earningsMonth);
+});
+earningsMonthClose?.addEventListener("click", closeEarningsMonthDialog);
+earningsMonthDialog?.addEventListener("click", (event) => {
+  if (event.target === earningsMonthDialog) closeEarningsMonthDialog();
+});
+earningsMonthDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeEarningsMonthDialog();
 });
 document.addEventListener("click", (event) => {
   if (!floatingPostDock?.contains(event.target)) hideFloatingPostActions();

@@ -321,13 +321,15 @@ Features:
 
 ### Creator Earnings
 
-The `#earnings` page is a creator-side revenue dashboard. It is reachable from the desktop topbar, account menu, and mobile account menu. The mock view aggregates request revenue, one-time tips, and memberships into:
+The `#earnings` page is a creator-side revenue dashboard. It is reachable from the account dropdown and mobile account menu only; do not expose it as a default topbar icon. The mock view aggregates request revenue, one-time tips, and memberships into:
 
+- Lifetime creator revenue.
 - Current month progress.
-- Estimated payout after fees.
-- Monthly totals for recent months.
+- Monthly totals for the current year only.
 - Yearly totals.
 - Recent revenue items.
+
+Monthly rows open a white/black revenue detail modal. The three category totals (`依頼`, `投げ銭`, `メンバーシップ`) stay in one horizontal row, and the transaction details below them use a simple list, not card rows. Yearly rows are clickable; they open that year's monthly totals, and older monthly detail is reached from there.
 
 The current data is mock/derived and should be replaced with backend payment ledger data later.
 
@@ -338,7 +340,7 @@ Desktop topbar:
 - Brand returns home.
 - Search is visible only on home.
 - When search is hidden, topbar should become narrower rather than reserving full search space.
-- Icon buttons exist for likes, bookmarks, circles, events, request manager, creator earnings, notifications, and account menu.
+- Icon buttons exist for likes, bookmarks, circles, events, request manager, notifications, and account menu. Creator earnings lives inside the account dropdown.
 - Light/dark toggle lives in the account dropdown, not as a standalone topbar button.
 - Tooltip style should match the small polished floating hint used by the floating post button.
 
