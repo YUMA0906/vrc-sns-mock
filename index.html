@@ -2241,7 +2241,22 @@
           </svg>
         </button>
         <div class="dialog-image-wrap">
-          <img id="dialogImage" alt="" />
+          <div id="dialogImageBgA" class="dialog-image-bg is-active"></div>
+          <div id="dialogImageBgB" class="dialog-image-bg"></div>
+          <div id="dialogImageTrack" class="dialog-image-track">
+            <img id="dialogImage" alt="" />
+          </div>
+          <button id="dialogImagePrev" class="dialog-image-nav is-prev" type="button" aria-label="Previous image" hidden>
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <button id="dialogImageNext" class="dialog-image-nav is-next" type="button" aria-label="Next image" hidden>
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="m9 6 6 6-6 6" />
+            </svg>
+          </button>
+          <span id="dialogImageCounter" class="dialog-image-counter" hidden>1 / 1</span>
         </div>
         <div class="dialog-content">
           <p id="dialogCategory" class="eyebrow"></p>
@@ -2374,11 +2389,6 @@
               <small>サムネイル付きの投稿として表示されます</small>
             </span>
           </label>
-          <div id="composePreviewCard" class="compose-preview-card">
-            <span>Avatar · You</span>
-            <strong>新しい投稿タイトル</strong>
-            <small>#vrchat #portfolio</small>
-          </div>
         </section>
 
         <section class="compose-content">
@@ -2390,7 +2400,7 @@
               <span>タイトル</span>
               <input id="composePostTitle" type="text" placeholder="例: Neon shrine avatar edit" autocomplete="off" required />
             </label>
-            <label class="field wide">
+            <label class="field">
               <span>カテゴリ</span>
               <select id="composeCategory">
                 <option>Avatar</option>
@@ -2412,7 +2422,7 @@
               <span>投稿先サークル</span>
               <select id="composeCircle"></select>
             </label>
-            <label id="composeVisibilityField" class="field wide">
+            <label id="composeVisibilityField" class="field">
               <span>公開範囲</span>
               <select id="composeVisibility">
                 <option>Public</option>
@@ -2444,6 +2454,7 @@
                 <span class="circle-post-toggle-copy">この投稿へのコメントを許可する</span>
               </label>
             </div>
+            <div id="composeMetadataHint" class="compose-metadata-hint wide" hidden></div>
             <label class="field">
               <span>Avatar</span>
               <input id="composeAvatar" type="text" placeholder="Selestia" autocomplete="off" />
@@ -2452,12 +2463,10 @@
               <span>World</span>
               <input id="composeWorld" type="text" placeholder="Yayoi Rain" autocomplete="off" />
             </label>
-            <div id="composeMetadataHint" class="compose-metadata-hint wide" hidden></div>
             <label class="field wide">
               <span>タグ</span>
               <div id="composeTagChips" class="compose-tag-chips" aria-label="確定済みタグ" hidden></div>
-              <input id="composeTags" type="text" placeholder="#avatar を入力してEnter" autocomplete="off" />
-              <small>タグを入力してEnterで確定</small>
+              <input id="composeTags" type="text" placeholder="タグを入力してEnterで確定" autocomplete="off" />
             </label>
             <label class="field wide">
               <span>説明</span>

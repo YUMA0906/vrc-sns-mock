@@ -1025,6 +1025,15 @@ Mock data in `backendSpecCards` is an in-app summary, but this document is the m
 - Compose tags are now committed with Enter and rendered as removable chips above the tag input.
 - Avatar/World links in post detail now search from an unfiltered All state instead of applying category narrowing.
 
+2026-06-18:
+
+- Post detail now supports multi-image posts with horizontal drag navigation, side arrow controls, and an image counter.
+- The post detail image carousel uses repeated image loops so the first and last images appear connected without a visible edge reset during fast navigation.
+- Blurred image backgrounds in the post detail modal cross-fade between images instead of switching abruptly.
+- The post detail modal guards against closing when an image drag ends outside the modal.
+- Post creation stores all attached images in `images` while keeping the first image as the thumbnail fallback.
+- The compose modal image preview now matches the post detail presentation more closely, with a larger image field and blurred background preview.
+
 ## Pre-Push Checklist
 
 Unless the user requests full QA, keep this lightweight:

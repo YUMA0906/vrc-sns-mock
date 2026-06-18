@@ -45,6 +45,7 @@ const pins = [
     request: { open: true, title: "アバター改変依頼", price: "¥12,000〜", capacity: "受付 2 / 5", delivery: "平均 10日" },
     description: "衣装差し替え、表情調整、軽いギミック追加まで含めたVRChat向けアバター改変の作例。",
     image: vrchatImages.steamAvatarA,
+    images: [vrchatImages.steamAvatarA, vrchatImages.steamStudio, vrchatImages.steamWorldA],
   },
   {
     id: 2,
@@ -1261,6 +1262,12 @@ const dialog = document.querySelector("#pinDialog");
 const closeDialog = document.querySelector("#closeDialog");
 const dialogImageWrap = document.querySelector(".dialog-image-wrap");
 const dialogImage = document.querySelector("#dialogImage");
+const dialogImageBgA = document.querySelector("#dialogImageBgA");
+const dialogImageBgB = document.querySelector("#dialogImageBgB");
+const dialogImageTrack = document.querySelector("#dialogImageTrack");
+const dialogImagePrev = document.querySelector("#dialogImagePrev");
+const dialogImageNext = document.querySelector("#dialogImageNext");
+const dialogImageCounter = document.querySelector("#dialogImageCounter");
 const dialogGrid = document.querySelector(".dialog-grid");
 const dialogContent = document.querySelector(".dialog-content");
 const dialogCategory = document.querySelector("#dialogCategory");
@@ -1458,6 +1465,16 @@ let notificationEnabledCreators = new Set(["Lumi Photo"]);
 let mutedCreators = new Set();
 let blockedCreators = new Set();
 let currentPin = null;
+let dialogImageIndex = 0;
+let dialogImageVisualIndex = 0;
+let dialogImageDrag = null;
+let dialogImageBgActive = 0;
+let dialogImageAnimating = false;
+let dialogImageQueuedDirection = 0;
+let dialogImageAnimationFallback = 0;
+let suppressNextDialogBackdropClose = false;
+const dialogImageLoopRepeats = 21;
+const dialogImageLoopMiddle = Math.floor(dialogImageLoopRepeats / 2);
 let activeProfile = null;
 let activeProfilePosts = [];
 let profilePostSortMode = "recent";
@@ -1511,6 +1528,7 @@ const eventCarouselMotion = {
   duration: 980,
   easing: "cubic-bezier(0.22, 1, 0.36, 1)"
 };
+const circlesFeatureEnabled = false;
 const demoAccountPassword = "password";
 let approveHoldTimer = 0;
 let approveHoldCompleted = false;
@@ -7198,14 +7216,8 @@ function openPin(pinId, sourceElement = null) {
 
   setDialogOrigin(sourceElement);
   resetPinDialogScroll();
-  dialog.classList.remove("is-landscape-image", "is-portrait-image", "is-square-image");
-  dialog.classList.add("is-square-image");
-  dialogImageWrap?.style.setProperty("--dialog-image-bg", `url(${JSON.stringify(currentPin.image)})`);
-  dialogImage.src = currentPin.image;
-  dialogImage.alt = currentPin.title;
-  if (dialogImage.complete && dialogImage.naturalWidth) {
-    applyDialogImageOrientation();
-  }
+  dialogImageIndex = 0;
+  renderDialogImage();
   const currentCircle = currentPin.circleId ? circleById(currentPin.circleId) : null;
   const visibilityLabel = currentPin.circleId ? "サークル限定" : currentPin.visibility === "SubscriberOnly" ? "メンバーシップ限定" : t("normalPost");
   const circleTrail = currentCircle
@@ -7251,10 +7263,230 @@ function openPin(pinId, sourceElement = null) {
   requestAnimationFrame(resetPinDialogScroll);
 }
 
+function dialogImagesForPin(pin = currentPin) {
+  if (!pin) return [];
+  const images = Array.isArray(pin.images) ? pin.images.filter(Boolean) : [];
+  if (images.length) return images;
+  return pin.image ? [pin.image] : [];
+}
+
+function activeDialogImageElement() {
+  return dialogImageTrack?.querySelector?.(`[data-dialog-visual-index="${dialogImageVisualIndex}"]`) || dialogImage;
+}
+
+function dialogTrackImages(images) {
+  if (images.length <= 1) return images.map((src, index) => ({ src, realIndex: index }));
+  return Array.from({ length: dialogImageLoopRepeats }, () => images)
+    .flat()
+    .map((src, visualIndex) => ({ src, realIndex: visualIndex % images.length }));
+}
+
+function setDialogImageBackground(image, { immediate = false } = {}) {
+  const layers = [dialogImageBgA, dialogImageBgB].filter(Boolean);
+  if (!layers.length || !image) return;
+  const backgroundImage = `url(${JSON.stringify(image)})`;
+  if (immediate) {
+    layers.forEach((layer, index) => {
+      layer.style.backgroundImage = backgroundImage;
+      layer.classList.toggle("is-active", index === 0);
+    });
+    dialogImageBgActive = 0;
+    return;
+  }
+  const nextIndex = dialogImageBgActive ? 0 : 1;
+  const currentLayer = layers[dialogImageBgActive];
+  const nextLayer = layers[nextIndex];
+  if (!nextLayer || currentLayer?.style.backgroundImage === backgroundImage) return;
+  nextLayer.style.backgroundImage = backgroundImage;
+  nextLayer.classList.add("is-active");
+  currentLayer?.classList.remove("is-active");
+  dialogImageBgActive = nextIndex;
+}
+
+function renderDialogImage() {
+  if (!currentPin || !dialogImageTrack) return;
+  const images = dialogImagesForPin(currentPin);
+  if (!images.length) return;
+  window.clearTimeout(dialogImageAnimationFallback);
+  dialogImageAnimating = false;
+  dialogImageQueuedDirection = 0;
+  dialogImageIndex = Math.max(0, Math.min(dialogImageIndex, images.length - 1));
+  const image = images[dialogImageIndex];
+  const hasMultiple = images.length > 1;
+  dialog.classList.remove("is-landscape-image", "is-portrait-image", "is-square-image");
+  dialog.classList.add("is-square-image");
+  dialogImageWrap?.style.removeProperty("--dialog-image-drag-x");
+  const imagesKey = `${currentPin.id}|${images.join("|")}`;
+  if (dialogImageTrack.dataset.imagesKey !== imagesKey) {
+    dialogImageTrack.dataset.imagesKey = imagesKey;
+    const trackImages = dialogTrackImages(images);
+    dialogImageTrack.innerHTML = trackImages.map(({ src, realIndex }, visualIndex) => `
+      <img
+        class="dialog-track-image"
+        src="${escapeHtml(src)}"
+        alt="${escapeHtml(`${currentPin.title}${hasMultiple ? ` ${realIndex + 1}/${images.length}` : ""}`)}"
+        data-dialog-image-index="${realIndex}"
+        data-dialog-visual-index="${visualIndex}"
+        draggable="false"
+      />
+    `).join("");
+  }
+  dialogImageVisualIndex = hasMultiple ? dialogImageLoopMiddle * images.length + dialogImageIndex : 0;
+  dialogImageTrack.classList.remove("is-loop-reset");
+  dialogImageTrack.style.setProperty("--dialog-image-index", String(dialogImageVisualIndex));
+  setDialogImageBackground(image, { immediate: true });
+  [dialogImagePrev, dialogImageNext].forEach((button) => {
+    if (button) button.hidden = !hasMultiple;
+  });
+  if (dialogImageCounter) {
+    dialogImageCounter.hidden = !hasMultiple;
+    dialogImageCounter.textContent = `${dialogImageIndex + 1} / ${images.length}`;
+  }
+  const activeImage = activeDialogImageElement();
+  if (activeImage?.complete && activeImage.naturalWidth) {
+    applyDialogImageOrientation();
+  }
+}
+
+function moveDialogImage(direction) {
+  if (dialogImageAnimating) {
+    dialogImageQueuedDirection = Math.max(-24, Math.min(24, dialogImageQueuedDirection + Math.sign(direction)));
+    return;
+  }
+  startDialogImageMove(Math.sign(direction));
+}
+
+function startDialogImageMove(direction) {
+  const images = dialogImagesForPin();
+  if (images.length < 2 || !direction || !dialogImageTrack) return;
+  alignDialogImageToRealSlide();
+  dialogImageIndex = (dialogImageIndex + direction + images.length) % images.length;
+  dialogImageVisualIndex += direction;
+  dialogImageAnimating = true;
+  dialogImageTrack.classList.remove("is-loop-reset");
+  dialogImageTrack.style.setProperty("--dialog-image-index", String(dialogImageVisualIndex));
+  setDialogImageBackground(images[dialogImageIndex]);
+  if (dialogImageCounter) {
+    dialogImageCounter.textContent = `${dialogImageIndex + 1} / ${images.length}`;
+  }
+  window.clearTimeout(dialogImageAnimationFallback);
+  dialogImageAnimationFallback = window.setTimeout(finishDialogImageMove, 900);
+  window.setTimeout(applyDialogImageOrientation, 80);
+}
+
+function finishDialogImageMove() {
+  if (!dialogImageAnimating) return;
+  window.clearTimeout(dialogImageAnimationFallback);
+  dialogImageAnimationFallback = 0;
+  settleDialogImageLoop();
+  dialogImageAnimating = false;
+  if (!dialogImageQueuedDirection) return;
+  const nextDirection = Math.sign(dialogImageQueuedDirection);
+  dialogImageQueuedDirection -= nextDirection;
+  requestAnimationFrame(() => startDialogImageMove(nextDirection));
+}
+
+function alignDialogImageToRealSlide() {
+  const images = dialogImagesForPin();
+  if (images.length < 2 || !dialogImageTrack) return;
+  const expectedVisualIndex = dialogImageLoopMiddle * images.length + dialogImageIndex;
+  if (dialogImageVisualIndex === expectedVisualIndex) return;
+  dialogImageVisualIndex = expectedVisualIndex;
+  dialogImageTrack.classList.add("is-loop-reset");
+  dialogImageTrack.style.setProperty("--dialog-image-index", String(dialogImageVisualIndex));
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => dialogImageTrack.classList.remove("is-loop-reset"));
+  });
+}
+
+function settleDialogImageLoop() {
+  const images = dialogImagesForPin();
+  if (images.length < 2 || !dialogImageTrack) return;
+  const minSafeIndex = images.length * 3;
+  const maxSafeIndex = images.length * (dialogImageLoopRepeats - 3);
+  if (dialogImageVisualIndex > minSafeIndex && dialogImageVisualIndex < maxSafeIndex) {
+    applyDialogImageOrientation();
+    return;
+  }
+  dialogImageVisualIndex = dialogImageLoopMiddle * images.length + dialogImageIndex;
+  dialogImageTrack.classList.add("is-loop-reset");
+  dialogImageTrack.style.setProperty("--dialog-image-index", String(dialogImageVisualIndex));
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => dialogImageTrack.classList.remove("is-loop-reset"));
+  });
+  applyDialogImageOrientation();
+}
+
+function startDialogImageDrag(event) {
+  if (dialogImagesForPin().length < 2) return;
+  if (event.button !== undefined && event.button !== 0) return;
+  if (event.target?.closest?.("button, a, input, textarea, select")) return;
+  dialogImageDrag = {
+    pointerId: event.pointerId,
+    x: event.clientX,
+    y: event.clientY,
+    moved: false,
+  };
+  dialogImageWrap?.classList.add("is-dragging");
+  dialogImageWrap?.setPointerCapture?.(event.pointerId);
+}
+
+function moveDialogImageDrag(event) {
+  if (!dialogImageDrag || !dialogImageWrap || event.pointerId !== dialogImageDrag.pointerId) return;
+  const dx = event.clientX - dialogImageDrag.x;
+  const dy = event.clientY - dialogImageDrag.y;
+  if (Math.abs(dx) > boardTapMoveTolerance || Math.abs(dy) > boardTapMoveTolerance) {
+    dialogImageDrag.moved = true;
+    suppressNextDialogBackdropClose = true;
+  }
+  const dragX = Math.max(-72, Math.min(72, dx * 0.18));
+  dialogImageWrap.style.setProperty("--dialog-image-drag-x", `${dragX}px`);
+}
+
+function endDialogImageDrag(event) {
+  if (!dialogImageDrag || event.pointerId !== dialogImageDrag.pointerId) return;
+  const dx = event.clientX - dialogImageDrag.x;
+  const dy = event.clientY - dialogImageDrag.y;
+  if (dialogImageDrag.moved) {
+    suppressNextDialogBackdropClose = true;
+    window.setTimeout(() => {
+      suppressNextDialogBackdropClose = false;
+    }, 250);
+  }
+  const shouldMove = Math.abs(dx) > 56 && Math.abs(dx) > Math.abs(dy) * 1.25;
+  if (shouldMove) {
+    const direction = dx < 0 ? 1 : -1;
+    dialogImageWrap?.releasePointerCapture?.(dialogImageDrag.pointerId);
+    dialogImageDrag = null;
+    dialogImageWrap?.classList.remove("is-dragging");
+    dialogImageWrap?.style.setProperty("--dialog-image-drag-x", "0px");
+    moveDialogImage(direction);
+    window.setTimeout(() => dialogImageWrap?.style.removeProperty("--dialog-image-drag-x"), 780);
+    return;
+  }
+  cancelDialogImageDrag();
+}
+
+function cancelDialogImageDrag() {
+  if (dialogImageDrag?.moved) {
+    suppressNextDialogBackdropClose = true;
+    window.setTimeout(() => {
+      suppressNextDialogBackdropClose = false;
+    }, 250);
+  }
+  if (dialogImageDrag?.pointerId !== undefined) {
+    dialogImageWrap?.releasePointerCapture?.(dialogImageDrag.pointerId);
+  }
+  dialogImageDrag = null;
+  dialogImageWrap?.classList.remove("is-dragging");
+  dialogImageWrap?.style.removeProperty("--dialog-image-drag-x");
+}
+
 function applyDialogImageOrientation() {
-  if (!dialog || !dialogImage) return;
-  const width = dialogImage.naturalWidth || 0;
-  const height = dialogImage.naturalHeight || 0;
+  const activeImage = activeDialogImageElement();
+  if (!dialog || !activeImage) return;
+  const width = activeImage.naturalWidth || 0;
+  const height = activeImage.naturalHeight || 0;
   dialog.classList.remove("is-landscape-image", "is-portrait-image", "is-square-image");
   if (!width || !height) {
     dialog.classList.add("is-square-image");
@@ -7276,6 +7508,9 @@ function closePinDialog() {
   if (!modalIsOpen(dialog) || dialog.classList.contains("is-closing")) return;
   dialog.classList.add("is-closing");
   window.setTimeout(() => {
+    window.clearTimeout(dialogImageAnimationFallback);
+    dialogImageAnimating = false;
+    dialogImageQueuedDirection = 0;
     dialog.classList.remove("is-closing");
     closeModalElement(dialog);
     resetPinDialogScroll();
@@ -7284,6 +7519,18 @@ function closePinDialog() {
       history.pushState("", document.title, `${location.pathname}${location.search}#`);
     }
   }, 180);
+}
+
+function closePinDialogForRouteChange() {
+  if (!modalIsOpen(dialog)) return;
+  window.clearTimeout(dialogImageAnimationFallback);
+  dialogImageAnimating = false;
+  dialogImageQueuedDirection = 0;
+  dialog.classList.remove("is-closing");
+  cancelDialogImageDrag();
+  closeModalElement(dialog);
+  resetPinDialogScroll();
+  currentPin = null;
 }
 
 function openTrustInfo(event) {
@@ -7370,6 +7617,7 @@ function routeFromHash() {
     openPin(Number(postMatch[1]));
     return;
   }
+  closePinDialogForRouteChange();
   const eventMatch = location.hash.match(/^#event\/([^/]+)$/);
   if (eventMatch) {
     renderEventDetailPage(eventMatch[1]);
@@ -9212,7 +9460,7 @@ function persistComposeDraft() {
     title: composePostTitle.value,
     category: composeCategory.value,
     visibility: composeVisibility?.value || "Public",
-    circlePost: Boolean(composeCircleToggle?.checked),
+    circlePost: Boolean(circlesFeatureEnabled && composeCircleToggle?.checked),
     r18: Boolean(composeR18Toggle?.checked),
     gore: Boolean(composeGoreToggle?.checked),
     allowReplies: Boolean(composeRepliesToggle?.checked),
@@ -9342,8 +9590,7 @@ function showComposeMetadataHint(metadata, options = {}) {
   composeMetadataHint.innerHTML = `
     <div>
       <strong>メタデータを検出したので反映しました</strong>
-      <p>${wasApplied ? "World情報とハッシュタグを投稿フォームに反映済みです。" : "検出した情報は保持しています。"}</p>
-      <div class="compose-metadata-tags">${formatVrchatMetadataRows(metadata)}</div>
+      <p>${wasApplied ? "World情報とタグに反映済みです。" : "検出した情報を保持しています。"}</p>
     </div>
   `;
 }
@@ -9461,7 +9708,7 @@ function restoreComposeDraft() {
     const draft = JSON.parse(raw);
     composePostTitle.value = draft.title || "";
     composeCategory.value = draft.category || "Photo";
-    const draftCirclePost = Boolean(draft.circlePost || draft.visibility === "Circle only");
+    const draftCirclePost = Boolean(circlesFeatureEnabled && (draft.circlePost || draft.visibility === "Circle only"));
     if (composeVisibility) {
       composePreviousVisibility = normalizeComposeVisibility(draft.visibility);
       composeVisibility.value = composePreviousVisibility;
@@ -9539,7 +9786,7 @@ function composeHasDraftableInput() {
     composeR18Toggle?.checked ||
     composeGoreToggle?.checked ||
     composeRepliesToggle?.checked === false ||
-    composeCircleToggle?.checked
+    (circlesFeatureEnabled && composeCircleToggle?.checked)
   );
 }
 
@@ -10996,7 +11243,7 @@ function populateComposeCircleOptions() {
 }
 
 function isComposeCirclePost() {
-  return Boolean(composeCircleToggle?.checked);
+  return Boolean(circlesFeatureEnabled && composeCircleToggle?.checked);
 }
 
 function updateComposeCircleVisibility() {
@@ -11030,6 +11277,7 @@ function handleComposeCircleToggleChange({ openMenu = false } = {}) {
 }
 
 function updateComposePreview() {
+  if (!composePreviewCard) return;
   const category = composeCategory.value || "Avatar";
   const title = composePostTitle.value.trim() || "新しい投稿タイトル";
   const tags = composeTagsText() || "#vrchat #portfolio";
@@ -11370,6 +11618,7 @@ function renderComposeImage() {
     composePreviewImage.removeAttribute("src");
     uploadDrop?.classList.remove("has-image");
     uploadDrop?.style.removeProperty("--preview-ratio");
+    uploadDrop?.style.removeProperty("--compose-image-bg");
     composeImageControls.hidden = true;
     removeComposeImage.hidden = true;
     composeImage.value = "";
@@ -11380,6 +11629,7 @@ function renderComposeImage() {
   composePreviewImage.alt = image.name || "Selected post image";
   composePreviewImage.hidden = false;
   uploadDrop?.classList.add("has-image");
+  uploadDrop?.style.setProperty("--compose-image-bg", `url(${JSON.stringify(image.src)})`);
   removeComposeImage.hidden = false;
   composeImageControls.hidden = !hasMultiple;
   composeImageCounter.textContent = `${composeImageIndex + 1} / ${composeImages.length}`;
@@ -11429,6 +11679,7 @@ function handleMockSubmit(event) {
   const normalizedTags = worldTag && !tags.some((tag) => tag.toLowerCase() === worldTag.toLowerCase())
     ? [...tags, worldTag]
     : tags;
+  const postImages = composeImages.map((image) => image?.src).filter(Boolean);
   const newPin = {
     id: Date.now(),
     title: composePostTitle.value.trim() || "新しい投稿",
@@ -11444,7 +11695,8 @@ function handleMockSubmit(event) {
     tags: normalizedTags,
     request: null,
     description: composeDescription.value.trim() || (circle ? `${circle.name}の参加者向け限定投稿です。` : "通常投稿のモックです。"),
-    image: composeImages[0]?.src || vrchatImages.portrait,
+    image: postImages[0] || vrchatImages.portrait,
+    images: postImages.length ? postImages : [vrchatImages.portrait],
     circleId: circle?.id || null,
     allowReplies: Boolean(composeRepliesToggle?.checked),
     sensitive: {
@@ -12797,9 +13049,30 @@ board.addEventListener("keydown", (event) => {
 
 closeDialog.addEventListener("click", closePinDialog);
 dialogImage?.addEventListener("load", applyDialogImageOrientation);
+dialogImageTrack?.addEventListener("load", applyDialogImageOrientation, true);
+dialogImageTrack?.addEventListener("transitionend", (event) => {
+  if (event.target === dialogImageTrack && event.propertyName === "transform") finishDialogImageMove();
+});
+dialogImagePrev?.addEventListener("click", (event) => {
+  event.stopPropagation();
+  moveDialogImage(-1);
+});
+dialogImageNext?.addEventListener("click", (event) => {
+  event.stopPropagation();
+  moveDialogImage(1);
+});
+dialogImageWrap?.addEventListener("pointerdown", startDialogImageDrag);
+window.addEventListener("pointermove", moveDialogImageDrag);
+window.addEventListener("pointerup", endDialogImageDrag);
+window.addEventListener("pointercancel", cancelDialogImageDrag);
 
 dialog.addEventListener("click", (event) => {
-  if (event.target === dialog) closePinDialog();
+  if (event.target !== dialog) return;
+  if (suppressNextDialogBackdropClose) {
+    suppressNextDialogBackdropClose = false;
+    return;
+  }
+  closePinDialog();
 });
 
 dialog.addEventListener("cancel", (event) => {

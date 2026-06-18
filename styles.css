@@ -833,6 +833,15 @@ body[data-theme="dark"] .account-menu button:focus-visible {
   display: none !important;
 }
 
+.circle-post-toggle-field,
+#composeCircleField,
+#eventCircleRequirementButton,
+.circle-create-button,
+#circleJoinButton,
+#circleSupportButton {
+  display: none !important;
+}
+
 @keyframes accountMenuIn {
   from {
     opacity: 0;
@@ -2440,12 +2449,12 @@ body[data-theme="dark"] .pin-dialog {
 .compose-dialog {
   position: fixed;
   inset: 0;
-  width: min(1040px, calc(100vw - 28px));
-  max-height: calc(100vh - 28px);
+  width: min(1160px, calc(100vw - 28px));
+  height: min(860px, calc(100vh - 16px));
+  max-height: calc(100vh - 16px);
   margin: auto;
-  overflow-y: scroll;
+  overflow: hidden;
   overscroll-behavior: contain;
-  scrollbar-gutter: stable;
   border: 0;
   border-radius: 28px;
   padding: 0;
@@ -2830,8 +2839,9 @@ body[data-theme="dark"] .avatar-editor-dialog {
 .compose-shell {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(300px, 0.86fr) minmax(360px, 1.14fr);
-  min-height: min(650px, calc(100vh - 28px));
+  grid-template-columns: minmax(420px, 1fr) minmax(380px, 0.86fr);
+  height: 100%;
+  min-height: 0;
 }
 
 .edit-profile-shell {
@@ -3102,11 +3112,12 @@ body[data-theme="dark"] .avatar-crop-panel {
 
 .compose-preview {
   display: grid;
-  align-content: stretch;
-  gap: 14px;
-  padding: 22px;
+  align-content: center;
+  place-items: center;
+  gap: 0;
+  padding: clamp(18px, 3vw, 28px);
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,255,255,0.06)),
+    linear-gradient(135deg, rgba(255,255,255,0.58), rgba(255,255,255,0.08)),
     radial-gradient(circle at 24% 18%, var(--lilac), transparent 34%),
     radial-gradient(circle at 78% 36%, var(--mint), transparent 34%),
     var(--paper);
@@ -3122,22 +3133,23 @@ body[data-theme="dark"] .compose-preview {
 }
 
 .upload-drop {
-  --preview-ratio: 0.78;
+  --preview-ratio: 1;
   position: relative;
   display: grid;
-  align-self: start;
+  place-items: center;
+  align-self: center;
   justify-self: center;
-  width: min(100%, 520px);
-  min-height: 340px;
-  max-height: min(560px, calc(100vh - 190px));
-  aspect-ratio: var(--preview-ratio);
+  width: min(100%, 660px, calc(100vh - 76px));
+  min-height: 0;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
-  border: 1px dashed color-mix(in srgb, var(--line) 86%, var(--ink));
-  border-radius: 24px;
+  border: 1px dashed color-mix(in srgb, var(--line) 82%, var(--ink));
+  border-radius: 28px;
   background: rgba(255,255,255,0.72);
   box-shadow:
     0 22px 50px rgba(79, 57, 120, 0.12),
     0 18px 42px rgba(20,20,20,0.08);
+  isolation: isolate;
 }
 
 [data-theme="dark"] .upload-drop,
@@ -3151,34 +3163,71 @@ body[data-theme="dark"] .upload-drop {
 .upload-drop input {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 4;
   opacity: 0;
   cursor: pointer;
 }
 
-.upload-drop img {
-  position: relative;
+.upload-drop::before,
+.upload-drop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.upload-drop::before {
+  z-index: 0;
+  background-image: var(--compose-image-bg);
+  background-position: center;
+  background-size: cover;
+  filter: blur(18px) saturate(1.12) brightness(1.02);
+  opacity: 0;
+  transform: scale(1.08);
+}
+
+.upload-drop::after {
   z-index: 1;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.04), transparent 52%),
+    linear-gradient(135deg, rgba(255,255,255,0.12), rgba(0,0,0,0.05));
+  opacity: 0;
+}
+
+.upload-drop img {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   width: 100%;
   height: 100%;
   min-height: 0;
   object-fit: contain;
-  background:
-    linear-gradient(135deg, rgba(255,255,255,0.44), rgba(0,0,0,0.05)),
-    rgba(251,251,248,0.72);
+  background: transparent;
+  border-radius: 10px;
+  box-shadow: 0 18px 54px rgba(0,0,0,0.2);
 }
 
 .upload-drop.has-image {
   border-style: solid;
 }
 
+.upload-drop.has-image::before,
+.upload-drop.has-image::after {
+  opacity: 1;
+}
+
 .upload-drop.has-image .upload-empty {
   display: none;
 }
 
+[data-theme="dark"] .upload-drop.has-image::before,
+body[data-theme="dark"] .upload-drop.has-image::before {
+  filter: blur(18px) saturate(1.08) brightness(0.86);
+}
+
 .image-controls {
   position: absolute;
-  z-index: 4;
+  z-index: 7;
   left: 14px;
   right: 14px;
   bottom: 14px;
@@ -3197,7 +3246,7 @@ body[data-theme="dark"] .upload-drop {
   position: absolute;
   top: 14px;
   right: 14px;
-  z-index: 5;
+  z-index: 8;
   display: grid;
   place-items: center;
   width: 38px;
@@ -3376,12 +3425,29 @@ body[data-theme="dark"] .request-compose-mini-meta span {
 .compose-content {
   display: flex;
   flex-direction: column;
-  padding: clamp(26px, 4.5vw, 52px);
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding: clamp(18px, 2.8vw, 34px) clamp(22px, 3.4vw, 40px) clamp(20px, 3vw, 36px);
+  -webkit-overflow-scrolling: touch;
+}
+
+.compose-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.compose-content::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 20%, transparent);
+  background-clip: padding-box;
 }
 
 .compose-content h2 {
-  margin: 0 0 22px;
-  font-size: clamp(2rem, 3.6vw, 3.4rem);
+  margin: -4px 0 14px;
+  font-size: clamp(1.72rem, 2.8vw, 2.58rem);
   line-height: 1;
   letter-spacing: 0;
 }
@@ -3460,12 +3526,12 @@ body[data-theme="dark"] .compose-mode label:has(input:checked) {
 .commission-fields {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 10px 12px;
 }
 
 .field {
   display: grid;
-  gap: 7px;
+  gap: 6px;
 }
 
 .field[hidden] {
@@ -3541,7 +3607,7 @@ body[data-theme="dark"] .field.is-circle-audience > span::after {
 .field select,
 .field textarea {
   width: 100%;
-  min-height: 44px;
+  min-height: 40px;
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 10px 12px;
@@ -3551,8 +3617,27 @@ body[data-theme="dark"] .field.is-circle-audience > span::after {
 }
 
 .field textarea {
-  resize: vertical;
+  resize: none;
   line-height: 1.6;
+}
+
+#composeDescription {
+  min-height: 92px;
+  max-height: 142px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+#composeDescription::-webkit-scrollbar {
+  width: 9px;
+}
+
+#composeDescription::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 24%, transparent);
+  background-clip: padding-box;
 }
 
 [data-theme="dark"] .field input,
@@ -3627,12 +3712,12 @@ body[data-theme="dark"] .compose-tag-chip:hover {
 .compose-metadata-hint {
   grid-column: 1 / -1;
   display: block;
-  padding: 13px 14px;
+  padding: 9px 11px;
   border: 1px solid color-mix(in srgb, var(--line) 72%, #7ca788);
-  border-radius: 18px;
+  border-radius: 14px;
   background: color-mix(in srgb, var(--panel) 82%, #e8f5ed);
   color: var(--ink);
-  box-shadow: 0 14px 34px rgba(24, 80, 48, 0.09);
+  box-shadow: 0 10px 22px rgba(24, 80, 48, 0.07);
 }
 
 .compose-metadata-hint[hidden] {
@@ -3641,16 +3726,16 @@ body[data-theme="dark"] .compose-tag-chip:hover {
 
 .compose-metadata-hint strong {
   display: block;
-  margin-bottom: 3px;
-  font-size: 0.88rem;
+  margin-bottom: 1px;
+  font-size: 0.78rem;
 }
 
 .compose-metadata-hint p {
   margin: 0;
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 720;
-  line-height: 1.45;
+  line-height: 1.35;
 }
 
 .compose-metadata-tags {
@@ -3701,7 +3786,7 @@ body[data-theme="dark"] .compose-metadata-tags span {
 }
 
 .circle-post-toggle {
-  min-height: 44px;
+  min-height: 40px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -3878,11 +3963,23 @@ body[data-theme="dark"] .commission-fields {
 }
 
 .compose-actions {
+  position: sticky;
+  bottom: 0;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: auto;
-  padding-top: 24px;
+  margin-top: 22px;
+  padding-top: 12px;
+  padding-bottom: 0;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, white 0%, transparent), var(--panel) 34%);
+  z-index: 2;
+}
+
+[data-theme="dark"] .compose-actions,
+body[data-theme="dark"] .compose-actions {
+  background:
+    linear-gradient(180deg, rgba(27,27,26,0), #1b1b1a 34%);
 }
 
 .close-button {
@@ -3908,6 +4005,13 @@ body[data-theme="dark"] .commission-fields {
   min-height: 0;
   border-radius: 28px 0 0 28px;
   background: #eef0ea;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.dialog-image-wrap.is-dragging {
+  cursor: grabbing;
 }
 
 .pin-dialog.is-landscape-image .dialog-image-wrap {
@@ -3932,17 +4036,10 @@ body[data-theme="dark"] .commission-fields {
 }
 
 .dialog-image-wrap::before {
-  content: "";
+  content: none;
   position: absolute;
   inset: 0;
   z-index: 0;
-  background-image: var(--dialog-image-bg);
-  background-position: center;
-  background-size: cover;
-  filter: blur(15px) saturate(1.14) brightness(1.04);
-  opacity: 1;
-  transform: scale(1.08);
-  pointer-events: none;
 }
 
 .dialog-image-wrap::after {
@@ -3956,20 +4053,162 @@ body[data-theme="dark"] .commission-fields {
   pointer-events: none;
 }
 
-.dialog-image-wrap img {
+.dialog-image-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-position: center;
+  background-size: cover;
+  filter: blur(15px) saturate(1.14) brightness(1.04);
+  opacity: 0;
+  transform: scale(1.08);
+  transition: opacity 460ms ease;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+.dialog-image-bg.is-active {
+  opacity: 1;
+}
+
+.dialog-image-track {
   position: absolute;
   inset: 0;
   z-index: 2;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transform: translate3d(calc((var(--dialog-image-index, 0) * -100%) + var(--dialog-image-drag-x, 0px)), 0, 0);
+  transition: transform 760ms cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: transform;
+  pointer-events: none;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.dialog-image-wrap.is-dragging .dialog-image-track {
+  transition: none;
+}
+
+.dialog-image-track.is-loop-reset {
+  transition: none;
+}
+
+.dialog-image-track img {
+  flex: 0 0 100%;
   display: block;
   width: 100%;
   height: 100%;
-  max-width: 100%;
-  max-height: 100%;
+  min-width: 100%;
   object-fit: contain;
   object-position: center;
   background: transparent;
   border-radius: 10px;
   box-shadow: 0 18px 60px rgba(0,0,0,0.22);
+  user-select: none;
+}
+
+.dialog-image-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 5;
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(255,255,255,0.44);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(15,15,15,0.46);
+  box-shadow: 0 14px 38px rgba(0,0,0,0.26);
+  backdrop-filter: blur(14px) saturate(1.25);
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
+  transform: translateY(-50%) !important;
+  transition: background-color 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.dialog-image-nav:hover {
+  background: rgba(15,15,15,0.56);
+  box-shadow: 0 15px 38px rgba(0,0,0,0.28);
+  transform: translateY(-50%) !important;
+}
+
+.dialog-image-nav:active {
+  background: rgba(15,15,15,0.62);
+  transform: translateY(-50%) !important;
+}
+
+.dialog-image-nav:focus-visible {
+  transform: translateY(-50%) !important;
+}
+
+.dialog-image-nav.is-prev {
+  left: 16px;
+}
+
+.dialog-image-nav.is-next {
+  right: 16px;
+}
+
+.dialog-image-nav svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dialog-image-nav[hidden],
+.dialog-image-counter[hidden] {
+  display: none !important;
+}
+
+.dialog-image-counter {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  padding: 7px 12px;
+  border: 1px solid rgba(255,255,255,0.38);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(15,15,15,0.44);
+  box-shadow: 0 12px 34px rgba(0,0,0,0.24);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 640px) {
+  .dialog-image-nav {
+    width: 38px;
+    height: 38px;
+  }
+
+  .dialog-image-nav.is-prev {
+    left: 10px;
+  }
+
+  .dialog-image-nav.is-next {
+    right: 10px;
+  }
+
+  .dialog-image-counter {
+    bottom: 10px;
+    min-width: 52px;
+    padding: 6px 10px;
+    font-size: 0.72rem;
+  }
 }
 
 [data-theme="dark"] .dialog-image-wrap,
@@ -3979,7 +4218,11 @@ body[data-theme="dark"] .dialog-image-wrap {
 
 [data-theme="dark"] .dialog-image-wrap::before,
 body[data-theme="dark"] .dialog-image-wrap::before {
-  opacity: 1;
+  content: none;
+}
+
+[data-theme="dark"] .dialog-image-bg,
+body[data-theme="dark"] .dialog-image-bg {
   filter: blur(15px) saturate(1.1) brightness(0.88);
 }
 
@@ -6668,6 +6911,10 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
 .my-requests-view,
 .my-request-detail-view {
   animation: fadeIn 220ms ease both;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
 }
 
 .my-requests-view[hidden],
@@ -6688,6 +6935,10 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   grid-template-columns: minmax(0, 1fr) minmax(280px, 0.85fr);
   gap: 18px;
   align-items: stretch;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
   padding: clamp(20px, 3vw, 30px);
   border: 1px solid var(--line);
   border-radius: 24px;
@@ -6714,6 +6965,7 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
+  min-width: 0;
 }
 
 .my-requests-guide span {
@@ -6740,6 +6992,8 @@ body[data-theme="dark"] .request-manager-card time.is-urgent {
   position: relative;
   width: 100%;
   max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .my-requests-tabs {
@@ -14331,11 +14585,13 @@ body.is-dragging .drop-hint {
   }
 
   .compose-dialog {
+    height: auto;
     overflow-y: scroll;
   }
 
   .compose-shell {
     grid-template-columns: 1fr;
+    height: auto;
   }
 
   .edit-profile-shell {
@@ -14343,7 +14599,7 @@ body.is-dragging .drop-hint {
   }
 
   .compose-preview {
-    padding-bottom: 0;
+    padding: 18px;
   }
 
   .request-compose-content {
@@ -14355,11 +14611,16 @@ body.is-dragging .drop-hint {
   }
 
   .upload-drop {
-    min-height: 340px;
+    width: min(100%, 520px);
+    min-height: 0;
   }
 
   .upload-drop img {
     min-height: 0;
+  }
+
+  #composeDescription {
+    max-height: 190px;
   }
 
   .profile-overview-grid {
