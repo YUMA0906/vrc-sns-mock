@@ -1,6 +1,6 @@
 # Veacon Mock Codex Handoff
 
-Last updated: 2026-06-17
+Last updated: 2026-07-08
 
 This document is intended for another Codex instance that needs to understand and continue the current frontend prototype without relying on chat history.
 
@@ -81,6 +81,7 @@ Update this document in the same commit whenever a change affects:
 
 ## Recent Changes
 
+- 2026-07-08: Added profile open-request surfacing. Creator profiles now show up to four currently open commission request cards in a 2x2 section, and if the creator has more than four open requests a `すべての依頼を見る` button routes to a new `#requests/{creatorSlug}` page. The new page lists all currently open requests for that creator with a Back button and cards that deep-link into `#request/{creatorSlug}/{postId}`. The `You` mock profile now includes five open request posts so the 4-card section and all-requests page can both be tested.
 - 2026-06-17: Added post modal scroll reset behavior. Opening a post now resets the dialog, grid, and content column scroll positions before render and again on the next animation frame; closing also resets after the close completes, so reopening a post never starts from the previous lower scroll position. Updated the `app.js` cache key in `index.html`.
 - 2026-06-17: Fixed the post detail modal content column so long descriptions start at the top when scrolling is needed. `.dialog-content` now uses `justify-content: flex-start` with `overflow-y: auto`, preventing the top of the modal copy from being clipped. Updated the stylesheet cache key in `index.html`.
 - 2026-06-17: Rebalanced the blurred fill brightness in the post detail modal after the brighter version felt too strong. The light theme blurred image fill now uses a slightly lower opacity, and the dark theme uses a lower opacity/brightness combination. Updated the stylesheet cache key in `index.html`.
@@ -143,6 +144,7 @@ Routing is hash-based in `routeFromHash()` in `app.js`.
 | `#me` | Current user's profile page. |
 | `#tip/{creatorSlug}` | One-time tipping page for a creator. Supports guest-friendly free-form amount tips. |
 | `#request/{creatorSlug}/{postId}` | Commission request page for a creator/request post. |
+| `#requests/{creatorSlug}` | Creator open-request list page. Shows all currently open commission request posts for that creator and links each card to the matching request detail page. |
 | `#request-manager` | Creator-side request management overview. |
 | `#request-manager/{id}` | Request detail and chat/workflow screen. |
 | `#my-requests` | Requester-side sent request overview. |
@@ -195,6 +197,13 @@ Post visibility concepts:
 - Circle posts linked by `circleId`.
 - Membership-only posts with `visibility: "SubscriberOnly"`.
 - Sensitive flags are available in compose UI for R18 and gore content.
+
+Profile request surfacing:
+
+- `openRequestPostsForCreator(creator)` filters posts whose `request.open` is true.
+- `renderProfileOpenRequestsSection(creator)` shows the first four open requests on the profile.
+- `openRequestListPage(creator)` / `renderRequestListPage(creator)` handle the all-open-requests page.
+- The profile "all requests" button should go to `#requests/{creatorSlug}`, not directly to the first `#request/...` detail page.
 
 ### `circleGroups`
 

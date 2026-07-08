@@ -437,6 +437,16 @@
             <button id="profileTipButton" class="primary-button profile-tip-button" type="button">投げ銭する</button>
           </div>
         </section>
+        <section id="profileOpenRequestsSection" class="trust-panel profile-open-requests-section" hidden aria-labelledby="profileOpenRequestsTitle">
+          <div class="section-heading-row">
+            <div>
+              <p class="eyebrow">Open requests</p>
+              <h2 id="profileOpenRequestsTitle">受付中の依頼</h2>
+            </div>
+            <button id="profileOpenRequestsAllButton" class="soft-button" type="button" hidden>すべての依頼を見る</button>
+          </div>
+          <div id="profileOpenRequestsGrid" class="profile-open-requests-grid"></div>
+        </section>
         <section class="trust-panel trust-featured" aria-labelledby="trustFeaturedTitle">
           <div class="section-heading-row">
             <div>
@@ -510,6 +520,27 @@
           <strong>サービス説明</strong>
           <span>Our Mission に進む前に、このサービスで何ができるかを見る</span>
         </button>
+      </section>
+
+      <section id="requestListView" class="request-list-view app-view" hidden>
+        <button id="backFromRequestList" class="soft-button" type="button">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back
+        </button>
+        <header class="request-list-hero">
+          <div>
+            <p id="requestListEyebrow" class="eyebrow">Open requests</p>
+            <h1 id="requestListTitle">受付中の依頼</h1>
+            <p id="requestListLead">このクリエイターが現在受け付けている依頼をまとめて確認できます。</p>
+          </div>
+        </header>
+        <div id="requestListGrid" class="request-list-grid"></div>
+        <div id="requestListEmpty" class="empty-state" hidden>
+          <p>受付中の依頼はありません</p>
+          <span>新しい依頼受付が公開されるとここに表示されます。</span>
+        </div>
       </section>
 
       <section id="requestView" class="request-view app-view" hidden>

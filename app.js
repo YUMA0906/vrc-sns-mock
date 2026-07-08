@@ -165,6 +165,11 @@ const pins = [
   { id: 103, title: "World walk archive", category: "World", creator: "You", role: "VRChat creator", avatar: "Rurune", world: "Silent Harbor", tags: ["#world", "#archive", "#photo"], request: null, description: "お気に入りワールドの散歩ログ。", image: vrchatImages.steamWorldA },
   { id: 104, title: "Subscriber-only setup memo", category: "Avatar", creator: "You", role: "VRChat creator", avatar: "Rurune", world: "Creator Room", tags: ["#subscriber", "#memo", "#setup"], request: null, description: "支援者だけに共有する導入手順や細かな設定メモの想定投稿。", image: vrchatImages.pressSdk, visibility: "SubscriberOnly" },
   { id: 105, title: "Backstage WIP notes", category: "Photo", creator: "You", role: "VRChat creator", avatar: "Shinra", world: "Soft Garden", tags: ["#subscriber", "#wip", "#photo"], request: null, description: "支援プラン向けの制作途中メモや未公開カットのまとめ。", image: vrchatImages.steamStudio, visibility: "SubscriberOnly" },
+  { id: 106, title: "Avatar expression setup", category: "Avatar", creator: "You", role: "VRChat creator", avatar: "Rurune", world: "Creator Room", tags: ["#依頼受付", "#表情設定", "#avatar"], request: { open: true, title: "表情メニュー設定", price: "¥7,000〜", capacity: "受付 2 / 5", delivery: "平均 6日" }, description: "表情メニュー、ハンドサイン、衣装切り替えを整理して使いやすくする依頼受付サンプル。", image: vrchatImages.steamAvatarA },
+  { id: 107, title: "Outfit fitting support", category: "Avatar", creator: "You", role: "VRChat creator", avatar: "Shinra", world: "Soft Garden", tags: ["#依頼受付", "#衣装導入", "#booth"], request: { open: true, title: "衣装導入サポート", price: "¥5,500〜", capacity: "受付 1 / 4", delivery: "平均 5日" }, description: "BOOTH衣装の導入、貫通調整、色替えまでをまとめて対応する依頼受付サンプル。", image: vrchatImages.steamAvatarB },
+  { id: 108, title: "Profile photo session", category: "Photo", creator: "You", role: "VRChat creator", avatar: "Rurune", world: "Silent Harbor", tags: ["#依頼受付", "#撮影", "#プロフィール"], request: { open: true, title: "プロフィール撮影", price: "¥3,500〜", capacity: "受付 3 / 6", delivery: "平均 3日" }, description: "プロフィールやSNS用に使いやすい構図で撮影し、簡単な色調整まで行う依頼受付サンプル。", image: vrchatImages.steamSocial },
+  { id: 109, title: "World lighting review", category: "World", creator: "You", role: "VRChat creator", avatar: "World sample", world: "Creator Room", tags: ["#依頼受付", "#world", "#lighting"], request: { open: true, title: "ワールド軽量化相談", price: "¥10,000〜", capacity: "受付 1 / 3", delivery: "平均 8日" }, description: "ライティング、容量、導線を確認して、Quest対応や撮影向けの改善案をまとめる依頼受付サンプル。", image: vrchatImages.steamWorldA },
+  { id: 110, title: "Retouch mini pack", category: "Retouch", creator: "You", role: "VRChat creator", avatar: "Shinra", world: "White Studio", tags: ["#依頼受付", "#retouch", "#photo"], request: { open: true, title: "写真レタッチパック", price: "¥2,800〜", capacity: "受付 4 / 8", delivery: "平均 2日" }, description: "VRChat写真の色味、明るさ、肌や髪の質感を整える小規模レタッチ依頼のサンプル。", image: vrchatImages.steamStudio },
 ];
 
 const myPosts = pins.filter((pin) => pin.creator === "You");
@@ -823,6 +828,13 @@ const eventPrev = document.querySelector("#eventPrev");
 const eventNext = document.querySelector("#eventNext");
 const openEventProposalButton = document.querySelector("#openEventProposalButton");
 const profileView = document.querySelector("#profileView");
+const requestListView = document.querySelector("#requestListView");
+const backFromRequestList = document.querySelector("#backFromRequestList");
+const requestListEyebrow = document.querySelector("#requestListEyebrow");
+const requestListTitle = document.querySelector("#requestListTitle");
+const requestListLead = document.querySelector("#requestListLead");
+const requestListGrid = document.querySelector("#requestListGrid");
+const requestListEmpty = document.querySelector("#requestListEmpty");
 const requestView = document.querySelector("#requestView");
 const notificationsView = document.querySelector("#notificationsView");
 const requestManagerView = document.querySelector("#requestManagerView");
@@ -961,6 +973,9 @@ const profileRequestButton = document.querySelector("#profileRequestButton");
 const profileTipCard = document.querySelector("#profileTipCard");
 const profileTipCardName = document.querySelector("#profileTipCardName");
 const profileTipButton = document.querySelector("#profileTipButton");
+const profileOpenRequestsSection = document.querySelector("#profileOpenRequestsSection");
+const profileOpenRequestsGrid = document.querySelector("#profileOpenRequestsGrid");
+const profileOpenRequestsAllButton = document.querySelector("#profileOpenRequestsAllButton");
 const profileFollowingButton = document.querySelector("#profileFollowingButton");
 const profileShareButton = document.querySelector("#profileShareButton");
 const trustSummaryText = document.querySelector("#trustSummaryText");
@@ -1493,6 +1508,7 @@ let adminReturnHash = "";
 let specsReturnHash = "";
 let profileReturnHash = "";
 let requestPageReturnHash = "";
+let requestListReturnHash = "";
 let subscriptionsReturnHash = "";
 let tipReturnHash = "";
 let subscriptionsQuery = "";
@@ -7594,10 +7610,11 @@ function showFeed() {
   if (earningsView) earningsView.hidden = true;
   if (tipView) tipView.hidden = true;
   profileView.hidden = true;
+  if (requestListView) requestListView.hidden = true;
   profileView.classList.remove("is-mine");
   feedView.hidden = false;
   updateTopbarSearchVisibility();
-  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#tip/") || location.hash.startsWith("#request/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#my-requests") || location.hash.startsWith("#event/") || location.hash.startsWith("#circle/") || location.hash.startsWith("#circle-manager") || location.hash === "#circles" || location.hash === "#events" || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#subscriptions" || location.hash === "#earnings" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#admin" || location.hash === "#backend-spec" || location.hash === "#me") {
+  if (location.hash.startsWith("#profile/") || location.hash.startsWith("#tip/") || location.hash.startsWith("#request/") || location.hash.startsWith("#requests/") || location.hash.startsWith("#request-manager/") || location.hash.startsWith("#my-requests") || location.hash.startsWith("#event/") || location.hash.startsWith("#circle/") || location.hash.startsWith("#circle-manager") || location.hash === "#circles" || location.hash === "#events" || location.hash === "#notifications" || location.hash === "#settings" || location.hash === "#request-manager" || location.hash === "#subscriptions" || location.hash === "#earnings" || location.hash === "#service" || location.hash === "#mission" || location.hash === "#admin" || location.hash === "#backend-spec" || location.hash === "#me") {
     history.pushState("", document.title, location.pathname + location.search);
   }
   renderPins();
@@ -7608,6 +7625,7 @@ function routeFromHash() {
   closeAccountMenu();
   closeSavedSearchContextMenu();
   hideFloatingPostActions();
+  if (requestListView) requestListView.hidden = true;
   if (subscriptionsView) subscriptionsView.hidden = true;
   if (earningsView) earningsView.hidden = true;
   if (tipView) tipView.hidden = true;
@@ -7703,6 +7721,14 @@ function routeFromHash() {
   if (location.hash === "#me") {
     renderProfile("You");
     return;
+  }
+  const requestListMatch = location.hash.match(/^#requests\/([^/]+)$/);
+  if (requestListMatch) {
+    const profileName = profileNameBySlug(requestListMatch[1]);
+    if (profileName) {
+      renderRequestListPage(profileName);
+      return;
+    }
   }
   const requestMatch = location.hash.match(/^#request\/([^/]+)(?:\/(\d+))?$/);
   if (requestMatch) {
@@ -7903,6 +7929,20 @@ function openRequestPage(creator, postId = null) {
   renderRequestPage(creator, post.id);
 }
 
+function openRequestListPage(creator) {
+  if (!openRequestPostsForCreator(creator).length) return;
+  if (modalIsOpen(dialog)) closeModalElement(dialog);
+  if (modalIsOpen(composeDialog)) closeComposeDialog();
+  if (modalIsOpen(requestComposeDialog)) closeRequestComposeDialog();
+  if (location.hash && !location.hash.startsWith("#requests/")) {
+    requestListReturnHash = location.hash;
+  } else if (!location.hash) {
+    requestListReturnHash = "";
+  }
+  location.hash = `requests/${slugify(creator)}`;
+  renderRequestListPage(creator);
+}
+
 function returnFromRequestPage() {
   if (returnToNotificationsFromTarget()) return;
   const targetHash = requestPageReturnHash;
@@ -7913,6 +7953,22 @@ function returnFromRequestPage() {
   }
   history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
   routeFromHash();
+}
+
+function returnFromRequestListPage() {
+  const targetHash = requestListReturnHash;
+  requestListReturnHash = "";
+  if (targetHash) {
+    history.pushState("", document.title, `${location.pathname}${location.search}${targetHash}`);
+    routeFromHash();
+    return;
+  }
+  if (activeProfile) {
+    history.pushState("", document.title, `${location.pathname}${location.search}#profile/${slugify(activeProfile)}`);
+    routeFromHash();
+    return;
+  }
+  showFeed();
 }
 
 function formatYen(amount) {
@@ -7953,6 +8009,63 @@ function updateRequestAmountState({ clamp = false } = {}) {
   return finalValid;
 }
 
+function requestCardCapacityLabel(post) {
+  const capacity = post?.request?.capacity || "";
+  return capacity || "受付中";
+}
+
+function renderRequestListPage(creator) {
+  if (!requestListView || !requestListGrid || !requestListEmpty) return;
+  const requests = openRequestPostsForCreator(creator);
+  activeProfile = creator;
+  hideMyRequestViews();
+  feedView.hidden = true;
+  profileView.hidden = true;
+  requestView.hidden = true;
+  notificationsView.hidden = true;
+  requestManagerView.hidden = true;
+  requestManagerDetailView.hidden = true;
+  settingsView.hidden = true;
+  serviceView.hidden = true;
+  eventDetailView.hidden = true;
+  eventsView.hidden = true;
+  circleView.hidden = true;
+  missionView.hidden = true;
+  adminView.hidden = true;
+  backendSpecView.hidden = true;
+  if (subscriptionsView) subscriptionsView.hidden = true;
+  if (earningsView) earningsView.hidden = true;
+  if (tipView) tipView.hidden = true;
+  requestListView.hidden = false;
+  if (requestListEyebrow) requestListEyebrow.textContent = `${requests.length} open requests`;
+  if (requestListTitle) requestListTitle.textContent = `${creator}の受付中の依頼`;
+  if (requestListLead) {
+    requestListLead.textContent = `${creator}が現在公開している依頼受付をまとめて確認できます。気になる依頼を選ぶと、詳細と依頼フォームへ進めます。`;
+  }
+  requestListEmpty.hidden = Boolean(requests.length);
+  requestListGrid.innerHTML = requests.map((post) => `
+    <button class="request-list-card" type="button" data-request-list-id="${post.id}">
+      <span class="request-list-card-image">
+        <img src="${escapeHtml(post.image)}" alt="${escapeHtml(post.title)}" loading="lazy" />
+      </span>
+      <span class="request-list-card-copy">
+        <span class="request-list-card-topline">
+          <small>${escapeHtml(post.category)}</small>
+          <em>${escapeHtml(requestCardCapacityLabel(post))}</em>
+        </span>
+        <strong>${escapeHtml(post.request?.title || post.title)}</strong>
+        <span>${escapeHtml(post.description)}</span>
+        <span class="request-list-card-meta">
+          <b>${escapeHtml(post.request?.price || "価格未設定")}</b>
+          <b>${escapeHtml(post.request?.delivery || "納期未設定")}</b>
+        </span>
+      </span>
+    </button>
+  `).join("");
+  updateTopbarSearchVisibility();
+  scrollPageTop();
+}
+
 function renderRequestPage(creator, postId = null) {
   const requestPosts = openRequestPostsForCreator(creator);
   const post = (postId ? requestPosts.find((item) => item.id === postId) : null) || requestPosts[0];
@@ -7965,6 +8078,7 @@ function renderRequestPage(creator, postId = null) {
   hideMyRequestViews();
   feedView.hidden = true;
   profileView.hidden = true;
+  if (requestListView) requestListView.hidden = true;
   notificationsView.hidden = true;
   requestManagerView.hidden = true;
   requestManagerDetailView.hidden = true;
@@ -9208,6 +9322,31 @@ function renderProfileSubscriptionSection(creator, posts, isMine) {
   profileSupportCards.innerHTML = subscriberOnlyPosts.length
     ? `<article class="support-history-card is-note"><strong>限定投稿</strong><p>加入すると、通常投稿とは別に支援者限定の作品・WIP・制作メモを閲覧できます。</p></article>`
     : "";
+}
+
+function renderProfileOpenRequestsSection(creator) {
+  if (!profileOpenRequestsSection || !profileOpenRequestsGrid || !profileOpenRequestsAllButton) return;
+  const requests = openRequestPostsForCreator(creator);
+  profileOpenRequestsSection.hidden = !requests.length;
+  if (!requests.length) {
+    profileOpenRequestsGrid.innerHTML = "";
+    profileOpenRequestsAllButton.hidden = true;
+    return;
+  }
+  profileOpenRequestsGrid.innerHTML = requests.slice(0, 4).map((post) => `
+    <button class="profile-open-request-card" type="button" data-profile-request-id="${post.id}">
+      <span class="profile-open-request-thumb">
+        <img src="${escapeHtml(post.image)}" alt="${escapeHtml(post.request?.title || post.title)}" loading="lazy" />
+      </span>
+      <span class="profile-open-request-copy">
+        <small>${escapeHtml(post.category)} / ${escapeHtml(post.request?.title || "依頼受付")}</small>
+        <strong>${escapeHtml(post.title)}</strong>
+        <span>${escapeHtml(post.request?.price || "価格未設定")} ・ ${escapeHtml(post.request?.delivery || "納期未設定")}</span>
+      </span>
+    </button>
+  `).join("");
+  profileOpenRequestsAllButton.hidden = requests.length <= 4;
+  profileOpenRequestsAllButton.textContent = `すべての依頼を見る${requests.length > 4 ? ` (${requests.length})` : ""}`;
 }
 
 function renderSavedPostsSection() {
@@ -12883,6 +13022,21 @@ profileRequestButton.addEventListener("click", () => {
   }
   openRequestPage(activeProfile);
 });
+profileOpenRequestsGrid?.addEventListener("click", (event) => {
+  const card = event.target.closest("[data-profile-request-id]");
+  if (!card || !activeProfile) return;
+  openRequestPage(activeProfile, Number(card.dataset.profileRequestId));
+});
+profileOpenRequestsAllButton?.addEventListener("click", () => {
+  if (!activeProfile) return;
+  openRequestListPage(activeProfile);
+});
+backFromRequestList?.addEventListener("click", returnFromRequestListPage);
+requestListGrid?.addEventListener("click", (event) => {
+  const card = event.target.closest("[data-request-list-id]");
+  if (!card || !activeProfile) return;
+  openRequestPage(activeProfile, Number(card.dataset.requestListId));
+});
 profileTipButton?.addEventListener("click", () => {
   if (profileTipButton.hidden || !activeProfile) return;
   openTipPage(activeProfile);
@@ -14673,6 +14827,7 @@ function renderProfile(creator) {
   hideMyRequestViews();
   feedView.hidden = true;
   requestView.hidden = true;
+  if (requestListView) requestListView.hidden = true;
   notificationsView.hidden = true;
   requestManagerView.hidden = true;
   requestManagerDetailView.hidden = true;
@@ -14726,6 +14881,7 @@ function renderProfile(creator) {
   renderProfileLevelBadge(posts, trust, creator);
   renderTrustProfile(creator, posts, isMine);
   renderProfileReviews(creator);
+  renderProfileOpenRequestsSection(creator);
   renderProfileSubscriptionSection(creator, posts, isMine);
   if (profileRequest) profileRequest.textContent = openRequest ? t("requestOpen") : `${trust.completed} ${t("completedMetric")}`;
   if (profileRating) profileRating.textContent = `${trust.saves} ${t("saves")}`;
