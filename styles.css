@@ -1550,10 +1550,30 @@ body[data-theme="dark"] .post-comments-state.is-closed {
   font-weight: 780;
 }
 
+.soft-button[hidden],
+.primary-button[hidden],
+.save-large[hidden],
+button[hidden] {
+  display: none !important;
+}
+
 .soft-button:hover,
 .primary-button:hover,
 .save-large:hover {
   box-shadow: 0 18px 42px rgba(20, 20, 20, 0.12);
+}
+
+.compact-back-button {
+  width: fit-content;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 15px;
+  gap: 7px;
+}
+
+.compact-back-button svg {
+  width: 17px;
+  height: 17px;
 }
 
 .summary-strip {

@@ -1608,6 +1608,7 @@ let myProfile = {
   premiumSince: "2024-09-03",
   earlyPremiumSupporter: true,
   acceptTips: true,
+  likedVisibility: "public",
 };
 let activeAccountId = "main";
 let userAccounts = [
@@ -1634,6 +1635,7 @@ let userAccounts = [
       joinedAt: "2023-11-18",
       premiumSince: "2024-01-12",
       earlyPremiumSupporter: true,
+      likedVisibility: "public",
     }
   },
   {
@@ -1653,6 +1655,7 @@ let userAccounts = [
       joinedAt: "2025-02-04",
       premiumSince: "",
       earlyPremiumSupporter: false,
+      likedVisibility: "private",
     }
   }
 ];
@@ -2142,7 +2145,7 @@ const translations = {
     settingsPrivacyTitle: "プライバシー",
     profileVisibility: "プロフィール公開範囲",
     likedVisibility: "いいねした投稿",
-    likedVisibilityHelp: "公開にするとプロフィールでいいねした投稿を見せられます",
+    likedVisibilityHelp: "他ユーザーから見たプロフィールで、いいねした投稿を見せるか選べます",
     likedVisibilityPublic: "公開",
     likedVisibilityPrivate: "非公開",
     externalLinkWarning: "外部リンク警告",
@@ -2362,7 +2365,7 @@ const translations = {
     settingsPrivacyTitle: "Privacy",
     profileVisibility: "Profile visibility",
     likedVisibility: "Liked posts",
-    likedVisibilityHelp: "When public, liked posts can be shown on your profile",
+    likedVisibilityHelp: "Choose whether liked posts appear on your public profile",
     likedVisibilityPublic: "Public",
     likedVisibilityPrivate: "Private",
     externalLinkWarning: "External link warning",
@@ -2582,7 +2585,7 @@ const translations = {
     settingsPrivacyTitle: "개인정보",
     profileVisibility: "프로필 공개 범위",
     likedVisibility: "좋아요한 게시물",
-    likedVisibilityHelp: "공개로 설정하면 프로필에 좋아요한 게시물이 표시됩니다",
+    likedVisibilityHelp: "다른 사용자에게 보이는 프로필에 좋아요한 게시물을 표시할지 선택합니다",
     likedVisibilityPublic: "공개",
     likedVisibilityPrivate: "비공개",
     externalLinkWarning: "외부 링크 경고",
@@ -4767,6 +4770,10 @@ function acceptTipsSettingKey() {
   return `settingsAcceptTips:${activeAccountId}`;
 }
 
+function likedVisibilitySettingKey() {
+  return `settingsLikedVisibility:${activeAccountId}`;
+}
+
 function currentTipThanksMessage() {
   return currentAccountRecord()?.profile?.tipThanks || myProfile.tipThanks || defaultTipThanksMessage();
 }
@@ -4774,6 +4781,33 @@ function currentTipThanksMessage() {
 function currentAcceptTips() {
   const profile = currentAccountRecord()?.profile || myProfile;
   return profile.acceptTips !== false;
+}
+
+function currentLikedVisibility() {
+  const profile = currentAccountRecord()?.profile || myProfile;
+  return profile.likedVisibility === "private" ? "private" : "public";
+}
+
+function applyLikedVisibilitySettingFromControl() {
+  const value = settingsLikedVisibility?.value === "private" ? "private" : "public";
+  const record = currentAccountRecord();
+  if (record?.profile) record.profile.likedVisibility = value;
+  myProfile.likedVisibility = value;
+}
+
+function syncLikedVisibilityField() {
+  if (!settingsLikedVisibility) return;
+  const key = likedVisibilitySettingKey();
+  settingsLikedVisibility.dataset.settingKey = key;
+  settingsLikedVisibility.value = currentLikedVisibility();
+  try {
+    const stored = localStorage.getItem(`vrc-sns-setting:${key}`);
+    if (stored) applySettingPayload(settingsLikedVisibility, JSON.parse(stored));
+  } catch {
+    localStorage.removeItem(`vrc-sns-setting:${key}`);
+    settingsLikedVisibility.value = currentLikedVisibility();
+  }
+  applyLikedVisibilitySettingFromControl();
 }
 
 function syncTipSettingsFields() {
@@ -4851,7 +4885,10 @@ function handleSettingsAutoSave(event) {
   saveSetting(control);
   if (control === settingsThemeMode) applyThemeMode(control.value);
   if (control === settingsReducedMotion) applyReducedMotionSetting();
-  if (control === settingsLikedVisibility) renderProfilePostArchive();
+  if (control === settingsLikedVisibility) {
+    applyLikedVisibilitySettingFromControl();
+    renderProfilePostArchive();
+  }
   if (control === settingsAcceptTips) applyAcceptTipsSettingFromControl();
   if (control === settingsTipThanksMessage) applyTipThanksSettingFromControl();
   if (control?.id === "settingsR18Content" || control?.id === "settingsGoreContent" || control?.id === "settingsSensitiveReveal") {
@@ -8352,6 +8389,7 @@ function renderSettingsPage() {
   if (subscriptionsView) subscriptionsView.hidden = true;
   settingsView.hidden = false;
   serviceView.hidden = true;
+  syncLikedVisibilityField();
   syncTipSettingsFields();
   scrollPageTop();
 }
@@ -9202,6 +9240,11 @@ function renderProfileReviews(creator) {
 
 function renderProfileSupportBadges(creator) {
   if (!profileSupportBadges) return;
+  if (!isOwnProfileName(creator)) {
+    profileSupportBadges.hidden = true;
+    profileSupportBadges.innerHTML = "";
+    return;
+  }
   const meta = profileMetaFor(creator);
   const badges = [];
   if (meta?.joinedAt) badges.push(`<span>${membershipYearLabel(meta.joinedAt)}</span>`);
@@ -9258,13 +9301,14 @@ function renderProfileSubscriptionSection(creator, posts, isMine) {
   if (!profileSubscriptionSection || !profileSubscriptionPlans || !profileSupportCards || !profileSubscriptionLead) return;
   const plans = subscriptionProgramFor(creator);
   const currentSubscription = currentSubscriptionFor(creator);
-  const supportCards = currentSupportCards();
   const subscriberOnlyPosts = posts.filter((post) => post.visibility === "SubscriberOnly");
+  profileSupportCards.hidden = true;
+  profileSupportCards.innerHTML = "";
 
   if (isMine) {
     profileSubscriptionSection.hidden = false;
     if (profileSubscriptionEyebrow) profileSubscriptionEyebrow.textContent = "Membership / Support";
-    profileSubscriptionLead.textContent = "公式承認なしで支援プランを作成できます。支援中の履歴カードはプロフィールに掲載され、限定投稿の導線にもなります。";
+    profileSubscriptionLead.textContent = "公式承認なしで支援プランを作成できます。限定投稿や制作ログを届けるためのプランをここから管理します。";
     subscriptionPlanManageButton.hidden = false;
     profileSubscriptionPlans.innerHTML = plans.length
       ? plans.map((plan) => `
@@ -9280,17 +9324,6 @@ function renderProfileSubscriptionSection(creator, posts, isMine) {
         </article>
       `).join("")
       : `<article class="subscription-plan-card-item is-empty"><strong>まだプランがありません</strong><p>限定投稿や支援カードを使いたい場合は、まず1つプランを作成してください。</p></article>`;
-    profileSupportCards.innerHTML = supportCards.length
-      ? supportCards.map((entry) => `
-        <article class="support-history-card">
-          ${subscriptionPlanVisualMarkup(entry.plan, entry.creator, entry.earlySupporter ? "Early supporter" : "Supporter card")}
-          <span class="support-history-badge">${entry.earlySupporter ? "Early supporter" : "Supporter card"}</span>
-          <strong>${escapeHtml(subscriptionTargetLabel(entry.creator))}</strong>
-          <p>${escapeHtml(entry.plan.name)} / ${formatSubscriptionPrice(entry.plan.price)}</p>
-          <small>${subscriptionDurationLabel(entry.startedAt)} / ${entry.startedAt}</small>
-        </article>
-      `).join("")
-      : `<article class="support-history-card is-empty"><strong>支援カードはまだありません</strong><p>他のクリエイターのプランに加入すると、ここに継続履歴カードを掲載できます。</p></article>`;
     return;
   }
 
@@ -9318,9 +9351,6 @@ function renderProfileSubscriptionSection(creator, posts, isMine) {
         </article>
       `;
     }).join("")
-    : "";
-  profileSupportCards.innerHTML = subscriberOnlyPosts.length
-    ? `<article class="support-history-card is-note"><strong>限定投稿</strong><p>加入すると、通常投稿とは別に支援者限定の作品・WIP・制作メモを閲覧できます。</p></article>`
     : "";
 }
 
@@ -11083,10 +11113,14 @@ function switchAccount(accountId) {
   pendingAvatarSource = myProfile.avatar || "";
   pendingBannerSource = myProfile.banner || "";
   applyMyAvatarToChrome();
+  syncLikedVisibilityField();
+  syncTipSettingsFields();
   closeAccountMenu();
   showProfileCopyToast(`${myProfile.displayName} に切り替えました`);
   if (location.hash === "#me" || !profileView.hidden && profileView.classList.contains("is-mine")) {
     renderProfile("You");
+  } else if (!settingsView.hidden) {
+    renderSettingsPage();
   }
 }
 
@@ -11107,6 +11141,8 @@ function addMockAccount() {
       visibility: "Public",
       avatar: "",
       banner: vrchatImages.neon,
+      likedVisibility: "public",
+      acceptTips: true,
     }
   };
   userAccounts = [newAccount, ...userAccounts];
@@ -11115,6 +11151,8 @@ function addMockAccount() {
   pendingAvatarSource = "";
   pendingBannerSource = myProfile.banner || "";
   applyMyAvatarToChrome();
+  syncLikedVisibilityField();
+  syncTipSettingsFields();
   closeAccountMenu();
   showProfileCopyToast("新しいアカウントを追加しました");
   if (location.hash === "#me" || !profileView.hidden && profileView.classList.contains("is-mine")) {
@@ -13020,7 +13058,7 @@ profileRequestButton.addEventListener("click", () => {
     openComposeHint();
     return;
   }
-  openRequestPage(activeProfile);
+  openRequestListPage(activeProfile);
 });
 profileOpenRequestsGrid?.addEventListener("click", (event) => {
   const card = event.target.closest("[data-profile-request-id]");
@@ -14292,6 +14330,7 @@ window.addEventListener("drop", (event) => {
 });
 
 loadSavedSettings();
+syncLikedVisibilityField();
 defaultReducedMotionOff();
 applyReducedMotionSetting();
 applyContentDisplaySettings();
@@ -14492,12 +14531,28 @@ function sortedProfilePosts(posts) {
 }
 
 function profileLikesArePublic() {
-  return activeProfile === "You" || settingsLikedVisibility?.value !== "private";
+  if (isOwnProfileName(activeProfile)) return true;
+  return currentLikedVisibility() !== "private";
+}
+
+function profilePostsTabLabel() {
+  if (isOwnProfileName(activeProfile)) {
+    if (currentLanguage === "en") return "My posts";
+    if (currentLanguage === "ko") return "내 게시물";
+    return "自分の投稿";
+  }
+  if (currentLanguage === "en") return "Posts";
+  if (currentLanguage === "ko") return "게시물";
+  return "投稿";
 }
 
 function renderProfilePostArchive() {
-  const likesArePublic = profileLikesArePublic();
+  const isMine = isOwnProfileName(activeProfile);
+  const likesArePublic = isMine && profileLikesArePublic();
   if (activeProfileArchiveTab === "likes" && !likesArePublic) {
+    activeProfileArchiveTab = "posts";
+  }
+  if (activeProfileArchiveTab === "folders" && !isMine) {
     activeProfileArchiveTab = "posts";
   }
   let sourcePosts = [...activeProfilePosts];
@@ -14508,9 +14563,10 @@ function renderProfilePostArchive() {
   }
   const posts = sortedProfilePosts(sourcePosts);
   profileArchiveTabs.forEach((button) => {
-    if (button.dataset.profileArchiveTab === "likes") {
-      button.hidden = !likesArePublic;
-    }
+    const tab = button.dataset.profileArchiveTab;
+    if (tab === "posts") button.textContent = profilePostsTabLabel();
+    if (tab === "likes") button.hidden = !likesArePublic;
+    if (tab === "folders") button.hidden = !isMine;
     button.classList.toggle("is-active", button.dataset.profileArchiveTab === activeProfileArchiveTab);
   });
   profilePostSortButtons.forEach((button) => {

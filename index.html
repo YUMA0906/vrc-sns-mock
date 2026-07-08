@@ -437,16 +437,6 @@
             <button id="profileTipButton" class="primary-button profile-tip-button" type="button">投げ銭する</button>
           </div>
         </section>
-        <section id="profileOpenRequestsSection" class="trust-panel profile-open-requests-section" hidden aria-labelledby="profileOpenRequestsTitle">
-          <div class="section-heading-row">
-            <div>
-              <p class="eyebrow">Open requests</p>
-              <h2 id="profileOpenRequestsTitle">受付中の依頼</h2>
-            </div>
-            <button id="profileOpenRequestsAllButton" class="soft-button" type="button" hidden>すべての依頼を見る</button>
-          </div>
-          <div id="profileOpenRequestsGrid" class="profile-open-requests-grid"></div>
-        </section>
         <section class="trust-panel trust-featured" aria-labelledby="trustFeaturedTitle">
           <div class="section-heading-row">
             <div>
@@ -457,7 +447,17 @@
           </div>
           <div id="trustFeaturedWorks" class="featured-works"></div>
         </section>
-        <section class="trust-panel profile-review-section" aria-labelledby="profileReviewTitle">
+        <section id="profileOpenRequestsSection" class="trust-panel profile-open-requests-section" hidden aria-labelledby="profileOpenRequestsTitle">
+          <div class="section-heading-row">
+            <div>
+              <p class="eyebrow">Open requests</p>
+              <h2 id="profileOpenRequestsTitle">受付中の依頼</h2>
+            </div>
+            <button id="profileOpenRequestsAllButton" class="soft-button" type="button" hidden>すべての依頼を見る</button>
+          </div>
+          <div id="profileOpenRequestsGrid" class="profile-open-requests-grid"></div>
+        </section>
+        <section class="trust-panel profile-review-section" aria-labelledby="profileReviewTitle" hidden>
           <div class="section-heading-row">
             <div>
               <p class="eyebrow">Reviews</p>
@@ -523,7 +523,7 @@
       </section>
 
       <section id="requestListView" class="request-list-view app-view" hidden>
-        <button id="backFromRequestList" class="soft-button" type="button">
+        <button id="backFromRequestList" class="soft-button compact-back-button" type="button">
           <svg aria-hidden="true" viewBox="0 0 24 24">
             <path d="m15 18-6-6 6-6" />
           </svg>
@@ -1017,7 +1017,7 @@
                   <option value="public">公開</option>
                   <option value="private">非公開</option>
                 </select>
-                <small>公開にするとプロフィールでいいねした投稿を見せられます</small>
+                <small>他ユーザーから見たプロフィールで、いいねした投稿を見せるか選べます</small>
               </label>
               <label class="settings-row">
                 <span><strong>外部リンク警告</strong><small>VRChat / BOOTH / X / YouTube 以外のリンクを開く前に確認</small></span>
