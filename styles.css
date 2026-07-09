@@ -62,7 +62,7 @@ body * {
   position: absolute;
   width: 1px;
   height: 1px;
-  overflow: hidden;
+  overflow: visible;
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
@@ -96,7 +96,7 @@ body.modal-scroll-locked {
   left: 0;
   right: 0;
   width: 100%;
-  overflow: hidden;
+  overflow: visible;
   overscroll-behavior: none;
 }
 
@@ -2442,6 +2442,11 @@ body[data-theme="dark"] .pin-dialog {
   backdrop-filter: blur(10px);
 }
 
+dialog:not([open]) {
+  display: none !important;
+  pointer-events: none !important;
+}
+
 .pin-dialog[open] {
   animation: dialogEnter 260ms cubic-bezier(.2,.8,.2,1) forwards;
 }
@@ -4432,6 +4437,7 @@ body[data-theme="dark"] .profile-banner {
   background: rgba(255,255,255,0.78);
   box-shadow: 0 28px 80px rgba(20,20,20,0.08);
   backdrop-filter: blur(18px);
+  z-index: 3;
 }
 
 .profile-overview-grid .profile-hero,
@@ -5097,6 +5103,56 @@ body[data-theme="dark"] .profile-support-badges span {
 .profile-tip-card[hidden],
 .trust-panel.profile-tip-card[hidden] {
   display: none !important;
+}
+
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]),
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]),
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):hover,
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):focus-visible,
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):hover,
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):focus-visible {
+  background: rgba(31, 31, 29, 0.92) !important;
+  border-color: rgba(31, 31, 29, 0.92) !important;
+  color: #fffaf1 !important;
+}
+
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]),
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]),
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):hover,
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):focus-visible,
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):hover,
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):focus-visible {
+  background: #fff4df !important;
+  border-color: #fff4df !important;
+  color: #151515 !important;
+}
+
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]),
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]),
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):hover,
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):focus-visible,
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):hover,
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):focus-visible {
+  background: rgba(31, 31, 29, 0.92) !important;
+  border-color: rgba(31, 31, 29, 0.92) !important;
+  color: #fffaf1 !important;
+}
+
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]),
+body[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]),
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]),
+body[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]),
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):hover,
+body[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):hover,
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):focus-visible,
+body[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):focus-visible,
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):hover,
+body[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):hover,
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):focus-visible,
+body[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):focus-visible {
+  background: #fff4df !important;
+  border-color: #fff4df !important;
+  color: #151515 !important;
 }
 
 @media (max-width: 600px) {
@@ -8322,63 +8378,6 @@ body[data-theme="dark"] .following-list-open {
     width: fit-content;
     padding: 7px 10px;
   }
-}
-
-.onboarding-dialog {
-  width: min(100%, 760px);
-}
-
-.onboarding-card {
-  gap: 18px;
-}
-
-.onboarding-card h2 {
-  font-size: clamp(1.55rem, 3vw, 2.35rem);
-  line-height: 1.06;
-}
-
-.onboarding-lead {
-  max-width: 680px;
-  color: var(--muted);
-  line-height: 1.6;
-  font-weight: 760;
-}
-
-.onboarding-steps {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.onboarding-steps article {
-  display: grid;
-  gap: 8px;
-  min-height: 150px;
-  padding: 14px;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  background: rgba(255,255,255,0.62);
-}
-
-.onboarding-steps span {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: rgba(34,34,33,0.92);
-  color: #fffaf1;
-  font-weight: 900;
-}
-
-.onboarding-steps strong {
-  font-size: 1rem;
-}
-
-.onboarding-steps p {
-  color: var(--muted);
-  font-size: 0.88rem;
-  line-height: 1.55;
 }
 
 .service-guide-routes {
@@ -16101,14 +16100,6 @@ body.is-dragging .drop-hint {
     padding: 20px;
   }
 
-  .onboarding-steps {
-    grid-template-columns: 1fr;
-  }
-
-  .onboarding-steps article {
-    min-height: 0;
-  }
-
   .request-review-score-group,
   .request-review-tags {
     grid-template-columns: 1fr;
@@ -16836,13 +16827,81 @@ body[data-theme="dark"] .profile-block-button.is-active:not([disabled]):focus-vi
   display: none !important;
 }
 
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]),
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]),
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):hover,
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):focus-visible,
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):hover,
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):focus-visible {
+  background: rgba(31, 31, 29, 0.92) !important;
+  border-color: rgba(31, 31, 29, 0.92) !important;
+  color: #fffaf1 !important;
+}
+
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]),
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]),
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):hover,
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):focus-visible,
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):hover,
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):focus-visible {
+  background: #fff4df !important;
+  border-color: #fff4df !important;
+  color: #151515 !important;
+}
+
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]),
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]),
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):hover,
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):focus-visible,
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):hover,
+.profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):focus-visible {
+  background: rgba(31,31,29,0.92) !important;
+  border-color: rgba(31,31,29,0.92) !important;
+  color: #fffaf1 !important;
+}
+
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]),
+body[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]),
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]),
+body[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]),
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):hover,
+body[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):hover,
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):focus-visible,
+body[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action:not([disabled]):focus-visible,
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):hover,
+body[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):hover,
+[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):focus-visible,
+body[data-theme="dark"] .profile-actions #profileNotifyButton.profile-social-button.is-notify-action.is-active:not([disabled]):focus-visible {
+  background: #fff4df !important;
+  border-color: #fff4df !important;
+  color: #151515 !important;
+}
+
 .profile-actions {
   align-items: center;
 }
 
+.profile-hero {
+  overflow: visible !important;
+  z-index: 3;
+}
+
+.profile-safety-menu-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 46px;
+}
+
+.profile-safety-menu-wrap[hidden],
+.profile-safety-menu[hidden] {
+  display: none !important;
+}
+
 .profile-actions .profile-share-button,
+.profile-actions .profile-safety-menu-button,
 .profile-actions .profile-social-button,
-.profile-actions #profileFollow.follow-action-button,
 .profile-actions #profileFollowingButton {
   display: inline-grid !important;
   place-items: center;
@@ -16856,6 +16915,151 @@ body[data-theme="dark"] .profile-block-button.is-active:not([disabled]):focus-vi
   border-radius: 999px !important;
   line-height: 1 !important;
   overflow: hidden;
+}
+
+.profile-actions .profile-safety-menu-button {
+  background: rgba(31,31,29,0.92) !important;
+  border-color: rgba(31,31,29,0.92) !important;
+  color: #fffaf1 !important;
+  box-shadow:
+    0 14px 34px rgba(20,20,20,0.16),
+    inset 0 1px 0 rgba(255,255,255,0.14) !important;
+}
+
+.profile-actions .profile-safety-menu-button:hover,
+.profile-actions .profile-safety-menu-button:focus-visible,
+.profile-actions .profile-safety-menu-button.is-active {
+  background: rgba(31,31,29,0.92) !important;
+  border-color: rgba(31,31,29,0.92) !important;
+  color: #fffaf1 !important;
+}
+
+.profile-safety-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: auto;
+  z-index: 120;
+  width: min(230px, calc(100vw - 32px));
+  padding: 8px;
+  border: 1px solid rgba(31,31,29,0.92);
+  border-radius: 18px;
+  background: rgba(31,31,29,0.96);
+  color: #fffaf1;
+  box-shadow:
+    0 22px 55px rgba(20,20,20,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.14);
+  backdrop-filter: blur(18px);
+}
+
+.profile-safety-menu::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 17px;
+  width: 12px;
+  height: 12px;
+  border-left: 1px solid rgba(31,31,29,0.92);
+  border-top: 1px solid rgba(31,31,29,0.92);
+  background: inherit;
+  transform: rotate(45deg);
+}
+
+.profile-safety-menu-item {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 11px;
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  white-space: normal;
+  overflow: visible;
+}
+
+.profile-safety-menu-item:hover,
+.profile-safety-menu-item:focus-visible {
+  background: rgba(255,244,223,0.11);
+  outline: 0;
+}
+
+.profile-safety-menu-item svg {
+  width: 22px;
+  height: 22px;
+  color: currentColor;
+}
+
+.profile-safety-menu-item span {
+  display: block;
+  min-width: 0;
+  font-weight: 820;
+  line-height: 1.18;
+}
+
+.profile-safety-menu-item small {
+  display: none;
+  min-width: 0;
+  margin-top: 3px;
+  color: var(--muted);
+  font-weight: 700;
+  line-height: 1.35;
+  white-space: normal;
+}
+
+.profile-safety-menu-item.is-active {
+  background: rgba(255,244,223,0.14);
+}
+
+.profile-safety-menu-item.is-danger {
+  color: #ff8b8b;
+}
+
+.profile-safety-menu-item.is-danger.is-active {
+  background: rgba(200,50,50,0.12);
+  color: #c83232;
+}
+
+.profile-actions #profileFollow.follow-action-button {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: auto !important;
+  min-width: 136px !important;
+  max-width: none !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  padding: 0 20px !important;
+  flex: 0 0 auto !important;
+  border-radius: 999px !important;
+  line-height: 1 !important;
+  white-space: nowrap;
+  overflow: visible;
+  font-size: 0.95rem;
+}
+
+.profile-actions #profileFollow.follow-action-button .follow-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+}
+
+.profile-actions #profileFollow.follow-action-button .follow-label,
+.profile-actions #profileFollow.follow-action-button .follow-unfollow-label {
+  min-width: 5.5em;
+  text-align: center;
+}
+
+.profile-actions #profileFollow.follow-action-button .follow-unfollow-label {
+  display: none;
 }
 
 .profile-actions #profileFollow.follow-action-button,
@@ -16881,10 +17085,67 @@ body[data-theme="dark"] .profile-block-button.is-active:not([disabled]):focus-vi
   transform: translateY(-1px);
 }
 
+.profile-actions #profileFollow.follow-action-button.is-saved {
+  background: #fffaf1 !important;
+  border-color: rgba(31,31,29,0.18) !important;
+  color: #151515 !important;
+  box-shadow:
+    0 14px 34px rgba(20,20,20,0.1),
+    inset 0 1px 0 rgba(255,255,255,0.72) !important;
+}
+
+.profile-actions #profileFollow.follow-action-button.is-blocked {
+  background: #fffaf1 !important;
+  border-color: rgba(204,47,47,0.28) !important;
+  color: #cc2f2f !important;
+  box-shadow:
+    0 14px 34px rgba(204,47,47,0.1),
+    inset 0 1px 0 rgba(255,255,255,0.72) !important;
+}
+
+.profile-actions #profileFollow.follow-action-button.is-blocked .follow-label {
+  color: #cc2f2f !important;
+}
+
+.profile-actions #profileFollow.follow-action-button.is-saved:hover,
+.profile-actions #profileFollow.follow-action-button.is-saved:focus-visible,
+.profile-actions #profileFollow.follow-action-button.is-blocked:hover,
+.profile-actions #profileFollow.follow-action-button.is-blocked:focus-visible {
+  background: #ffffff !important;
+  border-color: rgba(31,31,29,0.28) !important;
+  color: #cc2f2f !important;
+}
+
+.profile-actions #profileFollow.follow-action-button.is-saved:hover .follow-label,
+.profile-actions #profileFollow.follow-action-button.is-saved:focus-visible .follow-label,
+.profile-actions #profileFollow.follow-action-button.is-blocked:hover .follow-label,
+.profile-actions #profileFollow.follow-action-button.is-blocked:focus-visible .follow-label {
+  display: none;
+}
+
+.profile-actions #profileFollow.follow-action-button.is-saved:hover .follow-unfollow-label,
+.profile-actions #profileFollow.follow-action-button.is-saved:focus-visible .follow-unfollow-label,
+.profile-actions #profileFollow.follow-action-button.is-blocked:hover .follow-unfollow-label,
+.profile-actions #profileFollow.follow-action-button.is-blocked:focus-visible .follow-unfollow-label {
+  display: inline;
+  color: #cc2f2f !important;
+}
+
+[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-saved:hover .follow-unfollow-label,
+[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-saved:focus-visible .follow-unfollow-label,
+body[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-saved:hover .follow-unfollow-label,
+body[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-saved:focus-visible .follow-unfollow-label,
+[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-blocked:hover .follow-unfollow-label,
+[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-blocked:focus-visible .follow-unfollow-label,
+body[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-blocked:hover .follow-unfollow-label,
+body[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-blocked:focus-visible .follow-unfollow-label {
+  color: #ff8b8b !important;
+}
+
 .profile-actions .profile-social-button.is-notify-action:not([disabled]) {
-  background: #e6f8ee !important;
-  border-color: #2f7d56 !important;
-  color: #145b39 !important;
+  background: rgba(31,31,29,0.92) !important;
+  border-color: rgba(31,31,29,0.92) !important;
+  color: #fffaf1 !important;
 }
 
 .profile-actions .profile-social-button.is-mute-action:not([disabled]) {
@@ -16901,9 +17162,35 @@ body[data-theme="dark"] .profile-block-button.is-active:not([disabled]):focus-vi
 }
 
 .profile-actions .profile-social-button.is-notify-action.is-active:not([disabled]) {
-  background: #2f7d56 !important;
-  border-color: #2f7d56 !important;
-  color: #ffffff !important;
+  background: rgba(31,31,29,0.92) !important;
+  border-color: rgba(31,31,29,0.92) !important;
+  color: #fffaf1 !important;
+}
+
+.profile-actions .profile-social-button.is-notify-action .notify-status-cutout {
+  fill: none;
+  stroke: rgba(31,31,29,0.92);
+  stroke-width: 5.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.profile-actions .profile-social-button.is-notify-action .notify-status-mark {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.85;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+[data-theme="dark"] .profile-actions .profile-social-button.is-notify-action .notify-status-mark,
+body[data-theme="dark"] .profile-actions .profile-social-button.is-notify-action .notify-status-mark {
+  stroke: currentColor;
+}
+
+[data-theme="dark"] .profile-actions .profile-social-button.is-notify-action .notify-status-cutout,
+body[data-theme="dark"] .profile-actions .profile-social-button.is-notify-action .notify-status-cutout {
+  stroke: #fff4df;
 }
 
 .profile-actions .profile-social-button.is-mute-action.is-active:not([disabled]) {
@@ -16933,6 +17220,8 @@ body[data-theme="dark"] .profile-block-button.is-active:not([disabled]):focus-vi
 body[data-theme="dark"] .profile-actions #profileFollow.follow-action-button,
 [data-theme="dark"] .profile-actions .profile-share-button,
 body[data-theme="dark"] .profile-actions .profile-share-button,
+[data-theme="dark"] .profile-actions .profile-safety-menu-button,
+body[data-theme="dark"] .profile-actions .profile-safety-menu-button,
 [data-theme="dark"] .profile-edit-button,
 body[data-theme="dark"] .profile-edit-button,
 [data-theme="dark"] .profile-actions #profileRequestButton:not([disabled]),
@@ -16946,6 +17235,12 @@ body[data-theme="dark"] .profile-actions #profileRequestButton:not([disabled]) {
 body[data-theme="dark"] .profile-actions #profileFollow.follow-action-button:hover,
 [data-theme="dark"] .profile-actions .profile-share-button:hover,
 body[data-theme="dark"] .profile-actions .profile-share-button:hover,
+[data-theme="dark"] .profile-actions .profile-safety-menu-button:hover,
+body[data-theme="dark"] .profile-actions .profile-safety-menu-button:hover,
+[data-theme="dark"] .profile-actions .profile-safety-menu-button:focus-visible,
+body[data-theme="dark"] .profile-actions .profile-safety-menu-button:focus-visible,
+[data-theme="dark"] .profile-actions .profile-safety-menu-button.is-active,
+body[data-theme="dark"] .profile-actions .profile-safety-menu-button.is-active,
 [data-theme="dark"] .profile-edit-button:hover,
 body[data-theme="dark"] .profile-edit-button:hover,
 [data-theme="dark"] .profile-actions #profileRequestButton:not([disabled]):hover,
@@ -16955,11 +17250,98 @@ body[data-theme="dark"] .profile-actions #profileRequestButton:not([disabled]):h
   color: #111111 !important;
 }
 
+[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-saved,
+body[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-saved,
+[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-blocked,
+body[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-blocked {
+  background: rgba(18,18,17,0.94) !important;
+  border-color: rgba(255,244,223,0.22) !important;
+  color: #fffaf1 !important;
+  box-shadow:
+    0 14px 34px rgba(0,0,0,0.36),
+    inset 0 1px 0 rgba(255,255,255,0.1) !important;
+}
+
+[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-blocked,
+body[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-blocked {
+  border-color: rgba(255,139,139,0.36) !important;
+  color: #ff8b8b !important;
+}
+
+[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-blocked .follow-label,
+body[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-blocked .follow-label {
+  color: #ff8b8b !important;
+}
+
+[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-saved:hover,
+body[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-saved:hover,
+[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-saved:focus-visible,
+body[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-saved:focus-visible,
+[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-blocked:hover,
+body[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-blocked:hover,
+[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-blocked:focus-visible,
+body[data-theme="dark"] .profile-actions #profileFollow.follow-action-button.is-blocked:focus-visible {
+  background: #242320 !important;
+  border-color: rgba(255,244,223,0.34) !important;
+  color: #ff8b8b !important;
+}
+
+[data-theme="dark"] .profile-safety-menu,
+body[data-theme="dark"] .profile-safety-menu {
+  background: rgba(255,244,223,0.98);
+  border-color: rgba(255,244,223,0.98);
+  color: #151515;
+  box-shadow:
+    0 24px 60px rgba(0,0,0,0.44),
+    inset 0 1px 0 rgba(255,255,255,0.72);
+}
+
+[data-theme="dark"] .profile-safety-menu::before,
+body[data-theme="dark"] .profile-safety-menu::before {
+  border-left-color: rgba(255,244,223,0.98);
+  border-top-color: rgba(255,244,223,0.98);
+}
+
+[data-theme="dark"] .profile-safety-menu-item,
+body[data-theme="dark"] .profile-safety-menu-item {
+  color: #151515;
+}
+
+[data-theme="dark"] .profile-safety-menu-item:hover,
+[data-theme="dark"] .profile-safety-menu-item:focus-visible,
+body[data-theme="dark"] .profile-safety-menu-item:hover,
+body[data-theme="dark"] .profile-safety-menu-item:focus-visible {
+  background: rgba(31,31,29,0.08);
+}
+
+[data-theme="dark"] .profile-safety-menu-item.is-active,
+body[data-theme="dark"] .profile-safety-menu-item.is-active {
+  background: rgba(31,31,29,0.1);
+}
+
+[data-theme="dark"] .profile-safety-menu-item.is-danger,
+body[data-theme="dark"] .profile-safety-menu-item.is-danger {
+  color: #b72f2f;
+}
+
 [data-theme="dark"] .profile-actions .profile-social-button.is-notify-action:not([disabled]),
 body[data-theme="dark"] .profile-actions .profile-social-button.is-notify-action:not([disabled]) {
-  background: #c4ffd9 !important;
-  border-color: #c4ffd9 !important;
-  color: #0f2d1a !important;
+  background: #fff4df !important;
+  border-color: #fff4df !important;
+  color: #151515 !important;
+}
+
+[data-theme="dark"] .profile-actions #profileSafetyMenuButton.profile-safety-menu-button,
+body[data-theme="dark"] .profile-actions #profileSafetyMenuButton.profile-safety-menu-button,
+[data-theme="dark"] .profile-actions #profileSafetyMenuButton.profile-safety-menu-button:hover,
+body[data-theme="dark"] .profile-actions #profileSafetyMenuButton.profile-safety-menu-button:hover,
+[data-theme="dark"] .profile-actions #profileSafetyMenuButton.profile-safety-menu-button:focus-visible,
+body[data-theme="dark"] .profile-actions #profileSafetyMenuButton.profile-safety-menu-button:focus-visible,
+[data-theme="dark"] .profile-actions #profileSafetyMenuButton.profile-safety-menu-button.is-active,
+body[data-theme="dark"] .profile-actions #profileSafetyMenuButton.profile-safety-menu-button.is-active {
+  background: #fff4df !important;
+  border-color: #fff4df !important;
+  color: #151515 !important;
 }
 
 [data-theme="dark"] .profile-actions .profile-social-button.is-mute-action:not([disabled]),
@@ -17159,7 +17541,6 @@ body[data-theme="dark"] .profile-actions .profile-block-button:not([disabled]) {
     align-items: center;
   }
 
-  #profileFollow.follow-action-button,
   .profile-actions .profile-social-button,
   .profile-actions .profile-share-button,
   .profile-actions #profileFollowingButton {
@@ -17170,6 +17551,37 @@ body[data-theme="dark"] .profile-actions .profile-block-button:not([disabled]) {
     height: 42px !important;
     min-height: 42px !important;
     justify-self: center;
+  }
+
+  .profile-safety-menu-wrap {
+    grid-column: auto;
+    width: 42px;
+    min-width: 42px;
+    justify-self: center;
+  }
+
+  .profile-safety-menu {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: min(220px, calc(100vw - 28px));
+  }
+
+  .profile-safety-menu::before {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  #profileFollow.follow-action-button,
+  .profile-actions #profileFollow.follow-action-button {
+    grid-column: span 2;
+    width: 100% !important;
+    min-width: 132px !important;
+    max-width: none !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    justify-self: stretch;
   }
 
   #profileRequestButton {
@@ -17303,6 +17715,13 @@ body[data-theme="dark"] .profile-actions .profile-block-button:not([disabled]) {
     height: 42px !important;
     min-height: 42px !important;
     flex-basis: 42px !important;
+  }
+
+  .profile-actions #profileFollow.follow-action-button {
+    width: 100% !important;
+    min-width: 132px !important;
+    max-width: none !important;
+    flex-basis: auto !important;
   }
 }
 

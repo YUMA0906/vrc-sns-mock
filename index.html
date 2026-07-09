@@ -383,9 +383,20 @@
               <p id="profileBio"></p>
               <div class="profile-actions">
                 <button id="profileFollow" class="primary-button" type="button">Follow</button>
-                <button id="profileNotifyButton" class="icon-button profile-social-button" type="button" aria-label="通知をオンにする" title="通知をオンにする"></button>
-                <button id="profileMuteButton" class="icon-button profile-social-button" type="button" aria-label="ミュート" title="ミュート"></button>
-                <button id="profileBlockButton" class="icon-button profile-social-button profile-block-button" type="button" aria-label="ブロック" title="ブロック"></button>
+                <button id="profileNotifyButton" class="icon-button profile-social-button" type="button" aria-label="通知をオンにする" title="通知" hidden></button>
+                <div id="profileSafetyMenuWrap" class="profile-safety-menu-wrap" hidden>
+                  <button id="profileSafetyMenuButton" class="icon-button profile-social-button profile-safety-menu-button" type="button" aria-label="プロフィール操作メニュー" title="プロフィール操作" aria-haspopup="menu" aria-expanded="false">
+                    <svg aria-hidden="true" viewBox="0 0 24 24">
+                      <circle cx="5" cy="12" r="1.8" />
+                      <circle cx="12" cy="12" r="1.8" />
+                      <circle cx="19" cy="12" r="1.8" />
+                    </svg>
+                  </button>
+                  <div id="profileSafetyMenu" class="profile-safety-menu" hidden>
+                    <button id="profileMuteButton" class="profile-safety-menu-item" type="button" data-profile-safety-action="mute"></button>
+                    <button id="profileBlockButton" class="profile-safety-menu-item is-danger" type="button" data-profile-safety-action="block"></button>
+                  </div>
+                </div>
                 <button id="profileRequestButton" class="soft-button" type="button">依頼受付を見る</button>
                 <button id="profileFollowingButton" class="icon-button profile-social-button profile-following-button" type="button" aria-label="フォロー中一覧" title="フォロー中一覧" hidden>
                   <svg aria-hidden="true" viewBox="0 0 24 24">
@@ -2358,25 +2369,6 @@
         </div>
         <p class="trust-info-note">※VRChat公式のランクではありません。</p>
       </div>
-    </dialog>
-
-    <dialog id="onboardingDialog" class="request-sheet-dialog onboarding-dialog" aria-labelledby="onboardingTitle">
-      <form method="dialog" class="request-sheet-card onboarding-card">
-        <p class="eyebrow">Quick guide</p>
-        <h2 id="onboardingTitle">まずは3分だけ、この順番で触ってください</h2>
-        <p id="onboardingLead" class="onboarding-lead">細かい機能を見る前に、見る人、依頼する人、クリエイターの基本導線だけ確認すると迷いにくいです。</p>
-        <div class="onboarding-steps">
-          <article><span>1</span><strong id="onboardingStepTitle1">投稿を開く</strong><p id="onboardingStepBody1">ホームの画像を押して、保存、フォロー、共有、タグ検索を試します。</p></article>
-          <article><span>2</span><strong id="onboardingStepTitle2">信用を見る</strong><p id="onboardingStepBody2">投稿主のプロフィールで代表作、実績、レビュー、外部リンクを見ます。</p></article>
-          <article><span>3</span><strong id="onboardingStepTitle3">依頼する</strong><p id="onboardingStepBody3">依頼受付中カードから依頼ページへ進み、金額と依頼内容を入力します。</p></article>
-          <article><span>4</span><strong id="onboardingStepTitle4">進行を追う</strong><p id="onboardingStepBody4">依頼管理で承認、作業開始、納品、評価までの状態を確認します。</p></article>
-          <article><span>5</span><strong id="onboardingStepTitle5">広げる</strong><p id="onboardingStepBody5">イベント、サークル、通知、設定を見て運用イメージを確認します。</p></article>
-        </div>
-        <div class="request-sheet-actions">
-          <button id="onboardingServiceButton" class="soft-button" type="button">詳しい試用ルートを見る</button>
-          <button id="onboardingStartButton" class="primary-button" type="submit">ホームから試す</button>
-        </div>
-      </form>
     </dialog>
 
     <dialog id="composeDialog" class="compose-dialog" aria-labelledby="composeTitle">

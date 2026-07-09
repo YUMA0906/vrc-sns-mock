@@ -1046,6 +1046,14 @@ Mock data in `backendSpecCards` is an in-app summary, but this document is the m
 - Post creation stores all attached images in `images` while keeping the first image as the thumbnail fallback.
 - The compose modal image preview now matches the post detail presentation more closely, with a larger image field and blurred background preview.
 
+2026-07-09:
+
+- Profile action controls were refined: notification moved next to Follow, while mute/block live in the three-dot safety menu.
+- Following a blocked creator now clears block and mute state before following; clicking the blocked-state profile button clears block/mute without following.
+- The profile follow button now shows `フォロー中`, hover `フォロー解除`, and blocked-state `ブロック中` with hover `ブロック解除`.
+- Notification starts off after follow; the notification button uses a bell with direct plus/check marks and a cutout stroke to keep marks readable over the bell.
+- The profile safety menu now shows short labels only (`ミュート`, `ブロック`) and uses button colors aligned with the rest of the profile action row.
+
 ## Pre-Push Checklist
 
 Unless the user requests full QA, keep this lightweight:

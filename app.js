@@ -966,6 +966,9 @@ const profileRequest = document.querySelector("#profileRequest");
 const profileRating = document.querySelector("#profileRating");
 const profileFollow = document.querySelector("#profileFollow");
 const profileEditButton = document.querySelector("#profileEditButton");
+const profileSafetyMenuWrap = document.querySelector("#profileSafetyMenuWrap");
+const profileSafetyMenuButton = document.querySelector("#profileSafetyMenuButton");
+const profileSafetyMenu = document.querySelector("#profileSafetyMenu");
 const profileNotifyButton = document.querySelector("#profileNotifyButton");
 const profileMuteButton = document.querySelector("#profileMuteButton");
 const profileBlockButton = document.querySelector("#profileBlockButton");
@@ -1035,9 +1038,6 @@ const adminEventReviewBody = document.querySelector("#adminEventReviewBody");
 const adminEventApprove = document.querySelector("#adminEventApprove");
 const adminEventReject = document.querySelector("#adminEventReject");
 const backendSpecGrid = document.querySelector("#backendSpecGrid");
-const onboardingDialog = document.querySelector("#onboardingDialog");
-const onboardingStartButton = document.querySelector("#onboardingStartButton");
-const onboardingServiceButton = document.querySelector("#onboardingServiceButton");
 const settingsLanguage = document.querySelector("#settingsLanguage");
 const settingsThemeMode = document.querySelector("#settingsThemeMode");
 const settingsReducedMotion = document.querySelector("#settingsReducedMotion");
@@ -1575,7 +1575,6 @@ let profileArchivePinnedHeight = 0;
 const composeDraftStorageKey = "vrc-sns-compose-draft";
 const composeRepliesDefaultStorageKey = "vrc-sns-compose-replies-default";
 const requestComposeDraftStorageKey = "vrc-sns-request-compose-draft";
-const onboardingStorageKey = "vrc-sns-onboarding-seen";
 const savedSearchTabsStorageKey = "vrc-sns-saved-search-tabs";
 let savedSearchTabItems = loadSavedSearchTabItems();
 const sheetCancelButtonIds = [
@@ -4430,20 +4429,6 @@ function applyLanguage({ rerender = false } = {}) {
   setText("#serviceRouteStep3A", currentLanguage === "en" ? "Open a pending request in request manager" : currentLanguage === "ko" ? "의뢰 관리에서 미승낙 의뢰를 열기" : "依頼管理で未承諾の依頼を開く");
   setText("#serviceRouteStep3B", currentLanguage === "en" ? "Check hold-to-accept, start work, delivery, and review" : currentLanguage === "ko" ? "길게 눌러 승인, 작업 시작, 납품, 평가 흐름 확인" : "長押し承認、作業開始、納品、評価の流れを見る");
   setText("#serviceRouteStep3C", currentLanguage === "en" ? "Also test chat attachments, ZIP warning, and report flow" : currentLanguage === "ko" ? "채팅 첨부, ZIP 경고, 신고 동선도 확인" : "チャット添付、ZIP警告、通報導線も確認する");
-  setText("#onboardingTitle", currentLanguage === "en" ? "Spend three minutes here first" : currentLanguage === "ko" ? "먼저 3분만 이 순서로 만져보세요" : "まずは3分だけ、この順番で触ってください");
-  setText("#onboardingLead", currentLanguage === "en" ? "Before checking every feature, try the basic viewer, client, and creator flows. It makes the mock much easier to understand." : currentLanguage === "ko" ? "세부 기능을 보기 전에 보는 사람, 의뢰자, 크리에이터의 기본 동선만 확인하면 이해하기 쉽습니다." : "細かい機能を見る前に、見る人、依頼する人、クリエイターの基本導線だけ確認すると迷いにくいです。");
-  setText("#onboardingStepTitle1", currentLanguage === "en" ? "Open a post" : currentLanguage === "ko" ? "게시물 열기" : "投稿を開く");
-  setText("#onboardingStepBody1", currentLanguage === "en" ? "Tap an image on home and try save, follow, share, and tag search." : currentLanguage === "ko" ? "홈의 이미지를 눌러 저장, 팔로우, 공유, 태그 검색을 테스트합니다." : "ホームの画像を押して、保存、フォロー、共有、タグ検索を試します。");
-  setText("#onboardingStepTitle2", currentLanguage === "en" ? "Check trust" : currentLanguage === "ko" ? "신뢰 확인" : "信用を見る");
-  setText("#onboardingStepBody2", currentLanguage === "en" ? "Open the creator profile and check featured work, proof, reviews, and links." : currentLanguage === "ko" ? "작성자 프로필에서 대표작, 실적, 리뷰, 외부 링크를 확인합니다." : "投稿主のプロフィールで代表作、実績、レビュー、外部リンクを見ます。");
-  setText("#onboardingStepTitle3", currentLanguage === "en" ? "Send a request" : currentLanguage === "ko" ? "의뢰하기" : "依頼する");
-  setText("#onboardingStepBody3", currentLanguage === "en" ? "Move from an open commission card to the request page and enter amount and brief." : currentLanguage === "ko" ? "의뢰 접수 카드에서 의뢰 페이지로 이동해 금액과 내용을 입력합니다." : "依頼受付中カードから依頼ページへ進み、金額と依頼内容を入力します。");
-  setText("#onboardingStepTitle4", currentLanguage === "en" ? "Track progress" : currentLanguage === "ko" ? "진행 확인" : "進行を追う");
-  setText("#onboardingStepBody4", currentLanguage === "en" ? "Use request manager to check acceptance, start work, delivery, and review states." : currentLanguage === "ko" ? "의뢰 관리에서 승인, 작업 시작, 납품, 평가 상태를 확인합니다." : "依頼管理で承認、作業開始、納品、評価までの状態を確認します。");
-  setText("#onboardingStepTitle5", currentLanguage === "en" ? "Explore more" : currentLanguage === "ko" ? "확장 기능 보기" : "広げる");
-  setText("#onboardingStepBody5", currentLanguage === "en" ? "Check events, circles, notifications, and settings to imagine real operation." : currentLanguage === "ko" ? "이벤트, 서클, 알림, 설정을 보고 운영 이미지를 확인합니다." : "イベント、サークル、通知、設定を見て運用イメージを確認します。");
-  setText("#onboardingServiceButton", currentLanguage === "en" ? "See detailed routes" : currentLanguage === "ko" ? "자세한 테스트 루트 보기" : "詳しい試用ルートを見る");
-  setText("#onboardingStartButton", currentLanguage === "en" ? "Start from home" : currentLanguage === "ko" ? "홈에서 시작" : "ホームから試す");
   setText("#serviceWhatEyebrow", currentLanguage === "en" ? "Page guide" : currentLanguage === "ko" ? "화면 안내" : "Page guide");
   setText("#serviceWhatTitle", currentLanguage === "en" ? "What each screen is for" : currentLanguage === "ko" ? "어디에 무엇이 있는지" : "どこに何があるか");
   setText("#serviceWhatBody1", currentLanguage === "en" ? "Home: browse posts, search, switch categories, and check live event banners." : currentLanguage === "ko" ? "홈: 게시물 목록, 검색, 카테고리, 진행 중 이벤트를 확인합니다." : "ホーム: 投稿一覧、検索、カテゴリ、開催中イベントの確認。");
@@ -4927,6 +4912,33 @@ function closeModalElement(modal) {
   modal.classList.remove("is-fallback-open");
   unlockPageScrollIfIdle();
 }
+
+function eventPointOutsideElement(event, element) {
+  if (!element) return false;
+  const rect = element.getBoundingClientRect();
+  return event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom;
+}
+
+function handleCardDialogBackdropPointerDown(event) {
+  if (event.button !== undefined && event.button !== 0) return;
+  const managedDialogs = [
+    [trustInfoDialog, closeTrustInfoDialog],
+    [composeDialog, openComposeCloseConfirmDialog],
+    [requestComposeDialog, closeRequestComposeDialog],
+    [editProfileDialog, closeEditProfileDialog],
+    [avatarEditorDialog, closeAvatarEditorDialog],
+  ];
+  const openDialogs = [...document.querySelectorAll("dialog[open]")];
+  const topOpenDialog = openDialogs[openDialogs.length - 1];
+  const managed = managedDialogs.find(([modal]) => modal && modal === topOpenDialog);
+  if (!managed) return;
+  const [modal, closeHandler] = managed;
+  if (!eventPointOutsideElement(event, modal)) return;
+  event.preventDefault();
+  closeHandler();
+}
+
+document.addEventListener("pointerdown", handleCardDialogBackdropPointerDown, true);
 
 function closeSheetDialog(modal) {
   if (!modal) return;
@@ -6952,8 +6964,8 @@ function iconFollow(following = false) {
 function iconProfileAction(type, active = false) {
   const icons = {
     notify: active
-      ? `<svg aria-hidden="true" viewBox="0 0 24 24"><path class="icon-fill-soft" d="M18 16v-5a6 6 0 0 0-12 0v5l-2 2h16l-2-2Z" /><path d="M9.8 20a2.4 2.4 0 0 0 4.4 0" /><path d="M18.5 4.5 21 2" /></svg>`
-      : `<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M18 16v-5a6 6 0 0 0-12 0v5l-2 2h16l-2-2Z" /><path d="M9.8 20a2.4 2.4 0 0 0 4.4 0" /><path d="m3 3 18 18" /></svg>`,
+      ? `<svg aria-hidden="true" viewBox="0 0 24 24"><path class="icon-fill-soft" d="M18 16v-5a6 6 0 0 0-12 0v5l-2 2h16l-2-2Z" /><path d="M9.8 20a2.4 2.4 0 0 0 4.4 0" /><path class="notify-status-cutout" d="m13.8 6.2 2.35 2.35 4.7-5.25" /><path class="notify-status-mark" d="m13.8 6.2 2.35 2.35 4.7-5.25" /></svg>`
+      : `<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M18 16v-5a6 6 0 0 0-12 0v5l-2 2h16l-2-2Z" /><path d="M9.8 20a2.4 2.4 0 0 0 4.4 0" /><path class="notify-status-cutout" d="M17.4 2.1v8.7M13.05 6.45h8.7" /><path class="notify-status-mark" d="M17.4 2.1v8.7M13.05 6.45h8.7" /></svg>`,
     mute: active
       ? `<svg aria-hidden="true" viewBox="0 0 24 24"><path class="icon-fill-soft" d="M4 9v6h4l5 4V5L8 9H4Z" /><path d="m18 9-4 6" /><path d="m14 9 4 6" /></svg>`
       : `<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4Z" /><path d="M16 9.5a4 4 0 0 1 0 5" /><path d="M18.5 7a7 7 0 0 1 0 10" /></svg>`,
@@ -7144,15 +7156,29 @@ function updateDialogSave() {
 
 function updateFollowButton(button, creator) {
   const following = followedCreators.has(creator);
-  button.innerHTML = iconFollow(following);
-  button.setAttribute("aria-label", following ? `Unfollow ${creator}` : `${t("follow")} ${creator}`);
+  const blocked = blockedCreators.has(creator);
+  const isProfileFollow = button?.id === "profileFollow";
+  const label = blocked ? "ブロック中" : following ? "フォロー中" : "フォローする";
+  const hoverLabel = blocked ? "ブロック解除" : following ? "フォロー解除" : "";
+  button.innerHTML = isProfileFollow
+    ? `${iconFollow(following)}<span class="follow-label">${label}</span>${hoverLabel ? `<span class="follow-unfollow-label" aria-hidden="true">${hoverLabel}</span>` : ""}`
+    : iconFollow(following);
+  button.setAttribute("aria-label", blocked ? `${creator}のブロックを解除` : following ? `${creator}のフォローを解除` : `${t("follow")} ${creator}`);
   button.classList.toggle("is-saved", following);
+  button.classList.toggle("is-blocked", blocked);
   button.classList.add("follow-action-button");
-  button.title = following ? t("following") : t("follow");
+  button.title = isProfileFollow ? label : following ? t("following") : t("follow");
 }
 
 function updateProfileSocialButtons(creator, isMine = false) {
-  const buttons = [profileNotifyButton, profileMuteButton, profileBlockButton];
+  const buttons = [profileMuteButton, profileBlockButton];
+  if (profileSafetyMenuWrap) profileSafetyMenuWrap.hidden = isMine;
+  if (profileSafetyMenu) profileSafetyMenu.hidden = true;
+  if (profileSafetyMenuButton) {
+    profileSafetyMenuButton.classList.remove("is-active");
+    profileSafetyMenuButton.setAttribute("aria-expanded", "false");
+  }
+  if (profileNotifyButton) profileNotifyButton.hidden = true;
   buttons.forEach((button) => {
     if (!button) return;
     button.hidden = isMine;
@@ -7164,26 +7190,77 @@ function updateProfileSocialButtons(creator, isMine = false) {
   const blocked = blockedCreators.has(creator);
 
   if (profileNotifyButton) {
+    profileNotifyButton.hidden = !followedCreators.has(creator);
     profileNotifyButton.innerHTML = iconProfileAction("notify", notifyOn);
     profileNotifyButton.classList.add("is-notify-action");
     profileNotifyButton.classList.toggle("is-active", notifyOn);
     profileNotifyButton.setAttribute("aria-label", notifyOn ? `${creator}の通知をオフにする` : `${creator}の通知をオンにする`);
-    profileNotifyButton.title = notifyOn ? "通知オン" : "通知オフ";
+    profileNotifyButton.title = notifyOn ? "通知オン" : "通知をオンにする";
   }
   if (profileMuteButton) {
-    profileMuteButton.innerHTML = iconProfileAction("mute", muted);
+    profileMuteButton.innerHTML = `${iconProfileAction("mute", muted)}<span>${muted ? "ミュート解除" : "ミュート"}</span>`;
     profileMuteButton.classList.add("is-mute-action");
     profileMuteButton.classList.toggle("is-active", muted);
     profileMuteButton.setAttribute("aria-label", muted ? `${creator}のミュートを解除` : `${creator}をミュート`);
     profileMuteButton.title = muted ? "ミュート中" : "ミュート";
   }
   if (profileBlockButton) {
-    profileBlockButton.innerHTML = iconProfileAction("block", blocked);
+    profileBlockButton.innerHTML = `${iconProfileAction("block", blocked)}<span>${blocked ? "ブロック解除" : "ブロック"}</span>`;
     profileBlockButton.classList.add("is-block-action");
     profileBlockButton.classList.toggle("is-active", blocked);
     profileBlockButton.setAttribute("aria-label", blocked ? `${creator}のブロックを解除` : `${creator}をブロック`);
     profileBlockButton.title = blocked ? "ブロック中" : "ブロック";
   }
+}
+
+function setProfileSafetyMenuOpen(open) {
+  if (!profileSafetyMenu || !profileSafetyMenuButton || profileSafetyMenuWrap?.hidden) return;
+  profileSafetyMenu.hidden = !open;
+  profileSafetyMenuButton.classList.toggle("is-active", open);
+  profileSafetyMenuButton.setAttribute("aria-expanded", open ? "true" : "false");
+}
+
+function closeProfileSafetyMenu() {
+  if (!profileSafetyMenu || !profileSafetyMenuButton) return;
+  profileSafetyMenu.hidden = true;
+  profileSafetyMenuButton.classList.remove("is-active");
+  profileSafetyMenuButton.setAttribute("aria-expanded", "false");
+}
+
+function toggleProfileNotify() {
+  if (!activeProfile || isOwnProfileName(activeProfile)) return;
+  if (notificationEnabledCreators.has(activeProfile)) {
+    notificationEnabledCreators.delete(activeProfile);
+  } else {
+    notificationEnabledCreators.add(activeProfile);
+    mutedCreators.delete(activeProfile);
+  }
+  updateProfileSocialButtons(activeProfile, false);
+}
+
+function toggleProfileMute() {
+  if (!activeProfile || isOwnProfileName(activeProfile)) return;
+  if (mutedCreators.has(activeProfile)) {
+    mutedCreators.delete(activeProfile);
+  } else {
+    mutedCreators.add(activeProfile);
+    notificationEnabledCreators.delete(activeProfile);
+  }
+  updateProfileSocialButtons(activeProfile, false);
+}
+
+function toggleProfileBlock() {
+  if (!activeProfile || isOwnProfileName(activeProfile)) return;
+  if (blockedCreators.has(activeProfile)) {
+    blockedCreators.delete(activeProfile);
+  } else {
+    blockedCreators.add(activeProfile);
+    mutedCreators.add(activeProfile);
+    notificationEnabledCreators.delete(activeProfile);
+    followedCreators.delete(activeProfile);
+  }
+  updateFollowButton(profileFollow, activeProfile);
+  updateProfileSocialButtons(activeProfile, false);
 }
 
 function followedCreatorCards() {
@@ -11007,28 +11084,6 @@ function openNotificationTarget(item) {
   notificationTargetReturnActive = false;
 }
 
-function markOnboardingSeen() {
-  try {
-    localStorage.setItem(onboardingStorageKey, "1");
-  } catch {
-    // Ignore storage failures in the static mock.
-  }
-}
-
-function maybeShowOnboarding() {
-  if (!onboardingDialog) return;
-  try {
-    if (localStorage.getItem(onboardingStorageKey)) return;
-  } catch {
-    return;
-  }
-  window.setTimeout(() => {
-    if (document.body.classList.contains("is-dragging")) return;
-    if (modalIsOpen(dialog) || modalIsOpen(composeDialog) || modalIsOpen(requestComposeDialog)) return;
-    showModalElement(onboardingDialog);
-  }, 720);
-}
-
 function renderOtherRequestCards(creator, activePostId) {
   const others = openRequestPostsForCreator(creator).filter((post) => post.id !== activePostId);
   requestMoreSection.hidden = others.length === 0;
@@ -12539,6 +12594,13 @@ floatingNewPostButton?.addEventListener("click", () => {
   openComposeHint();
 });
 composeDraftListClose?.addEventListener("click", () => closeModalElement(composeDraftListDialog));
+composeDraftListDialog?.addEventListener("click", (event) => {
+  if (event.target === composeDraftListDialog) closeModalElement(composeDraftListDialog);
+});
+composeDraftListDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeModalElement(composeDraftListDialog);
+});
 composeDraftListBody?.addEventListener("click", (event) => {
   const action = event.target.closest("[data-compose-draft-action]");
   if (!action) return;
@@ -12647,13 +12709,6 @@ accountMenu?.addEventListener("click", (event) => {
     openNotificationsPage();
   }
 });
-onboardingStartButton?.addEventListener("click", markOnboardingSeen);
-onboardingServiceButton?.addEventListener("click", () => {
-  markOnboardingSeen();
-  closeModalElement(onboardingDialog);
-  openServicePage();
-});
-onboardingDialog?.addEventListener("close", markOnboardingSeen);
 document.addEventListener("click", (event) => {
   if (accountMenu?.hidden) return;
   if (event.target.closest(".account-menu-wrap")) return;
@@ -13052,6 +13107,13 @@ zipSafetyCheckbox?.addEventListener("change", () => {
 });
 zipSafetyConfirm?.addEventListener("click", confirmZipAttachments);
 zipSafetyCancel?.addEventListener("click", cancelZipAttachments);
+zipSafetyDialog?.addEventListener("click", (event) => {
+  if (event.target === zipSafetyDialog) cancelZipAttachments();
+});
+zipSafetyDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  cancelZipAttachments();
+});
 profileRequestButton.addEventListener("click", () => {
   if (profileRequestButton.hidden) return;
   if (activeProfile === "You") {
@@ -13316,6 +13378,13 @@ requestCheckoutAgreement?.addEventListener("change", () => {
   requestCheckoutSubmit.disabled = !requestCheckoutAgreement.checked;
 });
 requestCheckoutCancel?.addEventListener("click", () => closeModalElement(requestCheckoutDialog));
+requestCheckoutDialog?.addEventListener("click", (event) => {
+  if (event.target === requestCheckoutDialog) closeModalElement(requestCheckoutDialog);
+});
+requestCheckoutDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeModalElement(requestCheckoutDialog);
+});
 requestCheckoutSubmit?.addEventListener("click", () => {
   closeModalElement(requestCheckoutDialog);
   requestConfirmButton.textContent = currentLanguage === "en" ? "Payment screen planned" : currentLanguage === "ko" ? "결제 화면 예정" : "支払い画面へ進行予定";
@@ -13482,6 +13551,13 @@ requestDecisionActions?.addEventListener("pointercancel", (event) => {
 });
 
 requestApprovalCancel?.addEventListener("click", () => closeModalElement(requestApprovalDialog));
+requestApprovalDialog?.addEventListener("click", (event) => {
+  if (event.target === requestApprovalDialog) closeModalElement(requestApprovalDialog);
+});
+requestApprovalDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeModalElement(requestApprovalDialog);
+});
 requestApprovalConfirm?.addEventListener("click", (event) => {
   event.preventDefault();
   return;
@@ -13515,6 +13591,13 @@ requestReviewDialog?.addEventListener("cancel", (event) => {
 });
 
 requestRejectCancel?.addEventListener("click", () => closeModalElement(requestRejectDialog));
+requestRejectDialog?.addEventListener("click", (event) => {
+  if (event.target === requestRejectDialog) closeModalElement(requestRejectDialog);
+});
+requestRejectDialog?.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeModalElement(requestRejectDialog);
+});
 requestRejectConfirm?.addEventListener("click", () => {
   const selected = document.querySelector('input[name="requestRejectReason"]:checked');
   const reason = selected?.value === "other" ? (requestRejectMessage.value.trim() || "その他の理由") : selected?.value;
@@ -13628,10 +13711,15 @@ dialogWorld.addEventListener("click", (event) => {
 dialogSave.addEventListener("click", () => toggleSave(currentPin.id));
 
 dialogFollow.addEventListener("click", () => {
-  if (followedCreators.has(currentPin.creator)) {
+  if (blockedCreators.has(currentPin.creator)) {
+    blockedCreators.delete(currentPin.creator);
+    mutedCreators.delete(currentPin.creator);
+  } else if (followedCreators.has(currentPin.creator)) {
     followedCreators.delete(currentPin.creator);
   } else {
     followedCreators.add(currentPin.creator);
+    blockedCreators.delete(currentPin.creator);
+    mutedCreators.delete(currentPin.creator);
   }
   updateFollowButton(dialogFollow, currentPin.creator);
 });
@@ -13649,12 +13737,19 @@ dialogCommentForm?.addEventListener("submit", (event) => {
 
 profileFollow.addEventListener("click", () => {
   if (!activeProfile) return;
-  if (followedCreators.has(activeProfile)) {
+  if (blockedCreators.has(activeProfile)) {
+    blockedCreators.delete(activeProfile);
+    mutedCreators.delete(activeProfile);
+  } else if (followedCreators.has(activeProfile)) {
     followedCreators.delete(activeProfile);
+    notificationEnabledCreators.delete(activeProfile);
   } else {
     followedCreators.add(activeProfile);
+    blockedCreators.delete(activeProfile);
+    mutedCreators.delete(activeProfile);
   }
   updateFollowButton(profileFollow, activeProfile);
+  updateProfileSocialButtons(activeProfile, false);
 });
 
 profileEditButton?.addEventListener("click", openEditProfile);
@@ -13676,40 +13771,31 @@ followingListDialog?.addEventListener("cancel", (event) => {
   closeFollowingListDialog();
 });
 
-profileNotifyButton?.addEventListener("click", () => {
-  if (!activeProfile || activeProfile === "You") return;
-  if (notificationEnabledCreators.has(activeProfile)) {
-    notificationEnabledCreators.delete(activeProfile);
-  } else {
-    notificationEnabledCreators.add(activeProfile);
-    mutedCreators.delete(activeProfile);
-  }
-  updateProfileSocialButtons(activeProfile, false);
+profileSafetyMenuButton?.addEventListener("click", (event) => {
+  event.stopPropagation();
+  setProfileSafetyMenuOpen(Boolean(profileSafetyMenu?.hidden));
 });
 
-profileMuteButton?.addEventListener("click", () => {
-  if (!activeProfile || activeProfile === "You") return;
-  if (mutedCreators.has(activeProfile)) {
-    mutedCreators.delete(activeProfile);
-  } else {
-    mutedCreators.add(activeProfile);
-    notificationEnabledCreators.delete(activeProfile);
-  }
-  updateProfileSocialButtons(activeProfile, false);
+profileSafetyMenu?.addEventListener("click", (event) => {
+  const actionButton = event.target.closest("[data-profile-safety-action]");
+  if (!actionButton) return;
+  const action = actionButton.dataset.profileSafetyAction;
+  if (action === "mute") toggleProfileMute();
+  if (action === "block") toggleProfileBlock();
 });
 
-profileBlockButton?.addEventListener("click", () => {
-  if (!activeProfile || activeProfile === "You") return;
-  if (blockedCreators.has(activeProfile)) {
-    blockedCreators.delete(activeProfile);
-  } else {
-    blockedCreators.add(activeProfile);
-    mutedCreators.add(activeProfile);
-    notificationEnabledCreators.delete(activeProfile);
-    followedCreators.delete(activeProfile);
-  }
-  updateFollowButton(profileFollow, activeProfile);
-  updateProfileSocialButtons(activeProfile, false);
+profileNotifyButton?.addEventListener("click", (event) => {
+  event.stopPropagation();
+  toggleProfileNotify();
+});
+
+document.addEventListener("click", (event) => {
+  if (profileSafetyMenuWrap?.contains(event.target)) return;
+  closeProfileSafetyMenu();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeProfileSafetyMenu();
 });
 
 closeEditProfile.addEventListener("click", closeEditProfileDialog);
@@ -14346,7 +14432,6 @@ startHeroTitleRotation();
 renderPins();
 routeFromHash();
 updateTopbarSearchVisibility();
-maybeShowOnboarding();
 
 function ensureEditLinkList() {
   return document.querySelector("#editLinkList");
@@ -14954,6 +15039,7 @@ function renderProfile(creator) {
     profileFollow.hidden = true;
     if (profileEditButton) profileEditButton.hidden = false;
     if (profileFollowingButton) profileFollowingButton.hidden = true;
+    if (profileSafetyMenuWrap) profileSafetyMenuWrap.hidden = true;
     if (profileNotifyButton) profileNotifyButton.hidden = true;
     if (profileMuteButton) profileMuteButton.hidden = true;
     if (profileBlockButton) profileBlockButton.hidden = true;
@@ -14969,6 +15055,7 @@ function renderProfile(creator) {
     profileFollow.hidden = false;
     if (profileEditButton) profileEditButton.hidden = true;
     if (profileFollowingButton) profileFollowingButton.hidden = true;
+    if (profileSafetyMenuWrap) profileSafetyMenuWrap.hidden = false;
     if (profileNotifyButton) profileNotifyButton.hidden = false;
     if (profileMuteButton) profileMuteButton.hidden = false;
     if (profileBlockButton) profileBlockButton.hidden = false;
