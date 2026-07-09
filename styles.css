@@ -2008,24 +2008,69 @@ body[data-theme="dark"] .pin-card:hover .pin-media {
   font-weight: 760;
 }
 
-.save-dot {
+.save-split {
   position: relative;
   z-index: 4;
-  display: grid;
-  place-items: center;
-  width: 40px;
+  display: inline-flex;
+  align-items: stretch;
   height: 40px;
+  overflow: hidden;
   border: 0;
-  border-radius: 50%;
+  border-radius: 999px;
   background: rgba(255,255,255,0.92);
   color: #111;
   box-shadow: 0 12px 24px rgba(0,0,0,0.18);
   pointer-events: auto;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
-.save-dot:hover {
-  transform: translateY(-1px) scale(1.04);
+.save-split:hover {
   box-shadow: 0 16px 30px rgba(0,0,0,0.24);
+}
+
+.save-dot,
+.save-split-menu {
+  display: grid;
+  place-items: center;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.save-dot {
+  width: 42px;
+}
+
+.save-split-main {
+  border-radius: 999px 0 0 999px;
+}
+
+.save-split-menu {
+  width: 32px;
+  border-left: 1px solid rgba(20,20,20,0.12);
+  border-radius: 0 999px 999px 0;
+}
+
+.save-dot:hover,
+.save-split-menu:hover {
+  background: rgba(20,20,20,0.06);
+}
+
+.save-split-menu:hover .chevron-down-icon {
+  transform: translateY(1px);
+}
+
+.chevron-down-icon {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 160ms ease;
 }
 
 [data-theme="dark"] .save-large:hover,
@@ -2038,6 +2083,81 @@ body[data-theme="dark"] .save-large:hover {
 .save-large {
   width: 116px;
   flex: 0 0 116px;
+}
+
+.dialog-save-split {
+  height: 46px;
+  flex: 0 0 auto;
+  background: #202020;
+  color: #fffdf7;
+  box-shadow: 0 18px 42px rgba(20, 20, 20, 0.12);
+}
+
+.dialog-save-split .save-split-main {
+  width: auto;
+  height: 46px;
+  min-width: 104px;
+  padding: 0 15px 0 17px;
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transform: translateY(0);
+}
+
+.dialog-save-split .save-split-menu {
+  height: 46px;
+  width: 38px;
+  border-left: 1px solid rgba(255, 250, 241, 0.28);
+}
+
+.dialog-save-split .bookmark-icon {
+  display: block;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+}
+
+.dialog-save-split.is-saved .bookmark-icon {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  color: #fffdf7;
+}
+
+.dialog-save-split.is-saved .bookmark-icon path {
+  fill: #fffdf7;
+}
+
+.dialog-save-label {
+  display: inline-flex;
+  align-items: center;
+  height: 1em;
+  font-weight: 760;
+  line-height: 1;
+  transform: translateY(0.5px);
+}
+
+[data-theme="dark"] .dialog-save-split,
+body[data-theme="dark"] .dialog-save-split {
+  background: #fffdf7;
+  color: #111;
+}
+
+[data-theme="dark"] .dialog-save-split.is-saved .bookmark-icon,
+body[data-theme="dark"] .dialog-save-split.is-saved .bookmark-icon {
+  color: #111;
+}
+
+[data-theme="dark"] .dialog-save-split.is-saved .bookmark-icon path,
+body[data-theme="dark"] .dialog-save-split.is-saved .bookmark-icon path {
+  fill: #111;
+}
+
+[data-theme="dark"] .dialog-save-split .save-split-menu,
+body[data-theme="dark"] .dialog-save-split .save-split-menu {
+  border-left-color: rgba(17, 17, 17, 0.18);
 }
 
 #dialogFollow.follow-action-button,
@@ -2055,6 +2175,7 @@ body[data-theme="dark"] .save-large:hover {
   transition: fill 150ms ease;
 }
 
+.save-split.is-saved .bookmark-icon path,
 .save-dot.is-saved .bookmark-icon path,
 .save-large.is-saved .bookmark-icon path {
   fill: currentColor;
@@ -3341,8 +3462,31 @@ body[data-theme="dark"] .upload-drop.has-image::before {
 }
 
 .upload-empty strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   color: var(--ink);
   font-size: 1.15rem;
+}
+
+.upload-required-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: rgba(199, 65, 65, 0.12);
+  color: #b73535;
+  font-size: 0.66rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+[data-theme="dark"] .upload-required-badge,
+body[data-theme="dark"] .upload-required-badge {
+  background: rgba(255, 102, 102, 0.18);
+  color: #ffb0b0;
 }
 
 .upload-empty small {
@@ -4340,6 +4484,7 @@ body[data-theme="dark"] .world-external-link {
 }
 
 .request-panel {
+  position: relative;
   width: 100%;
   text-align: left;
   margin-bottom: 22px;
@@ -4373,6 +4518,85 @@ body[data-theme="dark"] .world-external-link {
 
 .request-panel.is-action:hover {
   box-shadow: 0 24px 54px rgba(20,20,20,0.22);
+}
+
+.request-self-bubble {
+  position: absolute;
+  right: 12px;
+  bottom: -17px;
+  z-index: 8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  max-width: min(280px, calc(100% - 24px));
+  padding: 0 13px;
+  border-radius: 999px;
+  background: #fff2f0;
+  color: #9f2f28;
+  border: 1px solid rgba(190, 56, 48, 0.24);
+  font-size: 0.78rem;
+  font-weight: 850;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: 0 14px 32px rgba(108, 28, 20, 0.16);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px) scale(0.96);
+}
+
+.request-self-bubble::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  right: 28px;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: inherit;
+  transform: rotate(45deg);
+}
+
+.request-self-bubble[hidden] {
+  display: none;
+}
+
+.request-self-bubble.is-visible {
+  animation: requestBubbleIn 180ms ease both;
+}
+
+.request-self-bubble.is-hiding {
+  animation: requestBubbleOut 180ms ease both;
+}
+
+[data-theme="dark"] .request-self-bubble,
+body[data-theme="dark"] .request-self-bubble {
+  background: rgba(255, 220, 216, 0.98);
+  color: #6f1f1a;
+  border-color: rgba(255, 186, 178, 0.72);
+  box-shadow: 0 16px 34px rgba(0,0,0,0.34);
+}
+
+@keyframes requestBubbleIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes requestBubbleOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
 }
 
 .profile-view {
@@ -4516,6 +4740,25 @@ body[data-theme="dark"] .profile-banner {
   padding: 0;
 }
 
+.dialog-actions .dialog-copy-link-button,
+.dialog-actions .dialog-copy-link-button.is-copied {
+  background: #202020;
+  border-color: #202020;
+  color: #fffaf1;
+  box-shadow:
+    0 14px 34px rgba(20,20,20,0.16),
+    inset 0 1px 0 rgba(255,255,255,0.14);
+}
+
+.dialog-actions .dialog-copy-link-button:hover,
+.dialog-actions .dialog-copy-link-button:focus-visible,
+.dialog-actions .dialog-copy-link-button.is-copied:hover,
+.dialog-actions .dialog-copy-link-button.is-copied:focus-visible {
+  background: #3a3935;
+  border-color: #3a3935;
+  color: #fffaf1;
+}
+
 .profile-social-button.is-notify-action {
   border-color: rgba(38,112,76,0.32);
   background: #f0fbf5;
@@ -4565,9 +4808,9 @@ body[data-theme="dark"] .profile-banner {
 }
 
 .profile-share-button.is-copied {
-  background: #2f7d56;
-  border-color: #2f7d56;
-  color: #fffdf8;
+  background: rgba(31,31,29,0.92);
+  border-color: rgba(31,31,29,0.92);
+  color: #fffaf1;
 }
 
 .profile-share-button.is-copying {
@@ -4646,9 +4889,27 @@ body[data-theme="dark"] .profile-social-button.is-block-action.is-active {
 
 [data-theme="dark"] .profile-share-button.is-copied,
 body[data-theme="dark"] .profile-share-button.is-copied {
-  background: #fff7e8;
-  border-color: #fff7e8;
-  color: #111111;
+  background: #fff4df;
+  border-color: #fff4df;
+  color: #151515;
+}
+
+[data-theme="dark"] .dialog-actions .dialog-copy-link-button,
+[data-theme="dark"] .dialog-actions .dialog-copy-link-button.is-copied,
+body[data-theme="dark"] .dialog-actions .dialog-copy-link-button,
+body[data-theme="dark"] .dialog-actions .dialog-copy-link-button.is-copied {
+  background: #fff4df;
+  border-color: #fff4df;
+  color: #151515;
+}
+
+[data-theme="dark"] .dialog-actions .dialog-copy-link-button:hover,
+[data-theme="dark"] .dialog-actions .dialog-copy-link-button:focus-visible,
+body[data-theme="dark"] .dialog-actions .dialog-copy-link-button:hover,
+body[data-theme="dark"] .dialog-actions .dialog-copy-link-button:focus-visible {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #151515;
 }
 
 .profile-copy-toast {
@@ -13940,16 +14201,26 @@ body[data-theme="dark"] .request-delivery-entry {
 
 .profile-archive-tabs {
   display: inline-flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 4px;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
   padding: 4px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: rgba(255,255,255,0.74);
   box-shadow: 0 12px 28px rgba(20,20,20,0.06);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.profile-archive-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .profile-archive-tabs button {
+  flex: 0 0 auto;
   min-height: 36px;
   padding: 0 14px;
   border: 0;
@@ -13959,6 +14230,7 @@ body[data-theme="dark"] .request-delivery-entry {
   font: inherit;
   font-size: 0.86rem;
   font-weight: 820;
+  white-space: nowrap;
   transition: background 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
@@ -14122,6 +14394,11 @@ body[data-theme="dark"] .profile-post-sort button.is-active {
   gap: 6px;
 }
 
+.bookmark-folder-covers.is-empty {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 38%;
+}
+
 .bookmark-folder-covers img,
 .bookmark-folder-cover-placeholder {
   width: 100%;
@@ -14133,11 +14410,19 @@ body[data-theme="dark"] .profile-post-sort button.is-active {
 .bookmark-folder-cover-placeholder {
   display: grid;
   place-items: center;
-  border: 1px dashed color-mix(in srgb, var(--muted) 32%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--muted) 20%, var(--line));
   background:
     linear-gradient(135deg, rgba(255,255,255,0.72), rgba(244,241,235,0.52));
   color: color-mix(in srgb, var(--muted) 72%, var(--ink));
   font-weight: 850;
+}
+
+.bookmark-folder-cover-placeholder.is-empty-folder::before {
+  content: "";
+  width: 34%;
+  height: 34%;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--muted) 24%, transparent);
 }
 
 .bookmark-folder-header {
@@ -14159,6 +14444,210 @@ body[data-theme="dark"] .profile-post-sort button.is-active {
   max-height: min(46vh, 430px);
   overflow-y: auto;
   padding: 2px 2px 6px;
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  overflow: visible;
+  z-index: 240;
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover::backdrop {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-popover-card {
+  gap: 14px;
+  max-height: inherit;
+  padding: 22px 18px 18px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.98);
+  border-color: rgba(20,20,20,0.08);
+  box-shadow:
+    0 16px 32px rgba(20,20,20,0.12),
+    0 40px 90px rgba(20,20,20,0.18);
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .eyebrow {
+  display: none;
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover h2 {
+  margin: 0;
+  text-align: center;
+  font-size: 1.02rem;
+  line-height: 1.2;
+}
+
+.bookmark-folder-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 74%, #4562ff);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.92);
+  color: #151515;
+}
+
+.bookmark-folder-search svg {
+  flex: 0 0 auto;
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.15;
+  stroke-linecap: round;
+}
+
+.bookmark-folder-search input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 720;
+}
+
+.bookmark-folder-search input::placeholder {
+  color: color-mix(in srgb, var(--muted) 76%, var(--ink));
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  max-height: min(52vh, 390px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 2px 4px 6px 0;
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-select-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "cover"
+    "name"
+    "meta"
+    "hint";
+  align-items: start;
+  gap: 8px;
+  min-height: 164px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255,255,255,0.70);
+  box-shadow: none;
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-covers {
+  grid-area: cover;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  width: 100%;
+  height: auto;
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-covers img,
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-cover-placeholder {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-select-card strong {
+  grid-area: name;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-select-card span:not(.bookmark-folder-covers) {
+  grid-area: meta;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 760;
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-select-card small {
+  display: block;
+  grid-area: hint;
+  color: color-mix(in srgb, var(--muted) 80%, var(--ink));
+  font-size: 0.76rem;
+  font-weight: 760;
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-option-card:hover .bookmark-folder-select-card,
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-option-card.is-selected .bookmark-folder-select-card {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--ink) 42%, var(--line));
+  background: rgba(255,255,255,0.92);
+  box-shadow: 0 18px 42px rgba(20,20,20,0.12);
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-option-card.is-selected .bookmark-folder-select-card::before,
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-option-card.is-selected .bookmark-folder-select-card::after {
+  display: none;
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-create-card {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: 9px;
+  min-height: 164px;
+  padding: 12px;
+  border: 1px dashed color-mix(in srgb, var(--muted) 36%, var(--line));
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.62), rgba(244,241,235,0.42));
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-create-card strong {
+  font-size: 0.92rem;
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-create-card small {
+  display: block;
+  color: color-mix(in srgb, var(--muted) 80%, var(--ink));
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-create-card:hover,
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-create-card:focus-visible {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--ink) 38%, var(--line));
+  background: rgba(255,255,255,0.88);
+  box-shadow: 0 18px 42px rgba(20,20,20,0.1);
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-create-icon {
+  width: 42px;
+  height: 42px;
+  background: rgba(34,34,33,0.92);
+  color: #fffaf1;
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .request-sheet-actions {
+  display: none;
+}
+
+#bookmarkFolderDialog.bookmark-folder-popover .sheet-close-button {
+  display: none;
 }
 
 .bookmark-folder-option-card {
@@ -14311,6 +14800,53 @@ body[data-theme="dark"] .bookmark-folder-card {
   background: rgba(24,24,23,0.82);
 }
 
+[data-theme="dark"] #bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-popover-card,
+body[data-theme="dark"] #bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-popover-card {
+  background: rgba(24,24,23,0.98);
+  border-color: rgba(255,247,232,0.13);
+  box-shadow:
+    0 18px 38px rgba(0,0,0,0.42),
+    0 44px 96px rgba(0,0,0,0.56);
+}
+
+[data-theme="dark"] .bookmark-folder-search,
+body[data-theme="dark"] .bookmark-folder-search {
+  background: rgba(255,250,241,0.08);
+  border-color: rgba(255,250,241,0.78);
+  color: #fffaf1;
+}
+
+[data-theme="dark"] #bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-option-card:hover .bookmark-folder-select-card,
+[data-theme="dark"] #bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-option-card.is-selected .bookmark-folder-select-card,
+[data-theme="dark"] #bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-create-card:hover,
+[data-theme="dark"] #bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-create-card:focus-visible,
+body[data-theme="dark"] #bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-option-card:hover .bookmark-folder-select-card,
+body[data-theme="dark"] #bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-option-card.is-selected .bookmark-folder-select-card,
+body[data-theme="dark"] #bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-create-card:hover,
+body[data-theme="dark"] #bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-create-card:focus-visible {
+  background: rgba(255,250,241,0.10);
+}
+
+[data-theme="dark"] #bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-select-card,
+body[data-theme="dark"] #bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-select-card {
+  background: rgba(255,250,241,0.06);
+  border-color: rgba(255,250,241,0.14);
+}
+
+[data-theme="dark"] #bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-create-card,
+body[data-theme="dark"] #bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-create-card {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03)),
+    rgba(24,24,23,0.74);
+  border-color: rgba(255,247,232,0.18);
+}
+
+[data-theme="dark"] #bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-create-icon,
+body[data-theme="dark"] #bookmarkFolderDialog.bookmark-folder-popover .bookmark-folder-create-icon {
+  background: rgba(255,250,241,0.12);
+  color: #fffaf1;
+}
+
 [data-theme="dark"] .bookmark-folder-create-card,
 body[data-theme="dark"] .bookmark-folder-create-card {
   background:
@@ -14373,6 +14909,10 @@ body[data-theme="dark"] .bookmark-folder-option-card.is-selected .bookmark-folde
   justify-items: end;
   gap: 10px;
   pointer-events: none;
+}
+
+body:not(.is-home-view) .floating-post-dock {
+  display: none;
 }
 
 .floating-post-hint {
@@ -14612,6 +15152,23 @@ body.is-dragging .drop-hint {
 
 .request-panel.is-action span {
   color: rgba(255,255,255,0.72);
+}
+
+.request-panel .request-self-bubble,
+.request-panel.is-action .request-self-bubble {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #9f2f28;
+  font-size: 0.78rem;
+  line-height: 1;
+}
+
+[data-theme="dark"] .request-panel .request-self-bubble,
+[data-theme="dark"] .request-panel.is-action .request-self-bubble,
+body[data-theme="dark"] .request-panel .request-self-bubble,
+body[data-theme="dark"] .request-panel.is-action .request-self-bubble {
+  color: #6f1f1a;
 }
 
 .request-panel.is-action strong::after {
@@ -15056,7 +15613,7 @@ body.is-dragging .drop-hint {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 840px) {
   .profile-posts-toolbar {
     display: grid;
     align-items: start;
@@ -15074,7 +15631,7 @@ body.is-dragging .drop-hint {
   }
 
   .profile-archive-tabs button {
-    flex: 1 1 0;
+    padding-inline: 12px;
   }
 
   .profile-post-search {
@@ -17666,6 +18223,69 @@ body[data-theme="dark"] .profile-actions .profile-block-button:not([disabled]) {
 
   .event-slide-image-panel {
     border-radius: 20px;
+  }
+}
+
+@media (max-width: 900px) {
+  .event-slide-card {
+    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr) clamp(92px, 22vw, 148px);
+  }
+
+  .event-slide-copy {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .event-slide-meta {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .event-pill,
+  .event-date,
+  .event-slide-highlights span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .event-slide-card h3 {
+    display: -webkit-box;
+    max-width: 100%;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .event-slide-card p {
+    display: -webkit-box;
+    max-width: 100%;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .event-slide-highlights {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 760px) {
+  .event-slide-card p {
+    -webkit-line-clamp: 1;
+  }
+
+  .event-slide-highlights span:nth-child(n+3) {
+    display: none;
   }
 }
 

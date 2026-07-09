@@ -1054,6 +1054,14 @@ Mock data in `backendSpecCards` is an in-app summary, but this document is the m
 - Notification starts off after follow; the notification button uses a bell with direct plus/check marks and a cutout stroke to keep marks readable over the bell.
 - The profile safety menu now shows short labels only (`ミュート`, `ブロック`) and uses button colors aligned with the rest of the profile action row.
 
+- Post creation now requires at least one image before submission; submit is disabled until title, image, and any circle selection requirements are satisfied.
+- Compose metadata reflects detected VRChat world metadata into the World field and world tag, but generic default tags and fallback Avatar/World values are not added.
+- Successful normal post submission closes the compose modal after adding the post to the feed and profile.
+- Own post detail modals hide Follow and block self-commission navigation; clicking the own request card keeps the card visible and shows a small inline warning bubble.
+- Post detail bookmark controls now match the timeline split button: main click saves to the default folder, and the chevron opens the folder picker above the modal.
+- The folder picker closes on outside scroll but stays open for internal folder-list scrolling; newly created folders save the current post and the default folder remains last.
+- Post detail action buttons were polished: bookmark fill follows button contrast, the save split divider is visible, and link copy no longer turns green after copy.
+
 ## Pre-Push Checklist
 
 Unless the user requests full QA, keep this lightweight:

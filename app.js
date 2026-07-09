@@ -1268,6 +1268,7 @@ const followingListBody = document.querySelector("#followingListBody");
 const followingListCount = document.querySelector("#followingListCount");
 const bookmarkFolderCreateDialog = document.querySelector("#bookmarkFolderCreateDialog");
 const bookmarkFolderOptions = document.querySelector("#bookmarkFolderOptions");
+const bookmarkFolderSearch = document.querySelector("#bookmarkFolderSearch");
 const bookmarkFolderName = document.querySelector("#bookmarkFolderName");
 const bookmarkFolderNameError = document.querySelector("#bookmarkFolderNameError");
 const bookmarkFolderCancel = document.querySelector("#bookmarkFolderCancel");
@@ -1555,6 +1556,7 @@ let accountDeleteHoldTimer = 0;
 let accountDeleteHoldCompleted = false;
 let acceptPopupTimer = 0;
 let profileCopyToastTimer = 0;
+let dialogRequestBubbleTimer = 0;
 let pendingZipAttachments = [];
 let requestChatAttachments = new Map();
 let lockedScrollY = 0;
@@ -1565,10 +1567,13 @@ let composePreviousVisibility = "Public";
 let pendingComposeMetadata = null;
 let composeTagItems = [];
 let requestComposeImageData = "";
+let bookmarkFolderAnchorElement = null;
+let bookmarkFolderQuery = "";
 let bookmarkFolders = [
   { id: "folder-photo", name: "撮影参考", pinIds: [3, 12] },
   { id: "folder-avatar", name: "改変メモ", pinIds: [7] },
-  { id: "folder-world", name: "World ideas", pinIds: [18] }
+  { id: "folder-world", name: "World ideas", pinIds: [18] },
+  { id: "folder-default", name: "デフォルトフォルダ", pinIds: [], isDefault: true }
 ];
 savedPins = new Set(bookmarkFolders.flatMap((folder) => folder.pinIds || []));
 let profileArchivePinnedHeight = 0;
@@ -4330,6 +4335,9 @@ function applyLanguage({ rerender = false } = {}) {
   if (bookmarkFolderName) {
     bookmarkFolderName.placeholder = currentLanguage === "en" ? "Example: Photo refs / Avatar notes" : currentLanguage === "ko" ? "예: 촬영 참고 / 개변 메모" : "例: 撮影参考 / 改変メモ";
   }
+  if (bookmarkFolderSearch) {
+    bookmarkFolderSearch.placeholder = currentLanguage === "en" ? "Search destination folders" : currentLanguage === "ko" ? "저장할 폴더 검색" : "保存先フォルダを検索";
+  }
   setAttr(circlePageButton, "aria-label", "circles");
   setTooltip(circlePageButton, "circles");
   if (eventPageButton) {
@@ -5049,7 +5057,8 @@ function unlockPageScroll() {
 function unlockPageScrollIfIdle() {
   window.setTimeout(() => {
     const hasOpenModal = [...document.querySelectorAll("dialog")].some((item) => (
-      modalIsOpen(item) || item.classList.contains("is-fallback-open") || item.classList.contains("is-closing")
+      !item.classList.contains("bookmark-folder-popover")
+      && (modalIsOpen(item) || item.classList.contains("is-fallback-open") || item.classList.contains("is-closing"))
     ));
     if (hasOpenModal) return;
     unlockPageScroll();
@@ -6951,6 +6960,10 @@ function iconBookmark() {
   return `<svg class="bookmark-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M19 21 12 17 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z" /></svg>`;
 }
 
+function iconChevronDown() {
+  return `<svg class="chevron-down-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>`;
+}
+
 function iconFollow(following = false) {
   return `
     <svg class="follow-icon" aria-hidden="true" viewBox="0 0 24 24">
@@ -7058,9 +7071,14 @@ function pinCard(pin) {
         <span class="pin-open-link" aria-hidden="true"></span>
         <div class="pin-overlay">
           ${status ? `<span class="status-chip">${status}</span>` : "<span></span>"}
-          <button class="save-dot ${saved ? "is-saved" : ""}" type="button" data-save="${pin.id}" aria-label="${saved ? "Unsave" : "Save"} ${pin.title}">
-            ${iconBookmark()}
-          </button>
+          <span class="save-split ${saved ? "is-saved" : ""}" aria-label="${saved ? "Saved" : "Save"} ${pin.title}">
+            <button class="save-dot save-split-main ${saved ? "is-saved" : ""}" type="button" data-save-default="${pin.id}" aria-label="${saved ? "Unsave" : "Save to default folder"} ${pin.title}">
+              ${iconBookmark()}
+            </button>
+            <button class="save-split-menu" type="button" data-save-folder="${pin.id}" aria-label="保存先フォルダを選ぶ ${pin.title}">
+              ${iconChevronDown()}
+            </button>
+          </span>
         </div>
         <div class="pin-image-meta">
           <span>${pin.category} / <span class="creator-link-onimage">${pin.creator}</span></span>
@@ -7124,6 +7142,49 @@ function toggleSave(pinId) {
   openBookmarkFolderDialog(pinId);
 }
 
+function defaultBookmarkFolderId() {
+  return bookmarkFolders.find((folder) => folder.isDefault)?.id || bookmarkFolders[0]?.id || null;
+}
+
+function savePinToFolder(pinId, folderId) {
+  if (!pinId || !folderId) return false;
+  let changed = false;
+  bookmarkFolders = bookmarkFolders.map((folder) => {
+    if (folder.id !== folderId) return folder;
+    const nextPinIds = [...new Set([...(folder.pinIds || []), pinId])];
+    changed = nextPinIds.length !== (folder.pinIds || []).length;
+    return {
+      ...folder,
+      pinIds: nextPinIds
+    };
+  });
+  refreshSavedPinsFromFolders();
+  syncSaveButtons(pinId);
+  if (currentPin?.id === pinId) updateDialogSave();
+  if (activeProfile === "You") renderSavedPostsSection();
+  return changed;
+}
+
+function toggleDefaultBookmarkSave(pinId) {
+  if (savedPins.has(pinId)) {
+    removePinFromAllBookmarkFolders(pinId);
+    syncSaveButtons(pinId);
+    if (currentPin?.id === pinId) updateDialogSave();
+    if (activeProfile === "You") renderSavedPostsSection();
+    showProfileCopyToast(currentLanguage === "en" ? "Removed from bookmarks" : currentLanguage === "ko" ? "북마크에서 제거했습니다" : "ブックマークから外しました");
+    return;
+  }
+  const folderId = defaultBookmarkFolderId();
+  if (!folderId) {
+    openBookmarkFolderDialog(pinId);
+    return;
+  }
+  savePinToFolder(pinId, folderId);
+  const folder = bookmarkFolders.find((item) => item.id === folderId);
+  const folderName = folder?.name || (currentLanguage === "en" ? "default folder" : "初期フォルダ");
+  showProfileCopyToast(currentLanguage === "en" ? `Saved to ${folderName}` : currentLanguage === "ko" ? `${folderName}에 저장했습니다` : `${folderName}に保存しました`);
+}
+
 function refreshSavedPinsFromFolders() {
   savedPins = new Set(bookmarkFolders.flatMap((folder) => folder.pinIds || []));
 }
@@ -7138,9 +7199,10 @@ function removePinFromAllBookmarkFolders(pinId) {
 
 function syncSaveButtons(pinId) {
   const saved = savedPins.has(pinId);
-  document.querySelectorAll(`[data-save="${pinId}"]`).forEach((button) => {
+  document.querySelectorAll(`[data-save="${pinId}"], [data-save-default="${pinId}"]`).forEach((button) => {
     const pin = findPostById(pinId);
     button.classList.toggle("is-saved", saved);
+    button.closest(".save-split")?.classList.toggle("is-saved", saved);
     if (pin) {
       button.setAttribute("aria-label", `${saved ? "Unsave" : t("save")} ${pin.title}`);
     }
@@ -7149,9 +7211,57 @@ function syncSaveButtons(pinId) {
 
 function updateDialogSave() {
   const saved = savedPins.has(currentPin.id);
+  const mainButton = dialogSave.querySelector("[data-dialog-save-default]");
+  const folderButton = dialogSave.querySelector("[data-dialog-save-folder]");
+  const label = dialogSave.querySelector(".dialog-save-label");
   dialogSave.classList.toggle("is-saved", saved);
-  dialogSave.setAttribute("aria-label", saved ? "Unsave" : t("save"));
-  dialogSave.innerHTML = `${iconBookmark()} ${saved ? t("saved") : t("save")}`;
+  dialogSave.setAttribute("aria-label", `${saved ? t("saved") : t("save")} ${currentPin.title}`);
+  if (mainButton) {
+    mainButton.classList.toggle("is-saved", saved);
+    mainButton.dataset.saveDefault = String(currentPin.id);
+    mainButton.setAttribute("aria-label", `${saved ? "Unsave" : "Save to default folder"} ${currentPin.title}`);
+  }
+  if (folderButton) {
+    folderButton.dataset.saveFolder = String(currentPin.id);
+    folderButton.setAttribute("aria-label", `保存先フォルダを選ぶ ${currentPin.title}`);
+  }
+  if (label) label.textContent = saved ? t("saved") : t("save");
+}
+
+function hideDialogRequestBubble() {
+  if (dialogRequestBubbleTimer) {
+    window.clearTimeout(dialogRequestBubbleTimer);
+    dialogRequestBubbleTimer = 0;
+  }
+  const bubble = dialogRequest?.querySelector(".request-self-bubble");
+  if (bubble) {
+    bubble.hidden = true;
+    bubble.classList.remove("is-visible", "is-hiding");
+  }
+}
+
+function showDialogRequestBubble(message = "自分に依頼することはできません") {
+  if (!dialogRequest) return;
+  hideDialogRequestBubble();
+  let bubble = dialogRequest.querySelector(".request-self-bubble");
+  if (!bubble) {
+    bubble = document.createElement("span");
+    bubble.className = "request-self-bubble";
+    dialogRequest.appendChild(bubble);
+  }
+  bubble.textContent = message;
+  bubble.hidden = false;
+  void bubble.offsetWidth;
+  bubble.classList.add("is-visible");
+  dialogRequestBubbleTimer = window.setTimeout(() => {
+    bubble.classList.add("is-hiding");
+    bubble.classList.remove("is-visible");
+    dialogRequestBubbleTimer = window.setTimeout(() => {
+      bubble.hidden = true;
+      bubble.classList.remove("is-hiding");
+      dialogRequestBubbleTimer = 0;
+    }, 180);
+  }, 1500);
 }
 
 function updateFollowButton(button, creator) {
@@ -7339,6 +7449,7 @@ function setDialogOrigin(sourceElement) {
 function openPin(pinId, sourceElement = null) {
   currentPin = findPostById(pinId);
   if (!currentPin) return;
+  hideDialogRequestBubble();
   if (!canViewPin(currentPin)) {
     showProfileCopyToast("この投稿は現在の閲覧条件では表示できません", false);
     return;
@@ -7387,7 +7498,9 @@ function openPin(pinId, sourceElement = null) {
   dialogRequest.disabled = !(creatorOpenRequest || creatorPlans.length);
   dialogRequest.classList.toggle("is-action", Boolean(creatorOpenRequest || creatorPlans.length));
   updateDialogSave();
-  updateFollowButton(dialogFollow, currentPin.creator);
+  const isOwnPost = isOwnProfileName(currentPin.creator);
+  dialogFollow.hidden = isOwnPost;
+  if (!isOwnPost) updateFollowButton(dialogFollow, currentPin.creator);
   renderDialogComments();
   showModalElement(dialog);
   requestAnimationFrame(resetPinDialogScroll);
@@ -9461,7 +9574,7 @@ function renderSavedPostsSection() {
   savedPostsSection.hidden = activeProfile !== "You" || activeProfileArchiveTab !== "folders";
   if (activeProfile !== "You" || activeProfileArchiveTab !== "folders") return;
 
-  const folders = bookmarkFolders;
+  const folders = orderedBookmarkFolders();
   bookmarkFoldersBoard.hidden = false;
   if (activeBookmarkFolderId) {
     const folder = bookmarkFolders.find((entry) => entry.id === activeBookmarkFolderId);
@@ -9502,13 +9615,11 @@ function renderSavedPostsSection() {
 
 function bookmarkFolderCoversMarkup(folder) {
   const covers = pins.filter((post) => folder.pinIds?.includes(post.id) && canViewPin(post)).slice(0, 3);
-  const placeholders = Array.from({ length: Math.max(0, 3 - covers.length) }, (_, index) => (
-    `<span class="bookmark-folder-cover-placeholder" aria-hidden="true">${index === 0 && !covers.length ? "+" : ""}</span>`
-  )).join("");
+  const placeholder = covers.length ? "" : `<span class="bookmark-folder-cover-placeholder is-empty-folder" aria-hidden="true"></span>`;
   return `
-    <span class="bookmark-folder-covers">
+    <span class="bookmark-folder-covers${covers.length ? "" : " is-empty"}">
       ${covers.map((post) => `<img src="${post.image}" alt="${post.title}" loading="lazy" />`).join("")}
-      ${placeholders}
+      ${placeholder}
     </span>
   `;
 }
@@ -9519,6 +9630,13 @@ function updateBookmarkFolderOptionSelection() {
     const input = option.querySelector('input[name="bookmarkFolderSelect"]');
     option.classList.toggle("is-selected", Boolean(input?.checked));
   });
+}
+
+function orderedBookmarkFolders(source = bookmarkFolders) {
+  return [
+    ...source.filter((folder) => !folder.isDefault),
+    ...source.filter((folder) => folder.isDefault)
+  ];
 }
 
 function bookmarkFolderCreateCardMarkup() {
@@ -9542,9 +9660,13 @@ function bookmarkFolderCreateCardMarkup() {
   `;
 }
 
-function renderBookmarkFolderOptions(selectedId = bookmarkFolders[0]?.id || "") {
+function renderBookmarkFolderOptions(selectedId = "") {
   if (!bookmarkFolderOptions) return;
-  const options = bookmarkFolders.map((folder, index) => `
+  const normalizedQuery = normalizedBookmarkFolderName(bookmarkFolderQuery);
+  const visibleFolders = orderedBookmarkFolders(normalizedQuery
+    ? bookmarkFolders.filter((folder) => normalizedBookmarkFolderName(folder.name).includes(normalizedQuery))
+    : bookmarkFolders);
+  const options = visibleFolders.map((folder, index) => `
     <label class="bookmark-folder-option-card${folder.id === selectedId ? " is-selected" : ""}">
       <input class="visually-hidden" type="radio" name="bookmarkFolderSelect" value="${folder.id}" ${folder.id === selectedId ? "checked" : ""} />
       <span class="bookmark-folder-card bookmark-folder-select-card">
@@ -9555,32 +9677,116 @@ function renderBookmarkFolderOptions(selectedId = bookmarkFolders[0]?.id || "") 
       </span>
     </label>
   `).join("");
-  bookmarkFolderOptions.innerHTML = `${options}${bookmarkFolderCreateCardMarkup()}`;
+  const empty = visibleFolders.length ? "" : `<p class="bookmark-folder-empty">${currentLanguage === "en" ? "No matching folders." : currentLanguage === "ko" ? "일치하는 폴더가 없습니다." : "一致するフォルダがありません。"}</p>`;
+  bookmarkFolderOptions.innerHTML = `${options}${empty}${bookmarkFolderCreateCardMarkup()}`;
 }
 
-function openBookmarkFolderDialog(pinId) {
+function positionBookmarkFolderPopover(anchorElement = null) {
+  if (!bookmarkFolderDialog) return;
+  bookmarkFolderDialog.classList.add("bookmark-folder-popover");
+  bookmarkFolderDialog.style.removeProperty("right");
+  bookmarkFolderDialog.style.removeProperty("bottom");
+  const panelWidth = Math.min(540, Math.max(280, window.innerWidth - 24));
+  const panelHeight = Math.min(520, Math.max(390, window.innerHeight - 24));
+  let left = Math.max(12, (window.innerWidth - panelWidth) / 2);
+  let top = Math.max(12, (window.innerHeight - panelHeight) / 2);
+  if (anchorElement?.getBoundingClientRect) {
+    const rect = anchorElement.getBoundingClientRect();
+    left = rect.left + rect.width / 2 - panelWidth + 26;
+    top = rect.bottom + 10;
+    if (left < 12) left = 12;
+    if (left + panelWidth > window.innerWidth - 12) left = window.innerWidth - panelWidth - 12;
+    if (top + panelHeight > window.innerHeight - 12) {
+      top = Math.max(12, window.innerHeight - panelHeight - 12);
+    }
+  }
+  bookmarkFolderDialog.style.width = `${panelWidth}px`;
+  bookmarkFolderDialog.style.maxHeight = `${panelHeight}px`;
+  bookmarkFolderDialog.style.left = `${Math.round(left)}px`;
+  bookmarkFolderDialog.style.top = `${Math.round(top)}px`;
+}
+
+function showBookmarkFolderPopover(anchorElement = null) {
+  if (!bookmarkFolderDialog) return;
+  positionBookmarkFolderPopover(anchorElement);
+  if (modalIsOpen(bookmarkFolderDialog)) return;
+  const shouldUseTopLayer = [dialog, composeDialog, requestComposeDialog, editProfileDialog, avatarEditorDialog]
+    .some((modal) => modal && modal !== bookmarkFolderDialog && modalIsOpen(modal));
+  if (shouldUseTopLayer && typeof bookmarkFolderDialog.showModal === "function") {
+    try {
+      bookmarkFolderDialog.showModal();
+      bookmarkFolderDialog.classList.add("is-top-layer-popover");
+      return;
+    } catch {
+      bookmarkFolderDialog.classList.remove("is-top-layer-popover");
+    }
+  }
+  if (typeof bookmarkFolderDialog.show === "function") {
+    try {
+      bookmarkFolderDialog.show();
+      return;
+    } catch {
+      bookmarkFolderDialog.setAttribute("open", "");
+      bookmarkFolderDialog.classList.add("is-fallback-open");
+      return;
+    }
+  }
+  bookmarkFolderDialog.setAttribute("open", "");
+}
+
+function hideBookmarkFolderPopoverOnly() {
+  if (!bookmarkFolderDialog) return;
+  if (typeof bookmarkFolderDialog.close === "function" && modalIsOpen(bookmarkFolderDialog)) {
+    bookmarkFolderDialog.close();
+  } else {
+    bookmarkFolderDialog.removeAttribute("open");
+    bookmarkFolderDialog.classList.remove("is-fallback-open");
+  }
+  bookmarkFolderDialog.classList.remove("is-top-layer-popover");
+}
+
+function openBookmarkFolderDialog(pinId, anchorElement = null) {
   pendingBookmarkPinId = pinId;
+  bookmarkFolderAnchorElement = anchorElement || null;
+  bookmarkFolderQuery = "";
+  if (bookmarkFolderSearch) bookmarkFolderSearch.value = "";
   if (!bookmarkFolderDialog || !bookmarkFolderOptions) return;
   renderBookmarkFolderOptions();
-  showModalElement(bookmarkFolderDialog);
+  showBookmarkFolderPopover(anchorElement);
+  window.setTimeout(() => bookmarkFolderSearch?.focus(), 40);
 }
 
 function closeBookmarkFolderDialog() {
   if (bookmarkFolderCreateDialog && modalIsOpen(bookmarkFolderCreateDialog)) closeModalElement(bookmarkFolderCreateDialog);
-  closeModalElement(bookmarkFolderDialog);
+  if (bookmarkFolderDialog) {
+    if (typeof bookmarkFolderDialog.close === "function" && modalIsOpen(bookmarkFolderDialog)) {
+      bookmarkFolderDialog.close();
+    } else {
+      bookmarkFolderDialog.removeAttribute("open");
+      bookmarkFolderDialog.classList.remove("is-fallback-open");
+    }
+    bookmarkFolderDialog.classList.remove("bookmark-folder-popover");
+    bookmarkFolderDialog.style.removeProperty("left");
+    bookmarkFolderDialog.style.removeProperty("top");
+    bookmarkFolderDialog.style.removeProperty("width");
+    bookmarkFolderDialog.style.removeProperty("max-height");
+  }
   pendingBookmarkPinId = null;
   pendingBookmarkFolderSelectionId = "";
+  bookmarkFolderAnchorElement = null;
+  bookmarkFolderQuery = "";
+  if (bookmarkFolderSearch) bookmarkFolderSearch.value = "";
 }
 
 function selectedBookmarkFolderId() {
-  return bookmarkFolderDialog?.querySelector('input[name="bookmarkFolderSelect"]:checked')?.value || bookmarkFolders[0]?.id || null;
+  return bookmarkFolderDialog?.querySelector('input[name="bookmarkFolderSelect"]:checked')?.value || defaultBookmarkFolderId();
 }
 
 function openBookmarkFolderCreateDialog() {
   if (!bookmarkFolderCreateDialog || !bookmarkFolderName) return;
   pendingBookmarkFolderSelectionId = selectedBookmarkFolderId() || pendingBookmarkFolderSelectionId || "";
   if (bookmarkFolderDialog && modalIsOpen(bookmarkFolderDialog)) {
-    closeModalElement(bookmarkFolderDialog);
+    hideBookmarkFolderPopoverOnly();
   }
   bookmarkFolderName.value = "";
   clearBookmarkFolderNameError();
@@ -9595,8 +9801,8 @@ function closeBookmarkFolderCreateDialog({ restoreFolderPicker = true } = {}) {
   }
   clearBookmarkFolderNameError();
   if (!restoreFolderPicker || !pendingBookmarkPinId || !bookmarkFolderDialog) return;
-  renderBookmarkFolderOptions(pendingBookmarkFolderSelectionId || bookmarkFolders[0]?.id || "");
-  showModalElement(bookmarkFolderDialog);
+  renderBookmarkFolderOptions("");
+  showBookmarkFolderPopover(bookmarkFolderAnchorElement);
 }
 
 function normalizedBookmarkFolderName(value) {
@@ -9665,16 +9871,28 @@ function createBookmarkFolder() {
   }
   const id = `folder-${Date.now()}`;
   clearBookmarkFolderNameError();
-  bookmarkFolders.push({ id, name, pinIds: [] });
+  const defaultIndex = bookmarkFolders.findIndex((folder) => folder.isDefault);
+  const newFolder = { id, name, pinIds: [] };
+  if (defaultIndex >= 0) {
+    bookmarkFolders.splice(defaultIndex, 0, newFolder);
+  } else {
+    bookmarkFolders.push(newFolder);
+  }
   pendingBookmarkFolderSelectionId = id;
   closeBookmarkFolderCreateDialog({ restoreFolderPicker: false });
-  renderBookmarkFolderOptions(id);
+  if (pendingBookmarkPinId) {
+    savePinToBookmarkFolder(id);
+    bookmarkFolderName.value = "";
+    return id;
+  } else {
+    renderBookmarkFolderOptions("");
+  }
   const radio = bookmarkFolderDialog?.querySelector(`input[value="${id}"]`);
   if (radio) radio.checked = true;
   updateBookmarkFolderOptionSelection();
   bookmarkFolderName.value = "";
   if (bookmarkFolderDialog && !modalIsOpen(bookmarkFolderDialog)) {
-    showModalElement(bookmarkFolderDialog);
+    showBookmarkFolderPopover(bookmarkFolderAnchorElement);
   }
   return id;
 }
@@ -9686,19 +9904,73 @@ function savePinToSelectedBookmarkFolder() {
     openBookmarkFolderCreateDialog();
     return;
   }
-  bookmarkFolders = bookmarkFolders.map((folder) => {
-    if (folder.id !== folderId) return folder;
-    return {
-      ...folder,
-      pinIds: [...new Set([...(folder.pinIds || []), pendingBookmarkPinId])]
-    };
-  });
-  refreshSavedPinsFromFolders();
-  syncSaveButtons(pendingBookmarkPinId);
-  if (currentPin?.id === pendingBookmarkPinId) updateDialogSave();
-  if (activeProfile === "You") renderSavedPostsSection();
+  savePinToFolder(pendingBookmarkPinId, folderId);
   closeBookmarkFolderDialog();
   showProfileCopyToast(currentLanguage === "en" ? "Saved to folder" : currentLanguage === "ko" ? "폴더에 저장했습니다" : "フォルダに保存しました");
+}
+
+function savePinToBookmarkFolder(folderId) {
+  if (!pendingBookmarkPinId || !folderId) return;
+  const folder = bookmarkFolders.find((item) => item.id === folderId);
+  savePinToFolder(pendingBookmarkPinId, folderId);
+  closeBookmarkFolderDialog();
+  const folderName = folder?.name || (currentLanguage === "en" ? "folder" : "フォルダ");
+  showProfileCopyToast(currentLanguage === "en" ? `Saved to ${folderName}` : currentLanguage === "ko" ? `${folderName}에 저장했습니다` : `${folderName}に保存しました`);
+}
+
+function handleBookmarkFolderOutsidePointer(event) {
+  if (!bookmarkFolderDialog || !modalIsOpen(bookmarkFolderDialog)) return;
+  if (bookmarkFolderCreateDialog && modalIsOpen(bookmarkFolderCreateDialog)) return;
+  const target = event.target;
+  if (bookmarkFolderDialog.contains(target)) return;
+  if (bookmarkFolderAnchorElement?.contains?.(target)) return;
+  closeBookmarkFolderDialog();
+}
+
+function repositionBookmarkFolderOnViewportChange() {
+  if (!bookmarkFolderDialog || !modalIsOpen(bookmarkFolderDialog)) return;
+  positionBookmarkFolderPopover(bookmarkFolderAnchorElement);
+}
+
+function closeBookmarkFolderOnScrollIntent(event) {
+  if (!bookmarkFolderDialog || !modalIsOpen(bookmarkFolderDialog)) return;
+  if (bookmarkFolderCreateDialog && modalIsOpen(bookmarkFolderCreateDialog)) return;
+  if (event.target === bookmarkFolderDialog) {
+    closeBookmarkFolderDialog();
+    return;
+  }
+  if (bookmarkFolderDialog.contains(event.target)) {
+    event.stopPropagation?.();
+    return;
+  }
+  if (
+    typeof event.clientX === "number"
+    && typeof event.clientY === "number"
+    && !eventPointOutsideElement(event, bookmarkFolderDialog)
+  ) return;
+  const firstTouch = event.touches?.[0] || event.changedTouches?.[0];
+  if (firstTouch && !eventPointOutsideElement(firstTouch, bookmarkFolderDialog)) {
+    event.stopPropagation?.();
+    return;
+  }
+  closeBookmarkFolderDialog();
+}
+
+function closeBookmarkFolderOnPageScroll(event) {
+  if (!bookmarkFolderDialog || !modalIsOpen(bookmarkFolderDialog)) return;
+  if (bookmarkFolderCreateDialog && modalIsOpen(bookmarkFolderCreateDialog)) return;
+  if (bookmarkFolderDialog.contains(event.target)) return;
+  closeBookmarkFolderDialog();
+}
+
+function containBookmarkFolderWheel(event) {
+  if (!bookmarkFolderDialog || !modalIsOpen(bookmarkFolderDialog)) return;
+  if (event.target === bookmarkFolderDialog) {
+    closeBookmarkFolderDialog();
+    return;
+  }
+  if (!bookmarkFolderDialog.contains(event.target)) return;
+  event.stopPropagation();
 }
 
 function persistComposeDraft() {
@@ -9894,8 +10166,9 @@ function composeCircleAudienceLabel() {
 function updateComposeSubmitState() {
   if (!composeForm || !composeSubmit) return;
   syncTrimRequiredFields(composeForm);
+  const hasImage = composeImages.some((image) => image?.src);
   const hasValidCircleSelection = !isComposeCirclePost() || Boolean(circleById(composeCircle?.value));
-  composeSubmit.disabled = !(composeForm.checkValidity() && hasValidCircleSelection);
+  composeSubmit.disabled = !(composeForm.checkValidity() && hasImage && hasValidCircleSelection);
 }
 
 function setComposeAudienceMode(circleOnly) {
@@ -11512,7 +11785,7 @@ function updateComposePreview() {
   if (!composePreviewCard) return;
   const category = composeCategory.value || "Avatar";
   const title = composePostTitle.value.trim() || "新しい投稿タイトル";
-  const tags = composeTagsText() || "#vrchat #portfolio";
+  const tags = composeTagsText();
   const creator = "You";
   const circle = isComposeCirclePost() ? circleById(composeCircle?.value) : null;
   const contentFlags = [
@@ -11524,7 +11797,7 @@ function updateComposePreview() {
   composePreviewCard.innerHTML = `
     <span>${category} / ${circle ? circle.name : creator}</span>
     <strong>${title}</strong>
-    <small>${circle ? `${composeCircleAudienceLabel()} / ` : `${normalizeComposeVisibility(composeVisibility?.value)} / `}${contentFlags ? `${contentFlags} / ` : ""}${tags}</small>
+    <small>${circle ? `${composeCircleAudienceLabel()} / ` : `${normalizeComposeVisibility(composeVisibility?.value)} / `}${contentFlags ? `${contentFlags}${tags ? " / " : ""}` : ""}${tags}</small>
   `;
 }
 
@@ -11828,6 +12101,7 @@ async function loadComposeImages(files, append = true) {
   composeImage.value = "";
   renderComposeImage();
   handleComposeMetadataFromImages(images);
+  updateComposeSubmitState();
 }
 
 async function loadRequestComposeImage(file) {
@@ -11895,6 +12169,13 @@ function handleMockSubmit(event) {
     composePostTitle.focus();
     return;
   }
+  if (!composeImages.some((image) => image?.src)) {
+    composeNotice.hidden = false;
+    composeNotice.textContent = "投稿画像を追加してください。";
+    composeImage?.focus();
+    updateComposeSubmitState();
+    return;
+  }
   const circleOnly = isComposeCirclePost();
   const circleId = circleOnly ? composeCircle?.value : "";
   const circle = circleId ? circleById(circleId) : null;
@@ -11903,14 +12184,8 @@ function handleMockSubmit(event) {
     composeNotice.textContent = "サークル限定投稿を作成するには、参加中のサークルを選択してください。";
     return;
   }
-  const tags = composeTagsText()
-    ? [...composeTagItems]
-    : (circle ? ["#circle", ...circle.tags.slice(0, 2)] : ["#vrchat", "#portfolio"]);
+  const tags = [...composeTagItems];
   const metadata = currentComposeMetadata();
-  const worldTag = worldNameToHashTag(metadata?.worldName || composeWorld.value);
-  const normalizedTags = worldTag && !tags.some((tag) => tag.toLowerCase() === worldTag.toLowerCase())
-    ? [...tags, worldTag]
-    : tags;
   const postImages = composeImages.map((image) => image?.src).filter(Boolean);
   const newPin = {
     id: Date.now(),
@@ -11921,10 +12196,10 @@ function handleMockSubmit(event) {
     circlePostAudience: circle ? circle.postAudience : null,
     creator: "You",
     role: "VRChat creator",
-    avatar: composeAvatar.value.trim() || "Rurune",
-    world: composeWorld.value.trim() || metadata?.worldName || "Creator Room",
-    worldId: metadata?.worldId || "",
-    tags: normalizedTags,
+    avatar: composeAvatar.value.trim(),
+    world: composeWorld.value.trim(),
+    worldId: composeWorld.value.trim() ? metadata?.worldId || "" : "",
+    tags,
     request: null,
     description: composeDescription.value.trim() || (circle ? `${circle.name}の参加者向け限定投稿です。` : "通常投稿のモックです。"),
     image: postImages[0] || vrchatImages.portrait,
@@ -11959,6 +12234,7 @@ function handleMockSubmit(event) {
   updateComposePreview();
   renderPins();
   if (activeProfile === "You") renderProfile("You");
+  closeComposeDialog();
 }
 
 function handleRequestComposeSubmit(event) {
@@ -12041,6 +12317,20 @@ function handleBoardClick(event) {
   if (profileButton) {
     event.stopPropagation();
     openProfile(profileButton.dataset.profile);
+    return;
+  }
+
+  const defaultSaveButton = event.target.closest("[data-save-default]");
+  if (defaultSaveButton) {
+    event.stopPropagation();
+    toggleDefaultBookmarkSave(Number(defaultSaveButton.dataset.saveDefault));
+    return;
+  }
+
+  const folderSaveButton = event.target.closest("[data-save-folder]");
+  if (folderSaveButton) {
+    event.stopPropagation();
+    openBookmarkFolderDialog(Number(folderSaveButton.dataset.saveFolder), folderSaveButton);
     return;
   }
 
@@ -13336,6 +13626,12 @@ dialog.addEventListener("cancel", (event) => {
 
 dialogRequest.addEventListener("click", (event) => {
   if (!currentPin) return;
+  if (isOwnProfileName(currentPin.creator)) {
+    event.preventDefault();
+    event.stopPropagation();
+    showDialogRequestBubble();
+    return;
+  }
   if (creatorHasOpenRequest(currentPin.creator)) {
     openRequestPage(currentPin.creator);
     return;
@@ -13651,9 +13947,16 @@ bookmarkFolderSave?.addEventListener("click", savePinToSelectedBookmarkFolder);
 bookmarkFolderOptions?.addEventListener("change", updateBookmarkFolderOptionSelection);
 bookmarkFolderOptions?.addEventListener("click", (event) => {
   const createCard = event.target.closest("[data-bookmark-folder-create-card]");
-  if (!createCard) return;
+  if (createCard) {
+    event.preventDefault();
+    openBookmarkFolderCreateDialog();
+    return;
+  }
+  const optionCard = event.target.closest(".bookmark-folder-option-card");
+  const folderId = optionCard?.querySelector('input[name="bookmarkFolderSelect"]')?.value;
+  if (!folderId) return;
   event.preventDefault();
-  openBookmarkFolderCreateDialog();
+  savePinToBookmarkFolder(folderId);
 });
 bookmarkFolderName?.addEventListener("input", () => {
   updateBookmarkFolderCreateState();
@@ -13669,6 +13972,10 @@ bookmarkFolderCreateDialog?.addEventListener("cancel", (event) => {
   event.preventDefault();
   closeBookmarkFolderCreateDialog();
 });
+bookmarkFolderSearch?.addEventListener("input", () => {
+  bookmarkFolderQuery = bookmarkFolderSearch.value;
+  renderBookmarkFolderOptions("");
+});
 bookmarkFolderDialog?.addEventListener("click", (event) => {
   if (event.target === bookmarkFolderDialog) closeBookmarkFolderDialog();
 });
@@ -13676,6 +13983,12 @@ bookmarkFolderDialog?.addEventListener("cancel", (event) => {
   event.preventDefault();
   closeBookmarkFolderDialog();
 });
+document.addEventListener("pointerdown", handleBookmarkFolderOutsidePointer, true);
+bookmarkFolderDialog?.addEventListener("wheel", containBookmarkFolderWheel, { passive: false });
+window.addEventListener("wheel", closeBookmarkFolderOnScrollIntent, { passive: true });
+window.addEventListener("touchmove", closeBookmarkFolderOnScrollIntent, { passive: true });
+window.addEventListener("scroll", closeBookmarkFolderOnPageScroll, true);
+window.addEventListener("resize", repositionBookmarkFolderOnViewportChange);
 
 dialogCreator.addEventListener("click", (event) => {
   const profileButton = event.target.closest("[data-profile]");
@@ -13708,9 +14021,21 @@ dialogWorld.addEventListener("click", (event) => {
   if (metaButton) searchByMeta(metaButton.dataset.metaCategory, metaButton.dataset.metaQuery);
 });
 
-dialogSave.addEventListener("click", () => toggleSave(currentPin.id));
+dialogSave.addEventListener("click", (event) => {
+  if (!currentPin) return;
+  const folderButton = event.target.closest("[data-dialog-save-folder]");
+  if (folderButton) {
+    openBookmarkFolderDialog(currentPin.id, folderButton);
+    return;
+  }
+  const mainButton = event.target.closest("[data-dialog-save-default]");
+  if (mainButton) {
+    toggleDefaultBookmarkSave(currentPin.id);
+  }
+});
 
 dialogFollow.addEventListener("click", () => {
+  if (!currentPin || isOwnProfileName(currentPin.creator)) return;
   if (blockedCreators.has(currentPin.creator)) {
     blockedCreators.delete(currentPin.creator);
     mutedCreators.delete(currentPin.creator);
